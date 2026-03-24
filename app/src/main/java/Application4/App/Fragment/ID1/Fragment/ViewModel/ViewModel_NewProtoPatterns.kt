@@ -3,8 +3,8 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Init.subInit
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.ActiveDatasFragNewProto
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.List_Datas
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.List_Datas
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto

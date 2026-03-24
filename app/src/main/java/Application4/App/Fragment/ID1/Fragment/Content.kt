@@ -1,6 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit

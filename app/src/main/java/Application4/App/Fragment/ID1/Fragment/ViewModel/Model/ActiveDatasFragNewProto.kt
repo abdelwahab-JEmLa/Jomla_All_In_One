@@ -4,17 +4,13 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.Prioriter
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
 
 @Stable
 class ActiveDatasFragNewProto {
@@ -30,8 +26,4 @@ class ActiveDatasFragNewProto {
     )
     var listM16_FilteredBy_active_M21Catalogue: List<M16CategorieProduit>? by mutableStateOf(null)
     var lastKnownBonVentKey: String? = null
-
-    fun get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt: Dao_M9AppCompt): Flow<Z_AppCompt?> =
-        FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt)
-            .onEach { compt -> active_M9Compt = compt }
 }

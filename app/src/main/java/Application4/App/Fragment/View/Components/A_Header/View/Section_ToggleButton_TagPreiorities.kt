@@ -1,15 +1,13 @@
 package Application4.App.Fragment.View.Components.A_Header.View
 
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.Prioriter
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Prioriter
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,22 +33,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Section_ToggleButton_TagPreiorities(
     produit: M01Produit,
     affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
+    start_Colapssed: Boolean = false,
     onAddDeleteTag_ToUpdate: (M01Produit) -> Unit,
     modifier: Modifier = Modifier.Companion
 ) {
     if (!affiche_ProduitDataBaseEdites_ComposableViews) return
 
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(!start_Colapssed) }
     val activeTags = remember(produit.tag_prioriter_str) { produit.produit_set_Tag_Priorite() }
     val hasAnyTag = activeTags.isNotEmpty()
 
     Column(modifier = modifier.fillMaxWidth()) {
-        // ── Pill trigger button ───────────────────────────────────────────
         Card(
             modifier = Modifier.Companion.clickable { expanded = !expanded },
             colors = CardDefaults.cardColors(
@@ -92,18 +89,16 @@ fun Section_ToggleButton_TagPreiorities(
             }
         }
 
-        // ── Expanded chip row ─────────────────────────────────────────────
         AnimatedVisibility(
             visible = expanded,
             enter = expandVertically(),
             exit = shrinkVertically()
         ) {
-            FlowRow(
+            Column(
                 modifier = Modifier.Companion
                     .fillMaxWidth()
                     .padding(top = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Prioriter.entries.forEach { prioriter ->
                     val isSelected = prioriter in activeTags
@@ -113,11 +108,12 @@ fun Section_ToggleButton_TagPreiorities(
                             val newTags = activeTags.toMutableSet().apply {
                                 if (isSelected) remove(prioriter) else add(prioriter)
                             }
-                            val updatedProduit = produit.setReturn_Produit_Ac_tag_prioriter_str(
-                                produit_set_Tag_Priorite = newTags,
-                                produit = produit
+                            onAddDeleteTag_ToUpdate(
+                                produit.setReturn_Produit_Ac_tag_prioriter_str(
+                                    produit_set_Tag_Priorite = newTags,
+                                    produit = produit
+                                )
                             )
-                            onAddDeleteTag_ToUpdate(updatedProduit)
                         },
                         label = {
                             Text(

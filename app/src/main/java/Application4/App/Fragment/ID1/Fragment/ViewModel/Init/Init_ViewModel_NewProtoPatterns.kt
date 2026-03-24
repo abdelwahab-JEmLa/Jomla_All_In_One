@@ -1,9 +1,8 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel.Init
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.List_Datas
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.FlowsFunctions_ActiveDatasFragNewProto
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.List_Datas
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
-import android.util.Log
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -12,18 +11,15 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
-
-private const val TAG_VM_INIT = "ViewModel_NewProto"
-
-//->
-//TODO(FIXME):Fix erreur enleve les commantaire et logs pour but de consise le max possible  tallie du code sans change le foctionemen
+       //<--
+       //TODO(1): //TODO(1): fait warp que ca soit sub classe ini in vm 
 fun ViewModel_NewProtoPatterns.subInit() {
     subInit_collectCentralValues()
     subInit_loadAllDatasOnce()
     subInit_collectActiveM9Compt()
     subInit_collectListM16FilteredByCatalogue()
     subInit_collectListM1Produit()
-    subInit_collectFilteredProductTree()   // FIX: now reactive to filter changes
+    subInit_collectFilteredProductTree()
     subInit_collectM10OperationVentCouleur()
 }
 
@@ -38,31 +34,19 @@ private fun ViewModel_NewProtoPatterns.subInit_collectCentralValues() {
 
 private fun ViewModel_NewProtoPatterns.subInit_loadAllDatasOnce() {
     viewModelScope.launch(Dispatchers.IO) {
-        _uiStateNewProtoPatterns.value =
-            _uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = 1 / 9f)
-        val clients = appDatabase.dao_M2Client().getAll()
-        _uiStateNewProtoPatterns.value =
-            _uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = 2 / 9f)
-        val categories = appDatabase.dao_16CategorieProduit().getAll()
-            .filter { it.catalogueParentId == active_Datas.active_M21Catalogue.id }
-        _uiStateNewProtoPatterns.value =
-            _uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = 3 / 9f)
-        val colors = appDatabase.dao_M3CouleurProduitInfos().getAll()
-        _uiStateNewProtoPatterns.value =
-            _uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = 4 / 9f)
-        val appCompt = appDatabase.dao_M9AppCompt().getAll()
-        _uiStateNewProtoPatterns.value =
-            _uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = 5 / 9f)
-        val bonVent = appDatabase.dao_M8BonVent().getAll()
-        _uiStateNewProtoPatterns.value =
-            _uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = 6 / 9f)
-        val ventPeriodes = appDatabase.dao_M14VentPeriode().getAll()
-        _uiStateNewProtoPatterns.value =
-            _uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = 7 / 9f)
-        val tarification = appDatabase.dao_M13TarificationInfos().getAll()
-        _uiStateNewProtoPatterns.value =
-            _uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = 8 / 9f)
-        val operationVentCouleurs = appDatabase.dao_M10OperationVentCouleur().getAll()
+        fun progress(p: Float) {
+            _uiStateNewProtoPatterns.value =
+                _uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = p)
+        }
+        progress(1 / 9f); val clients = appDatabase.dao_M2Client().getAll()
+        progress(2 / 9f); val categories = appDatabase.dao_16CategorieProduit().getAll()
+        .filter { it.catalogueParentId == active_Datas.active_M21Catalogue.id }
+        progress(3 / 9f); val colors = appDatabase.dao_M3CouleurProduitInfos().getAll()
+        progress(4 / 9f); val appCompt = appDatabase.dao_M9AppCompt().getAll()
+        progress(5 / 9f); val bonVent = appDatabase.dao_M8BonVent().getAll()
+        progress(6 / 9f); val ventPeriodes = appDatabase.dao_M14VentPeriode().getAll()
+        progress(7 / 9f); val tarification = appDatabase.dao_M13TarificationInfos().getAll()
+        progress(8 / 9f); val operationVentCouleurs = appDatabase.dao_M10OperationVentCouleur().getAll()
         _uiStateNewProtoPatterns.value = _uiStateNewProtoPatterns.value.copy(
             initDatasProgressEtate = 1f,
             list_Datas = List_Datas(
@@ -81,8 +65,9 @@ private fun ViewModel_NewProtoPatterns.subInit_loadAllDatasOnce() {
 
 private fun ViewModel_NewProtoPatterns.subInit_collectActiveM9Compt() {
     viewModelScope.launch(Dispatchers.IO) {
-        active_Datas.get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
-            dao_M9AppCompt = appDatabase.dao_M9AppCompt()
+        FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
+            dao_M9AppCompt = appDatabase.dao_M9AppCompt(),
+            activeDatasFragNewProto = active_Datas,
         ).collect()
     }
 }
@@ -92,9 +77,7 @@ private fun ViewModel_NewProtoPatterns.subInit_collectListM16FilteredByCatalogue
         FlowsFunctions_ActiveDatasFragNewProto.getFlow_listM16_FilteredBy_active_M21Catalogue(
             dao_M16CategorieProduit = appDatabase.dao_16CategorieProduit(),
             active_M21Catalogue = active_Datas.active_M21Catalogue
-        ).collect { filteredCategories ->
-            active_Datas.listM16_FilteredBy_active_M21Catalogue = filteredCategories
-        }
+        ).collect { active_Datas.listM16_FilteredBy_active_M21Catalogue = it }
     }
 }
 
@@ -106,6 +89,7 @@ private fun ViewModel_NewProtoPatterns.subInit_collectListM1Produit() {
         ).collect()
     }
 }
+
 @OptIn(ExperimentalCoroutinesApi::class)
 private fun ViewModel_NewProtoPatterns.subInit_collectFilteredProductTree() {
     viewModelScope.launch(Dispatchers.Main) {
@@ -121,13 +105,12 @@ private fun ViewModel_NewProtoPatterns.subInit_collectFilteredProductTree() {
                                 allColours = allColours,
                                 activeDatasFragNewProto = active_Datas,
                                 activeFilter = currentFilter,
-                            ).collect { tree -> send(tree) }
+                            ).collect { send(it) }
                     }
                 }
             }
-            .collect { tree ->
-                active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur =
-                    tree
+            .collect {
+                active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur = it
             }
     }
 }
@@ -141,18 +124,12 @@ private fun ViewModel_NewProtoPatterns.subInit_collectM10OperationVentCouleur() 
             when {
                 filtered.isNotEmpty() -> {
                     active_Datas.lastKnownBonVentKey = emittedKey
-                    active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
-                        filtered
+                    active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = filtered
                 }
-                emittedKey == null -> {
-                }
+                emittedKey == null -> Unit
                 emittedKey != active_Datas.lastKnownBonVentKey -> {
                     active_Datas.lastKnownBonVentKey = emittedKey
-                    active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
-                        emptyList()
-                }
-                else -> {
-                    Log.d(TAG_VM_INIT, "  → filtered is empty but key matches lastKnown — no update")
+                    active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = emptyList()
                 }
             }
         }

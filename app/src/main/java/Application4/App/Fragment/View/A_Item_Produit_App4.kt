@@ -1,6 +1,6 @@
 package Application4.App.Fragment.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3

@@ -1,12 +1,12 @@
 package Application4.App.Fragment.View.Components.A_Header.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.ViewS.Views.Image_Displaye
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.CategoryBadge
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.Prioriter
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Prioriter
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS.DeleteProductHeader
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
