@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.Components.A_Header.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.ViewS.Views.Image_Displaye
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.CategoryBadge
 import EntreApps.Shared.Models.M01Produit
@@ -380,7 +380,7 @@ fun ColorImageCard_FragID3(
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier.Companion,
     roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp),
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
 ) {
     val elevation = if (isSelected) 4.dp else 2.dp
 

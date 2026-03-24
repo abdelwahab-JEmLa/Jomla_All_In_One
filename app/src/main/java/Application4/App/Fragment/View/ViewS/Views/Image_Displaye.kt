@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.ViewS.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
@@ -29,7 +29,7 @@ fun Image_Displaye(
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
     on_pour_send_data: (String, String) -> Unit,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     list_M1Produit: List<M01Produit>?,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel

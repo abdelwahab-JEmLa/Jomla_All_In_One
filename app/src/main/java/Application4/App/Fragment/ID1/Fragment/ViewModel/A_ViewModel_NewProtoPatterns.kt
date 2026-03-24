@@ -1,7 +1,7 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application2.App.Base.Repository.ActiveCentralValues_app2
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Init.subInit
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Init.Initializer
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.List_Datas
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
@@ -40,7 +40,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 @SuppressLint("StaticFieldLeak")
-class ViewModel_NewProtoPatterns(
+class A_ViewModel_NewProtoPatterns(
     private val context: Context,
     val appDatabase: AppDatabase,
     private val fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
@@ -49,6 +49,7 @@ class ViewModel_NewProtoPatterns(
         context = context
     ),
 ) : ViewModel() {
+
     val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
     val active_Datas = ActiveDatasFragNewProto()
@@ -127,10 +128,11 @@ class ViewModel_NewProtoPatterns(
     fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_NewProto, data: Any? = null) =
         wifi.sendOrderToClientDisplayerT(order, data)
 
+
     init {
         fragmentNavigationHandler.closeAllActiveFragments()
         centraleMainGetter_NewProtoPattern
-        subInit()
+        Initializer(this).run()
     }
 
     fun update_M13TarificationInfos(tariff: M13TarificationInfos) {

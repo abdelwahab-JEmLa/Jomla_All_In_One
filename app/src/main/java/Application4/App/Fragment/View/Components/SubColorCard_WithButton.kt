@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.Components
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_FragID3
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
 import EntreApps.Shared.Models.M01Produit
@@ -27,7 +27,7 @@ fun SubColorCard_WithButton(
     isExpanded: Boolean,
     modifier: Modifier = Modifier,
     shouldShowButtons: Boolean,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
 ) {
     val uiState = uiState_NewProtoPatterns_viewModel.first
 

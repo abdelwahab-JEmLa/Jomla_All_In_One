@@ -1,7 +1,7 @@
 package Application4.App.Fragment.ID1.Fragment.Components.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M16CategorieProduit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +33,7 @@ fun CategoryStickyHeader(
     category: M16CategorieProduit,
     modifier: Modifier = Modifier,
     onToggleHeaderVisibility: (M16CategorieProduit) -> Unit = {},
-    viewModel: ViewModel_NewProtoPatterns,
+    viewModel: A_ViewModel_NewProtoPatterns,
     uiStateNewProtoPatterns: UiState_NewProtoPatterns
 ) {
     val filterState = uiStateNewProtoPatterns.active_Central_Values.filterState_Facad_Boutique

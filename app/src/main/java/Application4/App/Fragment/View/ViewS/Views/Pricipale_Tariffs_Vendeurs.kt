@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.ViewS.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
@@ -58,7 +58,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     onTariffSelected: (M13TarificationInfos) -> Unit,
     compactMode: Boolean = false,
     modifier: Modifier = Modifier,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
 ) {
     val isGrossistMode = false
     val filteredTariffs = tariffsList.filter { tariff ->
@@ -106,7 +106,7 @@ private fun TariffItemSelector(
     compactMode: Boolean,
     onClick: () -> Unit,
     tariffsList: List<M13TarificationInfos>,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
 ) {
     val prix = tariff.prixCurrency
     val nombreUnite = relative_M1produit.nombreUniteInt
@@ -151,7 +151,7 @@ private fun TariffItemSelector(
 private fun handleProgressivePriceUpdate(
     tariff: M13TarificationInfos,
     newPrice: Double,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
 ) {
     Log.d(
         "PricipaleTariffsVendeurs",

@@ -1,7 +1,7 @@
 package Application4.App.Main.A.Navigation
 
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
@@ -44,7 +44,7 @@ fun AppNavHost_NewProtoPattern(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
-    viewModelNewProtoPatterns: ViewModel_NewProtoPatterns,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route

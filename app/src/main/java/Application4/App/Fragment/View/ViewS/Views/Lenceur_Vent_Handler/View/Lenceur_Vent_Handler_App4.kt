@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.CatronAdd.CartonVentHandler_App4
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Lenceur_Vent_Handler_App4(
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     relative_M1produit: M01Produit,
     relative_M8BonVent: M8BonVent? = null,
     selectedCouleur: M3CouleurProduitInfos,

@@ -2,7 +2,7 @@ package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.Components.Views.CategoryStickyHeader
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
@@ -59,7 +59,7 @@ fun Etager_LazyColumn(
     on_pour_send_data: (String, String) -> Unit,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
@@ -225,7 +225,7 @@ fun LazyStigerList_Produits_FragID4(
     on_pour_send_data: (String, String) -> Unit,
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
 ) {
     val backgroundColor by animateColorAsState(
         targetValue = if (justMoved) Color(0xFF4CAF50).copy(alpha = 0.3f) else Color.Companion.Transparent,

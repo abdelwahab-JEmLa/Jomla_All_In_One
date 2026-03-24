@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
@@ -41,7 +41,7 @@ fun A_Item_Produit_App4(
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier,
     onCategoryClick: (() -> Unit)? = null,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val centralValues = uiState.active_Central_Values

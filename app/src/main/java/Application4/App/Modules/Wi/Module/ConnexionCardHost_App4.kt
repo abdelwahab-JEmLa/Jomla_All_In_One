@@ -1,6 +1,6 @@
 package Application4.App.Modules.Wi.Module
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
@@ -34,7 +34,7 @@ import org.koin.androidx.compose.koinViewModel
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ConnexionCardHost_App4(
-    vm: ViewModel_NewProtoPatterns = koinViewModel(),
+    vm: A_ViewModel_NewProtoPatterns = koinViewModel(),
     onClickToStartAsClient: () -> Unit = {},
 ) {
     val state by vm.wifiState.collectAsState()

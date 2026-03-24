@@ -1,7 +1,7 @@
 package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -28,7 +28,7 @@ fun Content(
     onClickImageToShowControles: () -> Unit,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
-    viewModel: ViewModel_NewProtoPatterns,
+    viewModel: A_ViewModel_NewProtoPatterns,
     uiStateNewProtoPatterns: UiState_NewProtoPatterns
 ) {
     val active_Central_Values = uiStateNewProtoPatterns.active_Central_Values

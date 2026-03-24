@@ -1,7 +1,7 @@
 package Application4.App.Screen
 
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NewProto
@@ -34,7 +34,7 @@ import org.koin.compose.koinInject
 fun MainScreen_NewProtoPattern(
     modifier: Modifier = Modifier,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
-    viewModelNewProtoPatterns: ViewModel_NewProtoPatterns = koinViewModel(),
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = koinViewModel(),
 ) {
     val wifiState by viewModelNewProtoPatterns.wifiState.collectAsState()
 
