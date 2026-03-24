@@ -1,6 +1,7 @@
 package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.Toggle_Active_section_ToggleButton_TagPreiorities__start_Collapsed_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.PrioriterToggle_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.UpdateActiveCompt_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.UploadFilteredData_DropdownMenuItem.View.UploadFilteredData_DropdownMenuItem
@@ -25,6 +26,10 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
             modifier = Modifier.offset(x = (-8).dp, y = 8.dp)
         ) {
             UpdateActiveCompt_DropdownMenuItem(
+                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                onDismissDropdown = onDismissDropdown
+            )
+            Toggle_Active_section_ToggleButton_TagPreiorities__start_Collapsed_DropdownMenuItem(
                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                 onDismissDropdown = onDismissDropdown
             )

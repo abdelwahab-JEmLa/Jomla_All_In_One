@@ -251,7 +251,8 @@ fun A_Item_Produit_App4(
                     catalogueName = currentCatalogue?.nom,
                     categoryName = currentCategory?.nom,
                     onCategoryClick = categoryClickForHeader,
-                )
+                    section_ToggleButton_TagPreiorities__start_Collapsed = viewModel.active_Datas.section_ToggleButton_TagPrioriter__start_Collapsed == true
+                    )
 
                 val filteredAndSortedTariffs = datasValue_with_synthetic
                     .filter { tariff ->

@@ -36,12 +36,11 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun Section_ToggleButton_TagPreiorities(
     produit: M01Produit,
-    start_Colapssed: Boolean = false,
+    start_Collapsed: Boolean = true,
     onAddDeleteTag_ToUpdate: (M01Produit) -> Unit,
     modifier: Modifier = Modifier.Companion
 ) {
-
-    var expanded by remember { mutableStateOf(!start_Colapssed) }
+    var expanded by remember { mutableStateOf(!start_Collapsed) }
     val activeTags = remember(produit.tag_prioriter_str) { produit.produit_set_Tag_Priorite() }
     val hasAnyTag = activeTags.isNotEmpty()
 

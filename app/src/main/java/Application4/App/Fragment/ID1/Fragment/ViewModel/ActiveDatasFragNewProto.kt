@@ -15,6 +15,8 @@ import androidx.compose.runtime.setValue
 @Stable
 class ActiveDatasFragNewProto {
     var active_M9Compt: Z_AppCompt? by mutableStateOf(null)
+    var section_ToggleButton_TagPrioriter__start_Collapsed: Boolean? by mutableStateOf(null)
+
     var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(Prioriter.entries.toSet())
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur:

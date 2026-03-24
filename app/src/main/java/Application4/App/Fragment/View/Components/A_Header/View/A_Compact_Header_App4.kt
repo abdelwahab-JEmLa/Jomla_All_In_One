@@ -47,9 +47,11 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun A_Compact_Header_App4(
+
     modifier: Modifier = Modifier,
     relative_M1produit: M01Produit,
     isExpanded: Boolean,
+    section_ToggleButton_TagPreiorities__start_Collapsed: Boolean,
     onUpdateTariff: () -> Unit,
     onUpdateProduit: (M01Produit) -> Unit,
     affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
@@ -94,6 +96,7 @@ fun A_Compact_Header_App4(
             // ── Priorité tag toggles (admin only) ─────────────────────────
             if (affiche_ProduitDataBaseEdites_ComposableViews) {
                 Section_ToggleButton_TagPreiorities(
+                    start_Collapsed =section_ToggleButton_TagPreiorities__start_Collapsed ,
                     produit = relative_M1produit,
                     onAddDeleteTag_ToUpdate = { updatedProduit -> onUpdateProduit(updatedProduit) }
                 )
