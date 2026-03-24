@@ -107,8 +107,6 @@ private fun ViewModel_NewProtoPatterns.subInit_collectFilteredProductTree() {
     viewModelScope.launch(Dispatchers.IO) {
         _uiStateNewProtoPatterns.collect { state ->
             val allColours = state.list_Datas?.m3CouleurProduit ?: return@collect
-            // FIX TODO(1) + TODO(2.C): use active_M21Catalogue only, not the full catalogue list.
-            // Passing the full list caused every catalogue to be rendered regardless of selection.
             ActiveDatasFragNewProtoFlows.getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
                 dao_M16CategorieProduit = appDatabase.dao_16CategorieProduit(),
                 activeCatalogue = active_Datas.active_M21Catalogue,

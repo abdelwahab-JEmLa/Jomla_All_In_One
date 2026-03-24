@@ -6,9 +6,6 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 
 @Entity
@@ -38,7 +35,7 @@ data class M01Produit(
     //-----------------Filter States-------------------------------------------------------------------------------------------------------------------------
     val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
-    // FIX (TODO 1): default tag is now Dernier_VentAchat_Est_Trop_Luin (added to Prioriter enum)
+    // default tag: Dernier_VentAchat_Est_Trop_Luin
     var tag_prioriter_str: String = Prioriter.Dernier_VentAchat_Est_Trop_Luin.name,
 
     //----------------------------------------------------------------------------------------------------------------------------------------
@@ -329,16 +326,11 @@ data class M01Produit(
             ref.removeValue()
         }
 
-        val ref = Firebase.database.getReference(
-            "00_DataPrototype-04-02" +
-                    "/_1_developingRef" +
-                    "/C_InfosSqlDataBases" +
-                    "/A_ProduitInfos"
-        )
+        val ref = M18CentralParametresOfAllApps.centralRef
+            .child("A_ProduitInfos")
 
-        val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
-            .document("Model01Produit")
-            .collection("Datas")
+        val ref_Active_Filtred_Datas = ref.child("Active_Filtred_Datas")
+
 
         fun removeRef(preparedData: M01Produit) {
             ref.child(preparedData.keyFireBase).removeValue()
@@ -396,8 +388,7 @@ fun DocumentSnapshot.toArticle(): M01Produit? {
             etateActuelleOnFusionAvecBaseDonne = getString("etateActuelleOnFusionAvecBaseDonne")
                 ?.let { name -> runCatching { M01Produit.EtateActuelleOnFusionAvecBaseDonne.valueOf(name) }.getOrNull() }
                 ?: M01Produit.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
-            // FIX (TODO 1): fall back to Dernier_VentAchat_Est_Trop_Luin for products
-            // arriving from Firestore with no tag stored yet
+            // Fall back to Dernier_VentAchat_Est_Trop_Luin for products with no tag stored yet
             tag_prioriter_str = getString("tag_prioriter_str")
                 ?.takeIf { it.isNotBlank() }
                 ?: Prioriter.Dernier_VentAchat_Est_Trop_Luin.name,

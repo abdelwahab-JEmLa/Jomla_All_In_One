@@ -17,6 +17,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import com.google.firebase.Firebase
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -142,6 +145,33 @@ data class M18CentralParametresOfAllApps(
 ) {
 
     companion object {
+        val centralRef = Firebase.database.getReference(
+            "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
+        )
+
+        fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
+
+        inline fun Long?.ifNotNullOrZero(block: () -> Unit) {
+            if (this != null && this != 0L) block()
+        }
+
+        inline fun String?.ifNotNullOrEmpty(block: () -> Unit) {
+            if (!this.isNullOrEmpty()) block()
+        }
+
+
+        inline fun Boolean.ifTrue(block: () -> Unit) {
+            if (this) block()
+        }
+
+        inline fun Boolean.ifFalse(block: () -> Unit) {
+            if (!this) block()
+        }
+
+        fun String?.empty_If_Null(value: String = ""): String {
+            return this ?: value
+        }
+
         val ref = RepositorysMainGetter.centralRef
             .child("Datas18CentralParametresOfAllApps")
 

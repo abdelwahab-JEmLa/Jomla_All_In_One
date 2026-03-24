@@ -40,14 +40,14 @@ fun A_Compact_Presentoire_App_Produits_App4(
     val groupe_Par_Catalogue by remember {
         derivedStateOf {
             active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur
-                .flatten()
+                .flatMap { it.second }
         }
     }
 
     val allCategories: List<M16CategorieProduit>? by remember {
         derivedStateOf {
             groupe_Par_Catalogue
-                .flatMap { (_, categoriesWithProducts) -> categoriesWithProducts.map { it.first } }
+                .map { (category, _) -> category }
                 .takeIf { it.isNotEmpty() }
         }
     }

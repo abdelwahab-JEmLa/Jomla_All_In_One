@@ -4,8 +4,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import com.google.firebase.firestore.CollectionReference
 
 @Entity
@@ -55,8 +53,10 @@ data class M16CategorieProduit(
     )
 
     companion object {
-        val ref =
-            Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/C_CategorieProduitInfos")
+        val ref = M18CentralParametresOfAllApps.centralRef
+            .child("C_CategorieProduitInfos")
+
+        val ref_Active_Filtred_Datas = ref.child("Active_Filtred_Datas")
 
         val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
             .document("M16CategorieProduit")

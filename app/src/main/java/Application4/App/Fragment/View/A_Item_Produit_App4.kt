@@ -2,9 +2,9 @@ package Application4.App.Fragment.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
-import Application4.App.Fragment.View.ViewS.A_Header.View.A_Compact_Header_App4
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -24,7 +24,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -201,12 +200,6 @@ fun A_Item_Produit_App4(
         mutableStateOf(finale_Tariff)
     }
 
-    val isHostPhone by remember {
-        derivedStateOf {
-            val wifi = viewModel.wifiState.value
-            wifi.isHostPhone && wifi.isConnected
-        }
-    }
 
     if (relative_ListM3Couleurs.isEmpty()) return
 
@@ -214,13 +207,6 @@ fun A_Item_Produit_App4(
     if (safeIndex != big_presenter_couleur_produit) big_presenter_couleur_produit = safeIndex
     val selectedCouleur = relative_ListM3Couleurs[safeIndex]
 
-    val relative_M10OperationVentCouleur by remember(selectedCouleur.keyID, onVentList.size) {
-        derivedStateOf {
-            viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.find {
-                it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID
-            }
-        }
-    }
 
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
     val innerPadding = if (isThisProductExpanded) 8.dp else 4.dp

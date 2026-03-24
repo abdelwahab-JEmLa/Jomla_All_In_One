@@ -21,7 +21,7 @@ class ActiveDatasFragNewProto {
     var active_M9Compt: Z_AppCompt? by mutableStateOf(null)
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur:
-            List<List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>>
+            List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>
             by mutableStateOf(emptyList())
     var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(null)
     var active_M21Catalogue: M21CataloguesCategorie by mutableStateOf(

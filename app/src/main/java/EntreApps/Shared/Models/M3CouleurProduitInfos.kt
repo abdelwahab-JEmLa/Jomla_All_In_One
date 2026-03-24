@@ -3,8 +3,6 @@ package EntreApps.Shared.Models
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import com.google.firebase.firestore.CollectionReference
 import java.io.File
 
@@ -75,9 +73,10 @@ M3CouleurProduitInfos(
     enum class ProcessPositioningInFactory { CreeDepuitRechercheRapid , CreeAuGeneralHandler }
 
     companion object {
-        val ref =
-            Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases" +
-                    "/B1CouleurOuGoutProduitDataBase")
+        val ref = M18CentralParametresOfAllApps.centralRef
+            .child("B1CouleurOuGoutProduitDataBase")
+
+        val ref_Active_Filtred_Datas = ref.child("Active_Filtred_Datas")
 
         val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
             .document("M3CouleurProduitInfos")

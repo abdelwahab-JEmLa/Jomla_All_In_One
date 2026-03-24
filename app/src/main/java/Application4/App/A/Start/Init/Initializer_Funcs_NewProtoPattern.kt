@@ -90,7 +90,6 @@ class Initializer_Funcs_NewProtoPattern(
                 ?.documents?.mapNotNull { it.toObject(M3CouleurProduitInfos::class.java) } ?: return
             if (items.isNotEmpty()) dao_M3CouleurProduitInfos.insertAll(items)
         }
-        // La sync Dropbox se fait en arrière-plan SANS bloquer la progression globale
         if (isOnline) {
             repoScope.launch { dropboxSyncer.syncAll() }
         }

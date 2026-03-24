@@ -3,9 +3,8 @@ package Application2.App.Init
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.toArticle
-import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
+import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import android.content.Context
 import android.net.ConnectivityManager
@@ -76,22 +75,22 @@ class Initializer_Funcs_app2(
 
     private suspend fun seedProducts() {
         if (dao_M1Produit.getAll().isNotEmpty()) return
-        val items = fetchWithRetry(M01Produit.refFirestore)
-            ?.documents?.mapNotNull { it.toArticle() } ?: return
+        val items = M01Produit.ref_Active_Filtred_Datas.get().await()
+            .children.mapNotNull { it.getValue(M01Produit::class.java) }
         if (items.isNotEmpty()) dao_M1Produit.upsertAllDatas(items)
     }
 
     private suspend fun seedCategories() {
         if (dao_16CategorieProduit.getAll().isNotEmpty()) return
-        val items = fetchWithRetry(M16CategorieProduit.refFirestore)
-            ?.documents?.mapNotNull { it.toObject(M16CategorieProduit::class.java) } ?: return
+        val items = M16CategorieProduit.ref.get().await()
+            .children.mapNotNull { it.getValue(M16CategorieProduit::class.java) }
         if (items.isNotEmpty()) dao_16CategorieProduit.upsertAllDatas(items)
     }
 
     private suspend fun seedColors(isOnline: Boolean) {
         if (dao_M3CouleurProduitInfos.getAll().isEmpty()) {
-            val items = fetchWithRetry(M3CouleurProduitInfos.refFirestore)
-                ?.documents?.mapNotNull { it.toObject(M3CouleurProduitInfos::class.java) } ?: return
+            val items = M3CouleurProduitInfos.ref_Active_Filtred_Datas.get().await()
+                .children.mapNotNull { it.getValue(M3CouleurProduitInfos::class.java) }
             if (items.isNotEmpty()) dao_M3CouleurProduitInfos.upsertAllDatas(items)
         }
         if (!isOnline) return

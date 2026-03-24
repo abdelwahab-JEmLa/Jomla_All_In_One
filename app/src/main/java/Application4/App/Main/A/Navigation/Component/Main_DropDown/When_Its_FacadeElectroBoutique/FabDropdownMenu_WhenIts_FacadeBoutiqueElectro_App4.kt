@@ -1,17 +1,15 @@
 package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.UploadFilteredData_DropdownMenuItem.View.UploadFilteredData_DropdownMenuItem
 import EntreApps.Shared.Models.Prioriter
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
@@ -28,9 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -50,52 +45,15 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
         ) {
             // ── Upload button ──────────────────────────────────────────────
             UploadButton(isUploading, coroutineScope, onDismissDropdown)
-
             // ── Prioriter filter toggles ───────────────────────────────────
             PrioriterToggleItem(viewModelNewProtoPatterns)
+
+            UploadFilteredData_DropdownMenuItem(
+                viewModelNewProtoPatterns.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur
+                ,onDismissDropdown
+            )
         }
     }
-}
-
-// ---------------------------------------------------------------------------
-// Upload button (unchanged logic)
-// ---------------------------------------------------------------------------
-@Composable
-private fun UploadButton(
-    isUploading: Boolean,
-    coroutineScope: CoroutineScope,
-    onDismissDropdown: () -> Unit
-) {
-    DropdownMenuItem(
-        leadingIcon = {
-            if (isUploading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Default.CloudUpload,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-            }
-        },
-        text = {
-            Text(
-                text = if (isUploading) "Envoi en cours..." else "Envoyer produits filtrés → Firestore",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        },
-        enabled = !isUploading,
-        onClick = {
-            coroutineScope.launch(Dispatchers.IO) {
-                onDismissDropdown()
-            }
-        }
-    )
 }
 
 // ---------------------------------------------------------------------------
@@ -104,7 +62,6 @@ private fun UploadButton(
 @Composable
 private fun PrioriterToggleItem(viewModelNewProtoPatterns: ViewModel_NewProtoPatterns) {
     val activeFilter = viewModelNewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter
-
     DropdownMenuItem(
         leadingIcon = {
             Icon(

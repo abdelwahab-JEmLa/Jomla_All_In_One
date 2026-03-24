@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 object ActiveDatasFragNewProtoFlows {
-
     fun get_list_M1Produit(
         dao_M1Produit: Dao_M1Produit,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
@@ -29,38 +28,34 @@ object ActiveDatasFragNewProtoFlows {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
         dao_M16CategorieProduit: Dao_M16CategorieProduit,
-        // FIX TODO(1) + TODO(2.C): only the active catalogue is passed in; the full list
-        // was the reason every catalogue (e.g. "cosmétique") was always rendered.
         activeCatalogue: M21CataloguesCategorie,
         allColours: List<M3CouleurProduitInfos>,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
-    ): Flow<List<List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>>> {
+    ): Flow<List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>> {
         val activeFilter = activeDatasFragNewProto.affiche_produits_Ou_On_TagPrioriter
 
         return dao_M16CategorieProduit.getAllFlow().map { allCategories ->
             val allProducts = activeDatasFragNewProto.list_M1Produit
 
-            // Only iterate the single active catalogue, not the full list.
-            listOf(activeCatalogue).mapNotNull { catalogue ->
-                val categoriesForCatalogue = allCategories.filter { it.catalogueParentId == catalogue.id }
+            // Only the single active catalogue — yields a flat List<Pair<M21, ...>>.
+            val categoriesForCatalogue = allCategories.filter { it.catalogueParentId == activeCatalogue.id }
 
-                val categoryProductColourTree = categoriesForCatalogue.mapNotNull { category ->
-                    val productsForCategory = allProducts
-                        ?.filter { it.idParentCategorie == category.id }
-                        ?.filter { it.matchesPrioriteFilter(activeFilter) }
-                        ?: emptyList()
+            val categoryProductColourTree = categoriesForCatalogue.mapNotNull { category ->
+                val productsForCategory = allProducts
+                    ?.filter { it.idParentCategorie == category.id }
+                    ?.filter { it.matchesPrioriteFilter(activeFilter) }
+                    ?: emptyList()
 
-                    if (productsForCategory.isEmpty()) return@mapNotNull null
+                if (productsForCategory.isEmpty()) return@mapNotNull null
 
-                    val productColourPairs = productsForCategory.map { product ->
-                        product to allColours.filter { it.parentBProduitInfosKeyID == product.keyID }
-                    }
-                    category to productColourPairs
+                val productColourPairs = productsForCategory.map { product ->
+                    product to allColours.filter { it.parentBProduitInfosKeyID == product.keyID }
                 }
-
-                if (categoryProductColourTree.isEmpty()) return@mapNotNull null
-                listOf(catalogue to categoryProductColourTree)
+                category to productColourPairs
             }
+
+            if (categoryProductColourTree.isEmpty()) emptyList()
+            else listOf(activeCatalogue to categoryProductColourTree)
         }
     }
 

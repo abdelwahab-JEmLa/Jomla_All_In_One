@@ -120,10 +120,10 @@ fun NavigationBarWithFab_NewProto(
         when {
             its_Compact_Presentoire -> FabButton_newProto(
                 showWarningState = showWarningState,
-                isFabVisible = false,        // never show the visibility-eye overlay in presenter mode
-                its_Targeted_Frag = false,
-                onToggleFabVisibility = {},  // no-op: no action on click for presenter
-                onShowDropdown = {}          // no-op: no action on click for presenter
+                isFabVisible = isFabVisible,
+                its_Targeted_Frag = true,   // routes click through onShowDropdown
+                onToggleFabVisibility = {},
+                onShowDropdown = { showFabDropdown_Compact_Presentoire_App_Produits_FragID4 = true }
             )
 
             its_Panier -> FabButton_newProto(
@@ -151,7 +151,7 @@ fun NavigationBarWithFab_NewProto(
         if (showFabDropdown_Compact_Presentoire_App_Produits_FragID4 && its_Compact_Presentoire) {
             FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
                 onDismissDropdown = {
-                    showFabDropdown_Panier = false
+                    showFabDropdown_Compact_Presentoire_App_Produits_FragID4 = false
                 },
             )
         }

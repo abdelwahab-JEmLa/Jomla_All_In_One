@@ -50,8 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-//<--
-//TODO(1): pk le catalogue cosmitique s affiche meem si
+
 @Composable
 fun Etager_LazyColumn(
     modifier: Modifier = Modifier.Companion,
@@ -86,10 +85,10 @@ fun Etager_LazyColumn(
 
         outer@ for ((_, categoriesWithProducts) in cataloguesWithCategoriesAndProducts) {
             if (categoriesWithProducts.isEmpty()) continue@outer
-            currentIndex++
+            currentIndex++ // catalogue header item
             for ((category, productColorPairs) in categoriesWithProducts) {
                 if (productColorPairs.isEmpty()) continue
-                if (category.displayedHeader) currentIndex++
+                if (category.displayedHeader) currentIndex++ // category header item
                 val productIndex = productColorPairs.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
                 if (productIndex != -1) { foundIndex = currentIndex + productIndex; break@outer }
                 currentIndex += productColorPairs.size
@@ -125,9 +124,24 @@ fun Etager_LazyColumn(
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
-            .semantics(mergeDescendants = true) { set(value = lenceVentOperations, key = SemanticsPropertyKey("lenceVentOperations")) }
-            .semantics(mergeDescendants = true) { set(value = activeBonVentKey, key = SemanticsPropertyKey("activeBonVentKey")) }
-            .semantics(mergeDescendants = true) { set(value = all, key = SemanticsPropertyKey("all")) }
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = lenceVentOperations,
+                    key = SemanticsPropertyKey("lenceVentOperations")
+                )
+            }
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = activeBonVentKey,
+                    key = SemanticsPropertyKey("activeBonVentKey")
+                )
+            }
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = all,
+                    key = SemanticsPropertyKey("all")
+                )
+            }
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
