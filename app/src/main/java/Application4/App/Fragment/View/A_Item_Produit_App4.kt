@@ -1,11 +1,10 @@
 package Application4.App.Fragment.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
-import Application4.App.Fragment.View.ViewS.Compact_Header_FragID4
-import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.CategoryBadge
+import Application4.App.Fragment.View.ViewS.A_Compact_Header_App4
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -25,7 +24,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,23 +45,18 @@ fun A_Item_Produit_App4(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
-
     val centralValues = uiState.active_Central_Values
 
     val allCategories = remember(uiState.list_M16CategorieProduit) {
         uiState.list_M16CategorieProduit
     }
-
     val categoryMap = remember(allCategories) {
         allCategories.associateBy { it.id }
     }
-
     val currentCategory = remember(relative_M1produit.idParentCategorie, allCategories) {
         relative_M1produit.idParentCategorie?.let { categoryMap[it] }
     }
-
     val catalogues = remember { get_ListM21CataloguesCategorie() }
-
     val currentCatalogue = remember(currentCategory, catalogues) {
         currentCategory?.catalogueParentId?.let { catalogueId ->
             catalogues.find { it.id.toLong() == catalogueId }
@@ -118,17 +111,11 @@ fun A_Item_Produit_App4(
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Tariff data — sourced from UiState, never from direct repository injection
-    // -------------------------------------------------------------------------
-
     val datasValue_distinct_type = remember(uiState.list_M13TarificationInfos) {
         uiState.list_M13TarificationInfos
             .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
             .groupBy { it.typeChoisi }
-            .mapValues { (_, tariffs) ->
-                tariffs.maxByOrNull { it.creationTimestamps }
-            }
+            .mapValues { (_, tariffs) -> tariffs.maxByOrNull { it.creationTimestamps } }
             .values
             .filterNotNull()
     }
@@ -148,7 +135,6 @@ fun A_Item_Produit_App4(
         relative_produit = relative_M1produit
     )
 
-    // Delegate tariff creation side-effect entirely to ViewModel
     LaunchedEffect(
         centralValues.activeOnVent_M8BonVent?.keyID,
         centralValues.activeOnVent_M8BonVent?.creationTimestamps
@@ -200,17 +186,11 @@ fun A_Item_Produit_App4(
         )
     }
 
-    val algoritme_choisiser_tariff = remember(datasValue_with_synthetic) {
-        val algorithm: () -> M13TarificationInfos? = {
-            datasValue_with_synthetic
-                .filter { it.prixCurrency != 0.0 }
-                .maxByOrNull { it.typeChoisi.profitabilityScore }
-        }
-        algorithm
-    }
-
-    val finale_Tariff = remember(algoritme_choisiser_tariff(), fallbackTariff) {
-        algoritme_choisiser_tariff() ?: fallbackTariff
+    val finale_Tariff = remember(datasValue_with_synthetic, fallbackTariff) {
+        datasValue_with_synthetic
+            .filter { it.prixCurrency != 0.0 }
+            .maxByOrNull { it.typeChoisi.profitabilityScore }
+            ?: fallbackTariff
     }
 
     var selectedTariff by remember(
@@ -221,17 +201,21 @@ fun A_Item_Produit_App4(
         mutableStateOf(finale_Tariff)
     }
 
-    val wifiState by viewModel.wifiState.collectAsState()
-    val isHostPhone = wifiState.isHostPhone && wifiState.isConnected
-
-    val selectedCouleur = relative_ListM3Couleurs[big_presenter_couleur_produit]
-
-    val relative_M10OperationVentCouleur by remember(
-        selectedCouleur.keyID,
-        onVentList.size
-    ) {
+    val isHostPhone by remember {
         derivedStateOf {
-            // FIX: active_Datas is now a stable val on the ViewModel, not part of uiState.
+            val wifi = viewModel.wifiState.value
+            wifi.isHostPhone && wifi.isConnected
+        }
+    }
+
+    if (relative_ListM3Couleurs.isEmpty()) return
+
+    val safeIndex = big_presenter_couleur_produit.coerceIn(0, relative_ListM3Couleurs.lastIndex)
+    if (safeIndex != big_presenter_couleur_produit) big_presenter_couleur_produit = safeIndex
+    val selectedCouleur = relative_ListM3Couleurs[safeIndex]
+
+    val relative_M10OperationVentCouleur by remember(selectedCouleur.keyID, onVentList.size) {
+        derivedStateOf {
             viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.find {
                 it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID
             }
@@ -240,11 +224,13 @@ fun A_Item_Produit_App4(
 
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
     val innerPadding = if (isThisProductExpanded) 8.dp else 4.dp
-    val wifi by viewModel.wifiState.collectAsState()
+
+    val isAdmin = centralValues.currentApp_Est_Admin
+            && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true
+    val categoryClickForHeader: (() -> Unit)? = if (isAdmin) onCategoryClick else null
 
     Column(
         modifier = modifier
-
             .semantics(mergeDescendants = true) {
                 set(value = supperGro, key = SemanticsPropertyKey("supperGro"))
             }
@@ -263,36 +249,22 @@ fun A_Item_Produit_App4(
                     .fillMaxWidth()
                     .padding(innerPadding)
             ) {
-
-                if (centralValues.currentApp_Est_Admin
-                    && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true
-                    && (currentCatalogue != null || currentCategory != null)
-                ) {
-                    CategoryBadge(
-                        catalogueName = currentCatalogue?.nom,
-                        categoryName = currentCategory?.nom,
-                        onClick = { onCategoryClick?.invoke() },
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                }
-                Compact_Header_FragID4(
+                A_Compact_Header_App4(
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
-                    onUpdateTariff =
-                        {
-                            centralValues.activeCompt?.let { appCompt ->
-                                viewModel.setActiveFocuceTariffPrixDifineur(
-                                    relative_M1produit,
-                                    appCompt
-                                )
-                            }
-                        },
-
+                    onUpdateTariff = {
+                        centralValues.activeCompt?.let { appCompt ->
+                            viewModel.setActiveFocuceTariffPrixDifineur(relative_M1produit, appCompt)
+                        }
+                    },
                     onUpdateProduit = { viewModel.update_m1Produit(it) },
                     affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin
                             || centralValues.activeCompt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
                     onDelete = { viewModel.delete_m1Produit(it) },
-                    modifier = modifier
+                    modifier = modifier,
+                    catalogueName = currentCatalogue?.nom,
+                    categoryName = currentCategory?.nom,
+                    onCategoryClick = categoryClickForHeader,
                 )
 
                 val filteredAndSortedTariffs = datasValue_with_synthetic
@@ -317,7 +289,7 @@ fun A_Item_Produit_App4(
                     },
                     tariffsList = filteredAndSortedTariffs,
                     isThisProductExpanded = isThisProductExpanded,
-                    shouldShowButtons = true,
+                    shouldShowButtons = shouldShowButtons,
                     on_pour_send_data = on_pour_send_data
                 )
 
@@ -341,7 +313,7 @@ fun A_Item_Produit_App4(
                                         on_pour_send_data = on_pour_send_data,
                                         isExpanded = true,
                                         modifier = Modifier.weight(1f, fill = false),
-                                        shouldShowButtons = true,
+                                        shouldShowButtons = shouldShowButtons,
                                     )
                                 }
                             }
@@ -359,7 +331,7 @@ fun A_Item_Produit_App4(
                                         relative_M1produit = relative_M1produit,
                                         selectedTariff = selectedTariff,
                                         on_pour_send_data = on_pour_send_data,
-                                        shouldShowButtons = true,
+                                        shouldShowButtons = shouldShowButtons,
                                         isExpanded = false,
                                         modifier = Modifier.fillMaxWidth()
                                     )
@@ -372,4 +344,3 @@ fun A_Item_Produit_App4(
         }
     }
 }
-

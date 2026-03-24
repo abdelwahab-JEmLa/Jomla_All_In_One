@@ -7,7 +7,7 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Modules.Base.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -35,7 +35,7 @@ import kotlinx.coroutines.tasks.await
 class Initializer_Funcs_NewProtoPattern(
     val context: Context,
     val on_Progress_Datas: (Float) -> Unit,
-    val dao_M1Produit: ArticlesBasesStatsModelDao,
+    val dao_M1Produit: Dao_M1Produit,
     val dao_16CategorieProduit: Dao_M16CategorieProduit,
     val dao_M3CouleurProduitInfos: M3CouleurProduitInfosDao,
     val dao_M13TarificationInfos: Dao13TarificationInfos,

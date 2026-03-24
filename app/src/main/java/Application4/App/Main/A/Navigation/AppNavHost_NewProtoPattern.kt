@@ -1,6 +1,6 @@
 package Application4.App.Main.A.Navigation
 
-import Application4.App.Fragment.ID1.Fragment.Compact_Presentoire_App_Produits_FragID4
+import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
@@ -72,7 +72,7 @@ fun AppNavHost_NewProtoPattern(
                             }
                     }
                 }
-                Compact_Presentoire_App_Produits_FragID4(
+                A_Compact_Presentoire_App_Produits_App4(
                     viewModelNewProtoPatterns = viewModelNewProtoPatterns
                 )
             }

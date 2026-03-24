@@ -57,7 +57,6 @@ fun NavigationBarWithFab_NewProto(
 
     var showFabDropdown_Gps by remember { mutableStateOf(false) }
 
-
     // Re-show the dialog after 30 seconds when snoozed
     val scope = rememberCoroutineScope()
     LaunchedEffect(snoozeActive) {
@@ -117,11 +116,15 @@ fun NavigationBarWithFab_NewProto(
         }
 
         when {
+            // FIX TODO(1): Presenter mode — FAB is purely decorative (logo/warning display).
+            // isFabVisible=false hides the eye-icon overlay so the button looks clean.
+            // Both lambdas are no-ops so clicking does absolutely nothing.
             its_Compact_Presentoire -> FabButton_newProto(
-                showWarningState = showWarningState, isFabVisible = isFabVisible,
-                its_Targeted_Frag = false, // TODO(1) fixed: no action on click for presenter
-                onToggleFabVisibility = {},  // no-op: affiche rien au click
-                onShowDropdown = {}          // no-op: affiche rien au click
+                showWarningState = showWarningState,
+                isFabVisible = false,        // never show the visibility-eye overlay in presenter mode
+                its_Targeted_Frag = false,
+                onToggleFabVisibility = {},  // no-op: no action on click for presenter
+                onShowDropdown = {}          // no-op: no action on click for presenter
             )
 
             its_Panier -> FabButton_newProto(
@@ -181,7 +184,6 @@ fun NavigationBarWithFab_NewProto(
                 },
                 confirmButton = {
                     TextButton(onClick = {
-                        // Snooze: hide now, re-appear in 30 seconds
                         affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon = false
                         snoozeActive = true
                     }) {

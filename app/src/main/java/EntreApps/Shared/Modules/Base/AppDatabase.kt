@@ -10,7 +10,7 @@ import EntreApps.Shared.Models.M18CentralParametresOfAllAppsDao
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Modules.Base.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
@@ -156,7 +156,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun Dao19Etudiant(): Dao19Etudiant
     abstract fun Dao20ObsarvationEtudion(): Dao20ObsarvationEtudion
 
-    abstract fun dao_M1Produit(): ArticlesBasesStatsModelDao
+    abstract fun dao_M1Produit(): Dao_M1Produit
     abstract fun dao_16CategorieProduit(): Dao_M16CategorieProduit
     abstract fun dao_M3CouleurProduitInfos(): M3CouleurProduitInfosDao
     abstract fun dao_M9AppCompt(): Dao_M9AppCompt

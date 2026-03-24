@@ -1,6 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
@@ -63,7 +63,8 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
-) {
+) {            //<--
+//TODO(1): fait que ca n affihe pas le header si il n ya aucun produit la don
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val wifiState by viewModel.wifiState.collectAsState()
@@ -90,6 +91,9 @@ fun Etager_LazyColumn(
         var foundIndex = -1
 
         outer@ for ((_, categoriesWithProducts) in cataloguesWithCategoriesAndProducts) {
+            // Guard: skip empty catalogues (mirrors the forEach guard in the grid)
+            if (categoriesWithProducts.isEmpty()) continue@outer
+
             currentIndex++     // catalogue_header_{catalogue.id}
 
             for ((category, productColorPairs) in categoriesWithProducts) {
@@ -182,6 +186,9 @@ fun Etager_LazyColumn(
             }      */
 
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
+            // TODO(1) fix: skip catalogue block entirely if it has no categories with products
+            if (categoriesWithProducts.isEmpty()) return@forEach
+
             // Add Catalogue Header
             item(
                 key = "catalogue_header_${catalogue.id}",

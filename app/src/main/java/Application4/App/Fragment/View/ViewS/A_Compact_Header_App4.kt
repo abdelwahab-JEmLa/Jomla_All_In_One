@@ -1,14 +1,18 @@
 package Application4.App.Fragment.View.ViewS
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Prioriter
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.ViewS.Views.Image_Displaye
+import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.CategoryBadge
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS.DeleteProductHeader
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS.FastInit_Outlined_Int_Edite_Modulable_Proto4
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,33 +25,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,11 +54,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Compact_Header_FragID4(
+fun A_Compact_Header_App4(
     modifier: Modifier = Modifier,
     relative_M1produit: M01Produit,
     isExpanded: Boolean,
@@ -67,7 +65,12 @@ fun Compact_Header_FragID4(
     onUpdateProduit: (M01Produit) -> Unit,
     affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
     shouldShowButtons: Boolean = affiche_ProduitDataBaseEdites_ComposableViews,
-    onDelete: (M01Produit) -> Unit
+    onDelete: (M01Produit) -> Unit,
+    // TODO(1) FIXED: CategoryBadge moved here from A_Item_Produit_App4.
+    // Pass nulls (default) to hide the badge entirely (e.g. non-admin callers).
+    catalogueName: String? = null,
+    categoryName: String? = null,
+    onCategoryClick: (() -> Unit)? = null,
 ) {
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
     val arabicTextSize = if (isExpanded) 12.sp else 9.sp
@@ -101,6 +104,26 @@ fun Compact_Header_FragID4(
                 .padding(cardPadding),
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
+            // ── Priorité tag toggles (admin only) ─────────────────────────
+            if (affiche_ProduitDataBaseEdites_ComposableViews) {
+                Section_ToggleButton_TagPreiorities(
+                    produit = relative_M1produit,
+                    affiche_ProduitDataBaseEdites_ComposableViews = affiche_ProduitDataBaseEdites_ComposableViews,
+                    onAddDeleteTag_ToUpdate = { updatedProduit -> onUpdateProduit(updatedProduit) }
+                )
+            }
+
+            // ── TODO(1) FIXED: CategoryBadge now lives here ───────────────
+            // Shown only when the caller supplies an onCategoryClick handler
+            // (admin context). The badge itself handles the "Non Définie" case.
+            if (onCategoryClick != null) {
+                CategoryBadge(
+                    catalogueName = catalogueName,
+                    categoryName = categoryName,
+                    onClick = onCategoryClick,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -267,6 +290,131 @@ fun Compact_Header_FragID4(
         }
     }
 }
+
+// =============================================================================
+// Section_ToggleButton_TagPreiorities
+// =============================================================================
+
+/**
+ * A compact pill button that expands on click to show one [FilterChip] per [Prioriter] value.
+ * Active tags are read from [produit.produit_set_Tag_Priorite()].
+ * Each chip click adds/removes the tag and calls [onAddDeleteTag_ToUpdate] with the updated product.
+ * Hidden entirely when [affiche_ProduitDataBaseEdites_ComposableViews] is false.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun Section_ToggleButton_TagPreiorities(
+    produit: M01Produit,
+    affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
+    onAddDeleteTag_ToUpdate: (M01Produit) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (!affiche_ProduitDataBaseEdites_ComposableViews) return
+
+    var expanded by remember { mutableStateOf(false) }
+    val activeTags = remember(produit.tag_prioriter_str) { produit.produit_set_Tag_Priorite() }
+    val hasAnyTag = activeTags.isNotEmpty()
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        // ── Pill trigger button ───────────────────────────────────────────
+        Card(
+            modifier = Modifier.clickable { expanded = !expanded },
+            colors = CardDefaults.cardColors(
+                containerColor = if (hasAnyTag)
+                    MaterialTheme.colorScheme.tertiaryContainer
+                else
+                    MaterialTheme.colorScheme.surfaceVariant
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Label,
+                    contentDescription = "Tags priorité",
+                    tint = if (hasAnyTag)
+                        MaterialTheme.colorScheme.onTertiaryContainer
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(12.dp)
+                )
+                Text(
+                    text = if (hasAnyTag)
+                        activeTags.joinToString(" · ") { it.label() }
+                    else
+                        "Tags priorité",
+                    fontSize = 8.sp,
+                    fontWeight = if (hasAnyTag) FontWeight.SemiBold else FontWeight.Normal,
+                    color = if (hasAnyTag)
+                        MaterialTheme.colorScheme.onTertiaryContainer
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+
+        // ── Expanded chip row ─────────────────────────────────────────────
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Prioriter.entries.forEach { prioriter ->
+                    val isSelected = prioriter in activeTags
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = {
+                            // Toggle tag in the set, serialize back into product, propagate
+                            val newTags = activeTags.toMutableSet().apply {
+                                if (isSelected) remove(prioriter) else add(prioriter)
+                            }
+                            val updatedProduit = produit.setReturn_Produit_Ac_tag_prioriter_str(
+                                produit_set_Tag_Priorite = newTags,
+                                produit = produit
+                            )
+                            onAddDeleteTag_ToUpdate(updatedProduit)
+                        },
+                        label = {
+                            Text(
+                                text = prioriter.label(),
+                                fontSize = 8.sp,
+                                lineHeight = 10.sp
+                            )
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Short human-readable label for each Prioriter value. */
+private fun Prioriter.label(): String = when (this) {
+    Prioriter.Dernier_VentAchat_Est_Moin_Mois  -> "< Mois"
+    Prioriter.Dernier_VentAchat_Est_Moin_Semain -> "< Sem"
+    Prioriter.PlusDe80P_Ne_Le_Voit_Pas          -> "80%"
+    else -> {""}
+}
+
+// =============================================================================
+// Private card helpers (unchanged)
+// =============================================================================
 
 /**
  * Affiche une InfoCard pill normale.
@@ -439,7 +587,7 @@ fun ColorImageCard_FragID3(
     isSelected: Boolean,
     on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier.Companion,
-    roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp), // Default: all corners rounded
+    roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp),
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
 ) {
     val elevation = if (isSelected) 4.dp else 2.dp
@@ -451,176 +599,24 @@ fun ColorImageCard_FragID3(
     ) {
         Box(
             modifier = if (isSelected) {
-                // Selected (main color): use fixed aspect ratio
                 Modifier.Companion
                     .fillMaxWidth()
                     .aspectRatio(370.dp / 500.dp)
             } else {
-                // Sub-color: wrap to content height
                 Modifier.Companion
                     .fillMaxWidth()
                     .wrapContentHeight()
             }
         ) {
-            // Image always clickable
             Image_Displaye(
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
                 contentScale = if (isSelected) ContentScale.Companion.Fit else ContentScale.Companion.Crop,
                 modifier = Modifier.Companion,
+                list_M1Produit = uiState_NewProtoPatterns_viewModel.second.active_Datas
+                    .list_M1Produit,
                 on_pour_send_data = on_pour_send_data
             )
-        }
-    }
-}
-
-/**
- * Header component with delete button that requires double-click with 4-second countdown
- *
- * Features:
- * - First click: Starts 4-second countdown
- * - Second click: Confirms deletion
- * - Right-side click during countdown: Cancels operation
- * - Auto-resets if countdown expires
- *
- * Usage:
- * DeleteProductHeader(
- *     productName = product.nom,
- *     onDelete = {
- *         // Your delete logic here
- *         repositorysMainGetter.repoM1Produit.deleteData(product)
- *     }
- * )
- */
-@Composable
-fun DeleteProductHeader(
-    productName: String,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var isCountdownActive by remember { mutableStateOf(false) }
-    var countdownSeconds by remember { mutableIntStateOf(4) }
-    var progress by remember { mutableFloatStateOf(1f) }
-
-    // Smooth countdown animation
-    LaunchedEffect(isCountdownActive) {
-        if (isCountdownActive) {
-            countdownSeconds = 4
-            progress = 1f
-            val totalMillis = 4000f
-            val step = 50L // Update every 50ms for smooth animation
-            var elapsed = 0L
-
-            while (elapsed < totalMillis && isCountdownActive) {
-                delay(step)
-                elapsed += step
-                progress = 1f - (elapsed / totalMillis)
-                countdownSeconds = ((totalMillis - elapsed) / 1000).toInt() + 1
-            }
-
-            // Reset if countdown expires
-            if (elapsed >= totalMillis) {
-                isCountdownActive = false
-                progress = 1f
-            }
-        }
-    }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                when {
-                    !isCountdownActive -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
-                    else -> MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
-                }
-            )
-            .clickable {
-                if (!isCountdownActive) {
-                    // First click: Start countdown
-                    isCountdownActive = true
-                } else {
-                    // Second click during countdown: Execute deletion
-                    isCountdownActive = false
-                    onDelete()
-                }
-            }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = when {
-                !isCountdownActive -> "🗑️ Supprimer \"$productName\""
-                else -> "👆 Cliquer pour confirmer"
-            },
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = when {
-                !isCountdownActive -> MaterialTheme.colorScheme.onErrorContainer
-                else -> MaterialTheme.colorScheme.onError
-            },
-            modifier = Modifier.weight(1f)
-        )
-
-        if (isCountdownActive) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Circular countdown indicator
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .drawBehind {
-                            val strokeWidth = 4.dp.toPx()
-                            // Background circle
-                            drawCircle(
-                                color = Color.Companion.White.copy(alpha = 0.3f),
-                                style = Stroke(width = strokeWidth)
-                            )
-                            // Progress arc
-                            drawArc(
-                                color = Color.Companion.White,
-                                startAngle = -90f,
-                                sweepAngle = 360f * progress,
-                                useCenter = false,
-                                style = Stroke(width = strokeWidth, cap = StrokeCap.Companion.Round)
-                            )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "$countdownSeconds",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onError
-                    )
-                }
-
-                // Cancel button - more appealing
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.onError.copy(alpha = 0.5f),
-                            shape = CircleShape
-                        )
-                        .clickable { isCountdownActive = false }
-                        .background(MaterialTheme.colorScheme.onError.copy(alpha = 0.1f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "✕",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onError
-                    )
-                }
-            }
         }
     }
 }

@@ -1,14 +1,14 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base
 
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Modules.Base.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class A_ProduitDataBaseProtoJuin17(
-    val dao: ArticlesBasesStatsModelDao,
+    val dao: Dao_M1Produit,
 ) {
     val repoTAG = "A_ProduitDataBase"
     val repoRef = M01Produit.ref

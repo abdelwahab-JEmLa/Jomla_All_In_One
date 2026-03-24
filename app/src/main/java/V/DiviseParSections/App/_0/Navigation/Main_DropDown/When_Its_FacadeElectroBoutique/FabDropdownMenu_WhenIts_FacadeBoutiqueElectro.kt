@@ -1,13 +1,12 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique
 
-import Application4.App.Fragment.ID1.Fragment.Filter.FilterState_Facad_Boutique
-import Application4.App.Fragment.ID1.Fragment.Filter.FilterTunnel
-import Application4.App.Fragment.ID1.Fragment.Filter.GroupTunnel
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.FilterState_Facad_Boutique_FragId5
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.FilterTunnel
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.GroupTunnel
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.compose.foundation.layout.Box
@@ -47,7 +46,6 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
     onClickImageToShowControles: () -> Unit,
 ) {
     val activeCentralValues = focusedValuesGetter.active_Central_Values
-    val currentFilterState = activeCentralValues.filterState_Facad_Boutique ?: FilterState_Facad_Boutique()
     val filterState_Facad_Boutique_FragId5 = activeCentralValues.filterState_Facad_Boutique_FragId5 ?: FilterState_Facad_Boutique_FragId5()
     val coroutineScope = rememberCoroutineScope()
     var isUploading by remember { mutableStateOf(false) }
@@ -90,9 +88,6 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                 onClick = {
                     focusedValuesGetter.update_activeCentralValues(
                         activeCentralValues.copy(
-                            filterState_Facad_Boutique = currentFilterState.copy(
-                                affiche_dialog_editeur = true
-                            ),
                             filterState_Facad_Boutique_FragId5 = filterState_Facad_Boutique_FragId5.copy(
                                 affiche_dialog_editeur = true
                             )
@@ -134,7 +129,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                         isUploading = true
                         uploadFilteredDataToFirestore(
                             groupe_Par_Catalogue = groupe_Par_Catalogue,
-                            filterState = currentFilterState,
+                            filterState = filterState_Facad_Boutique_FragId5,
                             catalogueFilter = focusedValuesGetter.currentActive_M9AppCompt
                                 ?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
                         )
@@ -189,7 +184,7 @@ fun Fab_Stigns(
  */
 private suspend fun uploadFilteredDataToFirestore(
     groupe_Par_Catalogue: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
-    filterState: FilterState_Facad_Boutique,
+    filterState: FilterState_Facad_Boutique_FragId5,
     catalogueFilter: String?,
 ) {
     val firestore = Firebase.firestore

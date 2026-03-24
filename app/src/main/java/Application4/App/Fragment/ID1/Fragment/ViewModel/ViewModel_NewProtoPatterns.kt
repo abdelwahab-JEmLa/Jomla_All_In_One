@@ -1,6 +1,9 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application2.App.Base.Repository.ActiveCentralValues_app2
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Init.subInit
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.List_Datas
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
@@ -11,129 +14,31 @@ import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
-import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Modules.Base.AppDatabase
-import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
-data class UiState_NewProtoPatterns(
-    val grpList_cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> = emptyList(),
-    val active_Central_Values: ActiveCentralValues = ActiveCentralValues.get_Default(),
-    val list_Datas: List_Datas? = null,
-    val initDatasProgressEtate: Float = 0f,
-) {
-    val list_M1Produit: List<M01Produit> get() = list_Datas?.m1Produit ?: emptyList()
-    val list_M16CategorieProduit: List<M16CategorieProduit>
-        get() = list_Datas?.m16CategorieProduit ?: emptyList()
-    val list_M3CouleurProduit: List<M3CouleurProduitInfos>
-        get() = list_Datas?.m3CouleurProduit ?: emptyList()
-    val list_M13TarificationInfos: List<M13TarificationInfos>
-        get() = list_Datas?.m13TarificationInfos ?: emptyList()
-}
-
-data class List_Datas(
-    val m1Produit: List<M01Produit> = emptyList(),
-    val m2Client: List<M2Client> = emptyList(),
-    val m14VentPeriode: List<M14VentPeriode> = emptyList(),
-    val m16CategorieProduit: List<M16CategorieProduit> = emptyList(),
-    val m3CouleurProduit: List<M3CouleurProduitInfos> = emptyList(),
-    val m9AppCompt: List<Z_AppCompt> = emptyList(),
-    val m8BonVent: List<M8BonVent> = emptyList(),
-    val m10OperationVentCouleur: List<M10OperationVentCouleur> = emptyList(),
-    val m13TarificationInfos: List<M13TarificationInfos> = emptyList(),
-)
-
-class ActiveDatasFragNewProto {
-    var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>?
-            by mutableStateOf(null)
-
-    var active_M21Catalogue: M21CataloguesCategorie
-            by mutableStateOf(get_ListM21CataloguesCategorie().find { it.keyID == "t1" } ?: M21CataloguesCategorie())
-    var active_M9Compt: Z_AppCompt?  by mutableStateOf(null)
-
-    var listM16_FilteredBy_active_M21Catalogue: List<M16CategorieProduit>?
-            by mutableStateOf(null)
-
-    var lastKnownBonVentKey: String? = null
-
-    fun get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
-        dao_M9AppCompt: Dao_M9AppCompt,
-    ): Flow<Z_AppCompt?> =
-        Companion.get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt)
-            .onEach { compt -> active_M9Compt = compt }
-
-    companion object {
-        @OptIn(ExperimentalCoroutinesApi::class)
-        fun get_listM10OperationVentCouleur_By_active_Central_Values(
-            dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
-            dao_M9AppCompt: Dao_M9AppCompt,
-        ): Flow<Pair<String?, List<M10OperationVentCouleur>>> =
-            dao_M9AppCompt.getFlow_ByKeyID(
-                M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
-            ).flatMapLatest { activeCompt ->
-                val onVentKey = activeCompt?.onVentM8BonVentKey
-                    ?.takeIf { it.isNotBlank() && it != "null" }
-
-                if (onVentKey == null) flowOf(null to emptyList())
-                else dao_M10OperationVentCouleur
-                    .getFlow_ListM10OperationVentCouleur_Of_Active_M8Bon_Key(onVentKey)
-                    .map { list ->
-                        val filtered = list.filter { it.parent_M8BonVent_KeyId == onVentKey }
-
-                        onVentKey to filtered
-                    }
-            }
-
-        fun get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
-            dao_M9AppCompt: Dao_M9AppCompt,
-        ): Flow<Z_AppCompt?> =
-            dao_M9AppCompt.getFlow_ByKeyID(
-                M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
-            )
-
-        fun get_listM16_FilteredBy_active_M21Catalogue(
-            dao_M16CategorieProduit: Dao_M16CategorieProduit,
-            active_M21Catalogue: M21CataloguesCategorie,
-        ): Flow<List<M16CategorieProduit>> =
-            dao_M16CategorieProduit.getAllFlow()
-                .map { list -> list.filter { it.catalogueParentId == active_M21Catalogue.id } }
-
-    }
-}
+private const val TAG_VM = "ViewModel_NewProto"
 
 @SuppressLint("StaticFieldLeak")
 class ViewModel_NewProtoPatterns(
@@ -240,85 +145,9 @@ class ViewModel_NewProtoPatterns(
 
     init {
         fragmentNavigationHandler.closeAllActiveFragments()
-
-        viewModelScope.launch(Dispatchers.IO) {
-            focusedValues_NewProtoPatterns.active_Central_Values.collect { centralValues ->
-                _uiStateNewProtoPatterns.update { it.copy(active_Central_Values = centralValues) }
-            }
-        }
-
         centraleMainGetter_NewProtoPattern
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val products = appDatabase.dao_M1Produit().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 1 / 9f) }
-            val clients = appDatabase.dao_M2Client().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 2 / 9f) }
-            val categories = appDatabase.dao_16CategorieProduit().getAll()
-                .filter { it.catalogueParentId == active_Datas.active_M21Catalogue.id }
-
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 3 / 9f) }
-            val colors = appDatabase.dao_M3CouleurProduitInfos().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 4 / 9f) }
-            val appCompt = appDatabase.dao_M9AppCompt().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 5 / 9f) }
-            val bonVent = appDatabase.dao_M8BonVent().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 6 / 9f) }
-            val ventPeriodes = appDatabase.dao_M14VentPeriode().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 7 / 9f) }
-            val tarification = appDatabase.dao_M13TarificationInfos().getAll()
-            _uiStateNewProtoPatterns.update { it.copy(initDatasProgressEtate = 8 / 9f) }
-            val operationVentCouleurs = appDatabase.dao_M10OperationVentCouleur().getAll()
-            _uiStateNewProtoPatterns.update {
-                it.copy(
-                    initDatasProgressEtate = 1f,
-                    list_Datas = List_Datas(
-                        m1Produit = products,
-                        m2Client = clients,
-                        m14VentPeriode = ventPeriodes,
-                        m16CategorieProduit = categories,
-                        m3CouleurProduit = colors,
-                        m9AppCompt = appCompt,
-                        m8BonVent = bonVent,
-                        m13TarificationInfos = tarification,
-                        m10OperationVentCouleur = operationVentCouleurs,
-                    )
-                )
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            active_Datas.get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
-                dao_M9AppCompt = appDatabase.dao_M9AppCompt()
-            ).collect()
-        }
-
-        viewModelScope.launch(Dispatchers.Main) {
-            ActiveDatasFragNewProto.get_listM10OperationVentCouleur_By_active_Central_Values(
-                dao_M10OperationVentCouleur = appDatabase.dao_M10OperationVentCouleur(),
-                dao_M9AppCompt = appDatabase.dao_M9AppCompt()
-            ).collect { (emittedKey, filtered) ->
-                when {
-                    filtered.isNotEmpty() -> {
-                        active_Datas.lastKnownBonVentKey = emittedKey
-                        active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
-                            filtered
-
-                    }
-
-                    emittedKey == null -> {}
-                    emittedKey != active_Datas.lastKnownBonVentKey -> {
-                        active_Datas.lastKnownBonVentKey = emittedKey
-                        active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
-                            emptyList()
-
-                    }
-
-                    else -> {
-                    }
-                }
-            }
-        }
+        // FIX TODO(1): all launch blocks moved to ViewModel_NewProtoPatternsSubInitFuncs.kt
+        subInit()
     }
 
     fun update_M13TarificationInfos(tariff: M13TarificationInfos) {
@@ -382,31 +211,25 @@ class ViewModel_NewProtoPatterns(
         )
 
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) {
-
         active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
-
         upsert_M10OperationVentCouleur(updatedList)
     }
 
     private fun upsert_M10OperationVentCouleur(updatedList: List<M10OperationVentCouleur>?) {
         val allTariffs = _uiStateNewProtoPatterns.value.list_Datas?.m13TarificationInfos
         updatedList?.forEach { operation ->
-
             val tariff = allTariffs?.find { it.keyID == operation.parentM13TarificationKeyID }
                 ?: allTariffs?.filter { it.parent_M1Produit_KeyId == operation.parent_M1Produit_KeyId }
                     ?.maxByOrNull { it.creationTimestamps }
             if (tariff == null) {
-
                 return@forEach
             }
             val opToSave = if (tariff.keyID != operation.parentM13TarificationKeyID) {
-
                 operation.copy(
                     parentM13TarificationKeyID = tariff.keyID,
                     parentM13TarificationDebugInfos = tariff.getDebugInfos()
                 )
             } else {
-
                 operation
             }
             repositorysMainSetter_NewProtoPatterns.upsert_M10OperationVentCouleur(opToSave, tariff)
@@ -457,6 +280,7 @@ class ViewModel_NewProtoPatterns(
         }
         repositorysMainSetter_NewProtoPatterns.insert_M16CategorieProduit(new)
     }
+
     fun update_m16CategorieProduit(new: M16CategorieProduit) {
         _uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()
@@ -469,24 +293,14 @@ class ViewModel_NewProtoPatterns(
     }
 
     fun update_m1Produit(new: M01Produit) {
-        _uiStateNewProtoPatterns.update { state ->
-            val current = state.list_Datas ?: List_Datas()
-            state.copy(
-                list_Datas = current.copy(
-                    m1Produit = current.m1Produit.map { if (it.keyID == new.keyID) new else it }
-                ))
-        }
+        active_Datas.list_M1Produit = active_Datas.list_M1Produit
+            ?.map { if (it.keyID == new.keyID) new else it }
         repositorysMainSetter_NewProtoPatterns.update_M1Produit(new)
     }
 
     fun delete_m1Produit(produit: M01Produit) {
-        _uiStateNewProtoPatterns.update { state ->
-            val current = state.list_Datas ?: List_Datas()
-            state.copy(
-                list_Datas = current.copy(
-                    m1Produit = current.m1Produit.filter { it.keyID != produit.keyID }
-                ))
-        }
+        active_Datas.list_M1Produit = active_Datas.list_M1Produit
+            ?.filter { it.keyID != produit.keyID }
         repositorysMainSetter_NewProtoPatterns.delete_M1Produit(produit)
     }
 

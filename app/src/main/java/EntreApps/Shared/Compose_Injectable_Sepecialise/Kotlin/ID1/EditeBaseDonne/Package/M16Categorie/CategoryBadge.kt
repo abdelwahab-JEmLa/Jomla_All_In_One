@@ -32,13 +32,26 @@ fun CategoryBadge(
     onClick: () -> Unit,
     modifier: Modifier = Modifier.Companion
 ) {
+    // TODO(1) FIXED: when both are absent, display "Non Définie" label instead of showing nothing
+    val hasNoCategory = catalogueName.isNullOrBlank() && categoryName.isNullOrBlank()
+    val displayedCategoryName = when {
+        hasNoCategory -> "Non Définie"
+        else -> categoryName ?: "Sans Catégorie"
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f))
+            .background(
+                if (hasNoCategory)
+                    MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
+                else
+                    MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+            )
             .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 6.dp)) {
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    ) {
         Row(
             verticalAlignment = Alignment.Companion.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -47,11 +60,14 @@ fun CategoryBadge(
             Icon(
                 imageVector = Icons.Default.Category,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                tint = if (hasNoCategory)
+                    MaterialTheme.colorScheme.onErrorContainer
+                else
+                    MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.Companion.size(16.dp)
             )
             Column(modifier = Modifier.Companion.weight(1f)) {
-                if (catalogueName != null) {
+                if (!catalogueName.isNullOrBlank()) {
                     Text(
                         text = catalogueName,
                         style = MaterialTheme.typography.labelSmall,
@@ -62,11 +78,14 @@ fun CategoryBadge(
                     )
                 }
                 Text(
-                    text = categoryName ?: "Sans Catégorie",
+                    text = displayedCategoryName,
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Companion.SemiBold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = if (hasNoCategory)
+                        MaterialTheme.colorScheme.onErrorContainer
+                    else
+                        MaterialTheme.colorScheme.onSecondaryContainer,
                     maxLines = 1,
                     overflow = TextOverflow.Companion.Ellipsis
                 )
@@ -74,7 +93,10 @@ fun CategoryBadge(
             Icon(
                 imageVector = Icons.Default.Edit,
                 contentDescription = "Changer catégorie",
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                tint = if (hasNoCategory)
+                    MaterialTheme.colorScheme.onErrorContainer
+                else
+                    MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.Companion.size(14.dp)
             )
         }

@@ -1,8 +1,9 @@
 package Application4.App.Fragment.View.ViewS.Views
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.clickable
@@ -28,7 +29,8 @@ fun Image_Displaye(
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
     on_pour_send_data: (String, String) -> Unit,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
+    list_M1Produit: List<M01Produit>?,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val centralValues = uiState.active_Central_Values
@@ -50,9 +52,9 @@ fun Image_Displaye(
         // Sourced from uiState — no direct repository injection needed
         val parentProduct = remember(
             relative_M3CouleurProduitInfos.parentBProduitInfosKeyID,
-            uiState.list_M1Produit
+            list_M1Produit
         ) {
-            uiState.list_M1Produit.find {
+            list_M1Produit?.find {
                 it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
             }
         }
@@ -65,8 +67,10 @@ fun Image_Displaye(
                     val currentExpandedProduct = centralValues.expanded_M1Produit
                     val currentExpandedColor = centralValues.expanded_M3CouleurProduitInfos
 
-                    val isSameProductExpanded = currentExpandedProduct?.keyID == parentProduct?.keyID
-                    val isDifferentColor = currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
+                    val isSameProductExpanded =
+                        currentExpandedProduct?.keyID == parentProduct?.keyID
+                    val isDifferentColor =
+                        currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
 
                     if (isSameProductExpanded && isDifferentColor) {
                         // CASE 1: Same product, different color → Update only the selected color
@@ -78,13 +82,14 @@ fun Image_Displaye(
                         )
                     } else {
                         // CASE 2: Different product OR same color → Toggle product expansion
-                        val newProductValue = if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
-                            // Same product, same color → Collapse
-                            null
-                        } else {
-                            // Different product → Expand it
-                            parentProduct
-                        }
+                        val newProductValue =
+                            if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
+                                // Same product, same color → Collapse
+                                null
+                            } else {
+                                // Different product → Expand it
+                                parentProduct
+                            }
 
                         viewModel.update_activeCentralValues(
                             centralValues.copy(

@@ -1,6 +1,6 @@
 package Application4.App.Screen
 
-import Application4.App.Fragment.ID1.Fragment.Compact_Presentoire_App_Produits_FragID4
+import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
@@ -53,7 +53,7 @@ fun MainScreen_NewProtoPattern(
     var isFabVisible by rememberSaveable { mutableStateOf(true) }
 
     if (M18CentralParametresOfAllApps.get_Default().no_loadKoin_CrachComposReglement) {
-        Compact_Presentoire_App_Produits_FragID4(viewModelNewProtoPatterns = viewModelNewProtoPatterns)
+        A_Compact_Presentoire_App_Produits_App4(viewModelNewProtoPatterns = viewModelNewProtoPatterns)
     } else {
         Scaffold(
             modifier = modifier.fillMaxSize(),

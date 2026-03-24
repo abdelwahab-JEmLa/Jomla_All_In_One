@@ -1,6 +1,6 @@
 package EntreApps.Shared.Models
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Prioriter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -172,10 +172,18 @@ data class M01Produit(
     }
 
 
-    fun matchesPrioriteFilter(filterSet: Set<Prioriter>?): Boolean {
-        if (filterSet.isNullOrEmpty()) return true
-        val productTags = produit_set_Tag_Priorite()
-        return filterSet.all { it in productTags }
+    fun matchesPrioriteFilter(filter: Set<Prioriter>?): Boolean {
+        // null filter = show everything
+        if (filter == null) return true
+
+        // Parse tags from the stored string field (reuses the existing helper)
+        val tags = produit_set_Tag_Priorite()
+
+        // Produit has no priority tags → always show it (untagged products are never filtered out)
+        if (tags.isEmpty()) return true
+
+        // Produit has tags → show only if at least one tag is in the active filter
+        return tags.any { it in filter }
     }
 
     fun toFirebaseMap(): Map<String, Any?> {

@@ -1,7 +1,5 @@
 package Application4.App.Fragment.ID1.Fragment
 
-import Application4.App.Fragment.ID1.Fragment.Filter.Contetn
-import Application4.App.Fragment.ID1.Fragment.Filter.GroupTunnel
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
 import EntreApps.Shared.Models.M01Produit
@@ -15,6 +13,7 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +25,7 @@ import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun Compact_Presentoire_App_Produits_FragID4(
+fun A_Compact_Presentoire_App_Produits_App4(
     modifier: Modifier = Modifier,
     viewModelNewProtoPatterns: ViewModel_NewProtoPatterns = koinViewModel(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
@@ -35,6 +34,29 @@ fun Compact_Presentoire_App_Produits_FragID4(
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
             && uiState.active_Central_Values.mainInitDataBaseProgressEtate >= 1f
+
+    val active_Datas = viewModelNewProtoPatterns.active_Datas
+
+    val groupe_Par_Catalogue by remember {
+        derivedStateOf {
+            active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur
+                .flatten()
+        }
+    }
+
+    val allCategories: List<M16CategorieProduit>? by remember {
+        derivedStateOf {
+            groupe_Par_Catalogue
+                .flatMap { (_, categoriesWithProducts) -> categoriesWithProducts.map { it.first } }
+                .takeIf { it.isNotEmpty() }
+        }
+    }
+
+    val allProducts: List<M01Produit>? by remember {
+        derivedStateOf {
+            active_Datas.list_M1Produit
+        }
+    }
 
     var selectedProductForCategoryChange by remember { mutableStateOf<M01Produit?>(null) }
     var justMovedProductKeyID by remember { mutableStateOf<String?>(null) }
@@ -45,25 +67,6 @@ fun Compact_Presentoire_App_Produits_FragID4(
             justMovedProductKeyID = null
         }
     }
-
-    val allCategories = remember(uiState.list_Datas?.m16CategorieProduit) {
-        uiState.list_Datas?.m16CategorieProduit
-    }
-
-    val allProducts = remember(uiState.list_Datas?.m1Produit) {
-        uiState.list_Datas?.m1Produit
-    }
-
-    val allColors = remember(uiState.list_Datas?.m3CouleurProduit) {
-        uiState.list_Datas?.m3CouleurProduit
-            ?.sortedByDescending { it.creationTimestamp }
-    }
-
-    val groupe_Par_Catalogue = GroupTunnel(
-        allColors = allColors,
-        allProducts = allProducts,
-        allCategories = allCategories
-    )
 
     if (!isInitDone) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -78,10 +81,9 @@ fun Compact_Presentoire_App_Produits_FragID4(
                 trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                 color = MaterialTheme.colorScheme.primary
             )
-
         }
     } else {
-        Contetn(
+        Content(
             modifier = modifier,
             groupe_Par_Catalogue = groupe_Par_Catalogue,
             on_pour_send_data = on_pour_send_data,
@@ -118,7 +120,7 @@ fun Compact_Presentoire_App_Produits_FragID4(
                 selectedProductForCategoryChange = null
             },
             onCreateNewCategory = { categoryName ->
-                val newId = System.currentTimeMillis()   // unique Long, same pattern Firebase uses
+                val newId = System.currentTimeMillis()
                 val data = M16CategorieProduit(
                     id = newId,
                     nom = categoryName,

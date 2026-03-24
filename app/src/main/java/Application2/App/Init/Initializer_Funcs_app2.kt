@@ -4,7 +4,7 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.toArticle
-import EntreApps.Shared.Modules.Base.SQL.ArticlesBasesStatsModelDao
+import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import android.content.Context
@@ -36,7 +36,7 @@ private const val TAG = "Dropbox"
 class Initializer_Funcs_app2(
     val context: Context,
     val on_Progress_Datas: (Float) -> Unit,
-    val dao_M1Produit: ArticlesBasesStatsModelDao,
+    val dao_M1Produit: Dao_M1Produit,
     val dao_16CategorieProduit: Dao_M16CategorieProduit,
     val dao_M3CouleurProduitInfos: M3CouleurProduitInfosDao,
 ) {

@@ -12,7 +12,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ArticlesBasesStatsModelDao {
+interface Dao_M1Produit {
     @Update
     suspend fun update(data: M01Produit)
 
@@ -26,7 +26,7 @@ interface ArticlesBasesStatsModelDao {
     suspend fun getAll(): MutableList<M01Produit>
 
     @Transaction
-    suspend fun transaction(block: suspend ArticlesBasesStatsModelDao.() -> Unit) {
+    suspend fun transaction(block: suspend Dao_M1Produit.() -> Unit) {
         block()
     }
 
