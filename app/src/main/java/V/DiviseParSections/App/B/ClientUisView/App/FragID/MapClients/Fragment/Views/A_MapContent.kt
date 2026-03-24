@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
+import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_2
@@ -16,7 +17,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -39,7 +39,6 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -69,30 +68,8 @@ fun MapContent(
     val showMarkerDetails by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
 
-    // FIXED: Use the computed visible clients mode from FocusedValuesGetter
-    var currentFilterMode by remember {
-        mutableStateOf(focusedValuesGetter.getCurrentVisibleClientsMode())
-    }
-
-    // FIXED: Handle temporary "show all" mode when activeOnVentM2ClientInfos changes
-    // This replaces the previous LaunchedEffect that had the 7-second delay
-    LaunchedEffect(focusedValuesGetter.activeOnVentM2ClientInfos) {
-        val activeClientInfos = focusedValuesGetter.activeOnVentM2ClientInfos
-
-        // Use the enhanced method from FocusedValuesGetter that handles timing internally
-        focusedValuesGetter.handleActiveClientChange(activeClientInfos)
-    }
-
-    // FIXED: Listen to the computed visible clients mode with proper timing control
-    LaunchedEffect(focusedValuesGetter.computedVisibleClientsMode) {
-        currentFilterMode = focusedValuesGetter.computedVisibleClientsMode
-    }
-
-    // FIXED: Also listen to the temporary mode flag for immediate UI updates
-    LaunchedEffect(focusedValuesGetter.active_Central_Values.isInTemporaryShowAllMode) {
-        // Update current filter mode when temporary mode changes
-        currentFilterMode = focusedValuesGetter.getCurrentVisibleClientsMode()
-    }
+    val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entrie
+        ?: MapClientsViewModel.VisibleClientsNow.showAll
 
     // Location tracker initialization
     val locationTracker = remember {
@@ -235,27 +212,11 @@ fun MapContent(
             currentFilterMode = currentFilterMode,
             onFilterMarkers = {
                 handleFilterMarkersClick(mapView, currentFilterMode) { newMode ->
-                    currentFilterMode = newMode
-                    // FIXED: Update the FocusedValuesGetter state when user manually changes filter
-                    val currentValues = focusedValuesGetter.active_Central_Values
-                    focusedValuesGetter.update_activeCentralValues(
-                        currentValues.copy(
-                            visibleClientsNow = newMode,
-                            isInTemporaryShowAllMode = false // Exit temporary mode if user manually changes
-                        )
-                    )
+                    viewModel.update_filter_marqueClient(newMode)
                 }
             },
             onPickFilter = {
-                currentFilterMode = it
-                // FIXED: Update the FocusedValuesGetter state when user picks a filter
-                val currentValues = focusedValuesGetter.active_Central_Values
-                focusedValuesGetter.update_activeCentralValues(
-                    currentValues.copy(
-                        visibleClientsNow = it,
-                        isInTemporaryShowAllMode = false // Exit temporary mode if user manually changes
-                    )
-                )
+                viewModel.update_filter_marqueClient(it)
             }
         )
 

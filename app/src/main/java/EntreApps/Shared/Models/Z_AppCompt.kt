@@ -68,6 +68,8 @@ data class Z_AppCompt(
 
     var mainInitDataBaseProgressEtate: Float = 0f,
     //---------------------------------Centrale_Focuces_Values.----------------------------------------------------------------------------------------------------------------------------------
+    val filter_marqueClient_Name: String = "no Filter",
+
     val activeDialogSearchM1Produit: Boolean = false,
     val active_ProduitKeyID_Au_DroopDown_PresenterEcran: String = "",
     val active_CouleurKeyID_Extended_Image: String = "",

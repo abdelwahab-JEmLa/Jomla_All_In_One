@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
 
+import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.find_its_Confirmation_de_Transaction
@@ -7,7 +8,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M8BonVent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -57,12 +57,12 @@ fun Floating_Separated_FragMap_Button_4(
         colors = Pair(Color.Red, Color.Green)
     )
 ) {
-    val currentValues = focusedValuesGetter.active_Central_Values
-    val currentVisibleClientsMode = currentValues.visibleClientsNow
+    val filter_marqueClient_enum_entrie = mapClientsViewModel.active_Datas.filter_marqueClient_enum_entrie
     val keyID_currentActiveFocused_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
-
-    val isShowingAll = currentVisibleClientsMode == MapClientsViewModel.VisibleClientsNow.showAll
     val isAdmin = focusedValuesGetter.currentApp_Est_Admin
+
+    val isShowingAll = filter_marqueClient_enum_entrie == MapClientsViewModel.VisibleClientsNow.showAll
+            || filter_marqueClient_enum_entrie == null
 
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
 
@@ -95,7 +95,10 @@ fun Floating_Separated_FragMap_Button_4(
             ) {
                 if (updatedButtonState.showLabels) {
                     Text(
-                        text = currentValues.active_drop_down_filter_client,
+                        text = getFilterLabelForMode(
+                            filter_marqueClient_enum_entrie
+                                ?: MapClientsViewModel.VisibleClientsNow.showAll
+                        ),
                         color = Color.White,
                         modifier = Modifier
                             .background(
@@ -141,16 +144,13 @@ fun Floating_Separated_FragMap_Button_4(
                         text = {
                             Text(
                                 text = filterLabel1,
-                                color = if (currentValues.active_drop_down_filter_client == filterLabel1)
+                                color = if (filter_marqueClient_enum_entrie == MapClientsViewModel.VisibleClientsNow.showAll
+                                    || filter_marqueClient_enum_entrie == null)
                                     Color.Blue else Color.Black
                             )
                         },
                         onClick = {
-                            val newValues = currentValues.copy(
-                                visibleClientsNow = MapClientsViewModel.VisibleClientsNow.showAll,
-                                active_drop_down_filter_client = filterLabel1
-                            )
-                            focusedValuesGetter.update_activeCentralValues(newValues)
+                            mapClientsViewModel.update_filter_marqueClient(MapClientsViewModel.VisibleClientsNow.showAll)
                             showDropdown = false
                         }
                     )
@@ -162,16 +162,12 @@ fun Floating_Separated_FragMap_Button_4(
                         text = {
                             Text(
                                 text = filterLabel2,
-                                color = if (currentValues.active_drop_down_filter_client == filterLabel2)
+                                color = if (filter_marqueClient_enum_entrie == visibleClientsNow1)
                                     Color.Red else Color.Black
                             )
                         },
                         onClick = {
-                            val newValues = currentValues.copy(
-                                visibleClientsNow = visibleClientsNow1,
-                                active_drop_down_filter_client = filterLabel2
-                            )
-                            focusedValuesGetter.update_activeCentralValues(newValues)
+                            mapClientsViewModel.update_filter_marqueClient(visibleClientsNow1)
                             showDropdown = false
                         }
                     )
@@ -211,7 +207,10 @@ fun Floating_Separated_FragMap_Button_4(
                                     value = bons.lastOrNull { bon ->
                                         bon.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                                     }?.let { bon ->
-                                        find_its_Confirmation_de_Transaction(repositorysMainGetter, bon)
+                                        find_its_Confirmation_de_Transaction(
+                                            repositorysMainGetter,
+                                            bon
+                                        )
                                     },
                                     key = SemanticsPropertyKey("lastCommandeLivraiTransaction")
                                 )
@@ -219,16 +218,12 @@ fun Floating_Separated_FragMap_Button_4(
                         text = {
                             Text(
                                 text = filterLabel3,
-                                color = if (currentValues.active_drop_down_filter_client.startsWith("COMMANDE_LIVRAI Filter"))
+                                color = if (filter_marqueClient_enum_entrie == visibleClientsNow2)
                                     Color.Red else Color.Black
                             )
                         },
                         onClick = {
-                            val newValues = currentValues.copy(
-                                visibleClientsNow = visibleClientsNow2,
-                                active_drop_down_filter_client = filterLabel3
-                            )
-                            focusedValuesGetter.update_activeCentralValues(newValues)
+                            mapClientsViewModel.update_filter_marqueClient(visibleClientsNow2)
                             showDropdown = false
                         }
                     )
@@ -267,7 +262,10 @@ fun Floating_Separated_FragMap_Button_4(
                                     value = bons.lastOrNull { bon ->
                                         bon.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
                                     }?.let { bon ->
-                                        find_its_Confirmation_de_Transaction(repositorysMainGetter, bon)
+                                        find_its_Confirmation_de_Transaction(
+                                            repositorysMainGetter,
+                                            bon
+                                        )
                                     },
                                     key = SemanticsPropertyKey("lastCreditTransaction")
                                 )
@@ -275,16 +273,12 @@ fun Floating_Separated_FragMap_Button_4(
                         text = {
                             Text(
                                 text = filterLabel4,
-                                color = if (currentValues.active_drop_down_filter_client.startsWith("Credit Filter"))
+                                color = if (filter_marqueClient_enum_entrie == visibleClientsNow3)
                                     Color.Red else Color.Black
                             )
                         },
                         onClick = {
-                            val newValues = currentValues.copy(
-                                visibleClientsNow = visibleClientsNow3,
-                                active_drop_down_filter_client = filterLabel4
-                            )
-                            focusedValuesGetter.update_activeCentralValues(newValues)
+                            mapClientsViewModel.update_filter_marqueClient(visibleClientsNow3)
                             showDropdown = false
                         }
                     )

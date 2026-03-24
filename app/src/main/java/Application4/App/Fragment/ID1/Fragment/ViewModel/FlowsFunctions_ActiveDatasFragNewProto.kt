@@ -8,6 +8,7 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
@@ -19,11 +20,18 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 object FlowsFunctions_ActiveDatasFragNewProto {
+    fun getFlow_filter_marqueClient_enum_entrie(
+        activeDatasFragNewProto: ActiveDatasFragNewProto,
+    ): MapClientsViewModel.VisibleClientsNow =
+        activeDatasFragNewProto.filter_marqueClient_enum_entrie
+            ?: MapClientsViewModel.VisibleClientsNow.showAll
+
     fun get_list_M1Produit(
         dao_M1Produit: Dao_M1Produit,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): Flow<List<M01Produit>> =
         dao_M1Produit.getAllFlow().onEach { activeDatasFragNewProto.list_M1Produit = it }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
         dao_M16CategorieProduit: Dao_M16CategorieProduit,

@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
+import EntreApps.Shared.Modules.Base.AViewModel_NewProtoPatterns
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Base.classes_NewProtoPatterns
-import EntreApps.Shared.Modules.Base.AViewModel_NewProtoPatterns
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.ClientsMapFilterViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
@@ -230,7 +230,7 @@ val viewModelModule = module {
     viewModel { RecordingViewModel(get(),get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get()) }
-    viewModel { MapClientsViewModel(get(), get(), get(), get(), get()) }
+    viewModel { MapClientsViewModel(androidContext(),get(), get(), get(), get(), get()) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
     viewModel { ViewModelPresistantButtonsSec8FWinID1(get()) }

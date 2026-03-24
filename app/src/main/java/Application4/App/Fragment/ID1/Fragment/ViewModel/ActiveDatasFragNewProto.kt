@@ -6,6 +6,7 @@ import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -16,6 +17,7 @@ import androidx.compose.runtime.setValue
 class ActiveDatasFragNewProto {
     var active_M9Compt: Z_AppCompt? by mutableStateOf(null)
     var section_ToggleButton_TagPrioriter__start_Collapsed: Boolean? by mutableStateOf(null)
+    var filter_marqueClient_enum_entrie: MapClientsViewModel.VisibleClientsNow? by mutableStateOf(null)
 
     var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(Prioriter.entries.toSet())
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)

@@ -1,10 +1,10 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
@@ -53,11 +54,13 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
         text_Label = "",
         icons = Pair(Icons.Default.FilterList, Icons.Default.ViewList),
         colors = Pair(Color.Red, Color.Green)
-    )
+    ),
+    viewModel: MapClientsViewModel = koinViewModel (),
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
-    val currentVisibleClientsMode = currentValues.visibleClientsNow
-    val isShowingAll = currentVisibleClientsMode == MapClientsViewModel.VisibleClientsNow.showAll
+    val filter_marqueClient_enum_entrie = viewModel.active_Datas.filter_marqueClient_enum_entrie
+    val isShowingAll = filter_marqueClient_enum_entrie == MapClientsViewModel.VisibleClientsNow.showAll
+            || filter_marqueClient_enum_entrie == null
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
 
     val configuration = LocalConfiguration.current

@@ -2,25 +2,24 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
+import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Repo18CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
-import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
-import EntreApps.Shared.Models.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
-import EntreApps.Shared.Models.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable
@@ -31,8 +30,6 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Stable
 class FocusedValuesGetter(
@@ -129,131 +126,6 @@ class FocusedValuesGetter(
         }
     }
 
-    // FIXED: Properly implemented computedVisibleClientsMode with timing control
-    val computedVisibleClientsMode by derivedStateOf {
-        val activeClientInfos = activeOnVentM2ClientInfos
-        val currentValues = active_Central_Values
-
-        // If there's an explicit setting and we're not in temporary mode, use it
-        if (currentValues.visibleClientsNow != null && !currentValues.isInTemporaryShowAllMode) {
-            return@derivedStateOf currentValues.visibleClientsNow!!
-        }
-
-        // If we're in temporary mode, always show all
-        if (currentValues.isInTemporaryShowAllMode) {
-            return@derivedStateOf MapClientsViewModel.VisibleClientsNow.showAll
-        }
-
-        // Default logic based on admin status and special account handling
-        val params = M18CentralParametresOfAllApps()
-        when {
-            // Special handling for abdelmomen account - always show command/delivery filter
-            params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId -> {
-                // Update label if not already set correctly
-                if (!currentValues.active_drop_down_filter_client.startsWith("COMMANDE_LIVRAI")) {
-                    update_activeCentralValues(
-                        currentValues.copy(
-                            active_drop_down_filter_client = "COMMANDE_LIVRAI Filter"
-                        )
-                    )
-                }
-                MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
-            }
-            // For admin users, show all
-            currentApp_Est_Admin -> {
-                // Update label if not already set correctly
-                if (currentValues.active_drop_down_filter_client != "Show All Clients") {
-                    update_activeCentralValues(
-                        currentValues.copy(
-                            active_drop_down_filter_client = "Show All Clients"
-                        )
-                    )
-                }
-                MapClientsViewModel.VisibleClientsNow.showAll
-            }
-            // For non-admin users, show targeted clients
-            else -> {
-                // Update label if not already set correctly
-                if (currentValues.active_drop_down_filter_client != "Targeted Clients") {
-                    update_activeCentralValues(
-                        currentValues.copy(
-                            active_drop_down_filter_client = "Targeted Clients"
-                        )
-                    )
-                }
-                MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
-            }
-        }
-    }
-
-    // Method to get the current visible clients mode
-    fun getCurrentVisibleClientsMode(): MapClientsViewModel.VisibleClientsNow {
-        return computedVisibleClientsMode
-    }
-
-    // FIXED: Enhanced temporary mode handling with proper timing control (2 seconds)
-    fun handleTemporaryShowAllMode() {
-        // Cancel any existing timer
-        temporaryModeJob?.cancel()
-
-        val currentValues = active_Central_Values
-
-        // Set to temporary show all mode
-        update_activeCentralValues(
-            currentValues.copy(
-                visibleClientsNow = MapClientsViewModel.VisibleClientsNow.showAll,
-                isInTemporaryShowAllMode = true
-            )
-        )
-
-        // FIXED: Start new timer for exactly 2 seconds (was 7 seconds before)
-        temporaryModeJob = coroutineScope.launch {
-            delay(2000) // 2 seconds instead of 7
-
-            // Check if we're still in temporary mode (user might have changed it manually)
-            if (_activeCentralValues.value.isInTemporaryShowAllMode) {
-                revertToStandardMode()
-            }
-        }
-    }
-
-    fun revertToStandardMode() {
-        // Cancel any running timer
-        temporaryModeJob?.cancel()
-
-        val currentValues = active_Central_Values
-        val params = M18CentralParametresOfAllApps()
-
-        val standardMode = when {
-            // Special handling for abdelmomen account
-            params.au_Lence_Set_Compt_Ac_KeyId == params.abdelmomen_Compt_KeyId ->
-                MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
-            // For admin users, show all
-            currentApp_Est_Admin ->
-                MapClientsViewModel.VisibleClientsNow.showAll
-            // For non-admin users, show targeted clients
-            else ->
-                MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
-        }
-
-        update_activeCentralValues(
-            currentValues.copy(
-                visibleClientsNow = standardMode,
-                isInTemporaryShowAllMode = false
-            )
-        )
-    }
-
-    // FIXED: Add method to handle activeOnVentM2ClientInfos changes automatically
-    fun handleActiveClientChange(newActiveClient: M2Client?) {
-        if (newActiveClient != null) {
-            // Start temporary show all mode when client becomes active
-            handleTemporaryShowAllMode()
-        } else {
-            // Immediately revert when no active client
-            revertToStandardMode()
-        }
-    }
 
     fun update_activeCentralValues(new: ActiveCentralValues) {
         _activeCentralValues.value = new
@@ -458,7 +330,6 @@ class FocusedValuesGetter(
                     put(
                         "focused_ListM10OpeVentCouleur_Par_PD_M1Produit",
                         focused_ListM10OpeVentCouleur_Par_PD_M1Produit.map { it.getDebugInfos() })
-                    put("computedVisibleClientsMode", computedVisibleClientsMode.toString())
                     put(
                         "isInTemporaryMode",
                         active_Central_Values.isInTemporaryShowAllMode.toString()

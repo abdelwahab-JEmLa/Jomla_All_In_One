@@ -1,12 +1,16 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ActiveDatasFragNewProto
+import Application4.App.Fragment.ID1.Fragment.ViewModel.FlowsFunctions_ActiveDatasFragNewProto
+import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
+import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Update.deleteData
@@ -14,6 +18,7 @@ import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Filter
@@ -30,6 +35,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,11 +59,17 @@ data class UiState(
 )
 
 class MapClientsViewModel(
+    private val context: Context,
     val aCentralFacade: ACentralFacade,
     val focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
-    val appDatabase: AppDatabase
+    val appDatabase: AppDatabase,
+    val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
+        appDatabase = appDatabase,
+        context = context
+    ),
+    val active_Datas: ActiveDatasFragNewProto = ActiveDatasFragNewProto(),
 ) : ViewModel() {
     val repo2Client = aCentralFacade.repositorysMainGetter.repo2Client
     val getter = aCentralFacade.repositorysMainGetter
@@ -101,11 +113,34 @@ class MapClientsViewModel(
             m2Client_In_ShowEditMarkerMode = m2Client_In_ShowEditMarkerMode,
         )
     }
+    fun update_active_Compt(compt: Z_AppCompt) {
+        active_Datas.active_M9Compt = compt
+        repositorysMainSetter_NewProtoPatterns.update_M9AppCompt(compt)
+    }
+
+    fun update_filter_marqueClient(mode: VisibleClientsNow) {
+        val compt = active_Datas.active_M9Compt ?: return
+        update_active_Compt(compt.copy(filter_marqueClient_Name = mode.name))
+    }
 
     init {
         initializeDataObservers()
+        collectActiveM9Compt()
     }
 
+    private fun collectActiveM9Compt() {
+        viewModelScope.launch(Dispatchers.IO) {
+            FlowsFunctions_ActiveDatasFragNewProto
+                .getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
+                    dao_M9AppCompt = appDatabase.dao_M9AppCompt(),
+                    activeDatasFragNewProto = active_Datas,
+                ).collect { compt ->
+                    compt?.filter_marqueClient_Name
+                        ?.let { name -> VisibleClientsNow.entries.find { it.name == name } }
+                        ?.let { active_Datas.filter_marqueClient_enum_entrie = it }
+                }
+        }
+    }
     fun set_M2Client_UiState_In_MarkerStatusDialog(data: M2Client?) {
         _uiState.value = _uiState.value.copy(
             markerStatusDialogActiveM2Client = data

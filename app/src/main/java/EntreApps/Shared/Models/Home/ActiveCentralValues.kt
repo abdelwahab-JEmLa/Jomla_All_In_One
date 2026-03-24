@@ -65,8 +65,6 @@ data class ActiveCentralValues(
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
 
-    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = null,
-
     val isInTemporaryShowAllMode: Boolean = false,
 
     //-----------------M9-----------------------------------------------------------------------------------------------------------------------------------------
@@ -111,8 +109,6 @@ data class ActiveCentralValues(
     var filterState_Facad_Boutique: FilterState_Facad_Boutique? = null,
     var filterState_Facad_Boutique_FragId5: FilterState_Facad_Boutique_FragId5? = null,
 
-    //-----------------Fragmet.Gps Clients-------------------------------------------------------------------------------------------------------------------------
-    var active_drop_down_filter_client: String = "Last Trx == Command Confirme ",
 
     //-----------------Fragmet.Paye-------------------------------------------------------------------------------------------------------------------------
     var active_Ousstad_Tahfid: Ousstad_Tahfid? = run {
