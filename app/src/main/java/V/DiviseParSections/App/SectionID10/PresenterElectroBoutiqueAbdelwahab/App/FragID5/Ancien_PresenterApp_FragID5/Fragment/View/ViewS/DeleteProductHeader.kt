@@ -32,25 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-
-/**
- * Header component with delete button that requires double-click with 4-second countdown
- *
- * Features:
- * - First click: Starts 4-second countdown
- * - Second click: Confirms deletion
- * - Right-side click during countdown: Cancels operation
- * - Auto-resets if countdown expires
- *
- * Usage:
- * DeleteProductHeader(
- *     productName = product.nom,
- *     onDelete = {
- *         // Your delete logic here
- *         repositorysMainGetter.repoM1Produit.deleteData(product)
- *     }
- * )
- */
 @Composable
 fun DeleteProductHeader(
     productName: String,

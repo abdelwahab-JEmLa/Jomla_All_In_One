@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
@@ -245,7 +245,7 @@ fun A_Item_Produit_App4(
                     },
                     onUpdateProduit = { viewModel.update_m1Produit(it) },
                     affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin
-                            || centralValues.activeCompt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
+                            && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
                     onDelete = { viewModel.delete_m1Produit(it) },
                     modifier = modifier,
                     catalogueName = currentCatalogue?.nom,

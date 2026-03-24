@@ -43,7 +43,7 @@ fun Compact_Header_FragID3(
     modifier: Modifier = Modifier,
     relative_M1produit: M01Produit,
     isExpanded: Boolean,
-    shouldShowButtons: Boolean = true,
+    shouldShowButtons: Boolean =true,
     onUpdateTariff: () -> Unit,
     onUpdateProduit: (M01Produit) -> Unit = {},
     currentApp_Est_Admin: Boolean,
