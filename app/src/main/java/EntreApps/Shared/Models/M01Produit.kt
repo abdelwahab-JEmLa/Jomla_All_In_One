@@ -1,6 +1,5 @@
 package EntreApps.Shared.Models
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Prioriter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -501,4 +500,11 @@ fun DocumentSnapshot.toArticle(): M01Produit? {
     } catch (e: Exception) {
         null   // Return null so mapNotNull() silently skips malformed documents
     }
+}
+
+enum class Prioriter {
+    Dernier_VentAchat_Est_Trop_Luin,
+    Dernier_VentAchat_Est_Moin_Mois,
+    Dernier_VentAchat_Est_Moin_Semain,
+    PlusDe80P_Ne_Le_Voit_Pas,
 }

@@ -4,7 +4,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPa
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
-import Application4.App.Fragment.View.ViewS.A_Compact_Header_App4
+import Application4.App.Fragment.View.ViewS.A_Header.View.A_Compact_Header_App4
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos

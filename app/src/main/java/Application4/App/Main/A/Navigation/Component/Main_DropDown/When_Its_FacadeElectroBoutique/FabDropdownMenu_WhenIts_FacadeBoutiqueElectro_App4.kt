@@ -1,7 +1,7 @@
 package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Prioriter
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+import EntreApps.Shared.Models.Prioriter
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

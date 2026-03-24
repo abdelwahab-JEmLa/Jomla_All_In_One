@@ -1,5 +1,6 @@
 package Application4.App.Main.A.Navigation.Component
 
+import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.Panie.FabDropdownMenu_WhenIts_Frag_Panie
 import android.util.Log
@@ -51,6 +52,7 @@ fun NavigationBarWithFab_NewProto(
         currentRoute == Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route
 
     var showFabDropdown_Panier by remember { mutableStateOf(false) }
+    var showFabDropdown_Compact_Presentoire_App_Produits_FragID4 by remember { mutableStateOf(false) }
 
     var affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon by remember { mutableStateOf(false) }
     var snoozeActive by remember { mutableStateOf(false) }
@@ -116,9 +118,6 @@ fun NavigationBarWithFab_NewProto(
         }
 
         when {
-            // FIX TODO(1): Presenter mode — FAB is purely decorative (logo/warning display).
-            // isFabVisible=false hides the eye-icon overlay so the button looks clean.
-            // Both lambdas are no-ops so clicking does absolutely nothing.
             its_Compact_Presentoire -> FabButton_newProto(
                 showWarningState = showWarningState,
                 isFabVisible = false,        // never show the visibility-eye overlay in presenter mode
@@ -146,6 +145,14 @@ fun NavigationBarWithFab_NewProto(
                 its_Targeted_Frag = its_A_Clients_LocationGps,
                 onToggleFabVisibility = onToggleFabVisibility,
                 onShowDropdown = { showFabDropdown_Gps = true }
+            )
+        }
+
+        if (showFabDropdown_Compact_Presentoire_App_Produits_FragID4 && its_Compact_Presentoire) {
+            FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
+                onDismissDropdown = {
+                    showFabDropdown_Panier = false
+                },
             )
         }
 

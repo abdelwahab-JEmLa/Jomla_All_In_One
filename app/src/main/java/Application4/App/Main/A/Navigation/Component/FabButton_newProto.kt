@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -101,13 +99,13 @@ fun FabButton_newProto(
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = null,
                     contentScale = ContentScale.Crop
-                )
+                )     /*
                 Icon(
                     imageVector = if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                     contentDescription = "Toggle FAB",
                     modifier = Modifier.align(Alignment.Center),
                     tint = Color.White
-                )
+                )      */
             }
         }
     }
