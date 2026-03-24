@@ -11,7 +11,6 @@ import kotlinx.coroutines.tasks.await
 suspend fun uploadFilteredDataTo_Firebase(
     filteredCatalogues: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
 ) {
-
     val filteredProducts = mutableListOf<M01Produit>()
     val filteredColors = mutableListOf<M3CouleurProduitInfos>()
     val filteredCategories = mutableListOf<M16CategorieProduit>()
@@ -34,18 +33,13 @@ suspend fun uploadFilteredDataTo_Firebase(
         keyOf: (T) -> String,
         mapOf: (T) -> Map<String, Any?>,
     ) {
-        // Delete all existing data under this ref
         ref.removeValue().await()
 
-        // Upload filtered items one by one under their key
         items.forEach { item ->
             ref.child(keyOf(item)).setValue(mapOf(item)).await()
         }
     }
 
-    // ── Step 4: Sync each collection using Realtime DB refs ───────────────────
-
-    // Products → ref_Active_Filtred_Datas is DatabaseReference in M01Produit
     syncCollection(
         ref = M01Produit.ref_Active_Filtred_Datas,
         items = filteredProducts,
@@ -53,7 +47,6 @@ suspend fun uploadFilteredDataTo_Firebase(
         mapOf = { product -> product.toFirebaseMap() }
     )
 
-    // Colors → only those whose parent product is in the filtered set
     syncCollection(
         ref = M3CouleurProduitInfos.ref_Active_Filtred_Datas,
         items = filteredColors,
