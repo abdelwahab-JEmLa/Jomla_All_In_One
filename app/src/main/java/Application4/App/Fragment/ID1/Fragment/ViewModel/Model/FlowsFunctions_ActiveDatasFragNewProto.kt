@@ -5,6 +5,7 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M18CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Prioriter
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
@@ -18,27 +19,26 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-object ActiveDatasFragNewProtoFlows {
+object FlowsFunctions_ActiveDatasFragNewProto {
     fun get_list_M1Produit(
         dao_M1Produit: Dao_M1Produit,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): Flow<List<M01Produit>> =
         dao_M1Produit.getAllFlow().onEach { activeDatasFragNewProto.list_M1Produit = it }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
         dao_M16CategorieProduit: Dao_M16CategorieProduit,
         activeCatalogue: M21CataloguesCategorie,
         allColours: List<M3CouleurProduitInfos>,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
+        activeFilter: Set<Prioriter>?,
     ): Flow<List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>> {
-        val activeFilter = activeDatasFragNewProto.affiche_produits_Ou_On_TagPrioriter
 
         return dao_M16CategorieProduit.getAllFlow().map { allCategories ->
             val allProducts = activeDatasFragNewProto.list_M1Produit
 
-            // Only the single active catalogue — yields a flat List<Pair<M21, ...>>.
-            val categoriesForCatalogue = allCategories.filter { it.catalogueParentId == activeCatalogue.id }
+            val categoriesForCatalogue =
+                allCategories.filter { it.catalogueParentId == activeCatalogue.id }
 
             val categoryProductColourTree = categoriesForCatalogue.mapNotNull { category ->
                 val productsForCategory = allProducts
@@ -67,7 +67,8 @@ object ActiveDatasFragNewProtoFlows {
         dao_M9AppCompt.getFlow_ByKeyID(
             M18CentralParametresOfAllApps.Companion.get_Default().au_Lence_Set_Compt_Ac_KeyId
         ).flatMapLatest { activeCompt ->
-            val onVentKey = activeCompt?.onVentM8BonVentKey?.takeIf { it.isNotBlank() && it != "null" }
+            val onVentKey =
+                activeCompt?.onVentM8BonVentKey?.takeIf { it.isNotBlank() && it != "null" }
             if (onVentKey == null) flowOf(null to emptyList())
             else dao_M10OperationVentCouleur
                 .getFlow_ListM10OperationVentCouleur_Of_Active_M8Bon_Key(onVentKey)

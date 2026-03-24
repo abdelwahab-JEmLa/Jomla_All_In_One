@@ -1,5 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment
 
+import Application4.App.Fragment.ID1.Fragment.Components.Views.CategoryStickyHeader
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
@@ -119,7 +120,8 @@ fun Etager_LazyColumn(
         }
     }
 
-    LazyVerticalStaggeredGrid(
+    LazyVerticalStaggeredGrid(       //<--
+    //TODO(1): et ici normalemet les produits affichable change on flow 
         columns = StaggeredGridCells.Fixed(2),
         state = gridState,
         contentPadding = PaddingValues(8.dp),
@@ -165,7 +167,9 @@ fun Etager_LazyColumn(
                         CategoryStickyHeader(
                             category = category,
                             onToggleHeaderVisibility = { updatedCategory ->
-                                uiState_NewProtoPatterns_viewModel.second.repositorysMainSetter_NewProtoPatterns.update_M16CategorieProduit(updatedCategory)
+                                uiState_NewProtoPatterns_viewModel.second.repositorysMainSetter_NewProtoPatterns.update_M16CategorieProduit(
+                                    updatedCategory
+                                )
                             },
                             viewModel = uiState_NewProtoPatterns_viewModel.second,
                             uiStateNewProtoPatterns = uiState_NewProtoPatterns_viewModel.first

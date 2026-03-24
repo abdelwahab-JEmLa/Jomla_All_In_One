@@ -1,25 +1,29 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel.Init
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.ActiveDatasFragNewProtoFlows
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.FlowsFunctions_ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.List_Datas
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
 import android.util.Log
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
 private const val TAG_VM_INIT = "ViewModel_NewProto"
 
-// FIX TODO(1): extracted from ViewModel_NewProtoPatterns.init so each coroutine
-// launch lives here and the ViewModel constructor stays readable.
+//->
+//TODO(FIXME):Fix erreur enleve les commantaire et logs pour but de consise le max possible  tallie du code sans change le foctionemen
 fun ViewModel_NewProtoPatterns.subInit() {
     subInit_collectCentralValues()
     subInit_loadAllDatasOnce()
     subInit_collectActiveM9Compt()
     subInit_collectListM16FilteredByCatalogue()
     subInit_collectListM1Produit()
-    subInit_collectFilteredProductTree()
+    subInit_collectFilteredProductTree()   // FIX: now reactive to filter changes
     subInit_collectM10OperationVentCouleur()
 }
 
@@ -85,7 +89,7 @@ private fun ViewModel_NewProtoPatterns.subInit_collectActiveM9Compt() {
 
 private fun ViewModel_NewProtoPatterns.subInit_collectListM16FilteredByCatalogue() {
     viewModelScope.launch(Dispatchers.IO) {
-        ActiveDatasFragNewProtoFlows.getFlow_listM16_FilteredBy_active_M21Catalogue(
+        FlowsFunctions_ActiveDatasFragNewProto.getFlow_listM16_FilteredBy_active_M21Catalogue(
             dao_M16CategorieProduit = appDatabase.dao_16CategorieProduit(),
             active_M21Catalogue = active_Datas.active_M21Catalogue
         ).collect { filteredCategories ->
@@ -96,49 +100,53 @@ private fun ViewModel_NewProtoPatterns.subInit_collectListM16FilteredByCatalogue
 
 private fun ViewModel_NewProtoPatterns.subInit_collectListM1Produit() {
     viewModelScope.launch(Dispatchers.IO) {
-        ActiveDatasFragNewProtoFlows.get_list_M1Produit(
+        FlowsFunctions_ActiveDatasFragNewProto.get_list_M1Produit(
             dao_M1Produit = appDatabase.dao_M1Produit(),
             activeDatasFragNewProto = active_Datas,
         ).collect()
     }
 }
-
+@OptIn(ExperimentalCoroutinesApi::class)
 private fun ViewModel_NewProtoPatterns.subInit_collectFilteredProductTree() {
-    viewModelScope.launch(Dispatchers.IO) {
-        _uiStateNewProtoPatterns.collect { state ->
-            val allColours = state.list_Datas?.m3CouleurProduit ?: return@collect
-            ActiveDatasFragNewProtoFlows.getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
-                dao_M16CategorieProduit = appDatabase.dao_16CategorieProduit(),
-                activeCatalogue = active_Datas.active_M21Catalogue,
-                allColours = allColours,
-                activeDatasFragNewProto = active_Datas,
-            ).collect { tree ->
+    viewModelScope.launch(Dispatchers.Main) {
+        snapshotFlow { active_Datas.affiche_produits_Ou_On_TagPrioriter }
+            .flatMapLatest { currentFilter ->
+                kotlinx.coroutines.flow.channelFlow {
+                    _uiStateNewProtoPatterns.collectLatest { state ->
+                        val allColours = state.list_Datas?.m3CouleurProduit ?: return@collectLatest
+                        FlowsFunctions_ActiveDatasFragNewProto
+                            .getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
+                                dao_M16CategorieProduit = appDatabase.dao_16CategorieProduit(),
+                                activeCatalogue = active_Datas.active_M21Catalogue,
+                                allColours = allColours,
+                                activeDatasFragNewProto = active_Datas,
+                                activeFilter = currentFilter,
+                            ).collect { tree -> send(tree) }
+                    }
+                }
+            }
+            .collect { tree ->
                 active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur =
                     tree
             }
-        }
     }
 }
 
 private fun ViewModel_NewProtoPatterns.subInit_collectM10OperationVentCouleur() {
     viewModelScope.launch(Dispatchers.IO) {
-        ActiveDatasFragNewProtoFlows.getFlow_listM10OperationVentCouleur_By_active_Central_Values(
+        FlowsFunctions_ActiveDatasFragNewProto.getFlow_listM10OperationVentCouleur_By_active_Central_Values(
             dao_M10OperationVentCouleur = appDatabase.dao_M10OperationVentCouleur(),
             dao_M9AppCompt = appDatabase.dao_M9AppCompt()
         ).collect { (emittedKey, filtered) ->
-            Log.d(TAG_VM_INIT, "M10OperationVentCouleur flow emitted: key=$emittedKey, count=${filtered.size}")
             when {
                 filtered.isNotEmpty() -> {
-                    Log.d(TAG_VM_INIT, "  → storing ${filtered.size} operations for bonVentKey=$emittedKey")
                     active_Datas.lastKnownBonVentKey = emittedKey
                     active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
                         filtered
                 }
                 emittedKey == null -> {
-                    Log.d(TAG_VM_INIT, "  → emittedKey=null, no active bon de vente yet — skipping")
                 }
                 emittedKey != active_Datas.lastKnownBonVentKey -> {
-                    Log.d(TAG_VM_INIT, "  → new bonVentKey detected ($emittedKey), resetting operations list")
                     active_Datas.lastKnownBonVentKey = emittedKey
                     active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
                         emptyList()

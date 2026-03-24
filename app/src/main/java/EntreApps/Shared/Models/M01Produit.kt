@@ -36,7 +36,7 @@ data class M01Produit(
     val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
     // default tag: Dernier_VentAchat_Est_Trop_Luin
-    var tag_prioriter_str: String = Prioriter.Dernier_VentAchat_Est_Trop_Luin.name,
+    var tag_prioriter_str: String = Prioriter.Dernier_VentAchat_Est_Trop_Luin.name +",",
 
     //----------------------------------------------------------------------------------------------------------------------------------------
 

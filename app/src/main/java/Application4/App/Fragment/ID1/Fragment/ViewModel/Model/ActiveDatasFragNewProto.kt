@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onEach
 @Stable
 class ActiveDatasFragNewProto {
     var active_M9Compt: Z_AppCompt? by mutableStateOf(null)
+    var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(Prioriter.entries.toSet())
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur:
             List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>
@@ -27,11 +28,10 @@ class ActiveDatasFragNewProto {
     var active_M21Catalogue: M21CataloguesCategorie by mutableStateOf(
         get_ListM21CataloguesCategorie().find { it.keyID == "t1" } ?: M21CataloguesCategorie()
     )
-    var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(Prioriter.entries.toSet())
     var listM16_FilteredBy_active_M21Catalogue: List<M16CategorieProduit>? by mutableStateOf(null)
     var lastKnownBonVentKey: String? = null
 
     fun get_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt: Dao_M9AppCompt): Flow<Z_AppCompt?> =
-        ActiveDatasFragNewProtoFlows.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt)
+        FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt)
             .onEach { compt -> active_M9Compt = compt }
 }
