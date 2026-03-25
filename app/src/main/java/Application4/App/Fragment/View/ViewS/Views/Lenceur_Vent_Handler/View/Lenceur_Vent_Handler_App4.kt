@@ -102,8 +102,11 @@ fun Lenceur_Vent_Handler_App4(
     }
 
     fun handleDepotUpdate(newDepotCount: Int) {
+        val liveCouleur = viewModel.active_Datas.list_M03CouleurProduitInfos
+            ?.find { it.keyID == selectedCouleur.keyID }
+            ?: selectedCouleur
         viewModel.update_depot_count(
-            couleur = selectedCouleur,
+            couleur = liveCouleur,
             newDepotCount = newDepotCount,
             onSuccess = {
                 Toast.makeText(context, "✓ Dépôt mis à jour: $newDepotCount unité(s)", Toast.LENGTH_SHORT).show()
