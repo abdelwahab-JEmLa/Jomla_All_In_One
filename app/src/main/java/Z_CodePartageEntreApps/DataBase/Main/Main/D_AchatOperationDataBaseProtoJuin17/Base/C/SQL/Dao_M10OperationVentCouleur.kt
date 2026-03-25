@@ -30,8 +30,6 @@ interface Dao_M10OperationVentCouleur {
     @Query("SELECT * FROM M10OperationVentCouleur")
     suspend fun getAll(): MutableList<M10OperationVentCouleur>
 
-    // FIX TODO(1): added the bonVentKey parameter and filtered the query by parent_M8BonVent_KeyId.
-    // Removed `suspend` — Room emits Flow directly, suspending here would prevent collection.
     @Query("SELECT * FROM M10OperationVentCouleur WHERE parent_M8BonVent_KeyId = :bonVentKey")
     fun getFlow_ListM10OperationVentCouleur_Of_Active_M8Bon_Key(
         bonVentKey: String

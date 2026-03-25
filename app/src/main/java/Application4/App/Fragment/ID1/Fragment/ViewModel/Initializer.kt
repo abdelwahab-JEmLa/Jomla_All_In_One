@@ -88,7 +88,7 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
             FlowsFunctions_ActiveDatasFragNewProto.get_list_M1Produit(
                 dao_M1Produit = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit(),
                 activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
-            ).collect()
+            )
         }
     }
 

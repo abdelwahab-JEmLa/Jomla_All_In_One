@@ -26,11 +26,12 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         activeDatasFragNewProto.filter_marqueClient_enum_entrie
             ?: MapClientsViewModel.VisibleClientsNow.showAll
 
-    fun get_list_M1Produit(
+    suspend fun get_list_M1Produit(
         dao_M1Produit: Dao_M1Produit,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
-    ): Flow<List<M01Produit>> =
-        dao_M1Produit.getAllFlow().onEach { activeDatasFragNewProto.list_M1Produit = it }
+    ) {
+        activeDatasFragNewProto.list_M1Produit = dao_M1Produit.getAll()
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
@@ -71,7 +72,7 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         dao_M9AppCompt: Dao_M9AppCompt,
     ): Flow<Pair<String?, List<M10OperationVentCouleur>>> =
         dao_M9AppCompt.getFlow_ByKeyID(
-            M18CentralParametresOfAllApps.Companion.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
         ).flatMapLatest { activeCompt ->
             val onVentKey =
                 activeCompt?.onVentM8BonVentKey?.takeIf { it.isNotBlank() && it != "null" }
@@ -82,7 +83,7 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         }
 
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt: Dao_M9AppCompt): Flow<Z_AppCompt?> =
-        dao_M9AppCompt.getFlow_ByKeyID(M18CentralParametresOfAllApps.Companion.get_Default().au_Lence_Set_Compt_Ac_KeyId)
+        dao_M9AppCompt.getFlow_ByKeyID(M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId)
 
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
         dao_M9AppCompt: Dao_M9AppCompt,
@@ -97,4 +98,11 @@ object FlowsFunctions_ActiveDatasFragNewProto {
     ): Flow<List<M16CategorieProduit>> =
         dao_M16CategorieProduit.getAllFlow()
             .map { list -> list.filter { it.catalogueParentId == active_M21Catalogue.id } }
+
+    fun getFlow_list_M1Produit(
+        dao_M1Produit: Dao_M1Produit,
+        activeDatasFragNewProto: ActiveDatasFragNewProto,
+    ): Flow<List<M01Produit>> =
+        dao_M1Produit.getAllFlow().onEach { activeDatasFragNewProto.list_M1Produit = it }
+
 }

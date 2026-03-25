@@ -41,7 +41,7 @@ import kotlinx.coroutines.flow.update
 class A_ViewModel_NewProtoPatterns(
     private val context: Context,
     val appDatabase: AppDatabase,
-    private val fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
         appDatabase = appDatabase,
         context = context
@@ -178,11 +178,6 @@ class A_ViewModel_NewProtoPatterns(
         )
         return true
     }
-    //<--
-    //TODO(1): extract depuit ici 
-    //<--
-    //TODO(1): ajout update_Active_Compt //<--
-    //TODO(1): ca update activeDatas et utilis       repositorysMainSetter_NewProtoPatterns.  update_M9()
     fun updateTariffForProductOperations(produitKeyID: String, newTariff: M13TarificationInfos) =
         repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(produitKeyID, newTariff)
 
@@ -270,8 +265,6 @@ class A_ViewModel_NewProtoPatterns(
 
     fun update_activeCentralValues(new: ActiveCentralValues) =
         focusedValues_NewProtoPatterns.update_activeCentralValues(new)
-       //<--
-       //TODO(2.C Relative Au Todo(1): 
-               //... a ici a Update_Functions_Vm
+
     override fun onCleared() = super.onCleared()
 }
