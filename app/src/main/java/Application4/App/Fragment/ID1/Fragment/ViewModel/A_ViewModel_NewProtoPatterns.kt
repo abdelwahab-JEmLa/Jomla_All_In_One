@@ -134,16 +134,19 @@ class A_ViewModel_NewProtoPatterns(
         wifi.sendOrderToClientDisplayerT(order, data)
 
     private fun collectActiveM9Compt() {
+        // Si_Empty: fetch Firebase si Room vide — one-shot, coroutine separee
         viewModelScope.launch(Dispatchers.IO) {
             FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_Si_Empty(
                 dao_M9AppCompt = appDatabase.dao_M9AppCompt(),
                 activeDatasFragNewProto = active_Datas,
             ).collect {}
-
+        }
+        // By_KeyId: flow Room continu — coroutine separee pour ne pas bloquer Si_Empty
+        viewModelScope.launch(Dispatchers.IO) {
             FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
                 dao_M9AppCompt = appDatabase.dao_M9AppCompt(),
                 activeDatasFragNewProto = active_Datas,
-            ).collect { }
+            ).collect {}
         }
     }
 
@@ -161,7 +164,7 @@ class A_ViewModel_NewProtoPatterns(
                 android.util.Log.d("DeleteInsertDebug", "-> nextStart collected = $nextStart | from = ${nextStart.from} | active_M9Compt = ${active_Datas.active_M9Compt?.keyID}")
                 when (nextStart) {
                     Do.StandartInit -> {
-                        android.util.Log.d("DeleteInsertDebug", "  -> branch StandartInit | from = ${nextStart.from}")
+                        android.util.Log.d("DeleteInsertDebug", "  -> branch StandartInit, lancement Initializer_App4 + Initializer")
                         Initializer_App4.initializeAllRepositories(
                             context = context,
                             appDatabase = appDatabase,
@@ -171,36 +174,20 @@ class A_ViewModel_NewProtoPatterns(
                             },
                             callerScope = viewModelScope,
                         )
-                        android.util.Log.d("DeleteInsertDebug", "  -> initializeAllRepositories done, entering from sub-switch | from = ${nextStart.from}")
-                        when (nextStart.from) {
-                            Do.From.Ref_All_Datas, null -> {
-                                android.util.Log.d("DeleteInsertDebug", "  -> sub-branch Ref_All_Datas/null -> calling deleteAllInsert_AllDatas()")
-                                deleteAllInsert_AllDatas()
-                                val updatedCompt = active_Datas.active_M9Compt
-                                if (updatedCompt != null) {
-                                    update_active_Compt(updatedCompt.copy(next_start = Do.StandartInit))
-                                }
-                                Initializer(this@A_ViewModel_NewProtoPatterns).run()
-                            }
-                            Do.From.Active_Key -> {
-                                android.util.Log.d("DeleteInsertDebug", "  -> sub-branch Active_Key -> calling deleteAllInsertKeyFilter()")
-                                deleteAllInsertKeyFilter()
-                                val updatedCompt = active_Datas.active_M9Compt
-                                if (updatedCompt != null) {
-                                    update_active_Compt(updatedCompt.copy(next_start = Do.StandartInit))
-                                }
-                                Initializer(this@A_ViewModel_NewProtoPatterns).run()
-                            }
-                        }
-                        android.util.Log.d("DeleteInsertDebug", "  -> cancelling collector job")
+                        Initializer(this@A_ViewModel_NewProtoPatterns).run()
                         this.coroutineContext[kotlinx.coroutines.Job]?.cancel()
                     }
-
-                    else -> {}
+                    Do.DeleteInsertAll -> {
+                        android.util.Log.d("DeleteInsertDebug", "  -> branch DeleteInsertAll -> calling deleteAllInsert_AllDatas()")
+                        when (nextStart.from) {
+                            Do.From.Active_Key -> deleteAllInsertKeyFilter()
+                            Do.From.Ref_All_Datas, null -> deleteAllInsert_AllDatas()
+                        }
+                        this.coroutineContext[kotlinx.coroutines.Job]?.cancel()
+                    }
                 }
             }
         }
-
     }
     fun deleteAllInsert_AllDatas() {
         android.util.Log.d("DeleteInsertDebug", "deleteAllInsert_AllDatas() called")
@@ -275,12 +262,12 @@ class A_ViewModel_NewProtoPatterns(
                 dao_M9.insertAll(m9List)
                 android.util.Log.d("DeleteInsertDebug", "  M9: inserted ${m9List.size} rows")
                 progress(1f)
-                android.util.Log.d("DeleteInsertDebug", "deleteAllInsert_AllDatas() completed successfully, relaunching Initializer")
+                android.util.Log.d("DeleteInsertDebug", "deleteAllInsert_AllDatas() completed successfully")
                 val updatedCompt = active_Datas.active_M9Compt
                 if (updatedCompt != null) {
                     update_active_Compt(updatedCompt.copy(next_start = Do.StandartInit))
+                    android.util.Log.d("DeleteInsertDebug", "  -> next_start reset to StandartInit, Initializer will auto-launch")
                 }
-                Initializer(this@A_ViewModel_NewProtoPatterns).run()
             } catch (e: Exception) {
                 android.util.Log.e("DeleteInsertDebug", "deleteAllInsert_AllDatas() ❌ EXCEPTION: ${e::class.simpleName}: ${e.message}", e)
                 progress(1f)
