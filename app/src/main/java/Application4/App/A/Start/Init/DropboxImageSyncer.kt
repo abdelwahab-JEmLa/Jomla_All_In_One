@@ -16,14 +16,10 @@ import java.io.FileOutputStream
 
 private const val TAG = "DropboxImageSyncer"
 
-class DropboxImageSyncer(
-    private val dao_M03CouleurProduitInfos: Dao_M03CouleurProduitInfos,
-    private val onUpdate_M3: (M3CouleurProduitInfos) -> Unit,
-    private val onProgress: (Float) -> Unit,
-) {
-    private val localImagesBaseDir = File(M00CentralParametresOfAllApps.images_central_Local_storageLink)
-    private val dropboxRootFolder = "/images"
+object DropboxImageSyncer {
 
+    // Lazy client — created once on first use, reused forever.
+    // No coroutine scope held here; the ViewModel's scope drives every call.
     private val client: DbxClientV2 by lazy {
         val config = DbxRequestConfig.newBuilder("jeMla-app/1.0").build()
         val credential = DbxCredential(
@@ -36,7 +32,14 @@ class DropboxImageSyncer(
         DbxClientV2(config, credential)
     }
 
-    suspend fun syncAll(set_dropBox_key: Boolean) {
+    private val dropboxRootFolder = "/images"
+
+    suspend fun syncAll(
+        dao_M03CouleurProduitInfos: Dao_M03CouleurProduitInfos,
+        onUpdate_M3: (M3CouleurProduitInfos) -> Unit,
+        onProgress: (Float) -> Unit,
+        set_dropBox_key: Boolean,
+    ) {
         onProgress(0.1f)
         val index = buildIndex()
 
@@ -48,12 +51,17 @@ class DropboxImageSyncer(
         Log.d(TAG, "Index construit: ${index.size} fichiers")
 
         val colors = dao_M03CouleurProduitInfos.getAll()
+        val toSync  = colors.count { it.dropBox_key == "Non Dispo" && it.nomImageFichieSansEtansion != "Non Dispo" }
+        val skipped = colors.count { it.dropBox_key != "Non Dispo" }
+        Log.d(TAG, "syncAll — set_dropBox_key=$set_dropBox_key | total=${colors.size} | à sync=$toSync | déjà indexées (skip)=$skipped")
+
         val total = colors.size.coerceAtLeast(1)
         colors.forEachIndexed { i, color ->
-            syncImage(color, index, set_dropBox_key)
+            syncImage(color, index, set_dropBox_key, onUpdate_M3)
             onProgress(0.2f + 0.8f * ((i + 1).toFloat() / total))
         }
         onProgress(1f)
+        Log.d(TAG, "syncAll terminé")
     }
 
     private suspend fun buildIndex(): Map<String, String> = withContext(Dispatchers.IO) {
@@ -86,25 +94,32 @@ class DropboxImageSyncer(
         color: M3CouleurProduitInfos,
         index: Map<String, String>,
         set_dropBox_key: Boolean,
+        onUpdate_M3: (M3CouleurProduitInfos) -> Unit,
     ) {
+        val localImagesBaseDir = File(M00CentralParametresOfAllApps.images_central_Local_storageLink)
         val filename = color.nomImageFichieSansEtansion
+        val id = color.keyID.takeLast(4).uppercase()
 
-        // Skip si image non dispo
-        if (filename == "Non Dispo" || filename.isBlank()) return
-
-        // Skip la recherche Dropbox si trigger désactivé OU si dropBox_key déjà assignée
-        if (!set_dropBox_key || color.dropBox_key != "Non Dispo") return
+        if (filename == "Non Dispo" || filename.isBlank()) {
+            Log.v(TAG, "[$id] skip — image Non Dispo"); return
+        }
+        if (!set_dropBox_key || color.dropBox_key != "Non Dispo") {
+            Log.v(TAG, "[$id] skip sync — set_dropBox_key=$set_dropBox_key | dropBox_key='${color.dropBox_key.take(20)}'"); return
+        }
 
         val localFile = File(localImagesBaseDir, "$filename.${color.extensionDisponible}")
-        if (localFile.exists()) return
+        if (localFile.exists()) {
+            Log.v(TAG, "[$id] fichier local déjà présent: $filename"); return
+        }
 
         val dropboxPath = index[filename]
         if (dropboxPath == null) {
-            Log.w(TAG, "Introuvable: '$filename' (parent=${color.parentBProduitInfosKeyID.takeLast(4)})")
-            Log.w(TAG, "  → Clés similaires: ${index.keys.filter { it.startsWith(filename.take(4)) }.take(3)}")
+            Log.w(TAG, "[$id] Introuvable dans index: '$filename' (parent=${color.parentBProduitInfosKeyID.takeLast(4)})")
+            Log.w(TAG, "[$id]   → Clés similaires: ${index.keys.filter { it.startsWith(filename.take(4)) }.take(3)}")
             return
         }
 
+        Log.d(TAG, "[$id] téléchargement '$filename' ← $dropboxPath")
         try {
             withContext(Dispatchers.IO) {
                 localFile.parentFile?.mkdirs()
@@ -113,10 +128,10 @@ class DropboxImageSyncer(
                 }
             }
             onUpdate_M3(color.copy(dropBox_key = dropboxPath))
-            Log.d(TAG, "OK '$filename' ← $dropboxPath (${localFile.length()} bytes) | dropBox_key mis à jour")
+            Log.d(TAG, "[$id] OK '$filename' (${localFile.length()} bytes) | dropBox_key → $dropboxPath")
         } catch (e: Exception) {
             localFile.delete()
-            Log.e(TAG, "Téléchargement échoué: '$filename' [${e::class.simpleName}]: ${e.message}")
+            Log.e(TAG, "[$id] téléchargement échoué: '$filename' [${e::class.simpleName}]: ${e.message}")
         }
     }
 }

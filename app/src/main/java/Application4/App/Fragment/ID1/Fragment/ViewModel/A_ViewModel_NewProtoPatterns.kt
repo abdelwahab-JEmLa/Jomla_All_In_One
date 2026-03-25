@@ -10,10 +10,10 @@ import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Home.CentraleMainGetter_NewProtoPattern
 import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
@@ -72,7 +72,8 @@ class A_ViewModel_NewProtoPatterns(
 
     val centraleMainGetter_NewProtoPattern: CentraleMainGetter_NewProtoPattern =
         CentraleMainGetter_NewProtoPattern(
-            context, appDatabase,
+            context = context,
+            appDatabase = appDatabase,
             on_Progress_Datas = { progress ->
                 _uiStateNewProtoPatterns.update { state ->
                     state.copy(
@@ -80,7 +81,7 @@ class A_ViewModel_NewProtoPatterns(
                         active_Central_Values = state.active_Central_Values.copy(mainInitDataBaseProgressEtate = progress)
                     )
                 }
-            }
+            },
         )
 
     private fun getActiveCentralValues(): ActiveCentralValues_app2 {
@@ -169,42 +170,27 @@ class A_ViewModel_NewProtoPatterns(
         return true
     }
 
-//────────────Setter_ViewModel_NewProtoPatterns─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    //────────────Setter_ViewModel_NewProtoPatterns─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     fun update_m1Produit(new: M01Produit) = updater.update_m1Produit(new)
-
     fun delete_m1Produit(produit: M01Produit) = updater.delete_m1Produit(produit)
-
-    fun update_activeCentralValues(new: ActiveCentralValues) =
-        focusedValues_NewProtoPatterns.update_activeCentralValues(new)
-
-    fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(
-        keys: Map<String, Boolean>,
-        onSuccess: () -> Unit = {}
-    ) = updater.deleteInsertFireBase_listKeys_M3CouleurProduitInfos(keys, onSuccess)
-
+    fun update_activeCentralValues(new: ActiveCentralValues) = focusedValues_NewProtoPatterns.update_activeCentralValues(new)
+    fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(keys: Map<String, Boolean>, onSuccess: () -> Unit = {}) =
+        updater.deleteInsertFireBase_listKeys_M3CouleurProduitInfos(keys, onSuccess)
     fun updateTariffForProductOperations(produitKeyID: String, newTariff: M13TarificationInfos) =
         repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(produitKeyID, newTariff)
-
     fun setActiveFocuceTariffPrixDifineur(produit: M01Produit, appCompt: Z_AppCompt) =
         repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit, appCompt)
-
     fun update_active_Compt(compt: Z_AppCompt) = updater.update_active_Compt(compt)
-
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) =
         updater.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList)
-
     fun update_m3couleur(couleur: M3CouleurProduitInfos) = updater.update_m3couleur(couleur)
-
     fun update_depot_count(couleur: M3CouleurProduitInfos, newDepotCount: Int, onSuccess: () -> Unit = {}) =
         updater.update_depot_count(couleur, newDepotCount, onSuccess)
-
-    fun update_M13TarificationInfos(tariff: M13TarificationInfos) =
-        updater.update_M13TarificationInfos(tariff)
-
+    fun update_M13TarificationInfos(tariff: M13TarificationInfos) = updater.update_M13TarificationInfos(tariff)
     fun insert_M16CategorieProduit(new: M16CategorieProduit) = updater.insert_M16CategorieProduit(new)
-
     fun update_m16CategorieProduit(new: M16CategorieProduit) = updater.update_m16CategorieProduit(new)
 
-
-    override fun onCleared() = super.onCleared()
+    override fun onCleared() {
+        super.onCleared()
+    }
 }

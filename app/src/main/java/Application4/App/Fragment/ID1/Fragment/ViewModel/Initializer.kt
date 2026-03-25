@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
@@ -70,7 +69,7 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
             FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
                 dao_M9AppCompt = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt(),
                 activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
-            ).collect()
+            ).collect {  }
         }
     }
 
@@ -79,7 +78,9 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
             FlowsFunctions_ActiveDatasFragNewProto.getFlow_listM16_FilteredBy_active_M21Catalogue(
                 dao_M16CategorieProduit = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit(),
                 active_M21Catalogue = AViewModel_NewProtoPatterns.active_Datas.active_M21Catalogue
-            ).collect { AViewModel_NewProtoPatterns.active_Datas.listM16_FilteredBy_active_M21Catalogue = it }
+            ).collect {
+                AViewModel_NewProtoPatterns.active_Datas.listM16_FilteredBy_active_M21Catalogue = it
+            }
         }
     }
 
@@ -89,6 +90,7 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
                 dao_M1Produit = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit(),
                 activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
             )
+
         }
     }
 
@@ -97,7 +99,9 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
     private fun collectList_M3() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
             AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
-                .collect { AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = it }
+                .collect {
+                    AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = it
+                }
         }
     }
 
@@ -107,8 +111,6 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
             snapshotFlow { AViewModel_NewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter }
                 .flatMapLatest { currentFilter ->
                     channelFlow {
-                        // Re-runs whenever the uiState changes (e.g. category updates), while
-                        // colours are read live from active_Datas inside the flow function itself.
                         AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.collectLatest {
                             FlowsFunctions_ActiveDatasFragNewProto
                                 .getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
@@ -120,8 +122,8 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
                         }
                     }
                 }
-                .collect {
-                    AViewModel_NewProtoPatterns.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur = it
+                .collect { tree ->
+                    AViewModel_NewProtoPatterns.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur = tree
                 }
         }
     }
