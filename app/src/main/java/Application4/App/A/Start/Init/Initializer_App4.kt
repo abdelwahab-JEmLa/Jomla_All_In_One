@@ -33,7 +33,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 
 @Suppress("DEPRECATION")
-object Initializer_Funcs_NewProtoPattern {
+object Initializer_App4 {
 
     suspend fun initializeAllRepositories(
         context: Context,

@@ -1,6 +1,6 @@
 package EntreApps.Shared.Models.Home
 
-import Application4.App.A.Start.Init.Initializer_Funcs_NewProtoPattern
+import Application4.App.A.Start.Init.Initializer_App4
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
@@ -34,7 +34,7 @@ class CentraleMainGetter_NewProtoPattern(
 
     init {
         initScope.launch {
-            Initializer_Funcs_NewProtoPattern.initializeAllRepositories(
+            Initializer_App4.initializeAllRepositories(
                 context                     = context,
                 appDatabase                 = appDatabase,
                 on_Progress_Datas           = on_Progress_Datas,
