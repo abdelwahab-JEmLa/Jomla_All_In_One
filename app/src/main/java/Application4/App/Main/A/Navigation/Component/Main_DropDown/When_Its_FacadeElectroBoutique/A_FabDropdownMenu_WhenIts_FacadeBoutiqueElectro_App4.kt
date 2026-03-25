@@ -28,6 +28,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                 onDismissDropdown = onDismissDropdown
             )
+            SyncDropboxImages_DropdownMenuItem(viewModelNewProtoPatterns, onDismissDropdown)
 
             PrioriterToggle_DropdownMenuItem(viewModelNewProtoPatterns)
 

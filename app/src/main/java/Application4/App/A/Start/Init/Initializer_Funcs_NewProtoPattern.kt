@@ -1,6 +1,5 @@
 package Application4.App.A.Start.Init
 
-import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
@@ -20,7 +19,6 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.Dao_M8Bon
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import android.content.Context
 import android.net.ConnectivityManager
-import android.util.Log
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
@@ -34,16 +32,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 
-private const val TAG = "InitializerNewProto"
-
 @Suppress("DEPRECATION")
 object Initializer_Funcs_NewProtoPattern {
 
-    // callerScope (viewModelScope) est passé UNIQUEMENT pour le launch Dropbox fire-and-forget
-    // qui doit survivre après la fin de l'init.
-    //
-    // Les 8 jobs de seed utilisent coroutineScope { } — un scope structuré qui se ferme
-    // automatiquement dès que tous ses enfants ont terminé. Zéro ressource tenue après l'init.
     suspend fun initializeAllRepositories(
         context: Context,
         appDatabase: AppDatabase,
@@ -56,158 +47,104 @@ object Initializer_Funcs_NewProtoPattern {
         dao_M8BonVent: Dao_M8BonVent,
         dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
         dao_M9AppCompt: Dao_M9AppCompt,
-        repositorysMainSetter: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
-            appDatabase = appDatabase,
-            context = context,
-        ),
-        set_dropBox_key: Boolean = false,
-        // Utilisé SEULEMENT pour le launch Dropbox qui doit continuer après l'init.
-        // Les jobs de seed n'utilisent PAS ce scope — ils utilisent coroutineScope { }.
         callerScope: CoroutineScope,
     ) {
         val mutex = Mutex()
         val progress = mutableMapOf<String, Float>()
+        fun emit() = on_Progress_Datas(if (progress.isEmpty()) 0f else progress.values.average().toFloat())
+        suspend fun setProgress(name: String, value: Float) = mutex.withLock { progress[name] = value; emit() }
+        suspend fun markComplete(name: String) = mutex.withLock { progress[name] = 1f; emit() }
 
-        fun emit() = on_Progress_Datas(
-            if (progress.isEmpty()) 0f else progress.values.average().toFloat()
-        )
-
-        suspend fun setProgress(name: String, value: Float) =
-            mutex.withLock { progress[name] = value; emit() }
-
-        suspend fun markComplete(name: String) =
-            mutex.withLock { progress[name] = 1f; emit() }
-
-        val repos = listOf(
-            "M1Produit", "M16CategorieProduit", "M3CouleurProduitInfos",
-            "M13TarificationInfos", "M14VentPeriode", "M8BonVent",
-            "M10OperationVentCouleur", "Z_AppCompt"
-        )
-        mutex.withLock { repos.forEach { progress[it] = 0f } }
-
-        val isOnline = isInternetAvailable(context)
-
-        suspend fun seedRepo(name: String, block: suspend () -> Unit) {
-            if (!isOnline) { markComplete(name); return }
-            try { setProgress(name, 0.2f); block(); markComplete(name) }
-            catch (e: Exception) { markComplete(name) }
+        mutex.withLock {
+            listOf("M1Produit", "M16CategorieProduit", "M3CouleurProduitInfos",
+                "M13TarificationInfos", "M14VentPeriode", "M8BonVent",
+                "M10OperationVentCouleur", "Z_AppCompt").forEach { progress[it] = 0f }
         }
 
-        // coroutineScope { } — scope structuré, suspendu jusqu'à la fin de tous les enfants,
-        // puis libéré immédiatement. Aucune ressource tenue après.
+        val isOnline = isInternetAvailable(context)
+        suspend fun seedRepo(name: String, block: suspend () -> Unit) {
+            if (!isOnline) { markComplete(name); return }
+            try { setProgress(name, 0.2f); block(); markComplete(name) } catch (_: Exception) { markComplete(name) }
+        }
+
         coroutineScope {
             launch(Dispatchers.IO) {
                 seedRepo("M1Produit") {
                     if (dao_M1Produit.getAll().isNotEmpty()) return@seedRepo
-                    val items = M01Produit.ref.get().await()
-                        .children.mapNotNull { it.getValue(M01Produit::class.java) }
-                    if (items.isNotEmpty()) dao_M1Produit.insertAll(items)
+                    M01Produit.ref.get().await().children.mapNotNull { it.getValue(M01Produit::class.java) }
+                        .takeIf { it.isNotEmpty() }?.let { dao_M1Produit.insertAll(it) }
                 }
             }
             launch(Dispatchers.IO) {
                 seedRepo("M16CategorieProduit") {
                     if (dao_16CategorieProduit.getAll().isNotEmpty()) return@seedRepo
-                    val items = fetchWithRetry(M16CategorieProduit.refFirestore)
+                    fetchWithRetry(M16CategorieProduit.refFirestore)
                         ?.documents?.mapNotNull { it.toObject(M16CategorieProduit::class.java) }
-                        ?: return@seedRepo
-                    if (items.isNotEmpty()) dao_16CategorieProduit.insertAll(items)
+                        ?.takeIf { it.isNotEmpty() }?.let { dao_16CategorieProduit.insertAll(it) }
                 }
             }
             launch(Dispatchers.IO) {
                 seedRepo("M3CouleurProduitInfos") {
                     if (dao_M03CouleurProduitInfos.getAll().isEmpty()) {
-                        val items = fetchWithRetry(M3CouleurProduitInfos.refFirestore)
+                        fetchWithRetry(M3CouleurProduitInfos.refFirestore)
                             ?.documents?.mapNotNull { it.toObject(M3CouleurProduitInfos::class.java) }
+                            ?.takeIf { it.isNotEmpty() }?.let { dao_M03CouleurProduitInfos.insertAll(it) }
                             ?: return@seedRepo
-                        if (items.isNotEmpty()) dao_M03CouleurProduitInfos.insertAll(items)
                     }
-                    val all = dao_M03CouleurProduitInfos.getAll()
-                    val needSync  = all.count { it.dropBox_key == "Non Dispo" && it.nomImageFichieSansEtansion != "Non Dispo" }
-                    val alreadyOk = all.count { it.dropBox_key != "Non Dispo" }
-                    Log.d(TAG, "seedColors — set_dropBox_key=$set_dropBox_key | isOnline=$isOnline")
-                    Log.d(TAG, "  couleurs total=${all.size} | à sync=$needSync | déjà indexées=$alreadyOk")
-                    if (isOnline) {
-                        if (set_dropBox_key) Log.d(TAG, "  → trigger ON : lancement syncAll($needSync couleurs à traiter)")
-                        else Log.d(TAG, "  → trigger OFF : sync Dropbox skippé, progress uniquement")
-                        // Fire-and-forget sur callerScope — survit à la fin de l'init,
-                        // annulé seulement quand le VM est détruit.
-                        callerScope.launch(Dispatchers.IO) {
-                            DropboxImageSyncer.syncAll(
-                                dao_M03CouleurProduitInfos = dao_M03CouleurProduitInfos,
-                                onUpdate_M3 = { updated ->
-                                    repositorysMainSetter.update_M3CouleurProduitInfos(updated)
-                                },
-                                onProgress = { p ->
-                                    callerScope.launch { setProgress("M3CouleurProduitInfos", p) }
-                                },
-                                set_dropBox_key = set_dropBox_key,
-                            )
+                    if (isOnline) callerScope.launch(Dispatchers.IO) {
+                        DropboxImageSyncer.syncAll(dao_M03CouleurProduitInfos) { p ->
+                            callerScope.launch { setProgress("M3CouleurProduitInfos", p) }
                         }
-                    } else {
-                        Log.d(TAG, "  → hors-ligne : syncAll non lancé")
                     }
                 }
             }
             launch(Dispatchers.IO) {
                 seedRepo("M13TarificationInfos") {
                     if (dao_M13TarificationInfos.getAll().isNotEmpty()) return@seedRepo
-                    val items = M13TarificationInfos.ref.get().await()
-                        .children.mapNotNull { it.getValue(M13TarificationInfos::class.java) }
-                    if (items.isNotEmpty()) dao_M13TarificationInfos.insertAll(items)
+                    M13TarificationInfos.ref.get().await().children.mapNotNull { it.getValue(M13TarificationInfos::class.java) }
+                        .takeIf { it.isNotEmpty() }?.let { dao_M13TarificationInfos.insertAll(it) }
                 }
             }
             launch(Dispatchers.IO) {
                 seedRepo("M14VentPeriode") {
                     if (dao_M14VentPeriode.getAll().isNotEmpty()) return@seedRepo
-                    val items = M14VentPeriode.ref.get().await()
-                        .children.mapNotNull { it.getValue(M14VentPeriode::class.java) }
-                    if (items.isNotEmpty()) dao_M14VentPeriode.insertAll(items)
+                    M14VentPeriode.ref.get().await().children.mapNotNull { it.getValue(M14VentPeriode::class.java) }
+                        .takeIf { it.isNotEmpty() }?.let { dao_M14VentPeriode.insertAll(it) }
                 }
             }
             launch(Dispatchers.IO) {
                 seedRepo("M8BonVent") {
                     if (dao_M8BonVent.getAll().isNotEmpty()) return@seedRepo
-                    val items = M8BonVent.ref.get().await()
-                        .children.mapNotNull { it.getValue(M8BonVent::class.java) }
-                    if (items.isNotEmpty()) dao_M8BonVent.insertAll(items)
+                    M8BonVent.ref.get().await().children.mapNotNull { it.getValue(M8BonVent::class.java) }
+                        .takeIf { it.isNotEmpty() }?.let { dao_M8BonVent.insertAll(it) }
                 }
             }
             launch(Dispatchers.IO) {
                 seedRepo("M10OperationVentCouleur") {
                     if (dao_M10OperationVentCouleur.getAll().isNotEmpty()) return@seedRepo
-                    val items = M10OperationVentCouleur.ref.get().await()
-                        .children.mapNotNull { it.getValue(M10OperationVentCouleur::class.java) }
-                    if (items.isNotEmpty()) dao_M10OperationVentCouleur.insertAll(items)
+                    M10OperationVentCouleur.ref.get().await().children.mapNotNull { it.getValue(M10OperationVentCouleur::class.java) }
+                        .takeIf { it.isNotEmpty() }?.let { dao_M10OperationVentCouleur.insertAll(it) }
                 }
             }
             launch(Dispatchers.IO) {
                 seedRepo("Z_AppCompt") {
                     if (dao_M9AppCompt.getAll().isNotEmpty()) return@seedRepo
-                    val items = Z_AppCompt.ref.get().await()
-                        .children.mapNotNull { it.getValue(Z_AppCompt::class.java) }
-                    if (items.isNotEmpty()) dao_M9AppCompt.insertAll(items)
+                    Z_AppCompt.ref.get().await().children.mapNotNull { it.getValue(Z_AppCompt::class.java) }
+                        .takeIf { it.isNotEmpty() }?.let { dao_M9AppCompt.insertAll(it) }
                 }
             }
         }
-        // Ici tous les jobs de seed sont terminés et libérés.
-        // Le launch Dropbox (callerScope) tourne indépendamment si set_dropBox_key=true.
         on_Progress_Datas(1f)
     }
 
-    private suspend fun fetchWithRetry(
-        ref: CollectionReference,
-        maxAttempts: Int = 5,
-        retryDelayMs: Long = 1500L,
-    ): QuerySnapshot? {
+    private suspend fun fetchWithRetry(ref: CollectionReference, maxAttempts: Int = 5, retryDelayMs: Long = 1500L): QuerySnapshot? {
         repeat(maxAttempts) {
-            try { return ref.get(Source.SERVER).await() }
-            catch (e: FirebaseFirestoreException) { delay(retryDelayMs) }
+            try { return ref.get(Source.SERVER).await() } catch (_: FirebaseFirestoreException) { delay(retryDelayMs) }
         }
         return null
     }
 
     private fun isInternetAvailable(context: Context) = try {
-        (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
-            .activeNetworkInfo?.isConnected == true
-    } catch (e: Exception) { false }
+        (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo?.isConnected == true
+    } catch (_: Exception) { false }
 }

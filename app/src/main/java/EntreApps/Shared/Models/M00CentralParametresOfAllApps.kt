@@ -10,6 +10,10 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 
+enum class Compts(val keyId: String){
+    AbdelwahabTravailleChezGros_KeyId("-OV9dYujH9cA3yEx8AY2"),
+    Telephone_de_presentation("-OTmoNn0cljrRuhVR2sp"),
+}
 @Entity
 data class M00CentralParametresOfAllApps(
     @PrimaryKey
@@ -23,10 +27,7 @@ data class M00CentralParametresOfAllApps(
     val listens_on_data_change_resources_consolation: Boolean = false,
     val no_loadKoin_CrachComposReglement: Boolean = false,
     val load_All_modules: Boolean = false,
-
-    //---------------------------------Compts----------------------------------------------------------------------------------------------------------------------------------
-    val abdelwahabTravailleChezGros_KeyId: String = "-OV9dYujH9cA3yEx8AY2",
-    val telephone_de_presentation: String = "-OTmoNn0cljrRuhVR2sp",
+//────────────────────────────Compts──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
@@ -37,18 +38,17 @@ data class M00CentralParametresOfAllApps(
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
+//────────────────────────────au_Lence_Set_Compt_Ac_KeyId──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    val au_Lence_Set_Compt_Ac_KeyId: String = Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
 
-    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    val au_Lence_Set_Compt_Ac_KeyId: String = telephone_de_presentation,
-
-    //---------------------------------Dimine Rapid----------------------------------------------------------------------------------------------------------------------------------
+//──────────────────────────────Dimine Rapid────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val au_Lence_Diminue_DatasFB: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_OperationVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_M8BonVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val time_tamp_all_tariffs: Boolean = false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == telephone_de_presentation) {
+    val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
     } else {
         if (itsDevMode) {
