@@ -1,16 +1,17 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application2.App.Base.Repository.ActiveCentralValues_app2
+import Application4.App.A.Start.Init.Initializer_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
 import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import EntreApps.Shared.Models.Home.CentraleMainGetter_NewProtoPattern
 import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.ifTrue
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
@@ -35,6 +36,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @SuppressLint("StaticFieldLeak")
 class A_ViewModel_NewProtoPatterns(
@@ -57,7 +59,8 @@ class A_ViewModel_NewProtoPatterns(
         appDatabase.dao_M9AppCompt()
             .getFlow_ByKeyID(M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId)
             .flatMapLatest { activeCompt ->
-                val onVentKey = activeCompt?.onVentM8BonVentKey?.takeIf { it.isNotBlank() && it != "null" }
+                val onVentKey =
+                    activeCompt?.onVentM8BonVentKey?.takeIf { it.isNotBlank() && it != "null" }
                 if (onVentKey == null) flowOf(null)
                 else appDatabase.dao_M8BonVent().getFlow_ByKeyID(onVentKey)
             }
@@ -67,22 +70,13 @@ class A_ViewModel_NewProtoPatterns(
     val focusedValues_NewProtoPatterns: FocusedValues_NewProtoPatterns =
         FocusedValues_NewProtoPatterns(
             list_Datas = _uiStateNewProtoPatterns.map { it.list_Datas }
-                .stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, initialValue = null)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.Eagerly,
+                    initialValue = null
+                )
         )
 
-    val centraleMainGetter_NewProtoPattern: CentraleMainGetter_NewProtoPattern =
-        CentraleMainGetter_NewProtoPattern(
-            context = context,
-            appDatabase = appDatabase,
-            on_Progress_Datas = { progress ->
-                _uiStateNewProtoPatterns.update { state ->
-                    state.copy(
-                        initDatasProgressEtate = progress,
-                        active_Central_Values = state.active_Central_Values.copy(mainInitDataBaseProgressEtate = progress)
-                    )
-                }
-            },
-        )
 
     private fun getActiveCentralValues(): ActiveCentralValues_app2 {
         val cv = _uiStateNewProtoPatterns.value.active_Central_Values
@@ -111,25 +105,54 @@ class A_ViewModel_NewProtoPatterns(
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
     )
 
-    val wifiState = wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController_NewProto())
+    val wifiState = wifi.state.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        ProductDisplayController_NewProto()
+    )
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsClient() { wifi.startAsClient(); wifi.updateTypePhone(isHost = false) }
+    fun startAsClient() {
+        wifi.startAsClient(); wifi.updateTypePhone(isHost = false)
+    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsHost() { wifi.startAsHost(); wifi.updateTypePhone(isHost = true) }
+    fun startAsHost() {
+        wifi.startAsHost(); wifi.updateTypePhone(isHost = true)
+    }
 
     fun disconnect() = wifi.disconnect()
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
         wifi.sendOrderToClientDisplayer(orderName, data)
 
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_NewProto, data: Any? = null) =
+    fun sendOrderToClientDisplayerT(
+        order: WifiUpdateClientDisplayerStats_NewProto,
+        data: Any? = null
+    ) =
         wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
         fragmentNavigationHandler.closeAllActiveFragments()
-        centraleMainGetter_NewProtoPattern
+        viewModelScope.launch {
+            M00CentralParametresOfAllApps.get_Default().load_Initializer_App4.ifTrue {
+                Initializer_App4.initializeAllRepositories(
+                    context = context,
+                    appDatabase = appDatabase,
+                    on_Progress_Datas = { progress ->
+                        _uiStateNewProtoPatterns.update { state ->
+                            state.copy(
+                                initDatasProgressEtate = progress,
+                                active_Central_Values = state.active_Central_Values.copy(
+                                    mainInitDataBaseProgressEtate = progress
+                                )
+                            )
+                        }
+                    },
+                    callerScope = viewModelScope,
+                )
+            }
+        }
         Initializer(this).run()
     }
 
@@ -173,22 +196,47 @@ class A_ViewModel_NewProtoPatterns(
     //────────────Setter_ViewModel_NewProtoPatterns─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     fun update_m1Produit(new: M01Produit) = updater.update_m1Produit(new)
     fun delete_m1Produit(produit: M01Produit) = updater.delete_m1Produit(produit)
-    fun update_activeCentralValues(new: ActiveCentralValues) = focusedValues_NewProtoPatterns.update_activeCentralValues(new)
-    fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(keys: Map<String, Boolean>, onSuccess: () -> Unit = {}) =
+    fun update_activeCentralValues(new: ActiveCentralValues) =
+        focusedValues_NewProtoPatterns.update_activeCentralValues(new)
+
+    fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(
+        keys: Map<String, Boolean>,
+        onSuccess: () -> Unit = {}
+    ) =
         updater.deleteInsertFireBase_listKeys_M3CouleurProduitInfos(keys, onSuccess)
+
     fun updateTariffForProductOperations(produitKeyID: String, newTariff: M13TarificationInfos) =
-        repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(produitKeyID, newTariff)
+        repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(
+            produitKeyID,
+            newTariff
+        )
+
     fun setActiveFocuceTariffPrixDifineur(produit: M01Produit, appCompt: Z_AppCompt) =
-        repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit, appCompt)
+        repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+            produit,
+            appCompt
+        )
+
     fun update_active_Compt(compt: Z_AppCompt) = updater.update_active_Compt(compt)
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) =
         updater.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList)
+
     fun update_m3couleur(couleur: M3CouleurProduitInfos) = updater.update_m3couleur(couleur)
-    fun update_depot_count(couleur: M3CouleurProduitInfos, newDepotCount: Int, onSuccess: () -> Unit = {}) =
+    fun update_depot_count(
+        couleur: M3CouleurProduitInfos,
+        newDepotCount: Int,
+        onSuccess: () -> Unit = {}
+    ) =
         updater.update_depot_count(couleur, newDepotCount, onSuccess)
-    fun update_M13TarificationInfos(tariff: M13TarificationInfos) = updater.update_M13TarificationInfos(tariff)
-    fun insert_M16CategorieProduit(new: M16CategorieProduit) = updater.insert_M16CategorieProduit(new)
-    fun update_m16CategorieProduit(new: M16CategorieProduit) = updater.update_m16CategorieProduit(new)
+
+    fun update_M13TarificationInfos(tariff: M13TarificationInfos) =
+        updater.update_M13TarificationInfos(tariff)
+
+    fun insert_M16CategorieProduit(new: M16CategorieProduit) =
+        updater.insert_M16CategorieProduit(new)
+
+    fun update_m16CategorieProduit(new: M16CategorieProduit) =
+        updater.update_m16CategorieProduit(new)
 
     override fun onCleared() {
         super.onCleared()

@@ -59,14 +59,6 @@ fun InitFull_DropdownMenuItem(
                     context = context,
                     appDatabase = db,
                     on_Progress_Datas = { /* progress ignored for manual re-init */ },
-                    dao_M1Produit = db.dao_M1Produit(),
-                    dao_16CategorieProduit = db.dao_16CategorieProduit(),
-                    dao_M03CouleurProduitInfos = db.dao_M03CouleurProduitInfos(),
-                    dao_M13TarificationInfos = db.dao_M13TarificationInfos(),
-                    dao_M14VentPeriode = db.dao_M14VentPeriode(),
-                    dao_M8BonVent = db.dao_M8BonVent(),
-                    dao_M10OperationVentCouleur = db.dao_M10OperationVentCouleur(),
-                    dao_M9AppCompt = db.dao_M9AppCompt(),
                     callerScope = viewModelNewProtoPatterns.viewModelScope,
                 )
             }

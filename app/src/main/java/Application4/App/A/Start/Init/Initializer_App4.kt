@@ -8,15 +8,7 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
-import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
-import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
-import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
-import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.Dao_M8BonVent
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import android.content.Context
 import android.net.ConnectivityManager
 import com.google.firebase.firestore.CollectionReference
@@ -39,16 +31,17 @@ object Initializer_App4 {
         context: Context,
         appDatabase: AppDatabase,
         on_Progress_Datas: (Float) -> Unit,
-        dao_M1Produit: Dao_M1Produit,
-        dao_16CategorieProduit: Dao_M16CategorieProduit,
-        dao_M03CouleurProduitInfos: Dao_M03CouleurProduitInfos,
-        dao_M13TarificationInfos: Dao13TarificationInfos,
-        dao_M14VentPeriode: Dao14VentPeriode,
-        dao_M8BonVent: Dao_M8BonVent,
-        dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
-        dao_M9AppCompt: Dao_M9AppCompt,
         callerScope: CoroutineScope,
     ) {
+      val  dao_M1Produit= appDatabase.dao_M1Produit()
+      val  dao_16CategorieProduit= appDatabase.dao_16CategorieProduit()
+      val  dao_M03CouleurProduitInfos= appDatabase.dao_M03CouleurProduitInfos()
+      val  dao_M13TarificationInfos= appDatabase.dao_M13TarificationInfos()
+      val  dao_M14VentPeriode= appDatabase.dao_M14VentPeriode()
+      val  dao_M8BonVent= appDatabase.dao_M8BonVent()
+      val  dao_M10OperationVentCouleur= appDatabase.dao_M10OperationVentCouleur()
+      val  dao_M9AppCompt= appDatabase.dao_M9AppCompt()
+
         val mutex = Mutex()
         val progress = mutableMapOf<String, Float>()
         fun emit() = on_Progress_Datas(if (progress.isEmpty()) 0f else progress.values.average().toFloat())

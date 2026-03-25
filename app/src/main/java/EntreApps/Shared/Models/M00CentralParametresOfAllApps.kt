@@ -28,6 +28,7 @@ data class M00CentralParametresOfAllApps(
     val listens_on_data_change_resources_consolation: Boolean = false,
     val no_loadKoin_CrachComposReglement: Boolean = false,
     val load_All_modules: Boolean = false,
+    val load_Initializer_App4: Boolean = true,
 //────────────────────────────Compts──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
