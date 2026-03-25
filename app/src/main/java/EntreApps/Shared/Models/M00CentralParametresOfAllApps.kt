@@ -20,7 +20,7 @@ data class M00CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = true,
+    val itsDevMode: Boolean = false,
     val devStartUpScree: String = Screen.Compact_Presentoire_App_Produits_FragID5.route,
 
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,
@@ -29,7 +29,6 @@ data class M00CentralParametresOfAllApps(
     val no_loadKoin_CrachComposReglement: Boolean = false,
     val load_All_modules: Boolean = false,
 //────────────────────────────Compts──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
     val abdelwahabCompt_KeyId: String = "-OV9dYujH9cA3yEx8AYT",
     val abdelwahabCompt_KeyId_DPL: String = "-OV9edQZecDczbx-ndPl",
 
@@ -52,10 +51,10 @@ data class M00CentralParametresOfAllApps(
     val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
     } else {
-        if (itsDevMode) {
-            AppType.JomLaElectroLivreurGrossist_VendeurHost
-        } else {
+        if (!itsDevMode) {
             AppType.AllInOne
+        } else {
+            AppType.JomLaElectroLivreurGrossist_VendeurHost
         }
     },
 
