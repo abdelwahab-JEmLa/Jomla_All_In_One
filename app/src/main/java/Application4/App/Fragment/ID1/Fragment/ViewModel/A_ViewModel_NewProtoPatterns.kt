@@ -176,26 +176,31 @@ class A_ViewModel_NewProtoPatterns(
                             Do.From.Ref_All_Datas, null -> {
                                 android.util.Log.d("DeleteInsertDebug", "  -> sub-branch Ref_All_Datas/null -> calling deleteAllInsert_AllDatas()")
                                 deleteAllInsert_AllDatas()
+                                val updatedCompt = active_Datas.active_M9Compt
+                                if (updatedCompt != null) {
+                                    update_active_Compt(updatedCompt.copy(next_start = Do.StandartInit))
+                                }
+                                Initializer(this@A_ViewModel_NewProtoPatterns).run()
                             }
                             Do.From.Active_Key -> {
                                 android.util.Log.d("DeleteInsertDebug", "  -> sub-branch Active_Key -> calling deleteAllInsertKeyFilter()")
                                 deleteAllInsertKeyFilter()
+                                val updatedCompt = active_Datas.active_M9Compt
+                                if (updatedCompt != null) {
+                                    update_active_Compt(updatedCompt.copy(next_start = Do.StandartInit))
+                                }
                                 Initializer(this@A_ViewModel_NewProtoPatterns).run()
                             }
                         }
                         android.util.Log.d("DeleteInsertDebug", "  -> cancelling collector job")
                         this.coroutineContext[kotlinx.coroutines.Job]?.cancel()
                     }
-                    Do.DeleteInsertAll -> {
-                        android.util.Log.d("DeleteInsertDebug", "  -> branch DeleteInsertAll -> calling deleteAllInsert_AllDatas()")
-                        deleteAllInsert_AllDatas()
-                        this.coroutineContext[kotlinx.coroutines.Job]?.cancel()
-                    }
+
+                    else -> {}
                 }
             }
         }
 
-        Initializer(this).run()
     }
     fun deleteAllInsert_AllDatas() {
         android.util.Log.d("DeleteInsertDebug", "deleteAllInsert_AllDatas() called")
@@ -271,6 +276,10 @@ class A_ViewModel_NewProtoPatterns(
                 android.util.Log.d("DeleteInsertDebug", "  M9: inserted ${m9List.size} rows")
                 progress(1f)
                 android.util.Log.d("DeleteInsertDebug", "deleteAllInsert_AllDatas() completed successfully, relaunching Initializer")
+                val updatedCompt = active_Datas.active_M9Compt
+                if (updatedCompt != null) {
+                    update_active_Compt(updatedCompt.copy(next_start = Do.StandartInit))
+                }
                 Initializer(this@A_ViewModel_NewProtoPatterns).run()
             } catch (e: Exception) {
                 android.util.Log.e("DeleteInsertDebug", "deleteAllInsert_AllDatas() ❌ EXCEPTION: ${e::class.simpleName}: ${e.message}", e)
