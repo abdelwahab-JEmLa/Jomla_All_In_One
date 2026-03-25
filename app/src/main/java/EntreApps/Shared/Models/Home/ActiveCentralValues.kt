@@ -2,6 +2,7 @@ package EntreApps.Shared.Models.Home
 
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Components.Utilisateur
+import EntreApps.Shared.Models.Compts
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
@@ -115,7 +116,7 @@ data class ActiveCentralValues(
         val utilisateur = when (params.au_Lence_Set_Compt_Ac_KeyId) {
             params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
             params.walid_Compt_KeyId -> Utilisateur.Walid
-            params.abdelwahabTravailleChezGros_KeyId -> Utilisateur.Abdelwahab_Osstad
+            Compts.AbdelwahabTravailleChezGros_KeyId.keyId -> Utilisateur.Abdelwahab_Osstad
             params.amine_madrasa_Compt_KeyId -> Utilisateur.Amine_Madrassa
             else -> Utilisateur.Admin
         }
@@ -133,7 +134,7 @@ data class ActiveCentralValues(
         when (params.au_Lence_Set_Compt_Ac_KeyId) {
             params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
             params.walid_Compt_KeyId -> Utilisateur.Walid
-            params.abdelwahabTravailleChezGros_KeyId -> Utilisateur.Abdelwahab_Osstad
+            Compts.AbdelwahabTravailleChezGros_KeyId.keyId -> Utilisateur.Abdelwahab_Osstad
             params.amine_madrasa_Compt_KeyId -> Utilisateur.Amine_Madrassa
             else -> Utilisateur.Admin
         }

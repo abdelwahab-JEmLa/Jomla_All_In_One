@@ -1,10 +1,11 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View
 
+import EntreApps.Shared.Models.Components.Ousstad_Tahfid
+import EntreApps.Shared.Models.Compts
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.DropDownItem_Imprime_pdf_communication_ac_parent
@@ -84,11 +85,11 @@ fun FabDropdownMenu_WhenIts_FragmentEducation(
         val params = M00CentralParametresOfAllApps()
 
         return when (activeOusstad) {
-            Ousstad_Tahfid.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
+            Ousstad_Tahfid.Abdelwahab_Osstad -> Compts.AbdelwahabTravailleChezGros_KeyId.keyId
             Ousstad_Tahfid.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
             Ousstad_Tahfid.Kissm_Intikali -> "Kissm_Intikali"
             Ousstad_Tahfid.Non_Defini_Actuellemen -> "Non_Defini_Actuellemen"
-            null -> params.abdelwahabTravailleChezGros_KeyId // Default fallback
+            null -> Compts.AbdelwahabTravailleChezGros_KeyId.keyId// Default fallback
         }
     }
 

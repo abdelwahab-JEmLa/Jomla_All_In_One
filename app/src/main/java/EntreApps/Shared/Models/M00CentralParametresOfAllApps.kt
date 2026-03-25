@@ -14,6 +14,7 @@ enum class Compts(val keyId: String){
     AbdelwahabTravailleChezGros_KeyId("-OV9dYujH9cA3yEx8AY2"),
     Telephone_de_presentation("-OTmoNn0cljrRuhVR2sp"),
 }
+
 @Entity
 data class M00CentralParametresOfAllApps(
     @PrimaryKey

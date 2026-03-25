@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Components.Utilisateur
+import EntreApps.Shared.Models.Compts
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
@@ -90,7 +91,7 @@ data class ActiveCentralValues_app2(
         val utilisateur = when (params.au_Lence_Set_Compt_Ac_KeyId) {
             params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
             params.walid_Compt_KeyId -> Utilisateur.Walid
-            params.abdelwahabTravailleChezGros_KeyId -> Utilisateur.Abdelwahab_Osstad
+            Compts.AbdelwahabTravailleChezGros_KeyId.keyId -> Utilisateur.Abdelwahab_Osstad
             params.amine_madrasa_Compt_KeyId -> Utilisateur.Amine_Madrassa
             else -> Utilisateur.Admin
         }
@@ -109,7 +110,7 @@ data class ActiveCentralValues_app2(
         when (params.au_Lence_Set_Compt_Ac_KeyId) {
             params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
             params.walid_Compt_KeyId -> Utilisateur.Walid
-            params.abdelwahabTravailleChezGros_KeyId -> Utilisateur.Abdelwahab_Osstad
+            Compts.AbdelwahabTravailleChezGros_KeyId.keyId -> Utilisateur.Abdelwahab_Osstad
             params.amine_madrasa_Compt_KeyId -> Utilisateur.Amine_Madrassa
             else -> Utilisateur.Admin
         }

@@ -1,8 +1,9 @@
 package V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
+import EntreApps.Shared.Models.Compts
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
 import android.content.Context
@@ -40,7 +41,7 @@ class Repo19Etudiant(
         } else {
             val params = M00CentralParametresOfAllApps()
             val targetKeyId = when (currentFilter) {
-                Ousstad_Tahfid.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
+                Ousstad_Tahfid.Abdelwahab_Osstad -> Compts.AbdelwahabTravailleChezGros_KeyId.keyId
                 Ousstad_Tahfid.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
                 Ousstad_Tahfid.Kissm_Intikali -> params.kissm_intikali_madrasa_Compt_KeyId
                 Ousstad_Tahfid.Non_Defini_Actuellemen -> return@derivedStateOf _datas.value
@@ -191,7 +192,7 @@ data class M19Etudiant(
     var nom: String = "",
     var prenom: String = "",
 
-    var parent_ousstad_key: String = M00CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
+    var parent_ousstad_key: String =Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
 
     var num_telephone_parent: String = "",
     var age: Int = 7,

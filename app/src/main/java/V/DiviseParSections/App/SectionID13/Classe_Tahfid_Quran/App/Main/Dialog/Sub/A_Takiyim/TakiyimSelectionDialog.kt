@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
+import EntreApps.Shared.Models.Compts
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -85,7 +86,7 @@ fun TakiyimSelectionDialog(
     val teacherKeyID = remember(activeOusstad) {
         val params = M00CentralParametresOfAllApps()
         when (activeOusstad) {
-            Ousstad_Tahfid.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
+            Ousstad_Tahfid.Abdelwahab_Osstad ->Compts.AbdelwahabTravailleChezGros_KeyId.keyId
             Ousstad_Tahfid.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
             Ousstad_Tahfid.Kissm_Intikali -> "Kissm_Intikali"
             Ousstad_Tahfid.Non_Defini_Actuellemen -> "Non_Defini_Actuellemen"

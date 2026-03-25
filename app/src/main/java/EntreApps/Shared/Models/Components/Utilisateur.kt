@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models.Components
 
+import EntreApps.Shared.Models.Compts
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 
 enum class Utilisateur(
@@ -10,7 +11,7 @@ enum class Utilisateur(
 ) {
     Admin("", "", "المسؤول"),
     Abdelwahab_Osstad(
-        M00CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
+        Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
         "dimanch/jeudi",
         "عبدالوهاب حمنيش",
              "+213 553 88 50 37"

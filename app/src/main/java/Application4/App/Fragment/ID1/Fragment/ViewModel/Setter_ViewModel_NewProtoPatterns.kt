@@ -14,6 +14,15 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
     fun update_m1Produit(new: M01Produit) {
         vm.active_Datas.list_M1Produit =
             vm.active_Datas.list_M1Produit?.map { if (it.keyID == new.keyID) new else it }
+        vm.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur =
+            vm.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur
+                .map { (catalogue, categoryList) ->
+                    catalogue to categoryList.map { (category, productList) ->
+                        category to productList.map { (product, colours) ->
+                            if (product.keyID == new.keyID) new to colours else product to colours
+                        }
+                    }
+                }
         vm.repositorysMainSetter_NewProtoPatterns.update_M1Produit(new)
     }
 
@@ -35,6 +44,15 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
     fun update_m3couleur(couleur: M3CouleurProduitInfos) {
         vm.active_Datas.list_M03CouleurProduitInfos =
             vm.active_Datas.list_M03CouleurProduitInfos?.map { if (it.keyID == couleur.keyID) couleur else it }
+        vm.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur =
+            vm.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur
+                .map { (catalogue, categoryList) ->
+                    catalogue to categoryList.map { (category, productList) ->
+                        category to productList.map { (product, colours) ->
+                            product to colours.map { if (it.keyID == couleur.keyID) couleur else it }
+                        }
+                    }
+                }
         vm.repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur)
     }
 
@@ -109,6 +127,13 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
         vm._uiStateNewProtoPatterns.update { state ->
             val current = state.list_Datas ?: List_Datas()
             state.copy(list_Datas = current.copy(m16CategorieProduit = current.m16CategorieProduit + new))
+        }
+        if (new.catalogueParentId == vm.active_Datas.active_M21Catalogue.id) {
+            vm.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur =
+                vm.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur
+                    .map { (catalogue, categoryList) ->
+                        catalogue to (categoryList + (new to emptyList()))
+                    }
         }
         vm.repositorysMainSetter_NewProtoPatterns.insert_M16CategorieProduit(new)
     }

@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models.Components
 
+import EntreApps.Shared.Models.Compts
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 
 enum class Ousstad_Tahfid(
@@ -10,7 +11,7 @@ enum class Ousstad_Tahfid(
     Abdelwahab_Osstad(
         "dimanch/jeudi",
         "عبدالوهاب حمنيش" ,
-        M00CentralParametresOfAllApps.Companion.get_Default().abdelwahabTravailleChezGros_KeyId
+        Compts.AbdelwahabTravailleChezGros_KeyId.keyId
 
     ),
     Non_Defini_Actuellemen(

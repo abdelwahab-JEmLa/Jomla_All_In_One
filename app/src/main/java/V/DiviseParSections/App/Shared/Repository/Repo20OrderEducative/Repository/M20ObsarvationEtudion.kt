@@ -1,8 +1,9 @@
 package V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Utilisateur
+import EntreApps.Shared.Models.Compts
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant.Takiyim
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_M20ObsarvationEtudion
@@ -39,7 +40,7 @@ class Repo20ObsarvationEtudion(
         } else {
             val params = M00CentralParametresOfAllApps()
             val targetKeyId = when (currentFilter) {
-                Utilisateur.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
+                Utilisateur.Abdelwahab_Osstad -> Compts.AbdelwahabTravailleChezGros_KeyId.keyId
                 Utilisateur.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
                 Utilisateur.Abdelmoumen -> params.abdelmomen_Compt_KeyId
                 Utilisateur.Walid -> params.walid_Compt_KeyId
@@ -280,7 +281,7 @@ data class M20ObsarvationEtudion(
     // Store custom moulahadat as comma-separated string
     var moulahadat_takyim_li_islahiha: String = "",
 
-    var parent_ousstad_key: String = M00CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
+    var parent_ousstad_key: String =Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
