@@ -8,6 +8,15 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 
+enum class Do(val from: From? = null) {
+    StandartInit,
+    DeleteInsertAll(From.Ref_All_Datas);
+    enum class From {
+        Ref_All_Datas,
+        Active_Key,
+    }
+}
+
 @Entity
 data class Z_AppCompt(
     @PrimaryKey
@@ -47,7 +56,7 @@ data class Z_AppCompt(
     val affiche_toujoure_tariffs_tournet: Boolean = false,
 
     val its_Admin: Boolean = false,
-    var c_Ouvert_Pour_Au_Command_Add_Period: Boolean =true,
+    var c_Ouvert_Pour_Au_Command_Add_Period: Boolean = true,
 
     val text_Message_Warning: String = "",
 
@@ -69,6 +78,8 @@ data class Z_AppCompt(
     var mainInitDataBaseProgressEtate: Float = 0f,
     //---------------------------------Centrale_Focuces_Values.----------------------------------------------------------------------------------------------------------------------------------
     val filter_marqueClient_Name: String = "no Filter",
+
+    val next_start: Do = Do.StandartInit,
 
     val activeDialogSearchM1Produit: Boolean = false,
     val active_ProduitKeyID_Au_DroopDown_PresenterEcran: String = "",
@@ -114,7 +125,7 @@ data class Z_AppCompt(
     //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
     var KeyByParent: String = "",
     var vid: Long = 1,
-    ) {
+) {
 
     fun get_DebugInfos(): String {
         return buildString {

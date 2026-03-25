@@ -24,15 +24,6 @@ class CentraleMainGetter_NewProtoPattern(
     private val appDatabase: AppDatabase,
     on_Progress_Datas: (Float) -> Unit,
 ) {
-    val dao_M1Produit = appDatabase.dao_M1Produit()
-    val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
-    val dao_M3CouleurProduitInfos = appDatabase.dao_M03CouleurProduitInfos()
-    val dao_M13TarificationInfos = appDatabase.dao_M13TarificationInfos()
-    val dao_M14VentPeriode = appDatabase.dao_M14VentPeriode()
-    val dao_M8BonVent = appDatabase.dao_M8BonVent()
-    val dao_M10OperationVentCouleur = appDatabase.dao_M10OperationVentCouleur()
-    val dao_M9AppCompt = appDatabase.dao_M9AppCompt()
-
     private val initScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     init {

@@ -1,8 +1,8 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Z_AppCompt
@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.tasks.await
 
 object FlowsFunctions_ActiveDatasFragNewProto {
     fun getFlow_filter_marqueClient_enum_entrie(
@@ -94,6 +95,35 @@ object FlowsFunctions_ActiveDatasFragNewProto {
 
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt: Dao_M9AppCompt): Flow<Z_AppCompt?> =
         dao_M9AppCompt.getFlow_ByKeyID(M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId)
+
+    fun getFlow_active_M9Compt_Si_Empty(
+        dao_M9AppCompt: Dao_M9AppCompt,
+        activeDatasFragNewProto: ActiveDatasFragNewProto,
+    ): Flow<Z_AppCompt?> = kotlinx.coroutines.flow.flow {
+        // If the local table already has data, skip the Firebase fetch entirely
+        if (dao_M9AppCompt.isTableEmpty()) {
+            // Pull the single account whose key is pinned in the app parameters
+            val targetKey = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            try {
+                val snapshot = Z_AppCompt.ref.child(targetKey).get()
+                    .await()
+                val compt = snapshot.getValue(Z_AppCompt::class.java)
+                if (compt != null) {
+                    dao_M9AppCompt.insertAll(listOf(compt))
+                    activeDatasFragNewProto.active_M9Compt = compt
+                    emit(compt)
+                } else {
+                    emit(null)
+                }
+            } catch (_: Exception) {
+                emit(null)
+            }
+        } else {
+            // Table is not empty — nothing to do; the by-key flow will take over
+            emit(null)
+        }
+    }
+
 
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
         dao_M9AppCompt: Dao_M9AppCompt,

@@ -3,6 +3,7 @@ package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_Faca
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.InitFiltered_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.InitFull_DropdownMenuItem
+import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.NextStart_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.PrioriterToggle_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.Toggle_Active_section_ToggleButton_TagPreiorities__start_Collapsed_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.UpdateActiveCompt_DropdownMenuItem
@@ -46,7 +47,12 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
 
             SyncDropboxImages_DropdownMenuItem(viewModelNewProtoPatterns, onDismissDropdown)
 
-            // Toggle section tags priorités (null ↔ true)
+            // Lets the user pick a Do value written to active_M9Compt.next_start
+            NextStart_DropdownMenuItem(
+                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                onDismissDropdown = onDismissDropdown
+            )
+
             Toggle_Active_section_ToggleButton_TagPreiorities__start_Collapsed_DropdownMenuItem(
                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                 onDismissDropdown = onDismissDropdown
