@@ -321,17 +321,13 @@ data class M01Produit(
         fun get_Default(): M01Produit {
             return  M01Produit()
         }
-        val KeyTagModel = "IdKeyModel1"
 
         fun safe_Remove_DataBase_Ref(): Unit {
             ref.removeValue()
         }
 
-        val ref = M18CentralParametresOfAllApps.centralRef
+        val ref = M00CentralParametresOfAllApps.centralRef
             .child("A_ProduitInfos")
-
-        val ref_Active_Filtred_Datas = ref.child("Active_Filtred_Datas")
-
 
         fun removeRef(preparedData: M01Produit) {
             ref.child(preparedData.keyFireBase).removeValue()

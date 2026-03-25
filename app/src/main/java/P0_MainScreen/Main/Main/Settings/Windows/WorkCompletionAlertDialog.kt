@@ -5,7 +5,7 @@ import P0_MainScreen.Main.Main.Settings.Windows.g.HistoriqueWorck
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.M14VentPeriode
-import EntreApps.Shared.Models.Repo18CentralParametresOfAllApps
+import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
@@ -196,7 +196,7 @@ fun MainFastSearchProduitPourVent(
         }
     }
 
-    var shouldPerformInitialSearch by remember { mutableStateOf(M18CentralParametresOfAllApps().itsDevMode) }
+    var shouldPerformInitialSearch by remember { mutableStateOf(M00CentralParametresOfAllApps().itsDevMode) }
 
     LaunchedEffect(isTextFieldReady) {
         if (isTextFieldReady && shouldPerformInitialSearch) {

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader.View
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -228,10 +228,10 @@ fun Section_ExpensesAndNetPosition(
                         fontWeight = FontWeight.Bold
                     )
 
-                    val currentUser = M18CentralParametresOfAllApps.get_utilisateur(
+                    val currentUser = M00CentralParametresOfAllApps.get_utilisateur(
                         focusedValuesGetter.currentActive_M9AppCompt?.keyID ?: ""
                     )
-                    val canEdit = M18CentralParametresOfAllApps.canEdit(currentUser)
+                    val canEdit = M00CentralParametresOfAllApps.canEdit(currentUser)
                     if (canEdit) {
                         Icon(
                             imageVector = Icons.Default.Edit,

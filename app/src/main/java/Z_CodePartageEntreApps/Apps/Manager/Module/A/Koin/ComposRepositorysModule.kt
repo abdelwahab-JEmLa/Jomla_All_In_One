@@ -19,7 +19,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
-import EntreApps.Shared.Models.Repo18CentralParametresOfAllApps
+import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit

@@ -1,7 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application2.App.Base.Repository.ActiveCentralValues_app2
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
@@ -14,7 +13,7 @@ import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
@@ -47,14 +46,16 @@ class A_ViewModel_NewProtoPatterns(
         context = context
     ),
 ) : ViewModel() {
+    val active_Datas = ActiveDatasFragNewProto()
+    private val updater = Setter_ViewModel_NewProtoPatterns(this)
+
     val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
-    val active_Datas = ActiveDatasFragNewProto()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val activeOnVent_M8BonVent_flow: StateFlow<M8BonVent?> by lazy {
         appDatabase.dao_M9AppCompt()
-            .getFlow_ByKeyID(M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId)
+            .getFlow_ByKeyID(M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId)
             .flatMapLatest { activeCompt ->
                 val onVentKey = activeCompt?.onVentM8BonVentKey?.takeIf { it.isNotBlank() && it != "null" }
                 if (onVentKey == null) flowOf(null)
@@ -125,21 +126,10 @@ class A_ViewModel_NewProtoPatterns(
     fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_NewProto, data: Any? = null) =
         wifi.sendOrderToClientDisplayerT(order, data)
 
-
     init {
         fragmentNavigationHandler.closeAllActiveFragments()
         centraleMainGetter_NewProtoPattern
         Initializer(this).run()
-    }
-
-    fun update_M13TarificationInfos(tariff: M13TarificationInfos) {
-        _uiStateNewProtoPatterns.update { state ->
-            val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
-                m13TarificationInfos = current.m13TarificationInfos.filter { it.keyID != tariff.keyID } + tariff
-            ))
-        }
-        repositorysMainSetter_NewProtoPatterns.update_M13TarificationInfos(tariff)
     }
 
     fun maybeCreateEditedPourClientTariff(
@@ -178,93 +168,43 @@ class A_ViewModel_NewProtoPatterns(
         )
         return true
     }
+
+//────────────Setter_ViewModel_NewProtoPatterns─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    fun update_m1Produit(new: M01Produit) = updater.update_m1Produit(new)
+
+    fun delete_m1Produit(produit: M01Produit) = updater.delete_m1Produit(produit)
+
+    fun update_activeCentralValues(new: ActiveCentralValues) =
+        focusedValues_NewProtoPatterns.update_activeCentralValues(new)
+
+    fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(
+        keys: Map<String, Boolean>,
+        onSuccess: () -> Unit = {}
+    ) = updater.deleteInsertFireBase_listKeys_M3CouleurProduitInfos(keys, onSuccess)
+
     fun updateTariffForProductOperations(produitKeyID: String, newTariff: M13TarificationInfos) =
         repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(produitKeyID, newTariff)
 
     fun setActiveFocuceTariffPrixDifineur(produit: M01Produit, appCompt: Z_AppCompt) =
         repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit, appCompt)
 
-    fun update_active_Compt(compt: Z_AppCompt) {
-        active_Datas.active_M9Compt = compt
-        repositorysMainSetter_NewProtoPatterns.update_M9AppCompt(compt)
-    }
+    fun update_active_Compt(compt: Z_AppCompt) = updater.update_active_Compt(compt)
 
-    fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) {
-        active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
-        upsert_M10OperationVentCouleur(updatedList)
-    }
+    fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) =
+        updater.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList)
 
-    private fun upsert_M10OperationVentCouleur(updatedList: List<M10OperationVentCouleur>?) {
-        val allTariffs = _uiStateNewProtoPatterns.value.list_Datas?.m13TarificationInfos
-        updatedList?.forEach { operation ->
-            val tariff = allTariffs?.find { it.keyID == operation.parentM13TarificationKeyID }
-                ?: allTariffs?.filter { it.parent_M1Produit_KeyId == operation.parent_M1Produit_KeyId }
-                    ?.maxByOrNull { it.creationTimestamps }
-            if (tariff == null) return@forEach
-            val opToSave = if (tariff.keyID != operation.parentM13TarificationKeyID) {
-                operation.copy(
-                    parentM13TarificationKeyID = tariff.keyID,
-                    parentM13TarificationDebugInfos = tariff.getDebugInfos()
-                )
-            } else operation
-            repositorysMainSetter_NewProtoPatterns.upsert_M10OperationVentCouleur(opToSave, tariff)
-        }
-    }
+    fun update_m3couleur(couleur: M3CouleurProduitInfos) = updater.update_m3couleur(couleur)
 
-    fun update_m3couleur(couleur: M3CouleurProduitInfos) {
-        _uiStateNewProtoPatterns.update { state ->
-            val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
-                m3CouleurProduit = current.m3CouleurProduit.map { if (it.keyID == couleur.keyID) couleur else it }
-            ))
-        }
-        repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur)
-    }
+    fun update_depot_count(couleur: M3CouleurProduitInfos, newDepotCount: Int, onSuccess: () -> Unit = {}) =
+        updater.update_depot_count(couleur, newDepotCount, onSuccess)
 
-    fun update_depot_count(couleur: M3CouleurProduitInfos, newDepotCount: Int, onSuccess: () -> Unit = {}) {
-        val updated = couleur.copy(
-            count_Don_Depot = newDepotCount,
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        )
-        _uiStateNewProtoPatterns.update { state ->
-            val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
-                m3CouleurProduit = current.m3CouleurProduit.map { if (it.keyID == updated.keyID) updated else it }
-            ))
-        }
-        repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(data = updated, onSuccess = onSuccess)
-    }
+    fun update_M13TarificationInfos(tariff: M13TarificationInfos) =
+        updater.update_M13TarificationInfos(tariff)
 
-    fun insert_M16CategorieProduit(new: M16CategorieProduit) {
-        _uiStateNewProtoPatterns.update { state ->
-            val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(m16CategorieProduit = current.m16CategorieProduit + new))
-        }
-        repositorysMainSetter_NewProtoPatterns.insert_M16CategorieProduit(new)
-    }
+    fun insert_M16CategorieProduit(new: M16CategorieProduit) = updater.insert_M16CategorieProduit(new)
 
-    fun update_m16CategorieProduit(new: M16CategorieProduit) {
-        _uiStateNewProtoPatterns.update { state ->
-            val current = state.list_Datas ?: List_Datas()
-            state.copy(list_Datas = current.copy(
-                m16CategorieProduit = current.m16CategorieProduit.map { if (it.keyID == new.keyID) new else it }
-            ))
-        }
-        repositorysMainSetter_NewProtoPatterns.update_M16CategorieProduit(new)
-    }
+    fun update_m16CategorieProduit(new: M16CategorieProduit) = updater.update_m16CategorieProduit(new)
 
-    fun update_m1Produit(new: M01Produit) {
-        active_Datas.list_M1Produit = active_Datas.list_M1Produit?.map { if (it.keyID == new.keyID) new else it }
-        repositorysMainSetter_NewProtoPatterns.update_M1Produit(new)
-    }
-
-    fun delete_m1Produit(produit: M01Produit) {
-        active_Datas.list_M1Produit = active_Datas.list_M1Produit?.filter { it.keyID != produit.keyID }
-        repositorysMainSetter_NewProtoPatterns.delete_M1Produit(produit)
-    }
-
-    fun update_activeCentralValues(new: ActiveCentralValues) =
-        focusedValues_NewProtoPatterns.update_activeCentralValues(new)
 
     override fun onCleared() = super.onCleared()
 }

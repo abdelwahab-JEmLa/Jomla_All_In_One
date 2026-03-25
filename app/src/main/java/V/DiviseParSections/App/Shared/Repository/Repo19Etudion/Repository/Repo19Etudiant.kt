@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.DataBaseInitFactory_19Etudiant
@@ -38,7 +38,7 @@ class Repo19Etudiant(
         if (currentFilter == null) {
             _datas.value
         } else {
-            val params = M18CentralParametresOfAllApps()
+            val params = M00CentralParametresOfAllApps()
             val targetKeyId = when (currentFilter) {
                 Ousstad_Tahfid.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
                 Ousstad_Tahfid.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
@@ -191,7 +191,7 @@ data class M19Etudiant(
     var nom: String = "",
     var prenom: String = "",
 
-    var parent_ousstad_key: String = M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
+    var parent_ousstad_key: String = M00CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
 
     var num_telephone_parent: String = "",
     var age: Int = 7,

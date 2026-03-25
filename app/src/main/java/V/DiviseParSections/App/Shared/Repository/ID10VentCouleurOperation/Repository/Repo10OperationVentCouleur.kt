@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repos
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadFromFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import android.content.Context
@@ -52,7 +52,7 @@ class Repo10OperationVentCouleur(
                         }
                     }
                     // Clean up invalid operations if M18 parameter is enabled
-                    if (_datas.value.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_Diminue_DatasFB) {
+                    if (_datas.value.isNotEmpty() && M00CentralParametresOfAllApps().au_Lence_Diminue_DatasFB) {
                         cleanupInvalidOperations(this@Repo10OperationVentCouleur)
                     }
                 }

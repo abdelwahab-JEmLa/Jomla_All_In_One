@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
@@ -92,7 +92,7 @@ class DataBaseInitFactory_M20ObsarvationEtudion(
     fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
         isListenerRegistered = true
-        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+        M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
             repoRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {

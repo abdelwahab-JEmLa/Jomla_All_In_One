@@ -8,7 +8,7 @@ import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NewProt
 import Application4.App.Main.A.Navigation.Component.NavigationItems
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import android.annotation.SuppressLint
 import android.os.Build
@@ -52,7 +52,7 @@ fun MainScreen_NewProtoPattern(
 
     var isFabVisible by rememberSaveable { mutableStateOf(true) }
 
-    if (M18CentralParametresOfAllApps.get_Default().no_loadKoin_CrachComposReglement) {
+    if (M00CentralParametresOfAllApps.get_Default().no_loadKoin_CrachComposReglement) {
         A_Compact_Presentoire_App_Produits_App4(viewModelNewProtoPatterns = viewModelNewProtoPatterns)
     } else {
         Scaffold(

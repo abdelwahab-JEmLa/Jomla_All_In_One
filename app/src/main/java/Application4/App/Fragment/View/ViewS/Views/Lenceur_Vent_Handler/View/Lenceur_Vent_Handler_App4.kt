@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.CatronAdd.CartonVentHandler_App4
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -75,10 +75,13 @@ fun Lenceur_Vent_Handler_App4(
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
 
-    val au_depot by remember(selectedCouleur.keyID, uiState.list_M3CouleurProduit) {
+    val au_depot by remember(
+        selectedCouleur.keyID,
+        viewModel.active_Datas.list_M03CouleurProduitInfos
+    ) {
         derivedStateOf {
-            uiState.list_M3CouleurProduit
-                .find { it.keyID == selectedCouleur.keyID }
+            viewModel.active_Datas.list_M03CouleurProduitInfos
+                ?.find { it.keyID == selectedCouleur.keyID }
                 ?.count_Don_Depot ?: selectedCouleur.count_Don_Depot
         }
     }

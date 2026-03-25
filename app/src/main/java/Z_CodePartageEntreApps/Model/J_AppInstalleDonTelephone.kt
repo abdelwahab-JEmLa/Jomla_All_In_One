@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
 import android.content.res.Resources
 import android.util.DisplayMetrics
@@ -207,7 +207,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
 
         // Attach the listener to the Firebase reference
         listener?.let {
-            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+            M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
             J_AppInstalleDonTelephoneRepository.caReference.addValueEventListener(it)}
         }
@@ -288,7 +288,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
             }
 
             // Attach the listener
-            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+            M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
             J_AppInstalleDonTelephoneRepository.caReference.addValueEventListener(listener)}
 

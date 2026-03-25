@@ -10,7 +10,7 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Components.Utilisateur
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -86,7 +86,7 @@ data class ActiveCentralValues_app2(
 
     //-----------------Fragmet.Paye-------------------------------------------------------------------------------------------------------------------------
     var active_Ousstad_Tahfid: Ousstad_Tahfid? = run {
-        val params = M18CentralParametresOfAllApps()
+        val params = M00CentralParametresOfAllApps()
         val utilisateur = when (params.au_Lence_Set_Compt_Ac_KeyId) {
             params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
             params.walid_Compt_KeyId -> Utilisateur.Walid
@@ -105,7 +105,7 @@ data class ActiveCentralValues_app2(
     },
 
     var active_filter_du_utilisateur: Utilisateur? = run {
-        val params = M18CentralParametresOfAllApps()
+        val params = M00CentralParametresOfAllApps()
         when (params.au_Lence_Set_Compt_Ac_KeyId) {
             params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
             params.walid_Compt_KeyId -> Utilisateur.Walid
@@ -128,8 +128,8 @@ data class ActiveCentralValues_app2(
     var le_pourvoire_clike_checked_est_active: Boolean = false,
 
     val fastSearchProduitPourVent: String = "",
-    val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
-        == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId)
+    val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M00CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
+        == M00CentralParametresOfAllApps().abdelmomen_Compt_KeyId)
         false else
         false,
 

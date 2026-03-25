@@ -1,7 +1,7 @@
 package V.DiviseParSections.App._0.Navigation
 
 import EntreApps.Shared.Models.Components.AppType
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -84,7 +84,7 @@ fun NavigationBarWithFab(
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
     val _activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
-    val activeFragment = if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
+    val activeFragment = if (M00CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
         Screen.FragmentProduitFastSearchDialog
     } else {
         _activeFragment

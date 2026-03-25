@@ -16,6 +16,7 @@ M3CouleurProduitInfos(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     val processPositioningInFactory: ProcessPositioningInFactory = ProcessPositioningInFactory.CreeAuGeneralHandler,
     val aAffiche: Type = Type.Image,
+    val dropBox_key: String = "Non Dispo",
     val nomImageFichieSansEtansion: String = "Non Dispo",
 
     val telephone_Prise_depuit: String = "",
@@ -73,10 +74,10 @@ M3CouleurProduitInfos(
     enum class ProcessPositioningInFactory { CreeDepuitRechercheRapid , CreeAuGeneralHandler }
 
     companion object {
-        val ref = M18CentralParametresOfAllApps.centralRef
+        val ref = M00CentralParametresOfAllApps.centralRef
             .child("B1CouleurOuGoutProduitDataBase")
 
-        val ref_Active_Filtred_Datas = ref.child("Active_Filtred_Datas")
+        val ref_listKeys_M3CouleurProduitInfos = ref.child("00_listKeys_M3CouleurProduitInfos")
 
         val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
             .document("M3CouleurProduitInfos")

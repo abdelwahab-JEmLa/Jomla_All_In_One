@@ -53,10 +53,8 @@ data class M16CategorieProduit(
     )
 
     companion object {
-        val ref = M18CentralParametresOfAllApps.centralRef
+        val ref = M00CentralParametresOfAllApps.centralRef
             .child("C_CategorieProduitInfos")
-
-        val ref_Active_Filtred_Datas = ref.child("Active_Filtred_Datas")
 
         val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
             .document("M16CategorieProduit")

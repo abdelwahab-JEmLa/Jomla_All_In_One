@@ -6,8 +6,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
-import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
@@ -47,7 +47,7 @@ import java.io.File
 import kotlin.coroutines.resume
 
 class DataBaseInitFactory_M3CouleurProduitInfos(
-    val dao: M3CouleurProduitInfosDao,
+    val dao: Dao_M03CouleurProduitInfos,
 ) {
     val repoTAG = "M3CouleurProduitInfos"
     val repoRef = M3CouleurProduitInfos.ref
@@ -141,7 +141,7 @@ class DataBaseInitFactory_M3CouleurProduitInfos(
     fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
         isListenerRegistered = true
-        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+        M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         repoRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

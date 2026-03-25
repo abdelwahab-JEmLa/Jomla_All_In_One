@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._012_ComptsVendeurs
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._013_ClientTransaction
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._015_Produits
@@ -154,7 +154,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(
     private fun attachFirebaseListener() {
         valueEventListener = createFirebaseValueEventListener()
         try {
-            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+            M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
             firebaseRef.addValueEventListener(valueEventListener!!) }
         } catch (e: Exception) {
@@ -254,7 +254,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(
     private fun attachAcheteursChangeListener() {
         acheteursChangeListener = createAcheteursChangeListener()
         try {
-            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+            M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         firebaseRef.addValueEventListener(acheteursChangeListener!!)
         }  } catch (e: Exception) {

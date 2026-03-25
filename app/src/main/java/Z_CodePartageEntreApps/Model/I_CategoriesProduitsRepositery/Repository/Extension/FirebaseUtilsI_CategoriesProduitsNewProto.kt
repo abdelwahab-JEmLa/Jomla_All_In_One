@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.I_CategoriesProduitsRepositery.Repository.Extension
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.I_CategoriesProduits
 import Z_CodePartageEntreApps.Model.I_CategoriesProduitsRepositery.Repository.I_CategoriesProduitsNewProtoRepository
 import Z_CodePartageEntreApps.Model.I_CategoriesProduitsRepositery.Repository.I_CategoriesProduitsNewProtoRepositoryImpl
@@ -23,7 +23,7 @@ object FirebaseUtilsI_CategoriesProduitsNewProto {
         onValueEventListenerCreated: (ValueEventListener) -> Unit
     ) {
         createValueEventListener(repository)?.let {
-            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+            M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
             I_CategoriesProduitsNewProtoRepository.caReference.addValueEventListener(it)}
             onValueEventListenerCreated(it)

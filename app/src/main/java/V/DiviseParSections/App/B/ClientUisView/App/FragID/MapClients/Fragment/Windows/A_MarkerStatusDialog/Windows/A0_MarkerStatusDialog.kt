@@ -13,7 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -583,7 +583,7 @@ fun MarkerStatusDialog(
             )
         }
 
-        if(!M18CentralParametresOfAllApps.get_Default().itsDevMode) {
+        if(!M00CentralParametresOfAllApps.get_Default().itsDevMode) {
             PressistatntMainActivityButtons_Sec8FWinID1()
         }
     }

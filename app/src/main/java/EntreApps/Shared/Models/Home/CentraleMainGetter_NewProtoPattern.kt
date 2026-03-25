@@ -5,9 +5,6 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.compose.runtime.Stable
-import com.google.firebase.Firebase
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +21,7 @@ class CentraleMainGetter_NewProtoPattern(
     val repoScope = CoroutineScope(Dispatchers.IO)
     val dao_M1Produit = appDatabase.dao_M1Produit()
     val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
-    val dao_M3CouleurProduitInfos = appDatabase.dao_M3CouleurProduitInfos()
+    val dao_M3CouleurProduitInfos = appDatabase.dao_M03CouleurProduitInfos()
     val dao_M13TarificationInfos = appDatabase.dao_M13TarificationInfos()
     val dao_M14VentPeriode = appDatabase.dao_M14VentPeriode()
     val dao_M8BonVent = appDatabase.dao_M8BonVent()
@@ -35,6 +32,7 @@ class CentraleMainGetter_NewProtoPattern(
     @Suppress("unused")
     private val initializer = Initializer_Funcs_NewProtoPattern(
         context = context,
+        appDatabase = appDatabase,
         on_Progress_Datas = { progress ->
             on_Progress_Datas(progress)
         },
@@ -52,18 +50,5 @@ class CentraleMainGetter_NewProtoPattern(
         repoScope.launch {
             initializer.initializeAllRepositories()
         }
-    }
-
-    companion object {
-        val centralRef = Firebase.database.getReference(
-            "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
-        )
-
-        const val images_central_Local_storageLink = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
-
-
-        fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
-        inline fun Boolean.ifTrue(block: () -> Unit) { if (this) block() }
-        inline fun Boolean.ifFalse(block: () -> Unit) { if (!this) block() }
     }
 }

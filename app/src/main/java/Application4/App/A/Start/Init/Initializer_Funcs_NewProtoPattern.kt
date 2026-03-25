@@ -1,5 +1,6 @@
 package Application4.App.A.Start.Init
 
+import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
@@ -7,9 +8,10 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
+import EntreApps.Shared.Modules.Base.AppDatabase
+import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
-import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
+import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
@@ -34,22 +36,29 @@ import kotlinx.coroutines.tasks.await
 @Suppress("DEPRECATION")
 class Initializer_Funcs_NewProtoPattern(
     val context: Context,
+    appDatabase: AppDatabase,
     val on_Progress_Datas: (Float) -> Unit,
     val dao_M1Produit: Dao_M1Produit,
     val dao_16CategorieProduit: Dao_M16CategorieProduit,
-    val dao_M3CouleurProduitInfos: M3CouleurProduitInfosDao,
+    val dao_M03CouleurProduitInfos: Dao_M03CouleurProduitInfos,
     val dao_M13TarificationInfos: Dao13TarificationInfos,
     val dao_M14VentPeriode: Dao14VentPeriode,
     val dao_M8BonVent: Dao_M8BonVent,
     val dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
     val dao_M9AppCompt: Dao_M9AppCompt,
+    val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
+        appDatabase = appDatabase,
+        context = context,
+    ),
+    val set_dropBox_key: Boolean = false,
 ) {
     private val mutex = Mutex()
     private val progress = mutableMapOf<String, Float>()
     val repoScope = CoroutineScope(Dispatchers.IO)
 
     private val dropboxSyncer = DropboxImageSyncer(
-        dao_M3CouleurProduitInfos = dao_M3CouleurProduitInfos,
+        dao_M03CouleurProduitInfos = dao_M03CouleurProduitInfos,
+        onUpdate_M3 = { updated -> repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(updated) },
         onProgress = { p -> setProgressBlocking(Repo.M3CouleurProduitInfos.name, p) },
     )
 
@@ -85,13 +94,14 @@ class Initializer_Funcs_NewProtoPattern(
     }
 
     private suspend fun seedColors(isOnline: Boolean) {
-        if (dao_M3CouleurProduitInfos.getAll().isEmpty()) {
+        if (dao_M03CouleurProduitInfos.getAll().isEmpty()) {
             val items = fetchWithRetry(M3CouleurProduitInfos.refFirestore)
                 ?.documents?.mapNotNull { it.toObject(M3CouleurProduitInfos::class.java) } ?: return
-            if (items.isNotEmpty()) dao_M3CouleurProduitInfos.insertAll(items)
+            if (items.isNotEmpty()) dao_M03CouleurProduitInfos.insertAll(items)
         }
+
         if (isOnline) {
-            repoScope.launch { dropboxSyncer.syncAll() }
+            repoScope.launch { dropboxSyncer.syncAll(set_dropBox_key) }
         }
     }
 

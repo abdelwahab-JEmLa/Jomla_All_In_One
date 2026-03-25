@@ -2,10 +2,11 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
@@ -26,6 +27,13 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         activeDatasFragNewProto.filter_marqueClient_enum_entrie
             ?: MapClientsViewModel.VisibleClientsNow.showAll
 
+    suspend fun get_list_M3CouleurProduitInfos(
+        dao: Dao_M03CouleurProduitInfos,
+        activeDatasFragNewProto: ActiveDatasFragNewProto,
+    ) {
+        activeDatasFragNewProto.list_M03CouleurProduitInfos = dao.getAll()
+    }
+
     suspend fun get_list_M1Produit(
         dao_M1Produit: Dao_M1Produit,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
@@ -33,16 +41,18 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         activeDatasFragNewProto.list_M1Produit = dao_M1Produit.getAll()
     }
 
+    // allColours now read directly from activeDatasFragNewProto instead of being passed in,
+    // so callers no longer need to source it from UiState/List_Datas.
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
         dao_M16CategorieProduit: Dao_M16CategorieProduit,
         activeCatalogue: M21CataloguesCategorie,
-        allColours: List<M3CouleurProduitInfos>,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
         activeFilter: Set<Prioriter>?,
     ): Flow<List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>> {
         return dao_M16CategorieProduit.getAllFlow().map { allCategories ->
             val allProducts = activeDatasFragNewProto.list_M1Produit
+            val allColours = activeDatasFragNewProto.list_M03CouleurProduitInfos ?: emptyList()
 
             val categoriesForCatalogue =
                 allCategories.filter { it.catalogueParentId == activeCatalogue.id }
@@ -72,7 +82,7 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         dao_M9AppCompt: Dao_M9AppCompt,
     ): Flow<Pair<String?, List<M10OperationVentCouleur>>> =
         dao_M9AppCompt.getFlow_ByKeyID(
-            M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
         ).flatMapLatest { activeCompt ->
             val onVentKey =
                 activeCompt?.onVentM8BonVentKey?.takeIf { it.isNotBlank() && it != "null" }
@@ -83,7 +93,7 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         }
 
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt: Dao_M9AppCompt): Flow<Z_AppCompt?> =
-        dao_M9AppCompt.getFlow_ByKeyID(M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId)
+        dao_M9AppCompt.getFlow_ByKeyID(M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId)
 
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
         dao_M9AppCompt: Dao_M9AppCompt,
@@ -104,5 +114,4 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): Flow<List<M01Produit>> =
         dao_M1Produit.getAllFlow().onEach { activeDatasFragNewProto.list_M1Produit = it }
-
 }

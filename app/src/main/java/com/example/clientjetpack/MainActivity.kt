@@ -4,7 +4,7 @@ import Application2.App.App.appModule_App2_ac_app1
 import Application2.App.MainScreen.MainScreen_Jemla_Com_PresentoirApp
 import Application4.App.Screen.MainScreen_NewProtoPattern
 import EntreApps.Shared.Models.Components.AppType
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Modules.Base.PermissionHandler
 import EntreApps.Shared.Modules.Base.StoragePermissionDialog
 import EntreApps.Shared.Modules.Base.modules_NewProtoPatterns
@@ -50,9 +50,9 @@ class MainActivity : ComponentActivity() {
             androidContext(this@MainActivity)
             modules(modules_NewProtoPatterns)
 
-            when (M18CentralParametresOfAllApps.get_Default().its_AppType) {
+            when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
                 AppType.JomLaElectroLivreurGrossist_PresenterScreen ->
-                    if (M18CentralParametresOfAllApps().load_All_modules)
+                    if (M00CentralParametresOfAllApps().load_All_modules)
                         modules(appModule) else
                         modules(appModule_App2_ac_app1)
                 AppType.JomLaElectroLivreurGrossist_VendeurHost -> {}
@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
-                                when (M18CentralParametresOfAllApps.get_Default().its_AppType) {
+                                when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
                                     AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
                                         MainScreen_Jemla_Com_PresentoirApp()
                                     }

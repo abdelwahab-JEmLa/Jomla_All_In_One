@@ -2,7 +2,7 @@ package P0_MainScreen.Main
 
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M14VentPeriode
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.BlinkingWarningCard
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
@@ -106,7 +106,7 @@ fun MainScreen_All(
         remember(targetedPeriodDoitEtreDon, focusedValuesGetter.currentActive_M9AppCompt) {
             targetedPeriodDoitEtreDon != null &&
                     (focusedValuesGetter.currentActive_M9AppCompt?.keyID
-                        ?: "") == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId
+                        ?: "") == M00CentralParametresOfAllApps().abdelmomen_Compt_KeyId
         }
 
     LaunchedEffect(repositoryProgress) {
@@ -196,7 +196,7 @@ fun MainScreen_All(
     var lockHost by remember { mutableStateOf(false) }
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
 
-    var isControleFabVisible by remember { mutableStateOf(M18CentralParametresOfAllApps().isControleFabVisible) }
+    var isControleFabVisible by remember { mutableStateOf(M00CentralParametresOfAllApps().isControleFabVisible) }
     var isProcessingUpdate by remember { mutableStateOf(false) }
 
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
@@ -347,7 +347,7 @@ fun MainScreen_All(
                                         key = SemanticsPropertyKey("isWifiClientConnected_1")
                                     )
                                 }) {
-                            if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
+                            if (M00CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
                                 Column(modifier = Modifier.fillMaxSize()) {
                                     MainFastSearchProduitPourVent()
                                 }

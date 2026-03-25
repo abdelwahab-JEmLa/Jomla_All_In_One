@@ -1,8 +1,8 @@
 package Application4.App.A.Start.Init
 
-import EntreApps.Shared.Models.Home.CentraleMainGetter_NewProtoPattern
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
+import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import android.util.Log
 import com.dropbox.core.DbxRequestConfig
 import com.dropbox.core.oauth.DbxCredential
@@ -17,10 +17,11 @@ import java.io.FileOutputStream
 private const val TAG = "DropboxImageSyncer"
 
 class DropboxImageSyncer(
-    private val dao_M3CouleurProduitInfos: M3CouleurProduitInfosDao,
+    private val dao_M03CouleurProduitInfos: Dao_M03CouleurProduitInfos,
+    private val onUpdate_M3: (M3CouleurProduitInfos) -> Unit,
     private val onProgress: (Float) -> Unit,
 ) {
-    private val localImagesBaseDir = File(CentraleMainGetter_NewProtoPattern.images_central_Local_storageLink)
+    private val localImagesBaseDir = File(M00CentralParametresOfAllApps.images_central_Local_storageLink)
     private val dropboxRootFolder = "/images"
 
     private val client: DbxClientV2 by lazy {
@@ -35,24 +36,24 @@ class DropboxImageSyncer(
         DbxClientV2(config, credential)
     }
 
-    suspend fun syncAll() {
+    suspend fun syncAll(set_dropBox_key: Boolean) {
         onProgress(0.1f)
         val index = buildIndex()
 
         if (index.isEmpty()) {
             Log.e(TAG, "Index vide — token invalide ou dossier '$dropboxRootFolder' introuvable")
-            onProgress(1f) // Fix: terminer même si index vide
+            onProgress(1f)
             return
         }
         Log.d(TAG, "Index construit: ${index.size} fichiers")
 
-        val colors = dao_M3CouleurProduitInfos.getAll()
+        val colors = dao_M03CouleurProduitInfos.getAll()
         val total = colors.size.coerceAtLeast(1)
         colors.forEachIndexed { i, color ->
-            syncImage(color, index)
-            onProgress(0.2f + 0.8f * ((i + 1).toFloat() / total)) // Fix: (i+1) et après syncImage
+            syncImage(color, index, set_dropBox_key)
+            onProgress(0.2f + 0.8f * ((i + 1).toFloat() / total))
         }
-        onProgress(1f) // Fix: garantir 1f à la fin
+        onProgress(1f)
     }
 
     private suspend fun buildIndex(): Map<String, String> = withContext(Dispatchers.IO) {
@@ -81,9 +82,18 @@ class DropboxImageSyncer(
         index
     }
 
-    private suspend fun syncImage(color: M3CouleurProduitInfos, index: Map<String, String>) {
+    private suspend fun syncImage(
+        color: M3CouleurProduitInfos,
+        index: Map<String, String>,
+        set_dropBox_key: Boolean,
+    ) {
         val filename = color.nomImageFichieSansEtansion
+
+        // Skip si image non dispo
         if (filename == "Non Dispo" || filename.isBlank()) return
+
+        // Skip la recherche Dropbox si trigger désactivé OU si dropBox_key déjà assignée
+        if (!set_dropBox_key || color.dropBox_key != "Non Dispo") return
 
         val localFile = File(localImagesBaseDir, "$filename.${color.extensionDisponible}")
         if (localFile.exists()) return
@@ -102,7 +112,8 @@ class DropboxImageSyncer(
                     client.files().download(dropboxPath).download(out)
                 }
             }
-            Log.d(TAG, "OK '$filename' ← $dropboxPath (${localFile.length()} bytes)")
+            onUpdate_M3(color.copy(dropBox_key = dropboxPath))
+            Log.d(TAG, "OK '$filename' ← $dropboxPath (${localFile.length()} bytes) | dropBox_key mis à jour")
         } catch (e: Exception) {
             localFile.delete()
             Log.e(TAG, "Téléchargement échoué: '$filename' [${e::class.simpleName}]: ${e.message}")

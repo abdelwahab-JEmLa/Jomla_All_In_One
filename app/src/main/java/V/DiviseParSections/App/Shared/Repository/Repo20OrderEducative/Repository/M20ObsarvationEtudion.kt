@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Utilisateur
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant.Takiyim
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
@@ -37,7 +37,7 @@ class Repo20ObsarvationEtudion(
         if (currentFilter == null || currentFilter == Utilisateur.Admin) {
             _datas.value
         } else {
-            val params = M18CentralParametresOfAllApps()
+            val params = M00CentralParametresOfAllApps()
             val targetKeyId = when (currentFilter) {
                 Utilisateur.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
                 Utilisateur.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId
@@ -280,7 +280,7 @@ data class M20ObsarvationEtudion(
     // Store custom moulahadat as comma-separated string
     var moulahadat_takyim_li_islahiha: String = "",
 
-    var parent_ousstad_key: String = M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
+    var parent_ousstad_key: String = M00CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
 
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),

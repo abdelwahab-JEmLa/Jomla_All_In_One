@@ -3,10 +3,10 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Repo18CentralParametresOfAllApps
+import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import EntreApps.Shared.Models.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -271,11 +271,11 @@ class RepositorysMainGetter(
     init {
         composScope.launch {
             try {
-                M18CentralParametresOfAllApps().au_Lence_Diminue_DatasFB.ifTrue {
+                M00CentralParametresOfAllApps().au_Lence_Diminue_DatasFB.ifTrue {
                     M11AchatOperation.remove_ref()
                 }
 
-                M18CentralParametresOfAllApps().au_Lence_Dimininue_Datas_OperationVents.ifTrue {
+                M00CentralParametresOfAllApps().au_Lence_Dimininue_Datas_OperationVents.ifTrue {
                     M10OperationVentCouleur.remove_ref()
                 }
 

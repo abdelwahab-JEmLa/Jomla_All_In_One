@@ -20,7 +20,11 @@ class ActiveDatasFragNewProto {
     var filter_marqueClient_enum_entrie: MapClientsViewModel.VisibleClientsNow? by mutableStateOf(null)
 
     var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(Prioriter.entries.toSet())
+
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
+    // Canonical source for M3 colours — used everywhere instead of UiState/List_Datas
+    var list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>? by mutableStateOf(null)
+
     var list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur:
             List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>
             by mutableStateOf(emptyList())

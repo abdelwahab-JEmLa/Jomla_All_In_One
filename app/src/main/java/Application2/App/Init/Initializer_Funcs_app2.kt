@@ -3,9 +3,9 @@ package Application2.App.Init
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
-import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
@@ -21,7 +21,6 @@ import com.google.firebase.firestore.Source
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -32,12 +31,13 @@ import java.io.FileOutputStream
 
 private const val TAG = "Dropbox"
 
+@Suppress("DEPRECATION")
 class Initializer_Funcs_app2(
     val context: Context,
     val on_Progress_Datas: (Float) -> Unit,
     val dao_M1Produit: Dao_M1Produit,
     val dao_16CategorieProduit: Dao_M16CategorieProduit,
-    val dao_M3CouleurProduitInfos: M3CouleurProduitInfosDao,
+    val dao_M03CouleurProduitInfos: Dao_M03CouleurProduitInfos,
 ) {
     private val mutex = Mutex()
     private val progress = mutableMapOf<String, Float>()
@@ -65,34 +65,59 @@ class Initializer_Funcs_app2(
     suspend fun initializeAllRepositories() {
         mutex.withLock { Repo.entries.forEach { progress[it.name] = 0f } }
         val isOnline = isInternetAvailable(context)
-        listOf(
-            repoScope.launch { seedRepo(Repo.M1Produit, isOnline) { seedProducts() } },
-            repoScope.launch { seedRepo(Repo.M16CategorieProduit, isOnline) { seedCategories() } },
-            repoScope.launch { seedRepo(Repo.M3CouleurProduitInfos, isOnline) { seedColors(isOnline) } },
-        ).joinAll()
+        // M3 must be seeded first — M1 and M16 filters depend on its Room content
+        repoScope.launch { seedRepo(Repo.M3CouleurProduitInfos, isOnline) { seedColors(isOnline) } }.join()
+        // M1Produit must be seeded before M16CategorieProduit — categories filter by available product IDs
+        repoScope.launch { seedRepo(Repo.M1Produit, isOnline) { seedProducts() } }.join()
+        repoScope.launch { seedRepo(Repo.M16CategorieProduit, isOnline) { seedCategories() } }.join()
         updateMainInitDataBaseProgressEtate(1f)
     }
 
     private suspend fun seedProducts() {
         if (dao_M1Produit.getAll().isNotEmpty()) return
-        val items = M01Produit.ref_Active_Filtred_Datas.get().await()
+
+        // Only keep products that have at least one M3 colour in Room
+        val m3ParentKeys: Set<String> = dao_M03CouleurProduitInfos.getAll()
+            .map { it.parentBProduitInfosKeyID }
+            .toSet()
+
+        val items = M01Produit.ref.get().await()
             .children.mapNotNull { it.getValue(M01Produit::class.java) }
-        if (items.isNotEmpty()) dao_M1Produit.upsertAllDatas(items)
+            .filter { it.keyID in m3ParentKeys }
+        if (items.isNotEmpty()) dao_M1Produit.insertAll(items)
     }
 
     private suspend fun seedCategories() {
         if (dao_16CategorieProduit.getAll().isNotEmpty()) return
+
+        // Only keep categories that have at least one M1Produit in Room
+        val m1CategoryIds: Set<Long> = dao_M1Produit.getAll()
+            .map { it.idParentCategorie }
+            .toSet()
+
         val items = M16CategorieProduit.ref.get().await()
             .children.mapNotNull { it.getValue(M16CategorieProduit::class.java) }
-        if (items.isNotEmpty()) dao_16CategorieProduit.upsertAllDatas(items)
+            .filter { it.id in m1CategoryIds }
+        if (items.isNotEmpty()) dao_16CategorieProduit.insertAll(items)
     }
 
     private suspend fun seedColors(isOnline: Boolean) {
-        if (dao_M3CouleurProduitInfos.getAll().isEmpty()) {
-            val items = M3CouleurProduitInfos.ref_Active_Filtred_Datas.get().await()
+        // Always work from the filtered list — seed it if Room is empty, otherwise read it back
+        val filteredColors: List<M3CouleurProduitInfos> = if (dao_M03CouleurProduitInfos.getAll().isEmpty()) {
+            val allowedKeys: Set<String> = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
+                .get().await()
+                .children.mapNotNull { it.key }
+                .toSet()
+
+            val items = M3CouleurProduitInfos.ref.get().await()
                 .children.mapNotNull { it.getValue(M3CouleurProduitInfos::class.java) }
-            if (items.isNotEmpty()) dao_M3CouleurProduitInfos.upsertAllDatas(items)
+                .filter { it.keyID in allowedKeys }
+            if (items.isNotEmpty()) dao_M03CouleurProduitInfos.insertAll(items)
+            items
+        } else {
+            dao_M03CouleurProduitInfos.getAll()
         }
+
         if (!isOnline) return
 
         setProgress(Repo.M3CouleurProduitInfos.name, 0.1f)
@@ -104,11 +129,13 @@ class Initializer_Funcs_app2(
         }
         Log.d(TAG, "Index construit: ${dropboxIndex.size} fichiers")
 
-        val colors = dao_M3CouleurProduitInfos.getAll()
-        val total = colors.size.coerceAtLeast(1)
-        colors.forEachIndexed { index, color ->
-            setProgress(Repo.M3CouleurProduitInfos.name, 0.2f + 0.8f * (index.toFloat() / total))
-            syncColorImageFromDropbox(color)
+        val total = filteredColors.size.coerceAtLeast(1)
+        filteredColors.forEachIndexed { index, color ->
+            setProgress(Repo.M3CouleurProduitInfos.name, 0.2f + 0.8f * ((index + 1).toFloat() / total))
+            // Sync Dropbox seulement si dropBox_key pas encore assignée
+            if (color.dropBox_key == "Non Dispo") {
+                syncColorImageFromDropbox(color)
+            }
         }
     }
 

@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.cleanupOldBonVents
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import android.content.Context
@@ -31,7 +31,7 @@ class Repo8BonVent(
             dataBaseCreationFactory.dao.getAllFlow().collect { newData ->
                 _datas.value = newData
 
-                if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_Dimininue_Datas_M8BonVents) {
+                if (newData.isNotEmpty() && M00CentralParametresOfAllApps().au_Lence_Dimininue_Datas_M8BonVents) {
                     cleanupOldBonVents(this@Repo8BonVent, newData)
                 }
             }

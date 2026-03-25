@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.VibrationEffect
@@ -61,7 +61,7 @@ fun Button_ID2_Menagerie_Telegram(
 
     val current_Compt_Et_Admin = focusedValuesGetter.currentApp_Est_Admin
     val currentAppComptKeyID = focusedValuesGetter.currentActive_M9AppCompt?.keyID
-    val isDevMode = M18CentralParametresOfAllApps.get_Default().itsDevMode
+    val isDevMode = M00CentralParametresOfAllApps.get_Default().itsDevMode
     val active_Notifications = aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.getNotificationSettings()
 
     val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()

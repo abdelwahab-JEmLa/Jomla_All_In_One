@@ -2,90 +2,16 @@ package EntreApps.Shared.Models
 
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.Components.Utilisateur
-import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App._0.Navigation.Screen
-import android.util.Log
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Entity
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
-import androidx.room.Query
 import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
-@Stable
-class Repo18CentralParametresOfAllApps(appDataBase: AppDatabase) {
-    val repoTAG = "Repo18CentralParametresOfAllApps"
-
-    private val repoScope = CoroutineScope(Dispatchers.IO)
-    private val refRepo = M18CentralParametresOfAllApps.ref
-    private val dao = appDataBase.M18CentralParametresOfAllAppsDao()
-
-    private val _data = mutableStateOf<M18CentralParametresOfAllApps?>(null)
-    val dataValue by derivedStateOf { _data.value }
-
-    init {
-        extracted()
-    }
-
-    private fun extracted() {
-        repoScope.launch {
-            val localData = dao.getAll()
-            _data.value = localData
-            setupFirebaseGet()
-        }
-    }
-
-    private fun setupFirebaseGet() {
-        refRepo.get().addOnSuccessListener { snapshot ->
-            val data = snapshot.getValue(M18CentralParametresOfAllApps::class.java)
-
-            repoScope.launch {
-                if (data != null) {
-                    dao.upsert(data)
-                    _data.value = data
-                    Log.d(repoTAG, "Successfully retrieved and saved data: $data")
-                } else {
-                    Log.w(repoTAG, "Received null data from Firebase")
-                    val defaultData = M18CentralParametresOfAllApps.get_Default()
-                    dao.upsert(defaultData)
-                    _data.value = defaultData
-                    Log.d(repoTAG, "Using default data: $defaultData")
-                }
-            }
-        }.addOnFailureListener { exception ->
-            Log.e(repoTAG, "Failed to retrieve data from Firebase", exception)
-
-            repoScope.launch {
-                val localData = dao.getAll()
-                if (localData == null) {
-                    val defaultData = M18CentralParametresOfAllApps.get_Default()
-                    dao.upsert(defaultData)
-                    _data.value = defaultData
-                    Log.d(repoTAG, "Firebase failed, using default data: $defaultData")
-                }
-            }
-        }
-    }
-
-    fun getNotificationSettings(): Boolean {
-        return _data.value?.enableNotifications ?: true
-    }
-}
 
 @Entity
-data class M18CentralParametresOfAllApps(
+data class M00CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
@@ -148,6 +74,7 @@ data class M18CentralParametresOfAllApps(
         val centralRef = Firebase.database.getReference(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
         )
+        const val images_central_Local_storageLink = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
@@ -172,15 +99,15 @@ data class M18CentralParametresOfAllApps(
             return this ?: value
         }
 
-        val ref = RepositorysMainGetter.centralRef
+        val ref = RepositorysMainGetter.Companion.centralRef
             .child("Datas18CentralParametresOfAllApps")
 
-        fun get_Default(): M18CentralParametresOfAllApps {
-            return M18CentralParametresOfAllApps()
+        fun get_Default(): M00CentralParametresOfAllApps {
+            return M00CentralParametresOfAllApps()
         }
 
         fun get_utilisateur(currentComptKeyId: String): Utilisateur {
-            val params = M18CentralParametresOfAllApps()
+            val params = M00CentralParametresOfAllApps()
             return when (currentComptKeyId) {
                 params.amine_madrasa_Compt_KeyId -> Utilisateur.Amine_Madrassa
                 params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
@@ -197,24 +124,4 @@ data class M18CentralParametresOfAllApps(
             return utilisateur == Utilisateur.Admin
         }
     }
-}
-
-@Dao
-interface M18CentralParametresOfAllAppsDao {
-    @Query("SELECT COUNT(*) FROM M18CentralParametresOfAllApps")
-    suspend fun getCount(): Int
-
-    suspend fun isTableEmpty(): Boolean = getCount() == 0
-
-    @Query("SELECT * FROM M18CentralParametresOfAllApps WHERE keyId = 'M18CentralParametresOfAllApps'")
-    suspend fun getAll(): M18CentralParametresOfAllApps?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(tarificationInfos: M18CentralParametresOfAllApps)
-
-    @Delete
-    suspend fun delete(data: M18CentralParametresOfAllApps)
-
-    @Query("DELETE FROM M18CentralParametresOfAllApps")
-    suspend fun deleteAll()
 }

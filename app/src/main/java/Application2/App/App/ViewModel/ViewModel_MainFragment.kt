@@ -44,7 +44,7 @@ class ViewModel_MainFragment(
 
     private val dao_M1Produit = appDatabase.dao_M1Produit()
     private val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
-    private val dao_M3CouleurProduitInfos = appDatabase.dao_M3CouleurProduitInfos()
+    private val dao_M3CouleurProduitInfos = appDatabase.dao_M03CouleurProduitInfos()
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()

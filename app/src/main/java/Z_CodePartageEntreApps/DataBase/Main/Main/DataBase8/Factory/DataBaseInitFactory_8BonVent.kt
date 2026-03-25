@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.Init.onLoadCategoriesFromCsv
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
@@ -131,7 +131,7 @@ class DataBaseInitFactory_8BonVent(
         isListenerRegistered = true
         Log.d("suit_flow", "🎧 Factory8.triggerListener: Enregistrement du listener Firebase")
 
-        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+        M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
             repoRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     Log.d("suit_flow", "🔔 Factory8.Listener: Changement Firebase détecté")

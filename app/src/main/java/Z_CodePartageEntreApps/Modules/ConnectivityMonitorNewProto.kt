@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -54,7 +54,7 @@ class ConnectivityMonitorNewProto(private val scope: CoroutineScope) {
                 onOffline()
             }
         }
-        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+        M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         connectedRef?.addValueEventListener(connectionListener!!)}
     }

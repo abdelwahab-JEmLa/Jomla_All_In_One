@@ -1,6 +1,6 @@
 package EntreApps.Shared.Models.Components
 
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 
 enum class Ousstad_Tahfid(
     val ayam_tadriss: String = "dimanch/jeudi",
@@ -10,7 +10,7 @@ enum class Ousstad_Tahfid(
     Abdelwahab_Osstad(
         "dimanch/jeudi",
         "عبدالوهاب حمنيش" ,
-        M18CentralParametresOfAllApps.Companion.get_Default().abdelwahabTravailleChezGros_KeyId
+        M00CentralParametresOfAllApps.Companion.get_Default().abdelwahabTravailleChezGros_KeyId
 
     ),
     Non_Defini_Actuellemen(
@@ -26,7 +26,7 @@ enum class Ousstad_Tahfid(
     Amine_Madrassa(
         "dimanch/jeudi",
         "أمين" ,
-        M18CentralParametresOfAllApps.Companion.get_Default().amine_madrasa_Compt_KeyId
+        M00CentralParametresOfAllApps.Companion.get_Default().amine_madrasa_Compt_KeyId
     )
     ;
 }

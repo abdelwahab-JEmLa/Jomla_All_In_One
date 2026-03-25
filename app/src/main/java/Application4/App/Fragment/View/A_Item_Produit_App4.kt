@@ -62,9 +62,9 @@ fun A_Item_Produit_App4(
         }
     }
 
-    val relative_ListM3Couleurs = remember(uiState.list_M3CouleurProduit) {
+    val relative_ListM3Couleurs = remember(viewModel.active_Datas.list_M03CouleurProduitInfos) {
         find_ListM3CouleurInfos_By_Parent_Produit_KeyID(
-            uiState.list_M3CouleurProduit,
+            viewModel.active_Datas.list_M03CouleurProduitInfos ?: emptyList(),
             relative_M1produit.keyID
         )
     }
@@ -252,7 +252,7 @@ fun A_Item_Produit_App4(
                     categoryName = currentCategory?.nom,
                     onCategoryClick = categoryClickForHeader,
                     section_ToggleButton_TagPreiorities__start_Collapsed = viewModel.active_Datas.section_ToggleButton_TagPrioriter__start_Collapsed == true
-                    )
+                )
 
                 val filteredAndSortedTariffs = datasValue_with_synthetic
                     .filter { tariff ->

@@ -5,7 +5,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.GroupTunnel
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.UploadFilteredData_DropdownMenuItem.View.UploadFilteredData_DropdownMenuItem
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.Icons
@@ -84,10 +83,6 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                 }
             )
             Fab_Stigns(onClickImageToShowControles, onDismissDropdown)
-            UploadFilteredData_DropdownMenuItem(
-                groupe_Par_Catalogue = filteredCatalogues,
-                onDismissDropdown = onDismissDropdown,
-            )
         }
     }
 }

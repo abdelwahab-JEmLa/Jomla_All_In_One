@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -78,7 +78,7 @@ class TariffsButtonsViewModelSec7ID2(
         viewModelScope.launch {
             allAppComptsFlow.collect { list ->
                 val active = list.find {
-                    it.keyID == M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+                    it.keyID == M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
                 }
                 _activeAppCompt.update { active }
                 _uiState.update {

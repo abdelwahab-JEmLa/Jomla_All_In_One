@@ -13,7 +13,7 @@ import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -62,7 +62,7 @@ fun ViewProduit_T1(
         mutableStateOf(
             focusedValuesGetter.currentApp_Its_Vendeur ||
                     !focusedValuesGetter.currentApp_ItsWorkChezGrossisst ||
-                    M18CentralParametresOfAllApps.get_Default().itsDevMode
+                    M00CentralParametresOfAllApps.get_Default().itsDevMode
         )
     }
 

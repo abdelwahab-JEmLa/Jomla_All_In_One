@@ -5,10 +5,10 @@ import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
 import EntreApps.Shared.Models.M14VentPeriode
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Repo18CentralParametresOfAllApps
+import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -204,8 +204,8 @@ class FocusedValuesGetter(
 
 
     val currentApp_Its_Vendeur by derivedStateOf {
-        M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId == M18CentralParametresOfAllApps.get_Default().younes_Compt_KeyId
-                || M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId == M18CentralParametresOfAllApps.get_Default().abdelmomen_Compt_KeyId
+        M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId == M00CentralParametresOfAllApps.get_Default().younes_Compt_KeyId
+                || M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId == M00CentralParametresOfAllApps.get_Default().abdelmomen_Compt_KeyId
     }
 
 
@@ -306,9 +306,9 @@ class FocusedValuesGetter(
         currentActive_M9AppCompt?.activeDialogSearchM1Produit ?: false
     }
 
-    val its_Developing_Mode = M18CentralParametresOfAllApps.get_Default().itsDevMode
+    val its_Developing_Mode = M00CentralParametresOfAllApps.get_Default().itsDevMode
 
-    val m18CentralParametresOfAllApps by derivedStateOf { M18CentralParametresOfAllApps() }
+    val m00CentralParametresOfAllApps by derivedStateOf { M00CentralParametresOfAllApps() }
 
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")

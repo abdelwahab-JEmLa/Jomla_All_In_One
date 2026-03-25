@@ -134,7 +134,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
     single { DataBaseInitFactory_14VentPeriode(get()) }
     single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }
     single { DataBaseInit_Z_AppCompt(get<AppDatabase>().dao_M9AppCompt()) }
-    single { DataBaseInitFactory_M3CouleurProduitInfos(get<AppDatabase>().dao_M3CouleurProduitInfos()) }
+    single { DataBaseInitFactory_M3CouleurProduitInfos(get<AppDatabase>().dao_M03CouleurProduitInfos()) }
     single { DataBaseCreationFactory13TarificationInfos(get()) }
     single { dataBaseCreationFactoryMID2ClientRepository(androidContext(), get()) }
     single<DataBaseInitFactory_8BonVent> { DataBaseInitFactory_8BonVent(get()) }

@@ -7,9 +7,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import com.google.firebase.Firebase
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,7 +28,7 @@ class RepositorysMainGetter_app2(
 
     val dao_M1Produit = appDatabase.dao_M1Produit()
     val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
-    val dao_M3CouleurProduitInfos = appDatabase.dao_M3CouleurProduitInfos()
+    val dao_M3CouleurProduitInfos = appDatabase.dao_M03CouleurProduitInfos()
 
     fun update_ActiveCentralValues_app2(new: ActiveCentralValues_app2) {
         _ActiveCentralValues_app2.value = new
@@ -53,21 +50,5 @@ class RepositorysMainGetter_app2(
         repoScope.launch {
             initializer.initializeAllRepositories()
         }
-    }
-
-    companion object {
-        val centralRef = Firebase.database.getReference(
-            "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
-        )
-
-        val images_central_Local_storageLink = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
-
-
-        fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
-        inline fun Long?.ifNotNullOrZero(block: () -> Unit) { if (this != null && this != 0L) block() }
-        inline fun String?.ifNotNullOrEmpty(block: () -> Unit) { if (!this.isNullOrEmpty()) block() }
-        inline fun Boolean.ifTrue(block: () -> Unit) { if (this) block() }
-        inline fun Boolean.ifFalse(block: () -> Unit) { if (!this) block() }
-        fun String?.empty_If_Null(value: String = ""): String { return this ?: value }
     }
 }

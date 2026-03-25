@@ -18,7 +18,7 @@ import EntreApps.Shared.Models.M01Produit.EtateActuelleOnFusionAvecBaseDonne
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -372,7 +372,7 @@ private fun applyCategoryGroupedSortingWithCatalogueLogic(
 
     // Process each catalogue in order
     categoriesByCatalogue.forEach { (catalogue, categories) ->
-        val shouldShowCatalogue = if (M18CentralParametresOfAllApps.get_Default().itsDevMode) {
+        val shouldShowCatalogue = if (M00CentralParametresOfAllApps.get_Default().itsDevMode) {
             catalogue.id != 4L
         } else {
             true

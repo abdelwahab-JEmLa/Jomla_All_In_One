@@ -22,7 +22,7 @@ class RepositorysMainSetter_NewProtoPatterns(
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-        // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // M01Produit
     // -------------------------------------------------------------------------
 
@@ -45,6 +45,22 @@ class RepositorysMainSetter_NewProtoPatterns(
     // M3CouleurProduitInfos
     // -------------------------------------------------------------------------
 
+    fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(
+        keys: Map<String, Boolean>,
+        onSuccess: () -> Unit = {}
+    ) {
+        val ref_listKeys = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
+        composScope.launch {
+            ref_listKeys.removeValue().await()
+            if (keys.isNotEmpty()) {
+                val updates: Map<String, Any> = keys.mapValues { it.value }
+                ref_listKeys.updateChildren(updates).await()
+            }
+
+            withContext(Dispatchers.Main) { onSuccess() }
+        }
+    }
+
     fun update_M3CouleurProduitInfos(
         data: M3CouleurProduitInfos,
         onSuccess: () -> Unit = {}
@@ -58,7 +74,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             return
         }
         composScope.launch {
-            appDatabase.dao_M3CouleurProduitInfos().update(data)
+            appDatabase.dao_M03CouleurProduitInfos().update(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
             M3CouleurProduitInfos.ref.updateChildren(updates).await()
             withContext(Dispatchers.Main) { onSuccess() }
@@ -117,22 +133,15 @@ class RepositorysMainSetter_NewProtoPatterns(
     // M10OperationVentCouleur
     // -------------------------------------------------------------------------
 
-    /**
-     * Inserts or updates an [M10OperationVentCouleur] and links it to [selectedTariff].
-     * Mirrors the old saveTariff_Et_RelateIt_Au_Vents_Correspond pattern but
-     * without requiring ACentralFacade.
-     */
     fun upsert_M10OperationVentCouleur(
         operation: M10OperationVentCouleur,
         selectedTariff: M13TarificationInfos
     ) {
         composScope.launch {
-            // Persist operation
             appDatabase.dao_M10OperationVentCouleur().upsert(operation)
             val opUpdates = mutableMapOf<String, Any>(operation.keyID to operation)
             M10OperationVentCouleur.ref.updateChildren(opUpdates).await()
 
-            // Persist tariff
             val tariffWithDefaults = selectedTariff.copy(
                 defaultNonSaved_Entre = false,
                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -148,11 +157,7 @@ class RepositorysMainSetter_NewProtoPatterns(
     // -------------------------------------------------------------------------
     // M9AppCompt
     // -------------------------------------------------------------------------
-    // -------------------------------------------------------------------------
 
-    /**
-     * Inserts a new M9AppCompt (compte) into the database and Firebase
-     */
     fun insert_M9AppCompt(
         data: Z_AppCompt,
         onSuccess: () -> Unit = {}
@@ -179,9 +184,6 @@ class RepositorysMainSetter_NewProtoPatterns(
         }
     }
 
-    /**
-     * Updates an existing M9AppCompt (compte) in the database and Firebase
-     */
     fun update_M9AppCompt(
         data: Z_AppCompt,
         onSuccess: () -> Unit = {}
@@ -207,7 +209,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             }
         }
     }
-    
+
     fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
         produit: M01Produit,
         currentAppCompt: Z_AppCompt

@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init.onLoadCategoriesFromCsv
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init.onLoadFromFireBase
@@ -58,7 +58,7 @@ class DataBaseInit_Z_AppCompt(
     fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
         isListenerRegistered = true
-        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+        M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         repoRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

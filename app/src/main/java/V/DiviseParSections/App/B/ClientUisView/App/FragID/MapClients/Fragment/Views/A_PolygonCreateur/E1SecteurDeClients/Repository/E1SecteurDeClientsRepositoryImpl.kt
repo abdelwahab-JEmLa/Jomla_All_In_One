@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Modules.Base.AppDatabase
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.android.gms.tasks.Tasks
@@ -201,7 +201,7 @@ class E1SecteurDeClientsRepositoryImpl(
                         // Firebase listener cancelled - no logging
                     }
                 }
-                M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+                M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
                 E1SecteurDeClientsRepository.sonDataBaseRef.addValueEventListener(
                     flowValueEventListener!!
                 )

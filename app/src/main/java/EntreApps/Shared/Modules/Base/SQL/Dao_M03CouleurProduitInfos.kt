@@ -11,7 +11,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface M3CouleurProduitInfosDao {
+interface Dao_M03CouleurProduitInfos {
     @Query("SELECT * FROM M3CouleurProduitInfos")
     fun getAllFlow(): Flow<List<M3CouleurProduitInfos>>
 

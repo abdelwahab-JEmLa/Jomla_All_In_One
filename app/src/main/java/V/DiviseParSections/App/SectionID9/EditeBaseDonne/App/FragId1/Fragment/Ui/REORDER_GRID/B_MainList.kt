@@ -6,7 +6,7 @@ import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -58,7 +58,7 @@ internal fun MainList(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             categoriesByCatalogue.forEach { (catalogue, categories) ->
-                val shouldShowCatalogue = if (M18CentralParametresOfAllApps.get_Default().itsDevMode) {
+                val shouldShowCatalogue = if (M00CentralParametresOfAllApps.get_Default().itsDevMode) {
                     catalogue.id != 4L
                 } else {
                     true

@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import androidx.compose.foundation.clickable
@@ -83,7 +83,7 @@ fun TakiyimSelectionDialog(
 
     // Get teacher's key from active Ousstad or from latest observation
     val teacherKeyID = remember(activeOusstad) {
-        val params = M18CentralParametresOfAllApps()
+        val params = M00CentralParametresOfAllApps()
         when (activeOusstad) {
             Ousstad_Tahfid.Abdelwahab_Osstad -> params.abdelwahabTravailleChezGros_KeyId
             Ousstad_Tahfid.Amine_Madrassa -> params.amine_madrasa_Compt_KeyId

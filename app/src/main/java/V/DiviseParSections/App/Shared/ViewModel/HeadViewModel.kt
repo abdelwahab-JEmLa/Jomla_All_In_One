@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Model.A_ProduitModel
@@ -864,7 +864,7 @@ open class HeadViewModel(
     }
 
     private fun setupAppSettingsListener() {
-        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+        M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         refAppSettingsSaverModel.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

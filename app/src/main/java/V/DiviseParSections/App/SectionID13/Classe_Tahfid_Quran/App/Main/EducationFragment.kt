@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.MonthSelectionDialog
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
@@ -72,7 +72,7 @@ fun EducationFragment(
 ) {
     val params = aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue
     val currentComptKeyId = params?.au_Lence_Set_Compt_Ac_KeyId ?: ""
-    val currentUtilisateur = M18CentralParametresOfAllApps.get_utilisateur(currentComptKeyId)
+    val currentUtilisateur = M00CentralParametresOfAllApps.get_utilisateur(currentComptKeyId)
 
     val activeCentralValues = focusedValuesGetter.active_Central_Values
     val searchQuery = activeCentralValues.outlined_filter_searcher_floating_abouve_all

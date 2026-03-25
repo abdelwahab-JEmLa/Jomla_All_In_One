@@ -1,7 +1,7 @@
 package Application4.App.Fragment.ID2.Fragment
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
@@ -237,7 +237,7 @@ fun MainFastSearchProduitPourVent_App4(
 
             val allAppCompts by appDatabase.dao_M9AppCompt().getAllFlow().collectAsState(initial = emptyList())
             val m9: Z_AppCompt? = allAppCompts.find {
-                it.keyID == M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+                it.keyID == M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             }
             val affiche_Dialog_Fast_Affiche_Panie_App4: Boolean? = m9?.affiche_Dialog_Fast_Affiche_Panie_App4
 

@@ -5,14 +5,14 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
-import EntreApps.Shared.Models.M18CentralParametresOfAllAppsDao
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import Z_CodePartageEntreApps.DataBase.M18CentralParametresOfAllAppsDao
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
+import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
-import EntreApps.Shared.Modules.Base.SQL.M3CouleurProduitInfosDao
+import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
@@ -112,7 +112,7 @@ import java.util.Date
         M11AchatOperation::class,
 
         M17MessageVocale::class,
-        M18CentralParametresOfAllApps::class,
+        M00CentralParametresOfAllApps::class,
         M19Etudiant::class,
         M20ObsarvationEtudion::class,
 
@@ -158,7 +158,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun dao_M1Produit(): Dao_M1Produit
     abstract fun dao_16CategorieProduit(): Dao_M16CategorieProduit
-    abstract fun dao_M3CouleurProduitInfos(): M3CouleurProduitInfosDao
+    abstract fun dao_M03CouleurProduitInfos(): Dao_M03CouleurProduitInfos
     abstract fun dao_M9AppCompt(): Dao_M9AppCompt
     abstract fun dao_M8BonVent(): Dao_M8BonVent
     abstract fun dao_M13TarificationInfos(): Dao13TarificationInfos

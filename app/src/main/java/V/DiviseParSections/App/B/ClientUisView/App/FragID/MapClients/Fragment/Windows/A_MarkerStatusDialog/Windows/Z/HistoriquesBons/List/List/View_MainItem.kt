@@ -14,7 +14,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.annotation.SuppressLint
@@ -164,7 +164,7 @@ fun View_MainItem(
 
     if (etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         && activeM8BonVentId != relative_M8BonVent.vid &&
-        !M18CentralParametresOfAllApps.get_Default().itsDevMode
+        !M00CentralParametresOfAllApps.get_Default().itsDevMode
     ) {
         LaunchedEffect(key1 = Unit) {
             while (true) {

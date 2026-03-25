@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.Extension
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepository
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepositoryImpl
@@ -39,7 +39,7 @@ object FirebaseUtilsC_GrossistsDataBase {
         onValueEventListenerCreated: (ValueEventListener) -> Unit
     ) {
         createValueEventListener(repository)?.let {
-            M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+            M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
             C_GrossistsDataBaseRepository.caReference.addValueEventListener(it)}
             onValueEventListenerCreated(it)

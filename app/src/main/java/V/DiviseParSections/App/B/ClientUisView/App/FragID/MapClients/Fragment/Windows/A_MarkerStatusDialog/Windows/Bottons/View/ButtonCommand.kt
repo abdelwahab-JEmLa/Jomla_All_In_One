@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.Components.AppType
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M8BonVent
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.vibrateOnUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
@@ -108,7 +108,7 @@ fun CommandButton(
 
             focusedValuesGetter.update_activeCentralValues(updatedActiveCentralValues)
 
-            if (M18CentralParametresOfAllApps.get_Default().its_AppType == AppType.AllInOne) {
+            if (M00CentralParametresOfAllApps.get_Default().its_AppType == AppType.AllInOne) {
                 viewModel.updateLongAppSetting(relative_M2Client.id)
                 onUpdateLongAppSetting()
             } else {

@@ -1,6 +1,6 @@
 package EntreApps.Shared.Models.Components
 
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 
 enum class Utilisateur(
     val comp: String,
@@ -10,28 +10,28 @@ enum class Utilisateur(
 ) {
     Admin("", "", "المسؤول"),
     Abdelwahab_Osstad(
-        M18CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
+        M00CentralParametresOfAllApps().abdelwahabTravailleChezGros_KeyId,
         "dimanch/jeudi",
         "عبدالوهاب حمنيش",
              "+213 553 88 50 37"
     ),
     kissm_intikali_madrasa_Compt_Osstad(
-        M18CentralParametresOfAllApps().kissm_intikali_madrasa_Compt_KeyId,
+        M00CentralParametresOfAllApps().kissm_intikali_madrasa_Compt_KeyId,
         "dimanch/jeudi",
         "قسم انتقالي"
     ),
     Abdelmoumen(
-        M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId,
+        M00CentralParametresOfAllApps().abdelmomen_Compt_KeyId,
         "dimanch/jeudi",
         "عبدالمؤمن"
     ),
     Walid(
-        M18CentralParametresOfAllApps().walid_Compt_KeyId,
+        M00CentralParametresOfAllApps().walid_Compt_KeyId,
         "dimanch/jeudi",
         "وليد"
     ),
     Amine_Madrassa(
-        M18CentralParametresOfAllApps().amine_madrasa_Compt_KeyId,
+        M00CentralParametresOfAllApps().amine_madrasa_Compt_KeyId,
         "dimanch/jeudi",
         "أمين"
     );

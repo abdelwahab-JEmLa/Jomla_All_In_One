@@ -4,12 +4,11 @@ import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Components.Utilisateur
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M14VentPeriode
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.FilterState_Facad_Boutique_FragId5
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -68,7 +67,7 @@ data class ActiveCentralValues(
     val isInTemporaryShowAllMode: Boolean = false,
 
     //-----------------M9-----------------------------------------------------------------------------------------------------------------------------------------
-    val activeCompt_KeyID: String? = M18CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId,
+    val activeCompt_KeyID: String? = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId,
     val activeCompt: Z_AppCompt? = null,
 
     // Derived from activeCompt.its_Admin — set by FocusedValues_FluidApp flow, never set manually
@@ -112,7 +111,7 @@ data class ActiveCentralValues(
 
     //-----------------Fragmet.Paye-------------------------------------------------------------------------------------------------------------------------
     var active_Ousstad_Tahfid: Ousstad_Tahfid? = run {
-        val params = M18CentralParametresOfAllApps()
+        val params = M00CentralParametresOfAllApps()
         val utilisateur = when (params.au_Lence_Set_Compt_Ac_KeyId) {
             params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
             params.walid_Compt_KeyId -> Utilisateur.Walid
@@ -130,7 +129,7 @@ data class ActiveCentralValues(
     },
 
     var active_filter_du_utilisateur: Utilisateur? = run {
-        val params = M18CentralParametresOfAllApps()
+        val params = M00CentralParametresOfAllApps()
         when (params.au_Lence_Set_Compt_Ac_KeyId) {
             params.abdelmomen_Compt_KeyId -> Utilisateur.Abdelmoumen
             params.walid_Compt_KeyId -> Utilisateur.Walid
@@ -152,8 +151,8 @@ data class ActiveCentralValues(
     var le_pourvoire_clike_checked_est_active: Boolean = false,
 
     val fastSearchProduitPourVent: String = "",
-    val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M18CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
-        == M18CentralParametresOfAllApps().abdelmomen_Compt_KeyId)
+    val affiche_Dialog_Fast_Affiche_Panie: Boolean = if (M00CentralParametresOfAllApps().au_Lence_Set_Compt_Ac_KeyId
+        == M00CentralParametresOfAllApps().abdelmomen_Compt_KeyId)
         false else
         false,
 

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposi
 import EntreApps.Shared.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -29,11 +29,11 @@ class Repo13TarificationInfos(
             dataBaseCreationFactory.dao.getAllFlow().collect { newData ->
                 _datas.value = newData
                 // Clean up duplicates after data is loaded
-                if (newData.isNotEmpty() && M18CentralParametresOfAllApps().au_Lence_Diminue_DatasFB) {
+                if (newData.isNotEmpty() && M00CentralParametresOfAllApps().au_Lence_Diminue_DatasFB) {
                     cleanupDuplicateTariffs(this@Repo13TarificationInfos, newData)
                 }
 
-                M18CentralParametresOfAllApps().time_tamp_all_tariffs.ifTrue {
+                M00CentralParametresOfAllApps().time_tamp_all_tariffs.ifTrue {
                     updateTariffsWithZeroTimestamps(newData)
                 }
             }

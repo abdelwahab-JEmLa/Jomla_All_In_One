@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -20,7 +20,7 @@ inline fun <reified T : Any> triggerUpdateFbParTimestampsListener(
     ref: DatabaseReference,
     noinline upsertFunction: suspend (T) -> Unit,
     noinline callback: (() -> Unit)? = null
-) {                          M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+) {                          M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
     ref.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -102,7 +102,7 @@ inline fun <reified T : Any> createFirebaseTimestampListener(
             callback?.invoke()
         }
     }.also {
-        M18CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+        M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
 
         ref.addValueEventListener(it) }
     }

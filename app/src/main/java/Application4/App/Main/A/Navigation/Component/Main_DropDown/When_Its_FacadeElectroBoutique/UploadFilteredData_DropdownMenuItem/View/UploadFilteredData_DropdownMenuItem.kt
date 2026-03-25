@@ -1,9 +1,6 @@
 package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.UploadFilteredData_DropdownMenuItem.View
 
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M21CataloguesCategorie
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudUpload
@@ -26,8 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun UploadFilteredData_DropdownMenuItem(
-    groupe_Par_Catalogue: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> =emptyList(),
+fun Upload_Filtered_M03Couleurs_DropdownMenuItem_App4(
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
     onDismissDropdown: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -79,9 +76,32 @@ fun UploadFilteredData_DropdownMenuItem(
                         showConfirmDialog = false
                         coroutineScope.launch(Dispatchers.IO) {
                             isUploading = true
-                            uploadFilteredDataTo_Firebase(
-                                filteredCatalogues = groupe_Par_Catalogue
-                            )
+                            val activeDatas = viewModelNewProtoPatterns.active_Datas
+                            val filteredTree = activeDatas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur
+
+                            // Collect every M03Couleur keyID that survived the priority/catalogue/category filter
+                            val filteredM03KeyIDs: Set<String> = filteredTree
+                                .flatMap { (_, categoryList) ->
+                                    categoryList.flatMap { (_, productList) ->
+                                        productList.flatMap { (_, couleurList) ->
+                                            couleurList.map { it.keyID }
+                                        }
+                                    }
+                                }
+                                .toSet()
+
+                            val filtred_listM03 = activeDatas.list_M03CouleurProduitInfos
+                                ?.filter { it.keyID in filteredM03KeyIDs }
+
+                            val keys: Map<String, Boolean> =
+                                filtred_listM03
+                                    ?.filter { it.keyID.isNotBlank() }
+                                    ?.associate { it.keyID to true }
+                                    ?: emptyMap()
+
+                            viewModelNewProtoPatterns
+                                .deleteInsertFireBase_listKeys_M3CouleurProduitInfos(keys)
+
                             isUploading = false
                             onDismissDropdown()
                         }

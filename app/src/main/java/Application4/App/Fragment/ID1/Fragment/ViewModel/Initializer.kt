@@ -21,6 +21,7 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
         collectActiveM9Compt()
         collectListM16FilteredByCatalogue()
         collectListM1Produit()
+        collectList_M3()
         collectFilteredProductTree()
         collectM10OperationVentCouleur()
     }
@@ -40,28 +41,27 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
                 AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
                     AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = p)
             }
-            progress(1 / 9f); val clients = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
-            progress(2 / 9f); val categories = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAll()
+            progress(1 / 8f); val clients = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
+            progress(2 / 8f); val categories = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAll()
             .filter { it.catalogueParentId == AViewModel_NewProtoPatterns.active_Datas.active_M21Catalogue.id }
-            progress(3 / 9f); val colors = AViewModel_NewProtoPatterns.appDatabase.dao_M3CouleurProduitInfos().getAll()
-            progress(4 / 9f); val appCompt = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().getAll()
-            progress(5 / 9f); val bonVent = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
-            progress(6 / 9f); val ventPeriodes = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
-            progress(7 / 9f); val tarification = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
-            progress(8 / 9f); val operationVentCouleurs = AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
-            AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value = AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(
-                initDatasProgressEtate = 1f,
-                list_Datas = List_Datas(
-                    m2Client = clients,
-                    m14VentPeriode = ventPeriodes,
-                    m16CategorieProduit = categories,
-                    m3CouleurProduit = colors,
-                    m9AppCompt = appCompt,
-                    m8BonVent = bonVent,
-                    m13TarificationInfos = tarification,
-                    m10OperationVentCouleur = operationVentCouleurs,
+            progress(3 / 8f); val appCompt = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().getAll()
+            progress(4 / 8f); val bonVent = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
+            progress(5 / 8f); val ventPeriodes = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
+            progress(6 / 8f); val tarification = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
+            progress(7 / 8f); val operationVentCouleurs = AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
+            AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
+                AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(
+                    initDatasProgressEtate = 1f,
+                    list_Datas = List_Datas(
+                        m2Client = clients,
+                        m14VentPeriode = ventPeriodes,
+                        m16CategorieProduit = categories,
+                        m9AppCompt = appCompt,
+                        m8BonVent = bonVent,
+                        m13TarificationInfos = tarification,
+                        m10OperationVentCouleur = operationVentCouleurs,
+                    )
                 )
-            )
         }
     }
 
@@ -92,20 +92,28 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
         }
     }
 
+    // Keeps active_Datas.list_M03CouleurProduitInfos live via a flow so that
+    // collectFilteredProductTree always sees up-to-date colours without going through UiState.
+    private fun collectList_M3() {
+        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
+            AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
+                .collect { AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = it }
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun collectFilteredProductTree() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.Main) {
             snapshotFlow { AViewModel_NewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter }
                 .flatMapLatest { currentFilter ->
                     channelFlow {
-                        AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.collectLatest { state ->
-                            val allColours =
-                                state.list_Datas?.m3CouleurProduit ?: return@collectLatest
+                        // Re-runs whenever the uiState changes (e.g. category updates), while
+                        // colours are read live from active_Datas inside the flow function itself.
+                        AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.collectLatest {
                             FlowsFunctions_ActiveDatasFragNewProto
                                 .getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
                                     dao_M16CategorieProduit = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit(),
                                     activeCatalogue = AViewModel_NewProtoPatterns.active_Datas.active_M21Catalogue,
-                                    allColours = allColours,
                                     activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
                                     activeFilter = currentFilter,
                                 ).collect { send(it) }
