@@ -17,11 +17,6 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import org.koin.compose.koinInject
 
-/**
- * FilterSortGroupe_Tunnels - Compact filtering and sorting orchestration with Catalogue support
- * UPDATED: Now handles Catalogue -> Category -> Product -> Colors hierarchy
- * FIXED: Extracted filter logic to FilterTunnel (now a regular function, not @Composable)
- */
 @Composable
 fun FilterSortGroupe_Tunnels(
     modifier: Modifier = Modifier,
@@ -83,7 +78,6 @@ fun FilterSortGroupe_Tunnels(
         cataloguesWithCategoriesAndProducts = sortedProducts,
         viewModelHeadViewModel = viewModelHeadViewModel,
         on_pour_send_data = on_pour_send_data,
-        onClickImageToShowControles = onClickImageToShowControles,
         onProductCategoryClick = onProductCategoryClick,
         justMovedProductKeyID = justMovedProductKeyID,
         repositorysMainGetter = repositorysMainGetter,

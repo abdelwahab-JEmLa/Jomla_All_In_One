@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -145,6 +146,14 @@ fun Etager_LazyColumn_FragID4(
             span = StaggeredGridItemSpan.FullLine
         ) {
             Box(modifier = modifier) {
+                Button(
+                    onClick = { showUploadDropdown = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(text = "⚙️ Options couleurs")
+                }
                 DropdownMenu(
                     expanded = showUploadDropdown,
                     onDismissRequest = { showUploadDropdown = false },
