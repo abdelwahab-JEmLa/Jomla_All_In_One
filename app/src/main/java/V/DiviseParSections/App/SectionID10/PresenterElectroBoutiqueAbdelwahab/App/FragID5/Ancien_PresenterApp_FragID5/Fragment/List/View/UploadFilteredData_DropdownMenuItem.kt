@@ -29,6 +29,10 @@ import org.koin.compose.koinInject
 @Composable
 fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
     list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>,
+    // Map of parentProduitKeyID → classement (product's position index within its category).
+    // Built at the call site from the structured catalogue tree so that classment
+    // reflects the product order, not the flat colour index.
+    parentProduit_Classement: Map<String, Int>,
     onDismissDropdown: () -> Unit,
     context: Context = koinInject(),
     appDatabase: AppDatabase = koinInject(),
@@ -83,40 +87,24 @@ fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
                         coroutineScope.launch(Dispatchers.IO) {
                             isUploading = true
 
+                            // associate replaces filter+map+toMap in one pass (no intermediate list).
                             val keys: Map<String, RepositorysMainSetter_NewProtoPatterns.Couleur_Main_Values> =
                                 list_M03CouleurProduitInfos
                                     .filter { it.keyID.isNotBlank() }
-                                    .mapIndexed { index, couleur ->
+                                    .associate { couleur ->
                                         couleur.keyID to RepositorysMainSetter_NewProtoPatterns.Couleur_Main_Values(
                                             nom                    = couleur.nomCouleurStrSiSonImageDispo,
-                                            classment              = index,
+                                            classment              = parentProduit_Classement[couleur.parentBProduitInfosKeyID] ?: 0,
                                             activated              = true,
                                             parentProduitKeyID     = couleur.parentBProduitInfosKeyID,
                                             parentProduitDebugName = couleur.parentId1ProduitInfosDebugName
                                         )
                                     }
-                                    .toMap()
-
-                            android.util.Log.d(
-                                "UploadFilteredData",
-                                "⬆️ Upload démarré — ${keys.size} couleurs à envoyer"
-                            )
-                            keys.entries.forEachIndexed { index, (keyID, couleur) ->
-                                android.util.Log.d(
-                                    "UploadFilteredData",
-                                    "  [$index] keyID=$keyID | nom=${couleur.nom} | classment=${couleur.classment} | parentProduit=${couleur.parentProduitDebugName} (${couleur.parentProduitKeyID})"
-                                )
-                            }
 
                             RepositorysMainSetter_NewProtoPatterns(
                                 appDatabase = appDatabase,
                                 context = context
                             ).insertFireBase_list_Main_Values_M3CouleurProduitInfos(keys)
-
-                            android.util.Log.d(
-                                "UploadFilteredData",
-                                "✅ Upload terminé — ${keys.size} couleurs envoyées vers ref_Active_Filtred_Datas"
-                            )
 
                             isUploading = false
                             onDismissDropdown()

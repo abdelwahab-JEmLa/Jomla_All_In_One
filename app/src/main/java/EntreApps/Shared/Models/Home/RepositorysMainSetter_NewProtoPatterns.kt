@@ -50,7 +50,11 @@ class RepositorysMainSetter_NewProtoPatterns(
         val classment: Int,
         val activated: Boolean,
         val parentProduitKeyID: String = "",
-        val parentProduitDebugName: String = ""
+        val parentProduitDebugName: String = "",
+        // Position of the parent product within its category list.
+        // Used to order colours by their product's rank rather than
+        // by a flat colour index across the whole catalogue.
+        val parentProduitClassement: Int = 0
     )
 
     fun insertFireBase_list_Main_Values_M3CouleurProduitInfos(
@@ -62,18 +66,18 @@ class RepositorysMainSetter_NewProtoPatterns(
             if (keys.isNotEmpty()) {
                 val updates: Map<String, Any> = keys.mapValues { (_, v) ->
                     mapOf(
-                        "nom" to v.nom,
-                        "classment" to v.classment,
-                        "activated" to v.activated,
-                        "parentProduitKeyID" to v.parentProduitKeyID,
-                        "parentProduitDebugName" to v.parentProduitDebugName
+                        "nom"                    to v.nom,
+                        "classment"              to v.classment,
+                        "activated"              to v.activated,
+                        "parentProduitKeyID"     to v.parentProduitKeyID,
+                        "parentProduitDebugName" to v.parentProduitDebugName,
+                        // Persisted alongside the colour entry so consumers can
+                        // sort/group by product order without a secondary lookup.
+                        "parentProduitClassement" to v.parentProduitClassement
                     )
                 }
-                android.util.Log.d("RepositorysMainSetter", "⬆️ insertFireBase — ${keys.size} couleurs à écrire")
                 ref_listKeys.removeValue().await()
-                android.util.Log.d("RepositorysMainSetter", "🗑️ removeValue() OK — réécriture en cours...")
                 ref_listKeys.updateChildren(updates).await()
-                android.util.Log.d("RepositorysMainSetter", "✅ updateChildren OK — ${keys.size} couleurs écrites")
             }
             withContext(Dispatchers.Main) { onSuccess() }
         }

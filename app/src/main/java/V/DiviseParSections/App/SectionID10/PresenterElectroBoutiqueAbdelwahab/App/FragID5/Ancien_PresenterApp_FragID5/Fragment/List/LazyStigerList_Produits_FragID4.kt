@@ -72,6 +72,19 @@ fun Etager_LazyColumn_FragID4(
             }
         }
 
+    // Build a map of parentProduitKeyID → classement (product index within its category).
+    // Each product gets its position index scoped to its own category's product list,
+    // which is then used as classment when uploading colour entries to Firebase.
+    val parentProduit_Classement: Map<String, Int> =
+        cataloguesWithCategoriesAndProducts
+            .flatMap { (_, cats) -> cats }
+            .flatMap { (_, productColorPairs) ->
+                productColorPairs.mapIndexed { index, (product, _) ->
+                    product.keyID to index
+                }
+            }
+            .toMap()
+
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -166,6 +179,7 @@ fun Etager_LazyColumn_FragID4(
                 ) {
                     Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
                         list_M03CouleurProduitInfos = allColors,
+                        parentProduit_Classement = parentProduit_Classement,
                         onDismissDropdown = { showUploadDropdown = false }
                     )
                     Delete_Ref_Active_Keys_M03Couleurs_Button(
