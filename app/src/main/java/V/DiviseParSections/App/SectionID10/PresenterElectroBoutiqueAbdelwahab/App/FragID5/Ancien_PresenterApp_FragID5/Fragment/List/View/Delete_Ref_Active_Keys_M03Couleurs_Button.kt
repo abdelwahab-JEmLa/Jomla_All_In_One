@@ -82,9 +82,7 @@ fun Delete_Ref_Active_Keys_M03Couleurs_Button(
                             RepositorysMainSetter_NewProtoPatterns(
                                 appDatabase = appDatabase,
                                 context = context
-                            ).deleteFireBase_listKeys_M3CouleurProduitInfos {
-                                // onSuccess runs on Main thread
-                            }
+                            ).deleteFireBase_listKeys_M3CouleurProduitInfos {}
                             isDeleting = false
                             onDismissDropdown()
                         }

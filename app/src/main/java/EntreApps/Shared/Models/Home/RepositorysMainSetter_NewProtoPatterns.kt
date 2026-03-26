@@ -45,15 +45,35 @@ class RepositorysMainSetter_NewProtoPatterns(
     // M3CouleurProduitInfos
     // -------------------------------------------------------------------------
 
-    fun insertFireBase_listKeys_M3CouleurProduitInfos(
-        keys: Map<String, Boolean>,
+    data class Couleur_Main_Values(
+        val nom: String,
+        val classment: Int,
+        val activated: Boolean,
+        val parentProduitKeyID: String = "",
+        val parentProduitDebugName: String = ""
+    )
+
+    fun insertFireBase_list_Main_Values_M3CouleurProduitInfos(
+        keys: Map<String, Couleur_Main_Values>,
         onSuccess: () -> Unit = {}
     ) {
         val ref_listKeys = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
         composScope.launch {
             if (keys.isNotEmpty()) {
-                val updates: Map<String, Any> = keys.mapValues { it.value }
+                val updates: Map<String, Any> = keys.mapValues { (_, v) ->
+                    mapOf(
+                        "nom" to v.nom,
+                        "classment" to v.classment,
+                        "activated" to v.activated,
+                        "parentProduitKeyID" to v.parentProduitKeyID,
+                        "parentProduitDebugName" to v.parentProduitDebugName
+                    )
+                }
+                android.util.Log.d("RepositorysMainSetter", "⬆️ insertFireBase — ${keys.size} couleurs à écrire")
+                ref_listKeys.removeValue().await()
+                android.util.Log.d("RepositorysMainSetter", "🗑️ removeValue() OK — réécriture en cours...")
                 ref_listKeys.updateChildren(updates).await()
+                android.util.Log.d("RepositorysMainSetter", "✅ updateChildren OK — ${keys.size} couleurs écrites")
             }
             withContext(Dispatchers.Main) { onSuccess() }
         }
@@ -91,7 +111,11 @@ class RepositorysMainSetter_NewProtoPatterns(
         if (data.keyID.isBlank()) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Erreur : données non disponibles, mise à jour annulée", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Erreur : données non disponibles, mise à jour annulée",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             return
@@ -120,7 +144,11 @@ class RepositorysMainSetter_NewProtoPatterns(
         if (data.keyID.isBlank()) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Erreur : données non disponibles, mise à jour annulée", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Erreur : données non disponibles, mise à jour annulée",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             return
@@ -140,7 +168,11 @@ class RepositorysMainSetter_NewProtoPatterns(
         if (data.keyID.isBlank()) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Erreur : données non disponibles, mise à jour annulée", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Erreur : données non disponibles, mise à jour annulée",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             return
@@ -188,7 +220,11 @@ class RepositorysMainSetter_NewProtoPatterns(
         if (data.keyID.isBlank()) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Erreur : données du compte invalides", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Erreur : données du compte invalides",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             return
@@ -201,7 +237,11 @@ class RepositorysMainSetter_NewProtoPatterns(
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Erreur lors de l'insertion : ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Erreur lors de l'insertion : ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -214,7 +254,11 @@ class RepositorysMainSetter_NewProtoPatterns(
         if (data.keyID.isBlank()) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Erreur : données non disponibles, mise à jour annulée", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Erreur : données non disponibles, mise à jour annulée",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             return
@@ -227,7 +271,11 @@ class RepositorysMainSetter_NewProtoPatterns(
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Erreur lors de la mise à jour : ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Erreur lors de la mise à jour : ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }

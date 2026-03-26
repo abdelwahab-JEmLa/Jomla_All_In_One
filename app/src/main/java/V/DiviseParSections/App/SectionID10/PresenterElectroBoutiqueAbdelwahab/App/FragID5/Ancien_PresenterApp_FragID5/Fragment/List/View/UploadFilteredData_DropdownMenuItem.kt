@@ -83,15 +83,40 @@ fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
                         coroutineScope.launch(Dispatchers.IO) {
                             isUploading = true
 
-                            val keys: Map<String, Boolean> =
+                            val keys: Map<String, RepositorysMainSetter_NewProtoPatterns.Couleur_Main_Values> =
                                 list_M03CouleurProduitInfos
                                     .filter { it.keyID.isNotBlank() }
-                                    .associate { it.keyID to true }
+                                    .mapIndexed { index, couleur ->
+                                        couleur.keyID to RepositorysMainSetter_NewProtoPatterns.Couleur_Main_Values(
+                                            nom                    = couleur.nomCouleurStrSiSonImageDispo,
+                                            classment              = index,
+                                            activated              = true,
+                                            parentProduitKeyID     = couleur.parentBProduitInfosKeyID,
+                                            parentProduitDebugName = couleur.parentId1ProduitInfosDebugName
+                                        )
+                                    }
+                                    .toMap()
+
+                            android.util.Log.d(
+                                "UploadFilteredData",
+                                "⬆️ Upload démarré — ${keys.size} couleurs à envoyer"
+                            )
+                            keys.entries.forEachIndexed { index, (keyID, couleur) ->
+                                android.util.Log.d(
+                                    "UploadFilteredData",
+                                    "  [$index] keyID=$keyID | nom=${couleur.nom} | classment=${couleur.classment} | parentProduit=${couleur.parentProduitDebugName} (${couleur.parentProduitKeyID})"
+                                )
+                            }
 
                             RepositorysMainSetter_NewProtoPatterns(
                                 appDatabase = appDatabase,
                                 context = context
-                            ).insertFireBase_listKeys_M3CouleurProduitInfos(keys)
+                            ).insertFireBase_list_Main_Values_M3CouleurProduitInfos(keys)
+
+                            android.util.Log.d(
+                                "UploadFilteredData",
+                                "✅ Upload terminé — ${keys.size} couleurs envoyées vers ref_Active_Filtred_Datas"
+                            )
 
                             isUploading = false
                             onDismissDropdown()

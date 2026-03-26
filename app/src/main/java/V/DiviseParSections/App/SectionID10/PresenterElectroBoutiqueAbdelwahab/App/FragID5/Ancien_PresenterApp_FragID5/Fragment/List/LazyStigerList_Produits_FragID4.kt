@@ -64,8 +64,14 @@ fun Etager_LazyColumn_FragID4(
     repositorysMainGetter: RepositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     isWifiClientConnected_1: Boolean,
-    allColors: List<M3CouleurProduitInfos> = emptyList(),
 ) {
+    val allColors = cataloguesWithCategoriesAndProducts
+        .flatMap { (_, cats) ->
+            cats.flatMap { (_, products) ->
+                products.flatMap { (_, colors) -> colors }
+            }
+        }
+
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -229,9 +235,6 @@ fun Etager_LazyColumn_FragID4(
     }
 }
 
-/**
- * Catalogue Header - Displays the catalogue name with color
- */
 @Composable
 fun CatalogueHeader(
     catalogue: M21CataloguesCategorie,
