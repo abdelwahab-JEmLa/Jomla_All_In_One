@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit
     catalogueFilter: String?,
     filterState: FilterState_Facad_Boutique_FragId5
 ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
-
     fun matchesCatalogue(catalogue: M21CataloguesCategorie, filter: String): Boolean {
         return catalogue.keyID == filter
     }

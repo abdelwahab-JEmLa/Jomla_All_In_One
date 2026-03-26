@@ -45,6 +45,30 @@ class RepositorysMainSetter_NewProtoPatterns(
     // M3CouleurProduitInfos
     // -------------------------------------------------------------------------
 
+    fun insertFireBase_listKeys_M3CouleurProduitInfos(
+        keys: Map<String, Boolean>,
+        onSuccess: () -> Unit = {}
+    ) {
+        val ref_listKeys = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
+        composScope.launch {
+            if (keys.isNotEmpty()) {
+                val updates: Map<String, Any> = keys.mapValues { it.value }
+                ref_listKeys.updateChildren(updates).await()
+            }
+            withContext(Dispatchers.Main) { onSuccess() }
+        }
+    }
+
+    fun deleteFireBase_listKeys_M3CouleurProduitInfos(
+        onSuccess: () -> Unit = {}
+    ) {
+        val ref_listKeys = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
+        composScope.launch {
+            ref_listKeys.removeValue().await()
+            withContext(Dispatchers.Main) { onSuccess() }
+        }
+    }
+
     fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(
         keys: Map<String, Boolean>,
         onSuccess: () -> Unit = {}
@@ -56,7 +80,6 @@ class RepositorysMainSetter_NewProtoPatterns(
                 val updates: Map<String, Any> = keys.mapValues { it.value }
                 ref_listKeys.updateChildren(updates).await()
             }
-
             withContext(Dispatchers.Main) { onSuccess() }
         }
     }

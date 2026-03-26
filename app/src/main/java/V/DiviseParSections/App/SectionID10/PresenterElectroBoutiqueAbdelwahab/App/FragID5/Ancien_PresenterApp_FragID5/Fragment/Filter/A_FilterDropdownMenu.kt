@@ -189,6 +189,15 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
                     fontWeight = FontWeight.Bold
                 )
             }
+            item {
+                FilterOption(
+                    label = "🛒 Produits en vente active en premier",
+                    checked = currentFilterState.prioritiseProduitsEnVente,
+                    onCheckedChange = {
+                        onFilterChanged(currentFilterState.copy(prioritiseProduitsEnVente = it))
+                    }
+                )
+            }
 
             item {
                 FilterOption(

@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 
@@ -18,10 +18,12 @@ fun SortTunnel(
     filteredProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     sortOrder: SortOrder_Facade_Boutique,
     enableCategoryGrouping: Boolean,
-    repositorysMainGetter: RepositorysMainGetter
+    repositorysMainGetter: RepositorysMainGetter,
+    prioritiseProduitsEnVente: Boolean = false,
+    onVentProduitKeyIDs: Set<String> = emptySet()
 ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
 
-    return remember(filteredProducts, sortOrder, enableCategoryGrouping) {
+    return remember(filteredProducts, sortOrder, enableCategoryGrouping, prioritiseProduitsEnVente, onVentProduitKeyIDs) {
 
         // If grouping disabled, create single "All products" catalogue and category
         if (!enableCategoryGrouping) {
@@ -51,13 +53,23 @@ fun SortTunnel(
                 position = 0
             )
 
-            return@remember listOf(
-                singleCatalogue to listOf(singleCategory to sorted)
-            )
+            val unsorted = listOf(singleCatalogue to listOf(singleCategory to sorted))
+            return@remember if (!prioritiseProduitsEnVente || onVentProduitKeyIDs.isEmpty()) {
+                unsorted
+            } else {
+                unsorted.map { (catalogue, categories) ->
+                    catalogue to categories.map { (category, products) ->
+                        val (enVente, rest) = products.partition { (product, _) ->
+                            product.keyID in onVentProduitKeyIDs
+                        }
+                        category to (enVente + rest)
+                    }
+                }
+            }
         }
 
         // Apply sorting with category and catalogue grouping
-        when (sortOrder) {
+        val sortedResult = when (sortOrder) {
             SortOrder_Facade_Boutique.CATEGORY_GROUPED -> {
                 // Keep catalogue and category grouping, sort by position
                 filteredProducts
@@ -109,6 +121,20 @@ fun SortTunnel(
                             null
                         }
                     }
+            }
+        }
+
+        // After all sorting/grouping: float en-vente products to the top of every category
+        if (!prioritiseProduitsEnVente || onVentProduitKeyIDs.isEmpty()) {
+            sortedResult
+        } else {
+            sortedResult.map { (catalogue, categories) ->
+                catalogue to categories.map { (category, products) ->
+                    val (enVente, rest) = products.partition { (product, _) ->
+                        product.keyID in onVentProduitKeyIDs
+                    }
+                    category to (enVente + rest)
+                }
             }
         }
     }

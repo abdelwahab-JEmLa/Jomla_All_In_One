@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel
 
-import EntreApps.Shared.Models.M21CataloguesCategorie
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
 import androidx.compose.material.icons.Icons
@@ -25,7 +25,7 @@ data class UiStateSec9Frag1(
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: M21CataloguesCategorie = get_ListM21CataloguesCategorie().first(),
     var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
-        EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage.PRODUCTS_LIST,
+        EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage.REORDER_GRID,
     val clickItemMode: ClickItemMode = ClickItemMode.FastMove,
 ) {
     enum class ClickItemMode(val couleur: Color, val icon: ImageVector) {

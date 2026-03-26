@@ -35,6 +35,12 @@ data class FilterState_Facad_Boutique_FragId5(
     val hideHeldPrioriteDemandAuGrossist: Boolean = false,
     val hideNonHeldPrioriteDemandAuGrossist: Boolean = false,
 
+    /**
+     * When true, products that are currently in the active sale (on vent) are
+     * floated to the very top of the list, regardless of the active sort order.
+     */
+    val prioritiseProduitsEnVente: Boolean = false,
+
     val searchText: String = "",
     val sortOrderFacadeBoutique: SortOrder_Facade_Boutique = SortOrder_Facade_Boutique.CATEGORY_GROUPED,
     val enableCategoryGrouping: Boolean = true,
@@ -42,7 +48,7 @@ data class FilterState_Facad_Boutique_FragId5(
     val enablePrixAchatTimeFilter: Boolean = false,
 
 
-) {
+    ) {
     enum class WhatDo {
         /** Only show products that have at least one color with an image */
         N_Affiche_Que_Lui,

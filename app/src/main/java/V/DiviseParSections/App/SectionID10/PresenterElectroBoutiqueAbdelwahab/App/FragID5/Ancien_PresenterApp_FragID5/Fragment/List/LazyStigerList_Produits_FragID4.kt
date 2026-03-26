@@ -1,9 +1,12 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.CategoryStickyHeader
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Delete_Ref_Active_Keys_M03Couleurs_Button
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.Item_Produit_FragID5
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
@@ -28,13 +31,17 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -45,21 +52,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
-/**
- * UPDATED: Now displays Catalogue headers followed by Category headers
- */
 @Composable
 fun Etager_LazyColumn_FragID4(
     modifier: Modifier = Modifier.Companion,
     cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     viewModelHeadViewModel: HeadViewModel,
     on_pour_send_data: (String, String) -> Unit,
-    onClickImageToShowControles: () -> Unit,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     repositorysMainGetter: RepositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    isWifiClientConnected_1: Boolean
+    isWifiClientConnected_1: Boolean,
+    allColors: List<M3CouleurProduitInfos> = emptyList(),
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()
@@ -74,6 +78,7 @@ fun Etager_LazyColumn_FragID4(
 
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
+    var showUploadDropdown by remember { mutableStateOf(false) }
 
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
@@ -82,14 +87,14 @@ fun Etager_LazyColumn_FragID4(
         val targetKeyID = expanded_M3CouleurProduitInfos.parentBProduitInfosKeyID
         if (targetKeyID.isBlank()) return@LaunchedEffect
 
-        var currentIndex = 0   // no banner — grid starts directly with catalogue_header
+        var currentIndex = 0
         var foundIndex = -1
 
         outer@ for ((_, categoriesWithProducts) in cataloguesWithCategoriesAndProducts) {
-            currentIndex++     // catalogue_header_{catalogue.id}
+            currentIndex++
 
             for ((category, productColorPairs) in categoriesWithProducts) {
-                if (category.displayedHeader) currentIndex++  // category_header_{category.id}
+                if (category.displayedHeader) currentIndex++
 
                 val productIndex = productColorPairs.indexOfFirst { (product, _) ->
                     product.keyID == targetKeyID
@@ -103,7 +108,6 @@ fun Etager_LazyColumn_FragID4(
         }
 
         if (foundIndex >= 0) {
-            // Wait for the FullLine span change to recompose and lay out before scrolling.
             delay(300)
             coroutineScope.launch {
                 gridState.animateScrollToItem(foundIndex)
@@ -136,21 +140,27 @@ fun Etager_LazyColumn_FragID4(
         verticalItemSpacing = 8.dp,
         userScrollEnabled = isScrollEnabled
     ) {
-        // Add banner at the top
-       /*  item(
-              key = "ad_banner_header",
-              span = StaggeredGridItemSpan.Companion.FullLine
-          ) {
-              ScrolleAdBanner(
-                  onBannerClick = { bannerIndex ->
-                      // Handle banner click if needed
-                  },
-                  onClickImageToShowControles = onClickImageToShowControles
-              )
-          }
-                */
+        item(
+            key = "upload_dropdown_header",
+            span = StaggeredGridItemSpan.FullLine
+        ) {
+            Box(modifier = modifier) {
+                DropdownMenu(
+                    expanded = showUploadDropdown,
+                    onDismissRequest = { showUploadDropdown = false },
+                ) {
+                    Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
+                        list_M03CouleurProduitInfos = allColors,
+                        onDismissDropdown = { showUploadDropdown = false }
+                    )
+                    Delete_Ref_Active_Keys_M03Couleurs_Button(
+                        onDismissDropdown = { showUploadDropdown = false }
+                    )
+                }
+            }
+        }
+
         cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
-            // Add Catalogue Header
             item(
                 key = "catalogue_header_${catalogue.id}",
                 span = StaggeredGridItemSpan.Companion.FullLine
@@ -159,7 +169,6 @@ fun Etager_LazyColumn_FragID4(
             }
 
             categoriesWithProducts.forEach { (category, productColorPairs) ->
-                // Only show category header if displayedHeader is true
                 if (category.displayedHeader) {
                     item(
                         key = "category_header_${category.id}",
@@ -180,7 +189,6 @@ fun Etager_LazyColumn_FragID4(
                     val isExpanded = focusedValuesGetter.active_Central_Values
                         .expanded_M1Produit?.keyID == product.keyID
 
-                    // Check if this product just moved
                     val justMoved = product.keyID == justMovedProductKeyID
 
                     item(
@@ -192,7 +200,7 @@ fun Etager_LazyColumn_FragID4(
                         }
                     ) {
                         LazyStigerList_Produits_FragID4(
-                            isWifiClientConnected_1=isWifiClientConnected_1,
+                            isWifiClientConnected_1 = isWifiClientConnected_1,
                             product = product,
                             colors = colors,
                             on_pour_send_data = on_pour_send_data,
@@ -248,10 +256,9 @@ fun LazyStigerList_Produits_FragID4(
     isWifiClientConnected_1: Boolean
 ) {
 
-    // Animation state for moved products
     val backgroundColor by animateColorAsState(
         targetValue = if (justMoved) {
-            Color(0xFF4CAF50).copy(alpha = 0.3f) // Green highlight
+            Color(0xFF4CAF50).copy(alpha = 0.3f)
         } else {
             Color.Companion.Transparent
         },

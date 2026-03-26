@@ -1,14 +1,15 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
-import EntreApps.Shared.Models.M16CategorieProduit
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Visibility
@@ -35,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,9 +45,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -81,7 +86,7 @@ fun OptionsFragmentButtons(
     selectedCategories: Set<Long> = emptySet(),
     onCategoriesUpdated: (List<M16CategorieProduit>) -> Unit = {}
 ) {
-    var showButtons by remember { mutableStateOf(false) }
+    var showButtons by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
 
     var mode_Click_Mete_Le_Clicked_Button_Persistent_AlwaysShowed by remember { mutableStateOf(false) }
@@ -90,9 +95,25 @@ fun OptionsFragmentButtons(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
+    val density = LocalDensity.current.density
 
-    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 200f)) }
-    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value) }
+    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 300f)) }
+    // Start near the bottom of the screen but still visible (leave room for the box height)
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 700f) }
+
+    // LaunchedEffect(Unit) = fires only once on first composition, not on every recomposition.
+    // Without this, the logs would appear on every state change in the parent.
+    LaunchedEffect(Unit) {
+        Log.d("DragDebug", "=== INIT (first composition only) ===")
+        Log.d("DragDebug", "screenWidth   = ${screenWidth.value} dp")
+        Log.d("DragDebug", "screenHeight  = ${screenHeightDp.value} dp")
+        Log.d("DragDebug", "density       = $density")
+        Log.d("DragDebug", "initial offsetX (dp) = $offsetX")
+        Log.d("DragDebug", "initial offsetY (dp) = $offsetY")
+        Log.d("DragDebug", "maxX (px) = ${(screenWidth.value - 60f) * density}")
+        Log.d("DragDebug", "maxY (px) = ${(screenHeightDp.value - 60f) * density}")
+    }
+
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var showDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
@@ -250,21 +271,52 @@ fun OptionsFragmentButtons(
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
             modifier = Modifier
-                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-                .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
-                        change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
-                    }
+                .offset {
+                    val ix = offsetX.roundToInt()
+                    val iy = offsetY.roundToInt()
+                    Log.v("DragDebug", "offset applied: IntOffset($ix, $iy)")
+                    IntOffset(ix, iy)
                 }
+                // NOTE: pointerInput is NOT here — LazyColumn would consume all gestures.
+                // The drag handle below is the only surface that captures drag events.
                 .padding(16.dp)
         ) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .height(700.dp) // Set a reasonable height for scrolling
+                    .height(700.dp)
             ) {
+                // ── DRAG HANDLE ─────────────────────────────────────────────────────────
+                // Sits above the LazyColumn in Z-order so it gets touch events first.
+                // The LazyColumn would swallow all gestures if pointerInput were on the
+                // parent Box instead of here.
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(bottom = 4.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(androidx.compose.ui.graphics.Color.Gray.copy(alpha = 0.5f))
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                change.consume()
+                                val maxX = (screenWidth.value - 60f) * density
+                                val maxY = (screenHeightDp.value - 60f) * density
+                                val prevX = offsetX
+                                val prevY = offsetY
+                                offsetX = (offsetX + dragAmount.x).coerceIn(0f, maxX)
+                                offsetY = (offsetY + dragAmount.y).coerceIn(0f, maxY)
+                                Log.d("DragDebug", "--- DRAG (handle) ---")
+                                Log.d("DragDebug", "dragAmount = (x=${dragAmount.x}, y=${dragAmount.y}) px")
+                                Log.d("DragDebug", "offsetX    = $prevX -> $offsetX  (max=$maxX)")
+                                Log.d("DragDebug", "offsetY    = $prevY -> $offsetY  (max=$maxY)")
+                                val clampedX = offsetX != prevX + dragAmount.x
+                                val clampedY = offsetY != prevY + dragAmount.y
+                                if (clampedX || clampedY) Log.w("DragDebug", "⚠️ CLAMPED: x=$clampedX y=$clampedY")
+                            }
+                        }
+                        .size(width = 40.dp, height = 6.dp)
+                )
+                // ────────────────────────────────────────────────────────────────────────
                 LazyColumn(
                     modifier = Modifier
                         .getSemanticsTag(button9AlwaysVisible,"button9AlwaysVisible")

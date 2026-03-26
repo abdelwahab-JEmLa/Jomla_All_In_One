@@ -17,7 +17,7 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
     fun run() {
         collectCentralValues()
         loadAllDatasOnce()
-
+        collectActiveM9Compt()
         collectListM16FilteredByCatalogue()
         collectListM1Produit()
         collectList_M3()
@@ -64,6 +64,14 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
         }
     }
 
+    private fun collectActiveM9Compt() {
+        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
+            FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
+                dao_M9AppCompt = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt(),
+                activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
+            ).collect {  }
+        }
+    }
 
     private fun collectListM16FilteredByCatalogue() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
