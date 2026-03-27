@@ -1,6 +1,5 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -16,46 +15,40 @@ import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-suspend fun initiateBackgroundPdfCreation_Np(
+suspend fun initiateBackgroundPdfCreation_NewP(
     context: Context,
     aCentralFacade: ACentralFacade,
     focusedValuesGetter: FocusedValuesGetter,
+    onPdfSaved: ((savedPath: String) -> Unit)? = null,
 ) {
-    val activeClient  = focusedValuesGetter.activeOnVentM2ClientInfos
+    val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
     val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val activeVents   = focusedValuesGetter
+    val activeVents = focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
 
     when {
-        activeClient  == null -> {
+        activeClient == null -> {
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "Aucun client actif trouvé",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }; return }
+                Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show()
+            }; return
+        }
+
         activeBonVent == null -> {
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "Aucun bon de vente actif",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }; return }
+                Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT).show()
+            }; return
+        }
+
         activeVents.isEmpty() -> {
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "Aucun article à traiter",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }; return }
+                Toast.makeText(context, "Aucun article à traiter", Toast.LENGTH_SHORT).show()
+            }; return
+        }
     }
 
     try {
-        val cv   = focusedValuesGetter.active_Central_Values
+        val cv = focusedValuesGetter.active_Central_Values
         val bons = cv.bons_a_imprime_avec_image_produit.toMutableList()
         if (!bons.any { it.keyID == activeBonVent!!.keyID }) {
             bons.add(activeBonVent!!)
@@ -65,20 +58,21 @@ suspend fun initiateBackgroundPdfCreation_Np(
         delay(300)
 
         val pdfFilePath = withTimeout(30_000L) {
-            (aCentralFacade.modulesCentral.printReceiptHandler as? PrintReceiptHandler_Juil)
-                ?.printPdfOnly(
+            aCentralFacade.modulesCentral.printReceiptHandler
+                .printPdfOnly(
                     context = context,
                     repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
                     repoM1Produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
                     repo3CouleurProduitInfos = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
                     scope = null,
                     relative_ListM10OperationVentCouleur = activeVents,
-                    relative_bonVent = activeBonVent!!,
-                    client = activeClient!!,
+                    relative_bonVent = activeBonVent,
+                    client = activeClient,
                     showCreditSection = false,
                     versement = 0.0,
                     shouldOpenFile = false
-                )?.getOrNull()
+                )
+                ?.getOrNull()
                 ?.substringAfter("PDF saved: ")
                 ?.substringBefore("\n")
         }
@@ -86,31 +80,33 @@ suspend fun initiateBackgroundPdfCreation_Np(
         val tempFile = pdfFilePath?.let { File(it) }
         if (tempFile == null || !tempFile.exists()) {
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "❌ Génération échouée",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(context, "❌ Génération échouée", Toast.LENGTH_LONG).show()
             }
             return
         }
 
-        val timestamp  = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM_dd_HH:mm"))
+        val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM_dd_HH:mm"))
         val clientPart = activeClient!!.nom.replace(Regex("[^A-Za-z0-9_\\-]"), "_").take(20)
-        val fileName   = "${clientPart}_${activeBonVent!!.keyID.takeLast(6)}_${timestamp}.pdf"
+        val fileName = "${clientPart}_${activeBonVent!!.keyID.takeLast(6)}_${timestamp}.pdf"
 
         PdfSaverUtility.savePdf(context, tempFile, fileName, "BonsWhatsApp")
             .onSuccess {
-                // TODO(1) FIXED: update path_pdf_bon_file and nombre_produits_don_dernier_pdf_stoked
-                // on the active bon vent so the UI indicator button can read the up-to-date values.
-                val savedDir  = context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
-                val finalPath = java.io.File(savedDir, "BonsWhatsApp/$fileName").absolutePath
-                val updated   = activeBonVent!!.copy(
-                    path_pdf_bon_file                      = finalPath,
-                    nombre_produits_don_dernier_pdf_stoked = activeVents.size
-                )
-                aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(updated)
+                val savedDir =
+                    context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
+                val finalPath = File(savedDir, "BonsWhatsApp/$fileName").absolutePath
 
+                // Notify caller with the saved path (e.g. so the FAB can update M8BonVent)
+                onPdfSaved?.invoke(finalPath)
+
+                // Fallback: if no callback provided, persist directly from here
+                if (onPdfSaved == null) {
+                    aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(
+                        activeBonVent!!.copy(
+                            path_pdf_bon_file = finalPath,
+                            nombre_produits_don_dernier_pdf_stoked = activeVents.size
+                        )
+                    )
+                }
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
@@ -121,11 +117,7 @@ suspend fun initiateBackgroundPdfCreation_Np(
             }
             .onFailure {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "❌ Erreur: ${it.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(context, "❌ Erreur: ${it.message}", Toast.LENGTH_LONG).show()
                 }
             }
 
@@ -133,25 +125,20 @@ suspend fun initiateBackgroundPdfCreation_Np(
 
     } catch (e: TimeoutCancellationException) {
         withContext(Dispatchers.Main) {
-            Toast.makeText(
-                context,
-                "❌ Timeout (>30s)",
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(context, "❌ Timeout (>30s)", Toast.LENGTH_LONG).show()
         }
     } catch (e: Exception) {
         withContext(Dispatchers.Main) {
-            Toast.makeText(
-                context,
-                "❌ Erreur: ${e.message}",
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(context, "❌ Erreur: ${e.message}", Toast.LENGTH_LONG).show()
         }
     } finally {
         delay(500)
         val fv = focusedValuesGetter.active_Central_Values
         focusedValuesGetter.update_activeCentralValues(
-            fv.copy(bons_a_imprime_avec_image_produit = fv.bons_a_imprime_avec_image_produit.filter { it.keyID != activeBonVent?.keyID })
+            fv.copy(
+                bons_a_imprime_avec_image_produit = fv.bons_a_imprime_avec_image_produit
+                    .filter { it.keyID != activeBonVent?.keyID }
+            )
         )
     }
 }

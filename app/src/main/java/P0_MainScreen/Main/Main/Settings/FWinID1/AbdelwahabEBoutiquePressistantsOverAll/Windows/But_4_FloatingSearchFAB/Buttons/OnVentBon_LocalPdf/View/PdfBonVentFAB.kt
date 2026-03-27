@@ -57,7 +57,7 @@ fun PdfBonVentFAB(
 
     // Default path suffix that means "nothing saved yet"
     val defaultPathSuffix = "/Pdf/"
-    val storedPath  = activeBonVent?.path_pdf_bon_file ?: ""
+    val storedPath = activeBonVent?.path_pdf_bon_file ?: ""
     val storedCount = activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0
     val activeCount = activeVents.size
 
@@ -82,16 +82,15 @@ fun PdfBonVentFAB(
                 isGenerating = true
                 scope.launch {
                     try {
-                        initiateBackgroundPdfCreation_Np(
-                            context            = context,
-                            aCentralFacade     = aCentralFacade,
+                        initiateBackgroundPdfCreation_NewP(
+                            context = context,
+                            aCentralFacade = aCentralFacade,
                             focusedValuesGetter = focusedValuesGetter,
-                            onPdfSaved = { savedPath: String ->        //->
-                                //TODO(FIXME):Fix erreur No parameter with name 'onPdfSaved' found.
+                            onPdfSaved = { savedPath: String ->
                                 // Persist path + count back into M8BonVent
                                 activeBonVent?.let { bon ->
                                     val updated = bon.copy(
-                                        path_pdf_bon_file                  = savedPath,
+                                        path_pdf_bon_file = savedPath,
                                         nombre_produits_don_dernier_pdf_stoked = activeCount
                                     )
                                     aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(updated)
@@ -104,26 +103,28 @@ fun PdfBonVentFAB(
                 }
             },
             containerColor = when {
-                isGenerating   -> MaterialTheme.colorScheme.surfaceVariant
-                isPdfUpToDate  -> Color(0xFF4CAF50)   // green  = up-to-date
-                else           -> Color(0xFFFF9800)   // orange = needs (re)generation
+                isGenerating -> MaterialTheme.colorScheme.surfaceVariant
+                isPdfUpToDate -> Color(0xFF4CAF50)   // green  = up-to-date
+                else -> Color(0xFFFF9800)   // orange = needs (re)generation
             },
         ) {
             when {
-                isGenerating  -> CircularProgressIndicator(
-                    modifier  = Modifier.size(24.dp),
-                    color     = Color.White,
+                isGenerating -> CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White,
                     strokeWidth = 2.dp
                 )
+
                 isPdfUpToDate -> Icon(
-                    imageVector      = Icons.Default.Check,
+                    imageVector = Icons.Default.Check,
                     contentDescription = "PDF à jour",
-                    tint             = Color.White
+                    tint = Color.White
                 )
-                else          -> Icon(
-                    imageVector      = Icons.Default.PictureAsPdf,
+
+                else -> Icon(
+                    imageVector = Icons.Default.PictureAsPdf,
                     contentDescription = "Créer PDF",
-                    tint             = Color.White
+                    tint = Color.White
                 )
             }
         }
@@ -131,9 +132,9 @@ fun PdfBonVentFAB(
         if (showLabels) {
             Text(
                 text = when {
-                    isGenerating  -> "Génération…"
+                    isGenerating -> "Génération…"
                     isPdfUpToDate -> "PDF ✓ ($storedCount art.)"
-                    else          -> "Créer PDF ($activeCount art.)"
+                    else -> "Créer PDF ($activeCount art.)"
                 },
                 modifier = Modifier
                     .background(
