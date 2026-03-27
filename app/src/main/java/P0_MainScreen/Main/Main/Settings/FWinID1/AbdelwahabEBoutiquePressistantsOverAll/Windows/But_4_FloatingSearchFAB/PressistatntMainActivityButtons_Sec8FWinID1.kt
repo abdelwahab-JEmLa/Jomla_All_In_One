@@ -428,9 +428,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                 itsFragmentProduitFastSearchDialog.ifTrue {
 
-                    FloatingBonVentToggleFAB(
+                false.ifTrue {     FloatingBonVentToggleFAB(
                         showLabels = showLabels
-                    )
+                    )  }
 
                     if (shouldShowFloatingSearcher) {
                         FloatingSecureClickToggleFAB(

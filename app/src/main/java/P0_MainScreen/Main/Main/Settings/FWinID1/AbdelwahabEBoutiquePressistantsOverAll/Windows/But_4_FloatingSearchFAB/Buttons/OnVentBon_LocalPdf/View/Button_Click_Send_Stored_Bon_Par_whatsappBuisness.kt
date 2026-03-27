@@ -64,7 +64,7 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     val scope = rememberCoroutineScope()
 
     val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val activeClient  = focusedValuesGetter.activeOnVentM2ClientInfos
+    val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
 
     val defaultPathSuffix = "/Pdf/"
 
@@ -82,11 +82,11 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     val storedPdfPath = overridePath
         .takeIf { it.isNotBlank() && !it.endsWith(defaultPathSuffix) }
         ?: livePdfPath
-    val storedPdfFile  = if (storedPdfPath.startsWith("/")) File(storedPdfPath) else null
-    val activeVents    = focusedValuesGetter
+    val storedPdfFile = if (storedPdfPath.startsWith("/")) File(storedPdfPath) else null
+    val activeVents = focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter { it.etateDelivery != V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
-    val activeCount    = activeVents.size
+    val activeCount = activeVents.size
     val liveCount by produceState(
         initialValue = activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0,
         key1 = activeBonVent?.keyID
@@ -98,9 +98,10 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
             kotlinx.coroutines.delay(500L)
         }
     }
-    val isRealPath       = storedPdfPath.isNotBlank() && !storedPdfPath.endsWith(defaultPathSuffix)
+    val isRealPath = storedPdfPath.isNotBlank() && !storedPdfPath.endsWith(defaultPathSuffix)
     val isMediaStorePath = isRealPath && !storedPdfPath.startsWith("/")
-    val fileOnDisk       = isMediaStorePath || (storedPdfFile?.exists() == true && storedPdfFile.length() > 0L)
+    val fileOnDisk =
+        isMediaStorePath || (storedPdfFile?.exists() == true && storedPdfFile.length() > 0L)
     val effectiveLiveCount = if (overrideCount > 0) overrideCount else liveCount
     val pdfExists = isRealPath && fileOnDisk && effectiveLiveCount == activeCount && activeCount > 0
 
@@ -148,7 +149,11 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                     return@FloatingActionButton
                 }
                 if (!pdfExists) {
-                    Toast.makeText(context, "Générez d'abord le PDF (bouton orange)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Générez d'abord le PDF (bouton orange)",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@FloatingActionButton
                 }
                 val phone = activeClient?.numTelephone?.trim() ?: ""
@@ -235,9 +240,15 @@ private fun sendPdfViaWhatsAppBusiness(
     try {
         val pdfUri = when {
             pdfFile != null && pdfFile.exists() ->
-                androidx.core.content.FileProvider.getUriForFile(context, "$packageName.fileprovider", pdfFile)
+                androidx.core.content.FileProvider.getUriForFile(
+                    context,
+                    "$packageName.fileprovider",
+                    pdfFile
+                )
+
             !pdfMediaStorePath.isNullOrBlank() ->
                 queryMediaStoreUri(context, pdfMediaStorePath)
+
             else -> null
         }
         if (pdfUri == null) {
@@ -253,9 +264,14 @@ private fun sendPdfViaWhatsAppBusiness(
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         context.startActivity(intent)
-        Toast.makeText(context, "Ouverture WhatsApp Business pour $clientName", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Ouverture WhatsApp Business pour $clientName", Toast.LENGTH_SHORT)
+            .show()
     } catch (e: Exception) {
-        Toast.makeText(context, "WhatsApp Business non installé ou erreur: ${e.message}", Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            context,
+            "WhatsApp Business non installé ou erreur: ${e.message}",
+            Toast.LENGTH_LONG
+        ).show()
     } finally {
         onResult()
     }
@@ -264,19 +280,23 @@ private fun sendPdfViaWhatsAppBusiness(
 private fun queryMediaStoreUri(context: Context, relativePath: String): android.net.Uri? {
     return try {
         val fileName = relativePath.substringAfterLast("/")
-        val folder   = relativePath.removePrefix("Downloads/").substringBeforeLast("/")
-        val collection   = android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI
-        val projection   = arrayOf(android.provider.MediaStore.Downloads._ID)
-        val selection    = "${android.provider.MediaStore.Downloads.DISPLAY_NAME} = ? AND ${android.provider.MediaStore.Downloads.RELATIVE_PATH} LIKE ?"
+        val folder = relativePath.removePrefix("Downloads/").substringBeforeLast("/")
+        val collection = android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(android.provider.MediaStore.Downloads._ID)
+        val selection =
+            "${android.provider.MediaStore.Downloads.DISPLAY_NAME} = ? AND ${android.provider.MediaStore.Downloads.RELATIVE_PATH} LIKE ?"
         val selectionArgs = arrayOf(fileName, "%$folder%")
         context.contentResolver.query(collection, projection, selection, selectionArgs, null)
             ?.use { cursor ->
                 if (cursor.moveToFirst()) {
-                    val id = cursor.getLong(cursor.getColumnIndexOrThrow(android.provider.MediaStore.Downloads._ID))
+                    val id =
+                        cursor.getLong(cursor.getColumnIndexOrThrow(android.provider.MediaStore.Downloads._ID))
                     android.content.ContentUris.withAppendedId(collection, id)
                 } else null
             }
-    } catch (e: Exception) { null }
+    } catch (e: Exception) {
+        null
+    }
 }
 
 private fun formatPhoneForWhatsApp(raw: String): String {
