@@ -6,9 +6,6 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.core.content.FileProvider
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
-import kotlinx.coroutines.tasks.await
 import java.io.File
 
 /**
@@ -17,7 +14,6 @@ import java.io.File
  * - No resource leaks when sharing files
  */
 class UploadHandler {
-    private val storageRef = Firebase.storage.reference.child("bonVents_pdf")
 
     companion object {
         private const val TAG = "UploadHandler"
@@ -33,13 +29,6 @@ class UploadHandler {
         val fileName = PdfFileNamingUtils.generateInternalPdfFileName(clientName, type, id)
 
         return File(dir, fileName)
-    }
-
-    suspend fun uploadToFirebaseStorage(file: File, fileName: String): String {
-        val fileRef = storageRef.child(fileName)
-        val uploadTask = fileRef.putFile(Uri.fromFile(file))
-        uploadTask.await()
-        return fileRef.downloadUrl.await().toString()
     }
 
     /**

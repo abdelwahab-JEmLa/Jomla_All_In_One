@@ -1,9 +1,9 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B5.View
 
+import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.UploadHandler
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
@@ -61,7 +61,7 @@ class AndroidNativeTaxInvoiceGenerator(
         private const val INVOICE_PREFIX = "Facture N°"
     }
 
-    suspend fun generateTaxInvoicePdf(
+    fun generateTaxInvoicePdf(
         context: Context,
         client: M2Client?,
         operations: List<M10OperationVentCouleur>,
@@ -181,11 +181,10 @@ class AndroidNativeTaxInvoiceGenerator(
                 return Result.failure(IllegalStateException("Tax invoice PDF creation failed"))
             }
 
-            val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
             val warningMsg = if (excludedCount > 0) {
                 "\n⚠️ ATTENTION: $excludedCount produits non inclus (dépassement limite de $nombre_Page_max pages)"
             } else ""
-            Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url$warningMsg")
+            Result.success("PDF saved: ${file.absolutePath}$warningMsg")
 
         } catch (e: Exception) {
             Result.failure(e)

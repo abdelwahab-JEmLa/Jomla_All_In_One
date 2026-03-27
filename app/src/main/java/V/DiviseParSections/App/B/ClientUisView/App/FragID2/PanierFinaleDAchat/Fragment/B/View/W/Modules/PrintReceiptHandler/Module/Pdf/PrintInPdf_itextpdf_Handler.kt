@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
+import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
@@ -47,7 +47,7 @@ class PrintInPdf_itextpdf_Handler(
      * FIXED: Now checks if bonVent has demande_Versemet_si_Type_est_regle = true
      * to determine if credit section should be shown
      */
-    suspend fun generateVentReceiptPdf(
+    fun generateVentReceiptPdf(
         context: Context,
         client: M2Client?,
         operations: List<M10OperationVentCouleur>,
@@ -100,14 +100,13 @@ class PrintInPdf_itextpdf_Handler(
             return Result.failure(IllegalStateException("PDF file creation failed"))
         }
 
-        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
-        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+        return Result.success("PDF saved: ${file.absolutePath}")
     }
 
     /**
      * Generate a receipt PDF with credit information
      */
-    suspend fun generateVentReceiptWithCreditPdf(
+    fun generateVentReceiptWithCreditPdf(
         context: Context,
         client: M2Client?,
         operations: List<M10OperationVentCouleur>,
@@ -142,14 +141,13 @@ class PrintInPdf_itextpdf_Handler(
             return Result.failure(IllegalStateException("PDF file creation failed"))
         }
 
-        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
-        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+        return Result.success("PDF saved: ${file.absolutePath}")
     }
 
     /**
      * Generate a credit receipt PDF
      */
-    suspend fun generateCreditReceiptPdf(
+    fun generateCreditReceiptPdf(
         context: Context,
         data: CreditReceiptData
     ): Result<String> {
@@ -163,7 +161,6 @@ class PrintInPdf_itextpdf_Handler(
             return Result.failure(IllegalStateException("PDF file creation failed"))
         }
 
-        val url = uploadHandler.uploadToFirebaseStorage(file, file.name)
-        return Result.success("PDF saved: ${file.absolutePath}\nFirebase: $url")
+        return Result.success("PDF saved: ${file.absolutePath}")
     }
 }

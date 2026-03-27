@@ -30,14 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import java.io.File
 
-/**
- * FAB that:
- * - Shows green ✓ when the last stored PDF already covers all current active products
- *   (path_pdf_bon_file is set AND nombre_produits_don_dernier_pdf_stoked == activeVents.size)
- * - Shows a PDF icon otherwise, and generates a new PDF on click
- * - After generation succeeds, persists path + product count back into M8BonVent via the repo
- */
 @Composable
 fun PdfBonVentFAB(
     showLabels: Boolean,
@@ -55,15 +49,18 @@ fun PdfBonVentFAB(
             it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0
         }
 
-    // Default path suffix that means "nothing saved yet"
     val defaultPathSuffix = "/Pdf/"
     val storedPath = activeBonVent?.path_pdf_bon_file ?: ""
     val storedCount = activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0
     val activeCount = activeVents.size
 
-    // Green "done" state: path is not the empty default AND count matches current basket
-    val isPdfUpToDate = storedPath.isNotBlank()
+    // Check the file actually exists on disk (not just a stored path string)
+    val storedFileExists = storedPath.isNotBlank()
             && !storedPath.endsWith(defaultPathSuffix)
+            && File(storedPath).let { it.exists() && it.length() > 0L }
+
+    // Green "done" state: path is valid, file exists on disk, count matches basket
+    val isPdfUpToDate = storedFileExists
             && storedCount == activeCount
             && activeCount > 0
 
@@ -87,7 +84,6 @@ fun PdfBonVentFAB(
                             aCentralFacade = aCentralFacade,
                             focusedValuesGetter = focusedValuesGetter,
                             onPdfSaved = { savedPath: String ->
-                                // Persist path + count back into M8BonVent
                                 activeBonVent?.let { bon ->
                                     val updated = bon.copy(
                                         path_pdf_bon_file = savedPath,
@@ -104,8 +100,8 @@ fun PdfBonVentFAB(
             },
             containerColor = when {
                 isGenerating -> MaterialTheme.colorScheme.surfaceVariant
-                isPdfUpToDate -> Color(0xFF4CAF50)   // green  = up-to-date
-                else -> Color(0xFFFF9800)   // orange = needs (re)generation
+                isPdfUpToDate -> Color(0xFF4CAF50)   // green  = up-to-date & file exists
+                else -> Color(0xFFFF9800)             // orange = needs (re)generation
             },
         ) {
             when {
