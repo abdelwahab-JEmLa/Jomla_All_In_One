@@ -11,6 +11,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingBonVentToggleFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingImageDisplay
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingSecureClickToggleFAB
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.PdfBonVentFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingUpdateAllChecksFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.Button_ID2_Menagerie_Telegram
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.CatalogueSelectionDialog
@@ -389,11 +390,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     }
 
 
-                    //<--        val path_pdf_bon_file = focusedValuesGetter.activeOnVent_M8BonVent.path_pdf_bon_file
-                    //                    val nombre_produits_don_dernier_pdf_stoked = focusedValuesGetter.activeOnVent_M8BonVent.nombre_produits_don_dernie_pdf_stoked
-                         //TODO(1): ajout un button qui s affiche paa done vert si path_pdf_bon_file != "" && nombre_produits_don_dernier_pdf_stoked ==  //<--
-                         //TODO(1): fait que a click au button de cree un pdf quand ca termine de update par le path du created et nombre_produits_don_dernie_pdf_stoked par actuelle nombre
-                    
+
+                    if (focusedValuesGetter.activeOnVent_M8BonVent != null) {
+                        PdfBonVentFAB(showLabels = showLabels)
+                    }
+
                     (focusedValuesGetter.currentApp_Est_Admin).ifTrue {
                         ID4ClientSearchButton(
                             uiState = uiState,

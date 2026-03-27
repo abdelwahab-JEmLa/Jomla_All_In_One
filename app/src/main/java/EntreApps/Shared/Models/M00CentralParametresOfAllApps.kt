@@ -74,7 +74,14 @@ data class M00CentralParametresOfAllApps(
         val centralRef = Firebase.database.getReference(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
         )
-        const val images_central_Local_storageLink = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+         val central_Local_storageLink = buildString {
+            append("/storage/emulated/0/Abdelwahab_jeMla.com")
+        }
+
+         val images_central_Local_storageLink = buildString {
+            append(central_Local_storageLink)
+            append("/IMGs/BaseDonne")
+        }
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 

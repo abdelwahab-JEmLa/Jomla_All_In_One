@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import android.R
 import androidx.room.Entity
@@ -22,6 +23,13 @@ data class M8BonVent(
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
+
+    val nombre_produits_don_dernier_pdf_stoked: Int = 0,
+    val path_pdf_bon_file: String = buildString {
+        append(central_Local_storageLink)
+        append("/Pdf/")
+    },
+
     var parent_M9AppCompt_KeyID: String = "null",
     var parent_M9AppCompt_DebugInfos: String = "null",
     var parent_M14VentPeriod_KeyId: String = "null",
@@ -60,6 +68,7 @@ data class M8BonVent(
     val parentID8C2TypeTransactionKeyByParent: String = "",
     var vid: Long = 0L,
 ) {
+
     fun get_DebugInfos(): String {
         return buildString {
             append("Bon")
