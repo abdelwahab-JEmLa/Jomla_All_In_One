@@ -6,13 +6,13 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -58,6 +58,8 @@ private const val TAG_WA = "WA_SendButton"
 fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     modifier: Modifier = Modifier,
     showLabels: Boolean = true,
+    overridePath: String = "",
+    overrideCount: Int = 0,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
@@ -85,7 +87,9 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
         }
     }
 
-    val storedPdfPath = livePdfPath
+    val storedPdfPath = overridePath
+        .takeIf { it.isNotBlank() && !it.endsWith(defaultPathSuffix) }
+        ?: livePdfPath
     // Handle both absolute path and MediaStore relative path
     val storedPdfFile  = if (storedPdfPath.startsWith("/")) File(storedPdfPath) else null
     val activeVents    = focusedValuesGetter
@@ -106,14 +110,16 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     val isRealPath       = storedPdfPath.isNotBlank() && !storedPdfPath.endsWith(defaultPathSuffix)
     val isMediaStorePath = isRealPath && !storedPdfPath.startsWith("/")
     val fileOnDisk       = isMediaStorePath || (storedPdfFile?.exists() == true && storedPdfFile.length() > 0L)
+    // overrideCount is set instantly by PdfBonVentFAB via onPdfSaved; fall back to polling liveCount
+    val effectiveLiveCount = if (overrideCount > 0) overrideCount else liveCount
     // Mirror PdfBonVentFAB.isPdfUpToDate: PDF must exist AND article count must match
-    val pdfExists = isRealPath && fileOnDisk && liveCount == activeCount && activeCount > 0
+    val pdfExists = isRealPath && fileOnDisk && effectiveLiveCount == activeCount && activeCount > 0
 
     Log.d(TAG_WA, "── WA_SendButton recompose ──")
     Log.d(TAG_WA, "  activeBonVent   = ${activeBonVent?.keyID ?: "NULL"}")
     Log.d(TAG_WA, "  storedPdfPath   = $storedPdfPath")
     Log.d(TAG_WA, "  isMediaStorePath= $isMediaStorePath")
-    Log.d(TAG_WA, "  liveCount=$liveCount  activeCount=$activeCount")
+    Log.d(TAG_WA, "  liveCount=$effectiveLiveCount  activeCount=$activeCount")
     Log.d(TAG_WA, "  storedPdfFile   = ${storedPdfFile?.absolutePath}  exists=${storedPdfFile?.exists()}")
     Log.d(TAG_WA, "  pdfExists       = $pdfExists")
     Log.d(TAG_WA, "  clientPhone     = ${activeClient?.numTelephone ?: "NULL"}")
@@ -236,7 +242,7 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                         append("📅 $creationDate")
                     }
                     if (isNotEmpty()) append("  ")
-                    append("📦 $liveCount art.")
+                    append("📦 $effectiveLiveCount art.")
                 }
             }
 

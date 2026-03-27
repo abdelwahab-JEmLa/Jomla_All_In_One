@@ -103,6 +103,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
     val showButtons by remember { mutableStateOf(true) }
     val showLabels by remember { mutableStateOf(true) }
+    var sharedPdfPath  by remember { mutableStateOf("") }
+    var sharedPdfCount by remember { mutableStateOf(0) }
     var showAlertDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
 
@@ -393,8 +395,18 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
 
                     if (focusedValuesGetter.activeOnVent_M8BonVent != null) {
-                        PdfBonVentFAB(showLabels = showLabels)
-                        Button_Click_Send_Stored_Bon_Par_whatsappBuisness(showLabels = showLabels)
+                        PdfBonVentFAB(
+                            showLabels = showLabels,
+                            onPdfSaved = { path, count ->
+                                sharedPdfPath  = path
+                                sharedPdfCount = count
+                            }
+                        )
+                        Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
+                            showLabels    = showLabels,
+                            overridePath  = sharedPdfPath,
+                            overrideCount = sharedPdfCount,
+                        )
                     }
 
                     (focusedValuesGetter.currentApp_Est_Admin).ifTrue {

@@ -38,6 +38,7 @@ private const val TAG_FAB = "PdfBonVentFAB"
 fun PdfBonVentFAB(
     showLabels: Boolean,
     modifier: Modifier = Modifier,
+    onPdfSaved: ((savedPath: String, count: Int) -> Unit)? = null,
     aCentralFacade: ACentralFacade = koinInject(),
 ) {
     val context = LocalContext.current
@@ -120,7 +121,9 @@ fun PdfBonVentFAB(
                                 // ① Update local State immediately → forces recomposition now
                                 localSavedPath  = savedPath
                                 localSavedCount = activeCount
-                                // ② Persist to DB (Flow will eventually sync, local state is the bridge)
+                                // ② Notify parent so sibling composables (e.g. WA button) update instantly
+                                onPdfSaved?.invoke(savedPath, activeCount)
+                                // ③ Persist to DB (Flow will eventually sync, local state is the bridge)
                                 activeBonVent?.let { bon ->
                                     val updated = bon.copy(
                                         path_pdf_bon_file = savedPath,
