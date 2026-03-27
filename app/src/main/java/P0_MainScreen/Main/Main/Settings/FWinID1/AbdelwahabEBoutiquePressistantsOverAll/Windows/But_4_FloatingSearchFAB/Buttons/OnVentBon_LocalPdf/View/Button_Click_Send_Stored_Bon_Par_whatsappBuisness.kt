@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -86,16 +87,34 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
 
     val storedPdfPath = livePdfPath
     // Handle both absolute path and MediaStore relative path
-    val storedPdfFile = if (storedPdfPath.startsWith("/")) File(storedPdfPath) else null
-    val isRealPath = storedPdfPath.isNotBlank() && !storedPdfPath.endsWith(defaultPathSuffix)
+    val storedPdfFile  = if (storedPdfPath.startsWith("/")) File(storedPdfPath) else null
+    val activeVents    = focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        .filter { it.etateDelivery != V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
+    val activeCount    = activeVents.size
+    val liveCount by produceState(
+        initialValue = activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0,
+        key1 = activeBonVent?.keyID
+    ) {
+        while (true) {
+            val current = focusedValuesGetter.activeOnVent_M8BonVent
+                ?.nombre_produits_don_dernier_pdf_stoked ?: 0
+            if (current != value) value = current
+            kotlinx.coroutines.delay(500L)
+        }
+    }
+    val isRealPath       = storedPdfPath.isNotBlank() && !storedPdfPath.endsWith(defaultPathSuffix)
     val isMediaStorePath = isRealPath && !storedPdfPath.startsWith("/")
-    val pdfExists = isRealPath && (isMediaStorePath || (storedPdfFile?.exists() == true && storedPdfFile.length() > 0L))
+    val fileOnDisk       = isMediaStorePath || (storedPdfFile?.exists() == true && storedPdfFile.length() > 0L)
+    // Mirror PdfBonVentFAB.isPdfUpToDate: PDF must exist AND article count must match
+    val pdfExists = isRealPath && fileOnDisk && liveCount == activeCount && activeCount > 0
 
     Log.d(TAG_WA, "── WA_SendButton recompose ──")
     Log.d(TAG_WA, "  activeBonVent   = ${activeBonVent?.keyID ?: "NULL"}")
     Log.d(TAG_WA, "  storedPdfPath   = $storedPdfPath")
     Log.d(TAG_WA, "  isMediaStorePath= $isMediaStorePath")
-    Log.d(TAG_WA, "  storedPdfFile   = ${storedPdfFile?.absolutePath}  exists=${storedPdfFile?.exists()}  size=${storedPdfFile?.length()}")
+    Log.d(TAG_WA, "  liveCount=$liveCount  activeCount=$activeCount")
+    Log.d(TAG_WA, "  storedPdfFile   = ${storedPdfFile?.absolutePath}  exists=${storedPdfFile?.exists()}")
     Log.d(TAG_WA, "  pdfExists       = $pdfExists")
     Log.d(TAG_WA, "  clientPhone     = ${activeClient?.numTelephone ?: "NULL"}")
 
@@ -199,25 +218,41 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
         }
 
         if (showLabels) {
+            // Extract creation date from MediaStore path e.g. "Downloads/BonsWhatsApp/03_27/..."
+            val creationDate = storedPdfPath
+                .split("/")
+                .firstOrNull { it.matches(Regex("\\d{2}_\\d{2}")) }
+                ?.replace("_", "/")
+                ?: ""
+            val phone = activeClient?.numTelephone?.trim() ?: ""
+
+            val labelText = when {
+                isSending -> "Envoi…"
+                !pdfExists -> "PDF non prêt"
+                else -> buildString {
+                    if (phone.isNotEmpty()) append("📱 $phone")
+                    if (creationDate.isNotEmpty()) {
+                        if (isNotEmpty()) append("  ")
+                        append("📅 $creationDate")
+                    }
+                    if (isNotEmpty()) append("  ")
+                    append("📦 $liveCount art.")
+                }
+            }
+
             Text(
-                text = when {
-                    isSending -> "Envoi…"
-                    !pdfExists -> "PDF non prêt"
-                    else -> "Envoyer WhatsApp"
-                },
+                text = labelText,
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White,
                 modifier = Modifier
-                    .let { m ->
-                        androidx.compose.foundation.layout.Box(
-                            modifier = m
-                                .then(
-                                    Modifier
-                                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                                )
-                        ) {}
-                        m
-                    }
+                    .background(
+                        color = when {
+                            isSending -> MaterialTheme.colorScheme.surfaceVariant
+                            !pdfExists -> Color(0xFF9E9E9E)
+                            else -> Color(0xFF25D366)
+                        },
+                        shape = RoundedCornerShape(4.dp)
+                    )
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             )
         }
