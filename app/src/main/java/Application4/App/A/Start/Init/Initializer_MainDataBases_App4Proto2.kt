@@ -1,11 +1,8 @@
-package Application2.App.Init
+package Application4.App.A.Start.Init
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
-import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
-import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
@@ -14,35 +11,23 @@ import com.dropbox.core.oauth.DbxCredential
 import com.dropbox.core.v2.DbxClientV2
 import com.dropbox.core.v2.files.FileMetadata
 import com.example.clientjetpack.BuildConfig
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.Source
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.bouncycastle.crypto.params.Blake3Parameters.context
 import java.io.File
 import java.io.FileOutputStream
 
 private const val TAG = "Dropbox"
 
 @Suppress("DEPRECATION")
-class Initializer_Funcs_app2(
-    val context: Context,
-    val on_Progress_Datas: (Float) -> Unit,
-    val dao_M1Produit: Dao_M1Produit,
-    val dao_16CategorieProduit: Dao_M16CategorieProduit,
-    val dao_M03CouleurProduitInfos: Dao_M03CouleurProduitInfos,
-) {
-    private val mutex = Mutex()
-    private val progress = mutableMapOf<String, Float>()
-    val repoScope = CoroutineScope(Dispatchers.IO)
-
+class Initializer_MainDataBases_App4Proto2(       //<--
+//TODO(1): change a un objecte   
+) {     
     private val localImagesBaseDir = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
     private val dropboxRootFolder = "/images"
 
@@ -62,7 +47,21 @@ class Initializer_Funcs_app2(
 
     enum class Repo { M1Produit, M16CategorieProduit, M3CouleurProduitInfos }
 
-    suspend fun initializeAllRepositories() {
+    suspend fun initializeAllRepositories(
+        //<--
+        //TODO(1): passe appData base
+        //<--            //<--
+        ////TODO(1): chnge a un object 
+        //    val context: Context,
+        //TODO(1): passe  mutex et repoScope //<-
+    // paase -
+        //TODO(1): et creee     val on_Progress_Datas: (Float) -> Unit,
+    ) {
+         val mutex = Mutex()
+         val progress = mutableMapOf<String, Float>()
+        val repoScope = CoroutineScope(Dispatchers.IO)
+
+        //<-- et lece le dao
         mutex.withLock { Repo.entries.forEach { progress[it.name] = 0f } }
         val isOnline = isInternetAvailable(context)
         // M3 must be seeded first — M1 and M16 filters depend on its Room content
@@ -73,7 +72,8 @@ class Initializer_Funcs_app2(
         updateMainInitDataBaseProgressEtate(1f)
     }
 
-    private suspend fun seedProducts() {
+    private suspend fun seedProducts() {   //<--
+    //TODO(1): passe le dao depuit la fun
         if (dao_M1Produit.getAll().isNotEmpty()) return
 
         // Only keep products that have at least one M3 colour in Room

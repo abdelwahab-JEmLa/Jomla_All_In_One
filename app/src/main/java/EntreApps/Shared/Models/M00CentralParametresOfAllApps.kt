@@ -20,7 +20,6 @@ data class M00CentralParametresOfAllApps(
     @PrimaryKey
     val keyId: String = "M18CentralParametresOfAllApps",
     //---------------------------------Developing.Tools---------------------------------------------------------------------------------------------------------------------------------
-    val itsDevMode: Boolean = false,
     val devStartUpScree: String = Screen.EditDatabaseWithCreateNewArticles.route,
 
     val desactive_Animation_Pour_LayoutInspector: Boolean = false,
@@ -47,14 +46,16 @@ data class M00CentralParametresOfAllApps(
     val au_Lence_Dimininue_Datas_M8BonVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val time_tamp_all_tariffs: Boolean = false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
 
-    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    val itsDevMode: Boolean = false,
+
     val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
     } else {
         if (itsDevMode) {
             AppType.AllInOne
         } else {
-            AppType.JomLaElectroLivreurGrossist_VendeurHost
+            AppType.AllInOne
         }
     },
 
