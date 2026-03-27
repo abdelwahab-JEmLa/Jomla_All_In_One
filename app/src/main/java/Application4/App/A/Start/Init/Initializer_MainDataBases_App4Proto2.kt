@@ -1,5 +1,5 @@
 package Application4.App.A.Start.Init
-
+         /*
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
@@ -229,3 +229,4 @@ class Initializer_MainDataBases_App4Proto2(       //<--
         } catch (e: Exception) { false }
     }
 }
+                                            */

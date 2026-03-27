@@ -391,8 +391,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     //<--        val path_pdf_bon_file = focusedValuesGetter.activeOnVent_M8BonVent.path_pdf_bon_file
                     //                    val nombre_produits_don_dernier_pdf_stoked = focusedValuesGetter.activeOnVent_M8BonVent.nombre_produits_don_dernie_pdf_stoked
-                         //TODO(1): ajout un button qui s affiche paa done vert si path_pdf_bon_file != "" && nombre_produits_don_dernier_pdf_stoked ==
-
+                         //TODO(1): ajout un button qui s affiche paa done vert si path_pdf_bon_file != "" && nombre_produits_don_dernier_pdf_stoked ==  //<--
+                         //TODO(1): fait que a click au button de cree un pdf quand ca termine de update par le path du created et nombre_produits_don_dernie_pdf_stoked par actuelle nombre
+                    
                     (focusedValuesGetter.currentApp_Est_Admin).ifTrue {
                         ID4ClientSearchButton(
                             uiState = uiState,

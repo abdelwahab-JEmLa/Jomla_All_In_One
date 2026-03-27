@@ -32,7 +32,6 @@ fun CategoryBadge(
     onClick: () -> Unit,
     modifier: Modifier = Modifier.Companion
 ) {
-    // TODO(1) FIXED: when both are absent, display "Non Définie" label instead of showing nothing
     val hasNoCategory = catalogueName.isNullOrBlank() && categoryName.isNullOrBlank()
     val displayedCategoryName = when {
         hasNoCategory -> "Non Définie"

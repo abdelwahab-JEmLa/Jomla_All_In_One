@@ -1,6 +1,5 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View
 
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B9.View.initiateBackgroundPdfCreation
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App._0.Navigation.Buttons_Gps.PdfSaverUtility
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B10.EnvoyerPDFviaWhatsAppBusiness.View.DropDownItem_WhenIts_FragFastVent_10
@@ -8,6 +7,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Fa
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B7.View.DropDownItem_WhenIts_FragFastVent_7
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B8.DropDownItem_WhenIts_FragFastVent_8
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B9.View.DropDownItem_WhenIts_FragFastVent_9
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B9.View.initiateBackgroundPdfCreation
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_2
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenIts_FragFastVent_3
@@ -141,8 +141,6 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
                 }
             )
 
-            // FIX TODO(1): Share current bon-vent PDF to the active client's WhatsApp Business
-            // number via intent. Falls back to abdelwahab oustad number when unavailable.
             DropDownItem_WhenIts_FragFastVent_10(
                 nomFun = "Envoyer PDF via WhatsApp Business",
                 onDismissDropdown = {
