@@ -13,8 +13,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import java.io.File
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 private const val TAG = "BgPdfCreation"
 
@@ -24,6 +22,7 @@ suspend fun initiateBackgroundPdfCreation_NewP(
     focusedValuesGetter: FocusedValuesGetter,
     onPdfSaved: ((savedPath: String) -> Unit)? = null,
 ) {
+    // ── 0. Snapshot active values ────────────────────────────────────────────────
     val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
     val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
     val activeVents = focusedValuesGetter
@@ -121,9 +120,10 @@ suspend fun initiateBackgroundPdfCreation_NewP(
         }
 
         // ── 4. Build final file name ─────────────────────────────────────────────
-        val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM_dd_HH:mm"))
+        val keyPart    = activeBonVent!!.keyID.takeLast(6)
         val clientPart = activeClient!!.nom.replace(Regex("[^A-Za-z0-9_\\-]"), "_").take(20)
-        val fileName = "${clientPart}_${activeBonVent!!.keyID.takeLast(6)}_${timestamp}.pdf"
+        val conte      = activeVents.size
+        val fileName   = "${keyPart}_${clientPart}_${conte}.pdf"
         Log.d(TAG, "  fileName = $fileName")
 
         // ── 5. Save to BonsWhatsApp folder ───────────────────────────────────────
@@ -137,16 +137,27 @@ suspend fun initiateBackgroundPdfCreation_NewP(
                 val savedDir = context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
                 val finalPath = File(savedDir, "BonsWhatsApp/$fileName").absolutePath
                 Log.d(TAG, "  ✅ savePdf succeeded → savedRelativePath=$savedRelativePath  finalPath=$finalPath")
+                Log.d(TAG, "  finalPath exists on disk = ${File(finalPath).exists()}  (if false → use savedRelativePath for storage)")
 
-                // Notify caller with the saved path (e.g. so the FAB can update M8BonVent)
-                onPdfSaved?.invoke(finalPath)
+                // Use the MediaStore relative path as the stored value when the absolute path
+                // doesn't exist on disk (MediaStore saved to public Downloads, not app-private dir)
+                val pathToStore = if (File(finalPath).exists() && File(finalPath).length() > 0L) {
+                    Log.d(TAG, "  → storing absolute finalPath")
+                    finalPath
+                } else {
+                    Log.d(TAG, "  → absolute path missing on disk; storing MediaStore savedRelativePath instead")
+                    savedRelativePath
+                }
+
+                // Notify caller with the correct stored path
+                onPdfSaved?.invoke(pathToStore)
 
                 // Fallback: if no callback provided, persist directly from here
                 if (onPdfSaved == null) {
-                    Log.d(TAG, "  onPdfSaved is null → persisting path directly via repo8BonVent")
+                    Log.d(TAG, "  onPdfSaved is null → persisting path directly via repo8BonVent  path=$pathToStore")
                     aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(
                         activeBonVent.copy(
-                            path_pdf_bon_file = finalPath,
+                            path_pdf_bon_file = pathToStore,
                             nombre_produits_don_dernier_pdf_stoked = activeVents.size
                         )
                     )
