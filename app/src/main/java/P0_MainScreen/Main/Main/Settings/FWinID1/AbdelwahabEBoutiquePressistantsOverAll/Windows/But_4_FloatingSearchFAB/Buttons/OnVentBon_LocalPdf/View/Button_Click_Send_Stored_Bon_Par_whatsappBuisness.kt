@@ -4,7 +4,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -52,8 +51,6 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import java.io.File
 
-private const val TAG_WA = "WA_SendButton"
-
 @Composable
 fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     modifier: Modifier = Modifier,
@@ -71,11 +68,6 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
 
     val defaultPathSuffix = "/Pdf/"
 
-    // ── Reactive PDF path ────────────────────────────────────────────────────
-    // focusedValuesGetter is a plain getter (not a StateFlow), so Compose never
-    // recomposes when the underlying M8BonVent changes after upsert().
-    // produceState polls the getter every 500ms so the WA button catches the
-    // update within half a second — no manual callback wiring needed.
     val livePdfPath by produceState(
         initialValue = activeBonVent?.path_pdf_bon_file ?: "",
         key1 = activeBonVent?.keyID
@@ -90,7 +82,6 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     val storedPdfPath = overridePath
         .takeIf { it.isNotBlank() && !it.endsWith(defaultPathSuffix) }
         ?: livePdfPath
-    // Handle both absolute path and MediaStore relative path
     val storedPdfFile  = if (storedPdfPath.startsWith("/")) File(storedPdfPath) else null
     val activeVents    = focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -110,32 +101,18 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     val isRealPath       = storedPdfPath.isNotBlank() && !storedPdfPath.endsWith(defaultPathSuffix)
     val isMediaStorePath = isRealPath && !storedPdfPath.startsWith("/")
     val fileOnDisk       = isMediaStorePath || (storedPdfFile?.exists() == true && storedPdfFile.length() > 0L)
-    // overrideCount is set instantly by PdfBonVentFAB via onPdfSaved; fall back to polling liveCount
     val effectiveLiveCount = if (overrideCount > 0) overrideCount else liveCount
-    // Mirror PdfBonVentFAB.isPdfUpToDate: PDF must exist AND article count must match
     val pdfExists = isRealPath && fileOnDisk && effectiveLiveCount == activeCount && activeCount > 0
 
-    Log.d(TAG_WA, "── WA_SendButton recompose ──")
-    Log.d(TAG_WA, "  activeBonVent   = ${activeBonVent?.keyID ?: "NULL"}")
-    Log.d(TAG_WA, "  storedPdfPath   = $storedPdfPath")
-    Log.d(TAG_WA, "  isMediaStorePath= $isMediaStorePath")
-    Log.d(TAG_WA, "  liveCount=$effectiveLiveCount  activeCount=$activeCount")
-    Log.d(TAG_WA, "  storedPdfFile   = ${storedPdfFile?.absolutePath}  exists=${storedPdfFile?.exists()}")
-    Log.d(TAG_WA, "  pdfExists       = $pdfExists")
-    Log.d(TAG_WA, "  clientPhone     = ${activeClient?.numTelephone ?: "NULL"}")
-
-    // UI state
     var showPhoneDialog by remember { mutableStateOf(false) }
     var isSending by remember { mutableStateOf(false) }
 
-    // ── Phone-entry dialog (shown when client has no phone number) ───────────
     if (showPhoneDialog) {
         PhoneEntryDialog(
             clientName = activeClient?.nom ?: "Client",
             onDismiss = { showPhoneDialog = false },
             onPhoneConfirmed = { enteredPhone ->
                 showPhoneDialog = false
-                // Persist the phone number on the client record
                 activeClient?.let { client ->
                     aCentralFacade.repositorysMainSetter.upsert_M2Client(
                         client.copy(numTelephone = enteredPhone)
@@ -157,7 +134,6 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
         )
     }
 
-    // ── Button ────────────────────────────────────────────────────────────────
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -167,35 +143,18 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
             modifier = Modifier.size(40.dp),
             onClick = {
                 if (isSending) return@FloatingActionButton
-
-                Log.d(TAG_WA, "── onClick ──")
-                Log.d(TAG_WA, "  activeBonVent=${ activeBonVent?.keyID }  pdfExists=$pdfExists  storedPdfPath=$storedPdfPath")
-
-                // Guard: need an active bon and a generated PDF
                 if (activeBonVent == null) {
                     Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT).show()
-                    Log.w(TAG_WA, "  ❌ activeBonVent null → abort")
                     return@FloatingActionButton
                 }
                 if (!pdfExists) {
-                    Toast.makeText(
-                        context,
-                        "Générez d'abord le PDF (bouton orange)",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    Log.w(TAG_WA, "  ❌ pdfExists=false → abort  storedPdfPath=$storedPdfPath")
+                    Toast.makeText(context, "Générez d'abord le PDF (bouton orange)", Toast.LENGTH_SHORT).show()
                     return@FloatingActionButton
                 }
-
                 val phone = activeClient?.numTelephone?.trim() ?: ""
-                Log.d(TAG_WA, "  clientPhone=$phone")
                 if (phone.isEmpty()) {
-                    Log.d(TAG_WA, "  → no phone, showing dialog")
-                    // No phone → show outlined dialog + keyboard
                     showPhoneDialog = true
                 } else {
-                    Log.d(TAG_WA, "  → phone exists, sending directly")
-                    // Phone exists → send directly
                     isSending = true
                     scope.launch {
                         sendPdfViaWhatsAppBusiness(
@@ -212,8 +171,8 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
             },
             containerColor = when {
                 isSending -> MaterialTheme.colorScheme.surfaceVariant
-                !pdfExists -> Color(0xFF9E9E9E)          // grey  = no PDF yet
-                else -> Color(0xFF25D366)                 // green = ready to send
+                !pdfExists -> Color(0xFF9E9E9E)
+                else -> Color(0xFF25D366)
             }
         ) {
             Icon(
@@ -224,7 +183,6 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
         }
 
         if (showLabels) {
-            // Extract creation date from MediaStore path e.g. "Downloads/BonsWhatsApp/03_27/..."
             val creationDate = storedPdfPath
                 .split("/")
                 .firstOrNull { it.matches(Regex("\\d{2}_\\d{2}")) }
@@ -265,113 +223,62 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     }
 }
 
-// ── Internal: send the stored local PDF to WhatsApp Business ─────────────────
 private fun sendPdfViaWhatsAppBusiness(
     context: Context,
     phoneNumber: String,
-    pdfFile: File?,               // absolute File path (may be null if MediaStore path)
-    pdfMediaStorePath: String?,   // MediaStore relative path e.g. "Downloads/BonsWhatsApp/..."
+    pdfFile: File?,
+    pdfMediaStorePath: String?,
     clientName: String,
     packageName: String,
     onResult: () -> Unit,
 ) {
-    Log.d(TAG_WA, "── sendPdfViaWhatsAppBusiness ──")
-    Log.d(TAG_WA, "  phoneNumber      = $phoneNumber")
-    Log.d(TAG_WA, "  pdfFile          = ${pdfFile?.absolutePath}  exists=${pdfFile?.exists()}")
-    Log.d(TAG_WA, "  pdfMediaStorePath= $pdfMediaStorePath")
-
     try {
-        // Resolve the URI: prefer absolute file, fall back to MediaStore
         val pdfUri = when {
-            pdfFile != null && pdfFile.exists() -> {
-                Log.d(TAG_WA, "  → using absolute file path for URI")
-                androidx.core.content.FileProvider.getUriForFile(
-                    context, "$packageName.fileprovider", pdfFile
-                )
-            }
-            !pdfMediaStorePath.isNullOrBlank() -> {
-                // MediaStore saved to public Downloads — query MediaStore for the URI
-                Log.d(TAG_WA, "  → querying MediaStore for relative path: $pdfMediaStorePath")
+            pdfFile != null && pdfFile.exists() ->
+                androidx.core.content.FileProvider.getUriForFile(context, "$packageName.fileprovider", pdfFile)
+            !pdfMediaStorePath.isNullOrBlank() ->
                 queryMediaStoreUri(context, pdfMediaStorePath)
-            }
             else -> null
         }
-
-        Log.d(TAG_WA, "  resolved pdfUri  = $pdfUri")
-
         if (pdfUri == null) {
-            Log.e(TAG_WA, "  ❌ pdfUri is null — cannot send")
             Toast.makeText(context, "Fichier PDF introuvable", Toast.LENGTH_LONG).show()
-            onResult()
-            return
+            onResult(); return
         }
-
-        val formattedPhone = formatPhoneForWhatsApp(phoneNumber)
-        Log.d(TAG_WA, "  formattedPhone   = $formattedPhone")
-
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"
             setPackage("com.whatsapp.w4b")
             putExtra(Intent.EXTRA_STREAM, pdfUri)
             putExtra(Intent.EXTRA_TEXT, "Voici votre bon de commande")
-            putExtra("jid", "$formattedPhone@s.whatsapp.net")
+            putExtra("jid", "${formatPhoneForWhatsApp(phoneNumber)}@s.whatsapp.net")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-
         context.startActivity(intent)
-        Log.d(TAG_WA, "  ✅ WhatsApp Business intent launched")
-        Toast.makeText(
-            context,
-            "Ouverture WhatsApp Business pour $clientName",
-            Toast.LENGTH_SHORT
-        ).show()
-
+        Toast.makeText(context, "Ouverture WhatsApp Business pour $clientName", Toast.LENGTH_SHORT).show()
     } catch (e: Exception) {
-        Log.e(TAG_WA, "  ❌ Exception: ${e::class.simpleName}: ${e.message}", e)
-        Toast.makeText(
-            context,
-            "WhatsApp Business non installé ou erreur: ${e.message}",
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(context, "WhatsApp Business non installé ou erreur: ${e.message}", Toast.LENGTH_LONG).show()
     } finally {
         onResult()
     }
 }
 
-// Query MediaStore Downloads for a relative path like "Downloads/BonsWhatsApp/03_27/file.pdf"
 private fun queryMediaStoreUri(context: Context, relativePath: String): android.net.Uri? {
     return try {
         val fileName = relativePath.substringAfterLast("/")
-        val folder = relativePath
-            .removePrefix("Downloads/")
-            .substringBeforeLast("/")
-
-        Log.d(TAG_WA, "  [queryMediaStore] fileName=$fileName  folder=$folder")
-
-        val collection = android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI
-        val projection = arrayOf(android.provider.MediaStore.Downloads._ID)
-        val selection = "${android.provider.MediaStore.Downloads.DISPLAY_NAME} = ? AND ${android.provider.MediaStore.Downloads.RELATIVE_PATH} LIKE ?"
+        val folder   = relativePath.removePrefix("Downloads/").substringBeforeLast("/")
+        val collection   = android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI
+        val projection   = arrayOf(android.provider.MediaStore.Downloads._ID)
+        val selection    = "${android.provider.MediaStore.Downloads.DISPLAY_NAME} = ? AND ${android.provider.MediaStore.Downloads.RELATIVE_PATH} LIKE ?"
         val selectionArgs = arrayOf(fileName, "%$folder%")
-
         context.contentResolver.query(collection, projection, selection, selectionArgs, null)
             ?.use { cursor ->
                 if (cursor.moveToFirst()) {
                     val id = cursor.getLong(cursor.getColumnIndexOrThrow(android.provider.MediaStore.Downloads._ID))
-                    val uri = android.content.ContentUris.withAppendedId(collection, id)
-                    Log.d(TAG_WA, "  [queryMediaStore] ✅ found URI=$uri")
-                    uri
-                } else {
-                    Log.w(TAG_WA, "  [queryMediaStore] ❌ no row found for fileName=$fileName  folder=$folder")
-                    null
-                }
+                    android.content.ContentUris.withAppendedId(collection, id)
+                } else null
             }
-    } catch (e: Exception) {
-        Log.e(TAG_WA, "  [queryMediaStore] exception: ${e.message}", e)
-        null
-    }
+    } catch (e: Exception) { null }
 }
 
-// Normalise to Algerian international format (213XXXXXXXXX)
 private fun formatPhoneForWhatsApp(raw: String): String {
     var cleaned = raw.replace(Regex("[^0-9]"), "")
     if (!cleaned.startsWith("213")) {
@@ -381,7 +288,6 @@ private fun formatPhoneForWhatsApp(raw: String): String {
     return cleaned
 }
 
-// ── Phone-entry dialog ────────────────────────────────────────────────────────
 @Composable
 private fun PhoneEntryDialog(
     clientName: String,
