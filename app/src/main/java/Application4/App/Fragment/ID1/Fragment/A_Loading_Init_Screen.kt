@@ -54,6 +54,8 @@ fun A_Loading_Init_Screen(
     appDatabase: AppDatabase = koinInject()
 ) {
     val context = LocalContext.current
+    val dev by remember { mutableStateOf(true) }
+
     var activeCompt by remember { mutableStateOf<Z_AppCompt?>(null) }
     var initDone by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }
@@ -73,7 +75,7 @@ fun A_Loading_Init_Screen(
             setProgress(progress, "Compt: ${activeCompt?.get_DebugInfos() ?: "?"}")
         }.join()
 
-        (activeCompt?.next_start == Do.DeleteInsertAll_Active_Key).ifTrue {
+        (activeCompt?.next_start == Do.DeleteInsertAll_Active_Key || dev).ifTrue {
             var seedResult = Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult()
             val seedJob = launch(Dispatchers.IO) {
                 seedResult = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16(
@@ -121,7 +123,7 @@ fun A_Loading_Init_Screen(
         initDone = true
     }
 
-    if (!initDone) {
+    if (dev) {
         val logoAlpha by rememberInfiniteTransition(label = "").animateFloat(
             initialValue = 1f,
             targetValue = 0.25f,
