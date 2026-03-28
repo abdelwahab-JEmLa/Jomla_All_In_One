@@ -114,54 +114,52 @@ fun A_Loading_Init_Screen(
         initDone = true
     }
 
-    if (initDone) A_Compact_Presentoire_App_Produits_App4()
-    else A_Loading_UI(progress, currentJobName)
-}
-
-@Composable
-private fun A_Loading_UI(progress: Float, currentJobName: String) {
-    val logoAlpha by rememberInfiniteTransition(label = "").animateFloat(
-        initialValue = 1f,
-        targetValue = 0.25f,
-        animationSpec = infiniteRepeatable(tween(900), RepeatMode.Reverse),
-        label = ""
-    )
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Image(
-            painter = painterResource(com.example.clientjetpack.R.drawable.logo),
-            contentDescription = null,
-            modifier = Modifier
-                .size(220.dp)
-                .alpha(logoAlpha)
+    if (!initDone) {
+        val logoAlpha by rememberInfiniteTransition(label = "").animateFloat(
+            initialValue = 1f,
+            targetValue = 0.25f,
+            animationSpec = infiniteRepeatable(tween(900), RepeatMode.Reverse),
+            label = ""
         )
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 32.dp, vertical = 48.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                currentJobName,
-                fontSize = 13.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            LinearProgressIndicator(
-                progress = { progress },
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Image(
+                painter = painterResource(com.example.clientjetpack.R.drawable.logo),
+                contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp),
-                color = Color(0xFF4CAF50),
-                trackColor = Color.White.copy(alpha = 0.25f),
+                    .size(220.dp)
+                    .alpha(logoAlpha)
             )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                "${(progress * 100).toInt()} %",
-                fontSize = 11.sp,
-                color = Color.White.copy(alpha = 0.7f)
-            )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 32.dp, vertical = 48.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    currentJobName,
+                    fontSize = 13.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp),
+                    color = Color(0xFF4CAF50),
+                    trackColor = Color.White.copy(alpha = 0.25f),
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    "${(progress * 100).toInt()} %",
+                    fontSize = 11.sp,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
         }
+    } else {
+        A_Compact_Presentoire_App_Produits_App4()
     }
 }
