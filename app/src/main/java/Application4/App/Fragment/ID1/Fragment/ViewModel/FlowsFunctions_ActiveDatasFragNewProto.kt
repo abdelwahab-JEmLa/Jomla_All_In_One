@@ -60,6 +60,7 @@ object FlowsFunctions_ActiveDatasFragNewProto {
                 val productsForCategory = allProducts
                     ?.filter { it.idParentCategorie == category.id }
                     ?.filter { it.matchesPrioriteFilter(activeFilter) }
+                    ?.sortedByDescending { it.classement_By_FilterKeys_M3 }
                     ?: emptyList()
 
                 if (productsForCategory.isEmpty()) return@mapNotNull null

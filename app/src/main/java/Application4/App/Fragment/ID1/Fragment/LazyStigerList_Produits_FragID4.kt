@@ -1,14 +1,14 @@
 package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.Components.Views.CategoryStickyHeader
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -60,7 +60,8 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {
+) {              //<--
+//TODO(1): fait que le sort soit par produit classement_By_FilterKeys_M3
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val wifiState by viewModel.wifiState.collectAsState()
