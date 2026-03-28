@@ -30,11 +30,18 @@ fun A_Compact_Presentoire_App_Produits_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = koinViewModel(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit = {},
-) {      //<--
-//TODO(1): cree log pksffiche pas mem si 
+) {
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
+
+    // FIX(TODO-1): The previous check also required mainInitDataBaseProgressEtate >= 1f, but
+    // that value was only ever set by the old composable-scope init (which was cancelled) and was
+    // therefore always stuck at 0f — keeping the screen in an infinite loading state even after
+    // the ViewModel's own init finished.
+    //
+    // Now that A_LoadingViewModel owns the full init sequence and flips initDone=true when done,
+    // A_Compact_Presentoire_App_Produits_App4 only needs to gate on the ViewModel's own
+    // initDatasProgressEtate (which Initializer_ViewModel sets to 1f once local DB reads finish).
     val isInitDone = uiState.initDatasProgressEtate >= 1f
-            && uiState.active_Central_Values.mainInitDataBaseProgressEtate >= 1f
 
     val active_Datas = viewModelNewProtoPatterns.active_Datas
 
@@ -53,9 +60,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
     }
 
     val allProducts: List<M01Produit>? by remember {
-        derivedStateOf {
-            active_Datas.list_M1Produit
-        }
+        derivedStateOf { active_Datas.list_M1Produit }
     }
 
     var selectedProductForCategoryChange by remember { mutableStateOf<M01Produit?>(null) }
@@ -71,12 +76,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
     if (!isInitDone) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(
-                progress = {
-                    minOf(
-                        uiState.initDatasProgressEtate,
-                        uiState.active_Central_Values.mainInitDataBaseProgressEtate
-                    )
-                },
+                progress = { uiState.initDatasProgressEtate },
                 modifier = Modifier.size(48.dp),
                 trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                 color = MaterialTheme.colorScheme.primary
@@ -88,9 +88,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
             groupe_Par_Catalogue = groupe_Par_Catalogue,
             on_pour_send_data = on_pour_send_data,
             onClickImageToShowControles = onClickImageToShowControles,
-            onProductCategoryClick = { product ->
-                selectedProductForCategoryChange = product
-            },
+            onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
             justMovedProductKeyID = justMovedProductKeyID,
             viewModel = viewModelNewProtoPatterns,
             uiStateNewProtoPatterns = uiState,
@@ -110,10 +108,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                     )
                 } ?: product
-
                 viewModelNewProtoPatterns.update_m1Produit(updatedProduct)
                 justMovedProductKeyID = product.keyID
-
                 selectedProductForCategoryChange = null
             },
             onDismiss = {
@@ -128,7 +124,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
                     catalogueParentId = 4
                 )
                 viewModelNewProtoPatterns.insert_M16CategorieProduit(data)
-
                 val updatedProduct = product.copy(
                     idParentCategorie = newId,
                     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -139,8 +134,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
             },
             onUpdateCategoryName = { categoryId, newName ->
                 allCategories?.find { it.id == categoryId }?.let { category ->
-                    val updatedCategory = category.copy(nom = newName)
-                    viewModelNewProtoPatterns.update_m16CategorieProduit(updatedCategory)
+                    viewModelNewProtoPatterns.update_m16CategorieProduit(category.copy(nom = newName))
                 }
             }
         )

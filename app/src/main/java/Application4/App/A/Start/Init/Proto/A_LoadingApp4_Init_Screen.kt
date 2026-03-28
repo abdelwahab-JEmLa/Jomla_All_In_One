@@ -1,13 +1,6 @@
 package Application4.App.A.Start.Init.Proto
 
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
-import EntreApps.Shared.Models.Do
-import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.ifTrue
-import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Modules.Base.AppDatabase
-import android.util.Log
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -26,11 +19,8 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -44,156 +34,53 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clientjetpack.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 
+// FIX(TODO-1 root cause): The original implementation ran getReturne_M1_3_16 inside a
+// LaunchedEffect tied to the composable scope. Navigation/recomposition cancelled that coroutine
+// mid-Firebase-fetch → LeftCompositionCancellationException → colors=0 → retry loop.
+//
+// Fix: all init work now runs inside A_LoadingViewModel (a ViewModel), whose coroutineScope
+// (viewModelScope) is NOT tied to the composition lifecycle. The composable only observes
+// the resulting StateFlows and renders accordingly.
 
 @Composable
 fun A_LoadingApp4_Init_Screen(
     modifier: Modifier = Modifier,
     innerPadding: PaddingValues = PaddingValues(),
-    appDatabase: AppDatabase = koinInject()
+    // FIX(FIXME): use the ViewModel instead of constructing AppDatabase / Repo inline here.
+    // koinViewModel() resolves the same scoped instance every time, so init runs exactly once.
+    loadingViewModel: A_LoadingViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
-    val dev = false
 
-    var activeCompt by remember { mutableStateOf<Z_AppCompt?>(null) }
-    var initDone by remember { mutableStateOf(false) }
-    var progress by remember { mutableFloatStateOf(0f) }
-    var currentJobName by remember { mutableStateOf("") }
-    var seedResult by remember { mutableStateOf(Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult()) }
-    var lightDataBasesResult by remember { mutableStateOf(Init_LightDataBases.LightDataBasesResult()) }
-
-    fun setProgress(p: Float, job: String = currentJobName) {
-        progress = p; currentJobName = job
-    }
-
-    LaunchedEffect(seedResult) {
-        Log.d("LoadingScreen", "SeedResult updated — " +
-                "products=${seedResult.products.size} " +
-                "colors=${seedResult.colors.size} " +
-                "categories=${seedResult.categories.size} " +
-                "filterKeys=${seedResult.filterKeys.size}"
-        )
-        if (seedResult.products.isEmpty() && seedResult.colors.isNotEmpty()) {
-            Log.w("LoadingScreen", "⚠️ products==0 but colors=${seedResult.colors.size} — " +
-                    "check parentBProduitInfosKeyID mapping in Empty_App_Initialize logs")
-        }
-    }
-
+    // Kick off init the first time this screen enters composition.
+    // Because loadingViewModel survives recomposition, this is effectively a no-op on subsequent
+    // calls — the ViewModel guards against double-init internally.
     LaunchedEffect(Unit) {
-        val repo = RepositorysMainSetter_NewProtoPatterns(appDatabase, context) // FIX(FIXME): pass required params
-
-        launch(Dispatchers.IO) {
-            val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
-            activeCompt = Z_AppCompt.ref.get().await()
-                .children.mapNotNull { it.getValue(Z_AppCompt::class.java) }
-                .find { it.keyID == key }
-            setProgress(progress, "Compt: ${activeCompt?.get_DebugInfos() ?: "?"}")
-        }.join()
-
-        // FIX(1-top): if local colors DB is empty, force a full re-sync on next_start
-        launch(Dispatchers.IO) {
-            val isColorsEmpty = appDatabase.dao_M03CouleurProduitInfos().getAll().isEmpty()
-            if (isColorsEmpty) {
-                activeCompt?.let { compt ->
-                    val updated = compt.copy(next_start = Do.DeleteInsertAll_Active_Key)
-                    activeCompt = updated
-                    repo.update_M9AppCompt(updated)
-                    Log.d("LoadingScreen", "dao_M03CouleurProduitInfos is empty — next_start set to DeleteInsertAll_Active_Key")
-                }
-            }
-        }.join()
-
-        (activeCompt?.next_start == Do.DeleteInsertAll_Active_Key || dev).ifTrue {
-            val deleteJob = launch(Dispatchers.IO) {
-                setProgress(progress, "Suppression données locales…")
-                appDatabase.dao_M03CouleurProduitInfos().deleteAll()
-                appDatabase.dao_M1Produit().deleteAll()
-                appDatabase.dao_16CategorieProduit().deleteAll()
-                appDatabase.dao_M13TarificationInfos().deleteAll()
-                appDatabase.dao_M14VentPeriode().deleteAll()
-                appDatabase.dao_M8BonVent().deleteAll()
-                appDatabase.dao_M10OperationVentCouleur().deleteAll()
-            }
-            deleteJob.join()
-
-            val seedJob = launch(Dispatchers.IO) {
-                seedResult = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16(
-                    context = context,
-                    on_Progress_Datas = { p -> setProgress(p, "Chargement produits…") },
-                )
-
-                launch {
-                    DropBox_Init.syncAll(seedResult.colors) { p ->
-                        setProgress(p, "Sync images…")
-                    }
-                }.join()
-            }
-            seedJob.join()
-
-            val lightDbJob = launch(Dispatchers.IO) {
-                setProgress(progress, "Chargement tarifs…")
-                val r = Init_LightDataBases.returne_FireBase_LightDataBases()
-                if (r.m13TarificationInfos.isNotEmpty()) appDatabase.dao_M13TarificationInfos()
-                    .insertAll(r.m13TarificationInfos)
-                if (r.m14VentPeriode.isNotEmpty()) appDatabase.dao_M14VentPeriode()
-                    .insertAll(r.m14VentPeriode)
-                if (r.m8BonVent.isNotEmpty()) appDatabase.dao_M8BonVent()
-                    .insertAll(r.m8BonVent)
-                if (r.m10OperationVentCouleur.isNotEmpty()) appDatabase.dao_M10OperationVentCouleur()
-                    .insertAll(r.m10OperationVentCouleur)
-            }
-            val insertJob = launch(Dispatchers.IO) {
-                setProgress(progress, "Insertion locale…")
-                if (seedResult.colors.isNotEmpty()) appDatabase.dao_M03CouleurProduitInfos()
-                    .insertAll(seedResult.colors)
-                if (seedResult.products.isNotEmpty()) appDatabase.dao_M1Produit()
-                    .insertAll(seedResult.products)
-                if (seedResult.categories.isNotEmpty()) appDatabase.dao_16CategorieProduit()
-                    .insertAll(seedResult.categories)
-            }
-            insertJob.join()
-            lightDbJob.join()
-        }
-
-        setProgress(1f, "Prêt ✓")
-
-        // FIX(FIXME) + FIX(1-bottom): reset next_start to StandartInit after successful init
-        activeCompt?.let { compt ->
-            val updated = compt.copy(next_start = Do.StandartInit)
-            activeCompt = updated
-            repo.update_M9AppCompt(updated)
-            Log.d("LoadingScreen", "Init complete — next_start reset to StandartInit")
-        }
-
-        initDone = true
+        loadingViewModel.startIfNeeded(context)
     }
 
-    if (!initDone || dev) {
-        val logoAlpha by rememberInfiniteTransition(label = "").animateFloat(
+    val uiState by loadingViewModel.uiState.collectAsState()
+
+    if (!uiState.initDone) {
+        val logoAlpha by rememberInfiniteTransition(label = "logo_pulse").animateFloat(
             initialValue = 1f,
             targetValue = 0.25f,
             animationSpec = infiniteRepeatable(tween(900), RepeatMode.Reverse),
-            label = ""
+            label = "logo_alpha"
         )
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .semantics(mergeDescendants = true) {
-                    set(value = activeCompt, key = SemanticsPropertyKey("activeCompt"))
-                }
-                .semantics(mergeDescendants = true) {
+                    set(value = uiState.activeCompt, key = SemanticsPropertyKey("activeCompt"))
                     set(
-                        value = lightDataBasesResult,
+                        value = uiState.lightDataBasesResult,
                         key = SemanticsPropertyKey("lightDataBasesResult")
                     )
-                }
-                .semantics(mergeDescendants = true) {
-                    set(value = seedResult, key = SemanticsPropertyKey("seedResult"))
+                    set(value = uiState.seedResult, key = SemanticsPropertyKey("seedResult"))
                 },
             contentAlignment = Alignment.Center
         ) {
@@ -213,14 +100,14 @@ fun A_LoadingApp4_Init_Screen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    currentJobName,
+                    uiState.currentJobName,
                     fontSize = 13.sp,
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 LinearProgressIndicator(
-                    progress = { progress },
+                    progress = { uiState.progress },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(6.dp),
@@ -229,7 +116,7 @@ fun A_LoadingApp4_Init_Screen(
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "${(progress * 100).toInt()} %",
+                    "${(uiState.progress * 100).toInt()} %",
                     fontSize = 11.sp,
                     color = Color.White.copy(alpha = 0.7f)
                 )
