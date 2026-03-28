@@ -23,7 +23,8 @@ import java.io.File
 import java.io.FileOutputStream
 
 private const val TAG = "Dropbox"
-
+             //<--
+             //TODO(1): fait que ini drop box opration soit separe don dn function 
 @Suppress("DEPRECATION")
 class Initializer_MainDataBases_App4Proto2(       //<--
 //TODO(1): change a un objecte   

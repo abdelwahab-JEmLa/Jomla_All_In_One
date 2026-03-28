@@ -164,8 +164,7 @@ class WifiTransferDatas_App2(
         }
     }
 
-    private fun handlePayload(payload: String) {    //<--
-    //TODO(1): cree moi log debog qui suit pk Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ne s active pas 
+    private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats_App2.fromPayload(payload)
             ?.let { (type, content) ->
                 when (type) {

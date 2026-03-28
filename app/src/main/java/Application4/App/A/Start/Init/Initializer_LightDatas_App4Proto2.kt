@@ -33,10 +33,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 
 @Suppress("DEPRECATION")
-object Initializer_LightDatas_App4Proto2{  //<--
-//TODO(1): enleve    ini de  dao_M1Produit: Dao_M1Produit,
-//        dao_16CategorieProduit: Dao_M16CategorieProduit,
-//        dao_M03CouleurProduitInfos: Dao_M03CouleurProduitInfos,  ici 
+object Initializer_LightDatas_App4Proto2{
 
     suspend fun initializeAllRepositories(
         context: Context,

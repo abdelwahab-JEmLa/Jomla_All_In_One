@@ -77,7 +77,6 @@
         -->
         <!-- App2: android:icon=
         "@mipmap/ic_launcher_app2"
-        todo comment ajoute "@mipmap/ic_launcher_presenter_app2"
         -->
 
         <!-- Previously: android:name=
