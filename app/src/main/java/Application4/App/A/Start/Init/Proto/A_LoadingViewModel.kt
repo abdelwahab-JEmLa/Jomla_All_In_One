@@ -152,6 +152,16 @@ class A_LoadingViewModel(
                 val r = Init_LightDataBases.returne_FireBase_LightDataBases()
                 _uiState.update { it.copy(lightDataBasesResult = r) }
                 with(appDatabase) {
+                    // FIX(UNIQUE-constraint): delete before re-inserting.
+                    // If the app crashed mid-init on a previous run, next_start was never reset
+                    // to StandartInit, so the delete block at the top of DeleteInsertAll runs
+                    // again — but Room's @Insert (without onConflict=REPLACE) will crash on any
+                    // row that Room flushed to disk before the crash.
+                    // Deleting here, immediately before the insert, closes that window entirely.
+                    dao_M13TarificationInfos().deleteAll()
+                    dao_M14VentPeriode().deleteAll()
+                    dao_M8BonVent().deleteAll()
+                    dao_M10OperationVentCouleur().deleteAll()
                     if (r.m13TarificationInfos.isNotEmpty()) dao_M13TarificationInfos().insertAll(r.m13TarificationInfos)
                     if (r.m14VentPeriode.isNotEmpty())        dao_M14VentPeriode().insertAll(r.m14VentPeriode)
                     if (r.m8BonVent.isNotEmpty())             dao_M8BonVent().insertAll(r.m8BonVent)
