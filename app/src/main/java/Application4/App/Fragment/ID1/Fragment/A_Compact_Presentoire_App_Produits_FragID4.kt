@@ -30,7 +30,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = koinViewModel(),
     on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit = {},
-) {
+) {      //<--
+//TODO(1): cree log pksffiche pas mem si 
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
             && uiState.active_Central_Values.mainInitDataBaseProgressEtate >= 1f

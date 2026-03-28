@@ -2,6 +2,7 @@ package Application4.App.A.Start.Init.Proto
 
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import EntreApps.Shared.Models.Do
+import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.ifTrue
 import EntreApps.Shared.Models.Z_AppCompt
@@ -69,7 +70,6 @@ fun A_LoadingApp4_Init_Screen(
         progress = p; currentJobName = job
     }
 
-    // Log seed results whenever they are updated so we can diagnose empty products
     LaunchedEffect(seedResult) {
         Log.d("LoadingScreen", "SeedResult updated — " +
                 "products=${seedResult.products.size} " +
@@ -84,12 +84,27 @@ fun A_LoadingApp4_Init_Screen(
     }
 
     LaunchedEffect(Unit) {
+        val repo = RepositorysMainSetter_NewProtoPatterns(appDatabase, context) // FIX(FIXME): pass required params
+
         launch(Dispatchers.IO) {
             val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             activeCompt = Z_AppCompt.ref.get().await()
                 .children.mapNotNull { it.getValue(Z_AppCompt::class.java) }
                 .find { it.keyID == key }
             setProgress(progress, "Compt: ${activeCompt?.get_DebugInfos() ?: "?"}")
+        }.join()
+
+        // FIX(1-top): if local colors DB is empty, force a full re-sync on next_start
+        launch(Dispatchers.IO) {
+            val isColorsEmpty = appDatabase.dao_M03CouleurProduitInfos().getAll().isEmpty()
+            if (isColorsEmpty) {
+                activeCompt?.let { compt ->
+                    val updated = compt.copy(next_start = Do.DeleteInsertAll_Active_Key)
+                    activeCompt = updated
+                    repo.update_M9AppCompt(updated)
+                    Log.d("LoadingScreen", "dao_M03CouleurProduitInfos is empty — next_start set to DeleteInsertAll_Active_Key")
+                }
+            }
         }.join()
 
         (activeCompt?.next_start == Do.DeleteInsertAll_Active_Key || dev).ifTrue {
@@ -145,6 +160,15 @@ fun A_LoadingApp4_Init_Screen(
         }
 
         setProgress(1f, "Prêt ✓")
+
+        // FIX(FIXME) + FIX(1-bottom): reset next_start to StandartInit after successful init
+        activeCompt?.let { compt ->
+            val updated = compt.copy(next_start = Do.StandartInit)
+            activeCompt = updated
+            repo.update_M9AppCompt(updated)
+            Log.d("LoadingScreen", "Init complete — next_start reset to StandartInit")
+        }
+
         initDone = true
     }
 
@@ -163,9 +187,11 @@ fun A_LoadingApp4_Init_Screen(
                     set(value = activeCompt, key = SemanticsPropertyKey("activeCompt"))
                 }
                 .semantics(mergeDescendants = true) {
-                    set(value = lightDataBasesResult, key = SemanticsPropertyKey("lightDataBasesResult"))
+                    set(
+                        value = lightDataBasesResult,
+                        key = SemanticsPropertyKey("lightDataBasesResult")
+                    )
                 }
-
                 .semantics(mergeDescendants = true) {
                     set(value = seedResult, key = SemanticsPropertyKey("seedResult"))
                 },
