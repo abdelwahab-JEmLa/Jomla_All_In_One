@@ -52,37 +52,77 @@ fun MainScreen_NewProtoPattern(
 
     var isFabVisible by rememberSaveable { mutableStateOf(true) }
 
+    // FIX(TODO-1): Track whether the loading phase is complete so we can gate between
+    // the loading screen and the main scaffold — in both the no_loadKoin and normal branches.
+    var isInitDone by rememberSaveable { mutableStateOf(false) }
+
     if (M00CentralParametresOfAllApps.get_Default().no_loadKoin_CrachComposReglement) {
-        A_LoadingApp4_Init_Screen()
+        // FIX(TODO-1): Show loading screen until init is done, then show the main scaffold.
+        // Previously this branch only ever showed A_LoadingApp4_Init_Screen and never transitioned.
+        if (!isInitDone) {
+            A_LoadingApp4_Init_Screen(
+                onInitDone = { isInitDone = true }
+            )
+        } else {
+            MainScaffold(
+                modifier = modifier,
+                wifiState = wifiState,
+                currentRoute = currentRoute,
+                navController = navController,
+                fragmentNavigationHandler = fragmentNavigationHandler,
+                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+            )
+        }
     } else {
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            bottomBar = {
-                NavigationBarWithFab_NewProto(
-                    items = NavigationItems.getItems(isAdmin = true),
-                    currentRoute = currentRoute,
-                    onNavigate = { route ->
-                        fragmentNavigationHandler.navigateTo(route)
-                    },
-                    modifier = modifier,
-                    isFabVisible = true,
-                    onToggleFabVisibility = {},
-                    showWarningState = false,
-                    onClickImageToShowControles = {},
-                )
+        MainScaffold(
+            modifier = modifier,
+            wifiState = wifiState,
+            currentRoute = currentRoute,
+            navController = navController,
+            fragmentNavigationHandler = fragmentNavigationHandler,
+            viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+        )
+    }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+private fun MainScaffold(
+    modifier: Modifier,
+    wifiState: Any, // type matches ProductDisplayController_NewProto via wifiState
+    currentRoute: String?,
+    navController: androidx.navigation.NavHostController,
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+) {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        bottomBar = {
+            NavigationBarWithFab_NewProto(
+                items = NavigationItems.getItems(isAdmin = true),
+                currentRoute = currentRoute,
+                onNavigate = { route ->
+                    fragmentNavigationHandler.navigateTo(route)
+                },
+                modifier = modifier,
+                isFabVisible = true,
+                onToggleFabVisibility = {},
+                showWarningState = false,
+                onClickImageToShowControles = {},
+            )
+        }
+    ) { innerPadding ->
+        Column {
+            (!(wifiState as Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto).isConnected).ifTrue {
+                ConnexionCardHost_App4(vm = viewModelNewProtoPatterns)
             }
-        ) { innerPadding ->
-            Column {
-                (!wifiState.isConnected).ifTrue {
-                    ConnexionCardHost_App4(vm = viewModelNewProtoPatterns)
-                }
-                AppNavHost_NewProtoPattern(
-                    modifier = Modifier.fillMaxSize(),
-                    viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-                    navController = navController,
-                    innerPadding = innerPadding,
-                )
-            }
+            AppNavHost_NewProtoPattern(
+                modifier = Modifier.fillMaxSize(),
+                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                navController = navController,
+                innerPadding = innerPadding,
+            )
         }
     }
 }

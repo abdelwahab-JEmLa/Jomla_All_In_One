@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 object FlowsFunctions_ActiveDatasFragNewProto {
-
     fun getFlow_filter_marqueClient_enum_entrie(
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): MapClientsViewModel.VisibleClientsNow =
@@ -64,6 +63,17 @@ object FlowsFunctions_ActiveDatasFragNewProto {
                     ?: emptyList()
 
                 if (productsForCategory.isEmpty()) return@mapNotNull null
+
+                // Diagnostic: verify the sort is correct after the pipeline.
+                val classements = productsForCategory.map { it.classement_By_FilterKeys_M3 }
+                val sorted = classements.zipWithNext().all { (a, b) -> a >= b }
+                android.util.Log.d(
+                    "SortCheck",
+                    if (sorted)
+                        "✅ Flow sort OK — catalogue=${activeCatalogue.nom} category=${category.nom} classements=$classements"
+                    else
+                        "⚠️ Flow sort WRONG — catalogue=${activeCatalogue.nom} category=${category.nom} classements=$classements"
+                )
 
                 val productColourPairs = productsForCategory.map { product ->
                     product to allColours.filter { it.parentBProduitInfosKeyID == product.keyID }

@@ -1,6 +1,5 @@
 package Application4.App.A.Start.Init.Proto
 
-import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -48,6 +47,7 @@ import org.koin.androidx.compose.koinViewModel
 fun A_LoadingApp4_Init_Screen(
     modifier: Modifier = Modifier,
     innerPadding: PaddingValues = PaddingValues(),
+    onInitDone: () -> Unit = {},
     // FIX(FIXME): use the ViewModel instead of constructing AppDatabase / Repo inline here.
     // koinViewModel() resolves the same scoped instance every time, so init runs exactly once.
     loadingViewModel: A_LoadingViewModel = koinViewModel(),
@@ -62,6 +62,13 @@ fun A_LoadingApp4_Init_Screen(
     }
 
     val uiState by loadingViewModel.uiState.collectAsState()
+
+    // FIX(TODO-1): When init is done, delegate to the caller via onInitDone() instead of
+    // directly composing A_Compact_Presentoire_App_Produits_App4 here.
+    // The loading screen's only responsibility is to show progress; navigation is the caller's job.
+    LaunchedEffect(uiState.initDone) {
+        if (uiState.initDone) onInitDone()
+    }
 
     if (!uiState.initDone) {
         val logoAlpha by rememberInfiniteTransition(label = "logo_pulse").animateFloat(
@@ -122,7 +129,5 @@ fun A_LoadingApp4_Init_Screen(
                 )
             }
         }
-    } else {
-        A_Compact_Presentoire_App_Produits_App4()
     }
 }

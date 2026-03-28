@@ -60,11 +60,39 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {              //<--
-//TODO(1): fait que le sort soit par produit classement_By_FilterKeys_M3
+) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val wifiState by viewModel.wifiState.collectAsState()
+
+    // Diagnostic: log whenever the product tree arrives so we can verify sort order.
+    // Products are sorted descending by classement_By_FilterKeys_M3 inside
+    // FlowsFunctions_ActiveDatasFragNewProto.getFlow_list_filter_Priorite_… — if the list
+    // appears out of order here it means a patch in Setter_ViewModel_NewProtoPatterns skipped
+    // the re-sort (see update_m1Produit / insert_M16CategorieProduit fixes there).
+    LaunchedEffect(cataloguesWithCategoriesAndProducts) {
+        cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
+            categoriesWithProducts.forEach { (category, productColorPairs) ->
+                val classements = productColorPairs.map { (p, _) -> p.classement_By_FilterKeys_M3 }
+                val isSorted = classements.zipWithNext().all { (a, b) -> a >= b }
+                if (!isSorted) {
+                    android.util.Log.w(
+                        "SortCheck",
+                        "⚠️ catalogue='${catalogue.nom}' category='${category.nom}' " +
+                                "is NOT sorted by classement_By_FilterKeys_M3. " +
+                                "classements=$classements — " +
+                                "likely caused by an in-place patch that skipped re-sorting."
+                    )
+                } else {
+                    android.util.Log.d(
+                        "SortCheck",
+                        "✅ catalogue='${catalogue.nom}' category='${category.nom}' " +
+                                "sorted OK. classements=$classements"
+                    )
+                }
+            }
+        }
+    }
     val coroutineScope = rememberCoroutineScope()
 
     val isHostPhone = wifiState.isHostPhone

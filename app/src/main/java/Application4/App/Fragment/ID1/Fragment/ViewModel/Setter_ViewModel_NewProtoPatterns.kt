@@ -18,9 +18,10 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
             vm.active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur
                 .map { (catalogue, categoryList) ->
                     catalogue to categoryList.map { (category, productList) ->
-                        category to productList.map { (product, colours) ->
+                        val patched = productList.map { (product, colours) ->
                             if (product.keyID == new.keyID) new to colours else product to colours
-                        }
+                        }.sortedByDescending { (product, _) -> product.classement_By_FilterKeys_M3 }
+                        category to patched
                     }
                 }
         vm.repositorysMainSetter_NewProtoPatterns.update_M1Produit(new)

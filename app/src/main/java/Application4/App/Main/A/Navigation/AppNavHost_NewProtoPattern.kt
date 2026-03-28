@@ -1,6 +1,7 @@
 package Application4.App.Main.A.Navigation
 
 import Application4.App.A.Start.Init.Proto.A_LoadingApp4_Init_Screen
+import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
@@ -20,7 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -56,7 +58,7 @@ fun AppNavHost_NewProtoPattern(
     }
 
     // State flag: true only after heavy modules are confirmed loaded in Koin
-    val heavyReady = remember { mutableStateOf(heavyModulesLoaded.get()) }
+    val heavyReady = androidx.compose.runtime.remember { mutableStateOf(heavyModulesLoaded.get()) }
 
     Surface(
         modifier = modifier
@@ -78,7 +80,19 @@ fun AppNavHost_NewProtoPattern(
                             }
                     }
                 }
-                A_LoadingApp4_Init_Screen(innerPadding = innerPadding)
+
+                // FIX(TODO-1): Gate between loading screen and A_Compact here in the nav graph.
+                // A_LoadingApp4_Init_Screen no longer embeds A_Compact directly — it fires
+                // onInitDone() when done, and we switch to A_Compact inside this composable.
+                var initDone by rememberSaveable { mutableStateOf(false) }
+                if (!initDone) {
+                    A_LoadingApp4_Init_Screen(
+                        innerPadding = innerPadding,
+                        onInitDone = { initDone = true },
+                    )
+                } else {
+                    A_Compact_Presentoire_App_Produits_App4()
+                }
             }
 
             composable(route = Screen_NewProtoPattern.Panier.route) {
