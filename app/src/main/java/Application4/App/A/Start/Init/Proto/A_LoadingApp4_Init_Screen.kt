@@ -56,7 +56,7 @@ fun A_LoadingApp4_Init_Screen(
     appDatabase: AppDatabase = koinInject()
 ) {
     val context = LocalContext.current
-    val dev = true
+    val dev = false
 
     var activeCompt by remember { mutableStateOf<Z_AppCompt?>(null) }
     var initDone by remember { mutableStateOf(false) }

@@ -34,7 +34,6 @@ import kotlinx.coroutines.tasks.await
 
 @Suppress("DEPRECATION")
 object Initializer_LightDatas_App4Proto2{
-
     suspend fun initializeAllRepositories(
         context: Context,
         appDatabase: AppDatabase,
