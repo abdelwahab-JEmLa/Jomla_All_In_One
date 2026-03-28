@@ -56,7 +56,8 @@ class A_ViewModel_NewProtoPatterns(
         appDatabase.dao_M9AppCompt()
             .getFlow_ByKeyID(M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId)
             .flatMapLatest { activeCompt ->
-                val onVentKey = activeCompt?.onVentM8BonVentKey?.takeIf { it.isNotBlank() && it != "null" }
+                val onVentKey =
+                    activeCompt?.onVentM8BonVentKey?.takeIf { it.isNotBlank() && it != "null" }
                 if (onVentKey == null) flowOf(null)
                 else appDatabase.dao_M8BonVent().getFlow_ByKeyID(onVentKey)
             }
@@ -66,7 +67,11 @@ class A_ViewModel_NewProtoPatterns(
     val focusedValues_NewProtoPatterns: FocusedValues_NewProtoPatterns =
         FocusedValues_NewProtoPatterns(
             list_Datas = _uiStateNewProtoPatterns.map { it.list_Datas }
-                .stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, initialValue = null)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.Eagerly,
+                    initialValue = null
+                )
         )
 
     private fun getActiveCentralValues(): ActiveCentralValues_app2 {
@@ -96,26 +101,36 @@ class A_ViewModel_NewProtoPatterns(
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
     )
 
-    val wifiState = wifi.state.stateIn(viewModelScope, SharingStarted.Eagerly, ProductDisplayController_NewProto())
+    val wifiState = wifi.state.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        ProductDisplayController_NewProto()
+    )
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsClient() { wifi.startAsClient(); wifi.updateTypePhone(isHost = false) }
+    fun startAsClient() {
+        wifi.startAsClient(); wifi.updateTypePhone(isHost = false)
+    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsHost() { wifi.startAsHost(); wifi.updateTypePhone(isHost = true) }
+    fun startAsHost() {
+        wifi.startAsHost(); wifi.updateTypePhone(isHost = true)
+    }
 
     fun disconnect() = wifi.disconnect()
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
         wifi.sendOrderToClientDisplayer(orderName, data)
 
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_NewProto, data: Any? = null) =
+    fun sendOrderToClientDisplayerT(
+        order: WifiUpdateClientDisplayerStats_NewProto,
+        data: Any? = null
+    ) =
         wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
         fragmentNavigationHandler.closeAllActiveFragments()
-
-            Initializer_ViewModel(this@A_ViewModel_NewProtoPatterns).run()
+        Initializer_ViewModel(this@A_ViewModel_NewProtoPatterns).run()
     }
 
     fun maybeCreateEditedPourClientTariff(
@@ -158,23 +173,47 @@ class A_ViewModel_NewProtoPatterns(
     //────────────Setter_ViewModel_NewProtoPatterns────────────────────────────────────────────────
     fun update_m1Produit(new: M01Produit) = updater.update_m1Produit(new)
     fun delete_m1Produit(produit: M01Produit) = updater.delete_m1Produit(produit)
-    fun update_activeCentralValues(new: ActiveCentralValues) = focusedValues_NewProtoPatterns.update_activeCentralValues(new)
-    fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(keys: Map<String, Boolean>, onSuccess: () -> Unit = {}) =
+    fun update_activeCentralValues(new: ActiveCentralValues) =
+        focusedValues_NewProtoPatterns.update_activeCentralValues(new)
+
+    fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(
+        keys: Map<String, Boolean>,
+        onSuccess: () -> Unit = {}
+    ) =
         updater.deleteInsertFireBase_listKeys_M3CouleurProduitInfos(keys, onSuccess)
 
     fun updateTariffForProductOperations(produitKeyID: String, newTariff: M13TarificationInfos) =
-        repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(produitKeyID, newTariff)
+        repositorysMainSetter_NewProtoPatterns.updateTariffForProductOperations(
+            produitKeyID,
+            newTariff
+        )
+
     fun setActiveFocuceTariffPrixDifineur(produit: M01Produit, appCompt: Z_AppCompt) =
-        repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit, appCompt)
+        repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+            produit,
+            appCompt
+        )
+
     fun update_active_Compt(compt: Z_AppCompt) = updater.update_active_Compt(compt)
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) =
         updater.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList)
+
     fun update_m3couleur(couleur: M3CouleurProduitInfos) = updater.update_m3couleur(couleur)
-    fun update_depot_count(couleur: M3CouleurProduitInfos, newDepotCount: Int, onSuccess: () -> Unit = {}) =
+    fun update_depot_count(
+        couleur: M3CouleurProduitInfos,
+        newDepotCount: Int,
+        onSuccess: () -> Unit = {}
+    ) =
         updater.update_depot_count(couleur, newDepotCount, onSuccess)
-    fun update_M13TarificationInfos(tariff: M13TarificationInfos) = updater.update_M13TarificationInfos(tariff)
-    fun insert_M16CategorieProduit(new: M16CategorieProduit) = updater.insert_M16CategorieProduit(new)
-    fun update_m16CategorieProduit(new: M16CategorieProduit) = updater.update_m16CategorieProduit(new)
+
+    fun update_M13TarificationInfos(tariff: M13TarificationInfos) =
+        updater.update_M13TarificationInfos(tariff)
+
+    fun insert_M16CategorieProduit(new: M16CategorieProduit) =
+        updater.insert_M16CategorieProduit(new)
+
+    fun update_m16CategorieProduit(new: M16CategorieProduit) =
+        updater.update_m16CategorieProduit(new)
 
     override fun onCleared() {
         super.onCleared()

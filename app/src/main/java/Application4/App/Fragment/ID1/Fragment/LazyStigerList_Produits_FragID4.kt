@@ -1,14 +1,14 @@
 package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.Components.Views.CategoryStickyHeader
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -64,35 +64,6 @@ fun Etager_LazyColumn(
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val wifiState by viewModel.wifiState.collectAsState()
-
-    // Diagnostic: log whenever the product tree arrives so we can verify sort order.
-    // Products are sorted descending by classement_By_FilterKeys_M3 inside
-    // FlowsFunctions_ActiveDatasFragNewProto.getFlow_list_filter_Priorite_… — if the list
-    // appears out of order here it means a patch in Setter_ViewModel_NewProtoPatterns skipped
-    // the re-sort (see update_m1Produit / insert_M16CategorieProduit fixes there).
-    LaunchedEffect(cataloguesWithCategoriesAndProducts) {
-        cataloguesWithCategoriesAndProducts.forEach { (catalogue, categoriesWithProducts) ->
-            categoriesWithProducts.forEach { (category, productColorPairs) ->
-                val classements = productColorPairs.map { (p, _) -> p.classement_By_FilterKeys_M3 }
-                val isSorted = classements.zipWithNext().all { (a, b) -> a >= b }
-                if (!isSorted) {
-                    android.util.Log.w(
-                        "SortCheck",
-                        "⚠️ catalogue='${catalogue.nom}' category='${category.nom}' " +
-                                "is NOT sorted by classement_By_FilterKeys_M3. " +
-                                "classements=$classements — " +
-                                "likely caused by an in-place patch that skipped re-sorting."
-                    )
-                } else {
-                    android.util.Log.d(
-                        "SortCheck",
-                        "✅ catalogue='${catalogue.nom}' category='${category.nom}' " +
-                                "sorted OK. classements=$classements"
-                    )
-                }
-            }
-        }
-    }
     val coroutineScope = rememberCoroutineScope()
 
     val isHostPhone = wifiState.isHostPhone
