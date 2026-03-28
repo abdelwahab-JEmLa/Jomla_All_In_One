@@ -61,6 +61,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,8 +74,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -130,6 +129,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val currentSelectedCatalogueId =
         currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
+    // Scope tied to this composable's lifecycle — used by DisposableEffect below
+    val recordingTickScope = rememberCoroutineScope()
 
     val fragmentNavigationHandler =
         viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
@@ -151,9 +152,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
     DisposableEffect(isRecording) {
         var job: Job? = null
-        val coroutineScope = CoroutineScope(Dispatchers.Main)
         if (isRecording) {
-            job = coroutineScope.launch {
+            job = recordingTickScope.launch {
                 while (true) {
                     recordingViewModel.updateElapsedTime()
                     delay(1000)
@@ -165,7 +165,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 Lifecycle.Event.ON_RESUME -> {
                     recordingViewModel.onLifecycleResume()
                     if (isRecording && job == null) {
-                        job = coroutineScope.launch {
+                        job = recordingTickScope.launch {
                             while (true) {
                                 recordingViewModel.updateElapsedTime()
                                 delay(1000)
@@ -395,6 +395,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
 
                     if (focusedValuesGetter.activeOnVent_M8BonVent != null) {
+                        // PDF staleness (count + total price) is tracked via last_sort_pdf_locale_totale_a_paye in M8BonVent — handled in PdfBonVentFAB
                         PdfBonVentFAB(
                             showLabels = showLabels,
                             onPdfSaved = { path, count ->
@@ -428,7 +429,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                 itsFragmentProduitFastSearchDialog.ifTrue {
 
-                false.ifTrue {     FloatingBonVentToggleFAB(
+                    false.ifTrue {     FloatingBonVentToggleFAB(
                         showLabels = showLabels
                     )  }
 

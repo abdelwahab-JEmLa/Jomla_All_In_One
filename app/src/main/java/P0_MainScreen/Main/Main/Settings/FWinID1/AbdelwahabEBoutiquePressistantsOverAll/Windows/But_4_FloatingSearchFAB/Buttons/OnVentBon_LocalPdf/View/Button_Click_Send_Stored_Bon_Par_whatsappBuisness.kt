@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -68,6 +69,28 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
 
     val defaultPathSuffix = "/Pdf/"
 
+    val activeVents = focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        .filter {
+            it.etateDelivery != V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.EtateDelivery.NonTrouve
+                    && it.quantity > 0
+        }
+
+    // Detect products whose tariff price is 0 — sending a PDF with zero-priced items risks financial loss
+    val zeroOrNullPriceProducts = remember(activeVents) {
+        activeVents.mapNotNull { vent ->
+            val tariff = aCentralFacade.repositorysMainGetter
+                .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+            val produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
+                .datasValue.find { it.keyID == vent.parent_M1Produit_KeyId }
+            if (tariff?.prixCurrency == null || tariff.prixCurrency == 0.0) {
+                produit?.nom ?: "Produit inconnu"
+            } else null
+        }
+    }
+    var showZeroPriceWarning by remember { mutableStateOf(false) }
+    val hasZeroPriceProducts = zeroOrNullPriceProducts.isNotEmpty()
+
     val livePdfPath by produceState(
         initialValue = activeBonVent?.path_pdf_bon_file ?: "",
         key1 = activeBonVent?.keyID
@@ -83,9 +106,6 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
         .takeIf { it.isNotBlank() && !it.endsWith(defaultPathSuffix) }
         ?: livePdfPath
     val storedPdfFile = if (storedPdfPath.startsWith("/")) File(storedPdfPath) else null
-    val activeVents = focusedValuesGetter
-        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-        .filter { it.etateDelivery != V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
     val activeCount = activeVents.size
     val liveCount by produceState(
         initialValue = activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0,
@@ -108,6 +128,82 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     var showPhoneDialog by remember { mutableStateOf(false) }
     var isSending by remember { mutableStateOf(false) }
 
+    // ⚠️ Zero-price warning dialog — shown before sending when any product has no price set
+    if (showZeroPriceWarning) {
+        Dialog(onDismissRequest = { showZeroPriceWarning = false }) {
+            androidx.compose.material3.Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "⚠️ خطر خسارة المال!",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = androidx.compose.ui.graphics.Color(0xFFFF9800)
+                    )
+                    Text(
+                        text = "${zeroOrNullPriceProducts.size} منتج بدون سعر محدد:",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    zeroOrNullPriceProducts.forEach { productName ->
+                        Text(
+                            text = "• $productName",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    Text(
+                        text = "يرجى تحديد الأسعار قبل الإرسال لتجنب الخسائر.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TextButton(
+                            onClick = { showZeroPriceWarning = false },
+                            modifier = Modifier.weight(1f)
+                        ) { Text("إلغاء") }
+
+                        Button(
+                            onClick = {
+                                showZeroPriceWarning = false
+                                // Proceed despite zero prices — user accepted the risk
+                                val phone = activeClient?.numTelephone?.trim() ?: ""
+                                if (phone.isEmpty()) {
+                                    showPhoneDialog = true
+                                } else {
+                                    isSending = true
+                                    scope.launch {
+                                        sendPdfViaWhatsAppBusiness(
+                                            context = context,
+                                            phoneNumber = phone,
+                                            pdfFile = storedPdfFile,
+                                            pdfMediaStorePath = if (isMediaStorePath) storedPdfPath else null,
+                                            clientName = activeClient?.nom ?: "",
+                                            packageName = context.packageName,
+                                            onResult = { isSending = false }
+                                        )
+                                    }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = androidx.compose.ui.graphics.Color(0xFFFF9800)
+                            ),
+                            modifier = Modifier.weight(1f)
+                        ) { Text("أرسل على أي حال", color = androidx.compose.ui.graphics.Color.White) }
+                    }
+                }
+            }
+        }
+    }
+
     if (showPhoneDialog) {
         PhoneEntryDialog(
             clientName = activeClient?.nom ?: "Client",
@@ -119,6 +215,7 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                         client.copy(numTelephone = enteredPhone)
                     )
                 }
+                isSending = true
                 scope.launch {
                     delay(200)
                     sendPdfViaWhatsAppBusiness(
@@ -156,6 +253,11 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                     ).show()
                     return@FloatingActionButton
                 }
+                // Guard: warn before sending if any product has a zero price
+                if (zeroOrNullPriceProducts.isNotEmpty()) {
+                    showZeroPriceWarning = true
+                    return@FloatingActionButton
+                }
                 val phone = activeClient?.numTelephone?.trim() ?: ""
                 if (phone.isEmpty()) {
                     showPhoneDialog = true
@@ -175,13 +277,18 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                 }
             },
             containerColor = when {
-                isSending -> MaterialTheme.colorScheme.surfaceVariant
-                !pdfExists -> Color(0xFF9E9E9E)
-                else -> Color(0xFF25D366)
+                isSending              -> MaterialTheme.colorScheme.surfaceVariant
+                !pdfExists             -> Color(0xFF9E9E9E)
+                hasZeroPriceProducts   -> Color(0xFFFF9800)   // orange — prix manquants
+                else                   -> Color(0xFF25D366)   // vert — tout est bon
             }
         ) {
             Icon(
-                imageVector = if (isSending) Icons.Default.Phone else Icons.Default.Send,
+                imageVector = when {
+                    isSending            -> Icons.Default.Phone
+                    hasZeroPriceProducts -> Icons.Default.Warning
+                    else                 -> Icons.Default.Send
+                },
                 contentDescription = "Envoyer via WhatsApp Business",
                 tint = Color.White
             )
@@ -196,8 +303,10 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
             val phone = activeClient?.numTelephone?.trim() ?: ""
 
             val labelText = when {
-                isSending -> "Envoi…"
-                !pdfExists -> "PDF non prêt"
+                isSending            -> "Envoi…"
+                !pdfExists           -> "PDF non prêt"
+                hasZeroPriceProducts ->
+                    "⚠️ ${zeroOrNullPriceProducts.size} prix manquant${if (zeroOrNullPriceProducts.size > 1) "s" else ""}"
                 else -> buildString {
                     if (phone.isNotEmpty()) append("📱 $phone")
                     if (creationDate.isNotEmpty()) {
@@ -216,9 +325,10 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                 modifier = Modifier
                     .background(
                         color = when {
-                            isSending -> MaterialTheme.colorScheme.surfaceVariant
-                            !pdfExists -> Color(0xFF9E9E9E)
-                            else -> Color(0xFF25D366)
+                            isSending            -> MaterialTheme.colorScheme.surfaceVariant
+                            !pdfExists           -> Color(0xFF9E9E9E)
+                            hasZeroPriceProducts -> Color(0xFFFF9800)
+                            else                 -> Color(0xFF25D366)
                         },
                         shape = RoundedCornerShape(4.dp)
                     )

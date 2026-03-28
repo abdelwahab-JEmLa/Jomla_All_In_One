@@ -25,10 +25,8 @@ data class M8BonVent(
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
 
     val nombre_produits_don_dernier_pdf_stoked: Int = 0,
-    val path_pdf_bon_file: String = buildString {
-        append(central_Local_storageLink)
-        append("/Pdf/")
-    },
+    val last_sort_pdf_locale_totale_a_paye: Double = 0.0,
+    val path_pdf_bon_file: String = "",
 
     var parent_M9AppCompt_KeyID: String = "null",
     var parent_M9AppCompt_DebugInfos: String = "null",

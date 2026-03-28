@@ -46,14 +46,26 @@ fun PdfBonVentFAB(
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
 
+    // Compute the live total value of the current bon so we can detect price-change staleness
+    val activeTotal = remember(activeVents) {
+        activeVents.sumOf { vent ->
+            val tariff = aCentralFacade.repositorysMainGetter
+                .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+            (tariff?.prixCurrency ?: 0.0) * vent.quantity
+        }
+    }
+
     val defaultPathSuffix = "/Pdf/"
     val activeCount = activeVents.size
 
     var localSavedPath  by remember(activeBonVent?.keyID) { mutableStateOf(activeBonVent?.path_pdf_bon_file ?: "") }
     var localSavedCount by remember(activeBonVent?.keyID) { mutableStateOf(activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0) }
+    // Tracks the total value at the time the last PDF was generated so price changes invalidate it
+    var localSavedTotal by remember(activeBonVent?.keyID) { mutableStateOf(activeBonVent?.last_sort_pdf_locale_totale_a_paye ?: 0.0) }
 
     val storedPath  = localSavedPath.takeIf { it.isNotBlank() && !it.endsWith(defaultPathSuffix) } ?: (activeBonVent?.path_pdf_bon_file ?: "")
     val storedCount = localSavedCount.takeIf { it > 0 } ?: (activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0)
+    val storedTotal = localSavedTotal.takeIf { it > 0.0 } ?: (activeBonVent?.last_sort_pdf_locale_totale_a_paye ?: 0.0)
 
     val fileExistsOnDisk = if (storedPath.startsWith("/")) {
         val f = java.io.File(storedPath)
@@ -62,11 +74,13 @@ fun PdfBonVentFAB(
         storedPath.isNotBlank() && !storedPath.endsWith(defaultPathSuffix)
     }
 
+    // isPdfUpToDate: file exists, count matches, AND total value matches (catches price-change staleness).
     val isPdfUpToDate = storedPath.isNotBlank()
             && !storedPath.endsWith(defaultPathSuffix)
             && fileExistsOnDisk
             && storedCount == activeCount
             && activeCount > 0
+            && (storedTotal - activeTotal).let { kotlin.math.abs(it) < 0.01 }
 
     var isGenerating by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -79,7 +93,8 @@ fun PdfBonVentFAB(
         FloatingActionButton(
             modifier = Modifier.size(40.dp),
             onClick = {
-                if (isGenerating || isPdfUpToDate) return@FloatingActionButton
+
+                if (isGenerating) return@FloatingActionButton
                 isGenerating = true
                 scope.launch {
                     try {
@@ -90,10 +105,15 @@ fun PdfBonVentFAB(
                             onPdfSaved = { savedPath ->
                                 localSavedPath  = savedPath
                                 localSavedCount = activeCount
+                                localSavedTotal = activeTotal
                                 onPdfSaved?.invoke(savedPath, activeCount)
                                 activeBonVent?.let { bon ->
                                     aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(
-                                        bon.copy(path_pdf_bon_file = savedPath, nombre_produits_don_dernier_pdf_stoked = activeCount)
+                                        bon.copy(
+                                            path_pdf_bon_file = savedPath,
+                                            nombre_produits_don_dernier_pdf_stoked = activeCount,
+                                            last_sort_pdf_locale_totale_a_paye = activeTotal
+                                        )
                                     )
                                 }
                             }

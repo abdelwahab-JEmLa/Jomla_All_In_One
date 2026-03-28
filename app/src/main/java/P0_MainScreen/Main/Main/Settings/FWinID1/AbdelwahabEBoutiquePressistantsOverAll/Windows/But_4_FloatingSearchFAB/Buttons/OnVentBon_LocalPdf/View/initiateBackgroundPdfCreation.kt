@@ -6,8 +6,10 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.content.Context
 import android.widget.Toast
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -47,7 +49,7 @@ suspend fun initiateBackgroundPdfCreation_NewP(
                 repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
                 repoM1Produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
                 repo3CouleurProduitInfos = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
-                scope = null,
+                scope = CoroutineScope(currentCoroutineContext()),
                 relative_ListM10OperationVentCouleur = activeVents,
                 relative_bonVent = activeBonVent,
                 client = activeClient,

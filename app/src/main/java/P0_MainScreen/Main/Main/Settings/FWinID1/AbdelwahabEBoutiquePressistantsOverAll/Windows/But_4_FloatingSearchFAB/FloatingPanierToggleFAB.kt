@@ -92,15 +92,10 @@ fun FloatingPanierToggleFAB(
                     "onClick => affiche_Dialog_Fast_Affiche_Panie: $affiche_Dialog_Fast_Affiche_Panie_App4 -> $newPanierState"
                 )
 
+                // Single authoritative update: toggle using the persisted DB value as source of truth
                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
                     latestValues.copy(
                         affiche_Dialog_Fast_Affiche_Panie = !affiche_Dialog_Fast_Affiche_Panie_App4!!
-                    )
-                )
-
-                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
-                    latestValues.copy(
-                        affiche_Dialog_Fast_Affiche_Panie = !affiche_Dialog_Fast_Affiche_Panie_App4
                     )
                 )
 
@@ -162,11 +157,6 @@ fun FloatingPanierToggleFAB(
         }
     }
 }
-
-// NOTE: dao_M9AppCompt() doit exposer getAllAsFlow(): Flow<List<Z_AppCompt>>
-// Exemple dans le DAO:
-//   @Query("SELECT * FROM z_app_compt")
-//   fun getAllAsFlow(): Flow<List<Z_AppCompt>>
 
 @SuppressLint("ObsoleteSdkInt")
 @RequiresPermission(Manifest.permission.VIBRATE)
