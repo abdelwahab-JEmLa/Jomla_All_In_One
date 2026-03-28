@@ -1,6 +1,6 @@
 package Application4.App.Main.A.Navigation
 
-import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
+import Application4.App.Fragment.ID1.Fragment.A_LoadingApp4_Init_Screen
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
@@ -62,7 +62,6 @@ fun AppNavHost_NewProtoPattern(
             modifier = Modifier.fillMaxSize()
         ) {
             composable(route = Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route) {
-                // Unload heavy modules when returning to the light screen
                 LaunchedEffect(Unit) {
                     if (heavyModulesLoaded.get()) {
                         runCatching { GlobalContext.get().unloadModules(heavyModules) }
@@ -72,9 +71,7 @@ fun AppNavHost_NewProtoPattern(
                             }
                     }
                 }
-                A_Compact_Presentoire_App_Produits_App4(
-                    viewModelNewProtoPatterns = viewModelNewProtoPatterns
-                )
+                A_LoadingApp4_Init_Screen()
             }
 
             composable(route = Screen_NewProtoPattern.Panier.route) {

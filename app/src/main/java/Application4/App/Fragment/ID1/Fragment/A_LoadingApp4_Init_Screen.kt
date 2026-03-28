@@ -49,12 +49,12 @@ import org.koin.compose.koinInject
 
 
 @Composable
-fun A_Loading_Init_Screen(
+fun A_LoadingApp4_Init_Screen(
     modifier: Modifier = Modifier,
     appDatabase: AppDatabase = koinInject()
 ) {
     val context = LocalContext.current
-    val dev by remember { mutableStateOf(true) }
+    val dev = true
 
     var activeCompt by remember { mutableStateOf<Z_AppCompt?>(null) }
     var initDone by remember { mutableStateOf(false) }
@@ -76,6 +76,18 @@ fun A_Loading_Init_Screen(
         }.join()
 
         (activeCompt?.next_start == Do.DeleteInsertAll_Active_Key || dev).ifTrue {
+            val deleteJob = launch(Dispatchers.IO) {
+                setProgress(progress, "Suppression données locales…")
+                appDatabase.dao_M03CouleurProduitInfos().deleteAll()
+                appDatabase.dao_M1Produit().deleteAll()
+                appDatabase.dao_16CategorieProduit().deleteAll()
+                appDatabase.dao_M13TarificationInfos().deleteAll()
+                appDatabase.dao_M14VentPeriode().deleteAll()
+                appDatabase.dao_M8BonVent().deleteAll()
+                appDatabase.dao_M10OperationVentCouleur().deleteAll()
+            }
+            deleteJob.join()
+
             var seedResult = Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult()
             val seedJob = launch(Dispatchers.IO) {
                 seedResult = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16(
@@ -86,10 +98,7 @@ fun A_Loading_Init_Screen(
                     "colors:${seedResult.colors.size} products:${seedResult.products.size} categories:${seedResult.categories.size}"
                 launch {
                     DropBox_Init.syncAll(seedResult.colors) { p ->
-                        setProgress(
-                            p,
-                            "Sync images…"
-                        )
+                        setProgress(p, "Sync images…")
                     }
                 }.join()
             }
@@ -102,7 +111,8 @@ fun A_Loading_Init_Screen(
                     .insertAll(r.m13TarificationInfos)
                 if (r.m14VentPeriode.isNotEmpty()) appDatabase.dao_M14VentPeriode()
                     .insertAll(r.m14VentPeriode)
-                if (r.m8BonVent.isNotEmpty()) appDatabase.dao_M8BonVent().insertAll(r.m8BonVent)
+                if (r.m8BonVent.isNotEmpty()) appDatabase.dao_M8BonVent()
+                    .insertAll(r.m8BonVent)
                 if (r.m10OperationVentCouleur.isNotEmpty()) appDatabase.dao_M10OperationVentCouleur()
                     .insertAll(r.m10OperationVentCouleur)
             }
