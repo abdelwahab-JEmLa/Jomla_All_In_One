@@ -51,8 +51,6 @@ import org.koin.compose.koinInject
 @Composable
 fun A_LoadingApp4_Init_Screen(
     modifier: Modifier = Modifier,
-    // FIX TODO(1): accept inner padding from the Scaffold / NavHost so the
-    //              progress bar is never hidden behind the bottom nav bar.
     innerPadding: PaddingValues = PaddingValues(),
     appDatabase: AppDatabase = koinInject()
 ) {
@@ -64,6 +62,7 @@ fun A_LoadingApp4_Init_Screen(
     var progress by remember { mutableFloatStateOf(0f) }
     var currentJobName by remember { mutableStateOf("") }
     var seedResult by remember { mutableStateOf(Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult()) }
+    var lightDataBasesResult by remember { mutableStateOf(Init_LightDataBases.LightDataBasesResult()) }
 
     fun setProgress(p: Float, job: String = currentJobName) {
         progress = p; currentJobName = job
@@ -149,8 +148,13 @@ fun A_LoadingApp4_Init_Screen(
                     set(value = activeCompt, key = SemanticsPropertyKey("activeCompt"))
                 }
                 .semantics(mergeDescendants = true) {
+                    set(value = lightDataBasesResult, key = SemanticsPropertyKey("lightDataBasesResult"))
+                }
+
+                .semantics(mergeDescendants = true) {
                     set(value = seedResult, key = SemanticsPropertyKey("seedResult"))
-                },
+                },            //<--
+                //TODO(1): cree logs au Empty_App_Initialize_M1_3_16_App4Proto2 pk ca .prodits ==0
             contentAlignment = Alignment.Center
         ) {
             Image(

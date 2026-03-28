@@ -7,7 +7,6 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import kotlinx.coroutines.tasks.await
 
 object Init_LightDataBases {
-
     data class LightDataBasesResult(
         val m13TarificationInfos: List<M13TarificationInfos> = emptyList(),
         val m14VentPeriode: List<M14VentPeriode> = emptyList(),

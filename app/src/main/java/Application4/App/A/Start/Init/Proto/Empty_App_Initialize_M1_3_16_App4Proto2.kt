@@ -30,12 +30,16 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
             mutex.withLock { progress[name] = 1f; emitAggregatedProgress() }
 
         var seededColors     = emptyList<M3CouleurProduitInfos>()
+        var seededFilterKeys = emptyList<Ref_list_Filtred_Keys_M3Couleur_Main_Values>()
         var seededProducts   = emptyList<M01Produit>()
         var seededCategories = emptyList<M16CategorieProduit>()
 
         suspend fun seedColors() {
-            val allowedKeys = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
-                .get().await().children.mapNotNull { it.key }.toSet()
+            val refKeysSnap = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
+                .get().await()
+            val allowedKeys = refKeysSnap.children.mapNotNull { it.key }.toSet()
+            seededFilterKeys = refKeysSnap.children
+                .mapNotNull { it.getValue(Ref_list_Filtred_Keys_M3Couleur_Main_Values::class.java) }
             seededColors = M3CouleurProduitInfos.ref.get().await()
                 .children.mapNotNull { it.getValue(M3CouleurProduitInfos::class.java) }
                 .filter { it.keyID in allowedKeys }
@@ -43,12 +47,8 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
 
         suspend fun seedProducts() {
             val m3ParentKeys = seededColors.map { it.parentBProduitInfosKeyID }.toSet()
-            val classementByProduitKey = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
-                .get().await().children
-                .mapNotNull { snap ->
-                    snap.getValue(Ref_list_Filtred_Keys_M3Couleur_Main_Values::class.java)
-                        ?.let { it.parentProduitKeyID to it.parentProduitClassement }
-                }
+            val classementByProduitKey = seededFilterKeys
+                .map { it.parentProduitKeyID to it.parentProduitClassement }
                 .groupBy({ it.first }, { it.second })
                 .mapValues { (_, v) -> v.max() }
             seededProducts = M01Produit.ref.get().await()
@@ -83,7 +83,7 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
         seedRepo(Repo.M16CategorieProduit, isOnline) { seedCategories() }
 
         on_Progress_Datas(1f)
-        return SeedResult(seededColors, seededProducts, seededCategories)
+        return SeedResult(seededColors, seededFilterKeys, seededProducts, seededCategories)
     }
 
     private fun isInternetAvailable(context: Context): Boolean = try {
@@ -93,8 +93,8 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
     } catch (_: Exception) { false }
     data class SeedResult(
         val colors: List<M3CouleurProduitInfos> = emptyList(),
+        val filterKeys: List<Ref_list_Filtred_Keys_M3Couleur_Main_Values> = emptyList(),
         val products: List<M01Produit> = emptyList(),
         val categories: List<M16CategorieProduit> = emptyList(),
     )
-
 }
