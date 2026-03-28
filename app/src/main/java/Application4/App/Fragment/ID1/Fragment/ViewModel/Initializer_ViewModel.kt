@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 // -------------------------------------------------------------------------
 // Inner initializer — replaces the external subInit extension functions
 // -------------------------------------------------------------------------
-class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoPatterns) {
+class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoPatterns) {
     fun run() {
         collectCentralValues()
         loadAllDatasOnce()
@@ -86,11 +86,10 @@ class Initializer(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoP
 
     private fun collectListM1Produit() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
-            FlowsFunctions_ActiveDatasFragNewProto.get_list_M1Produit(
+            FlowsFunctions_ActiveDatasFragNewProto.getFlow_list_M1Produit(
                 dao_M1Produit = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit(),
                 activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
-            )
-
+            ).collect { /* side-effect: active_Datas.list_M1Produit updated via onEach */ }
         }
     }
 

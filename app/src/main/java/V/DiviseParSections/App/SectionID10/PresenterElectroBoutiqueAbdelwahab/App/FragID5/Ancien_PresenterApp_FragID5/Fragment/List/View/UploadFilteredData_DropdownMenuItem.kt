@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View
 
+import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
@@ -88,15 +89,16 @@ fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
                             isUploading = true
 
                             // associate replaces filter+map+toMap in one pass (no intermediate list).
-                            val keys: Map<String, RepositorysMainSetter_NewProtoPatterns.Couleur_Main_Values> =
+                            val keys: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values> =
                                 list_M03CouleurProduitInfos
                                     .filter { it.keyID.isNotBlank() }
                                     .associate { couleur ->
-                                        couleur.keyID to RepositorysMainSetter_NewProtoPatterns.Couleur_Main_Values(
-                                            nom                    = couleur.nomCouleurStrSiSonImageDispo,
-                                            classment              = parentProduit_Classement[couleur.parentBProduitInfosKeyID] ?: 0,
-                                            activated              = true,
-                                            parentProduitKeyID     = couleur.parentBProduitInfosKeyID,
+                                        couleur.keyID to Ref_list_Filtred_Keys_M3Couleur_Main_Values(
+                                            nom = couleur.nomCouleurStrSiSonImageDispo,
+                                            classment = parentProduit_Classement[couleur.parentBProduitInfosKeyID]
+                                                ?: 0,
+                                            activated = true,
+                                            parentProduitKeyID = couleur.parentBProduitInfosKeyID,
                                             parentProduitDebugName = couleur.parentId1ProduitInfosDebugName
                                         )
                                     }

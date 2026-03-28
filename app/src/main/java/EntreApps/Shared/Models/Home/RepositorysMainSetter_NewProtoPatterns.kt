@@ -4,6 +4,7 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -45,20 +46,8 @@ class RepositorysMainSetter_NewProtoPatterns(
     // M3CouleurProduitInfos
     // -------------------------------------------------------------------------
 
-    data class Couleur_Main_Values(
-        val nom: String,
-        val classment: Int,
-        val activated: Boolean,
-        val parentProduitKeyID: String = "",
-        val parentProduitDebugName: String = "",
-        // Position of the parent product within its category list.
-        // Used to order colours by their product's rank rather than
-        // by a flat colour index across the whole catalogue.
-        val parentProduitClassement: Int = 0
-    )
-
     fun insertFireBase_list_Main_Values_M3CouleurProduitInfos(
-        keys: Map<String, Couleur_Main_Values>,
+        keys: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>,
         onSuccess: () -> Unit = {}
     ) {
         val ref_listKeys = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
@@ -71,8 +60,6 @@ class RepositorysMainSetter_NewProtoPatterns(
                         "activated"              to v.activated,
                         "parentProduitKeyID"     to v.parentProduitKeyID,
                         "parentProduitDebugName" to v.parentProduitDebugName,
-                        // Persisted alongside the colour entry so consumers can
-                        // sort/group by product order without a secondary lookup.
                         "parentProduitClassement" to v.parentProduitClassement
                     )
                 }

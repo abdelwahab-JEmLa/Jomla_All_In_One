@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 object FlowsFunctions_ActiveDatasFragNewProto {
+
     fun getFlow_filter_marqueClient_enum_entrie(
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): MapClientsViewModel.VisibleClientsNow =
@@ -41,8 +42,6 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         activeDatasFragNewProto.list_M1Produit = dao_M1Produit.getAll()
     }
 
-    // allColours now read directly from activeDatasFragNewProto instead of being passed in,
-    // so callers no longer need to source it from UiState/List_Datas.
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getFlow_list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur(
         dao_M16CategorieProduit: Dao_M16CategorieProduit,
@@ -92,9 +91,15 @@ object FlowsFunctions_ActiveDatasFragNewProto {
                 .map { list -> onVentKey to list.filter { it.parent_M8BonVent_KeyId == onVentKey } }
         }
 
-    fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt: Dao_M9AppCompt): Flow<Z_AppCompt?> =
-        dao_M9AppCompt.getFlow_ByKeyID(M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId)
+    // Base overload — returns a plain flow, no side effects
+    fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
+        dao_M9AppCompt: Dao_M9AppCompt,
+    ): Flow<Z_AppCompt?> =
+        dao_M9AppCompt.getFlow_ByKeyID(
+            M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+        )
 
+    // Overload with side-effect — writes collected value into activeDatasFragNewProto
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
         dao_M9AppCompt: Dao_M9AppCompt,
         activeDatasFragNewProto: ActiveDatasFragNewProto,

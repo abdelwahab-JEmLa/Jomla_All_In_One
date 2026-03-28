@@ -8,13 +8,10 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 
-enum class Do(val from: From? = null) {
+enum class Do() {
     StandartInit,
-    DeleteInsertAll(From.Ref_All_Datas);
-    enum class From {
-        Ref_All_Datas,
-        Active_Key,
-    }
+    DeleteInsertAll_Active_Key(),
+    DeleteInsertAll_Ref_All_Datas();
 }
 
 @Entity
@@ -79,7 +76,7 @@ data class Z_AppCompt(
     //---------------------------------Centrale_Focuces_Values.----------------------------------------------------------------------------------------------------------------------------------
     val filter_marqueClient_Name: String = "no Filter",
 
-    val next_start: Do = Do.StandartInit,
+    val next_start: Do = Do.DeleteInsertAll_Active_Key,
 
     val activeDialogSearchM1Produit: Boolean = false,
     val active_ProduitKeyID_Au_DroopDown_PresenterEcran: String = "",

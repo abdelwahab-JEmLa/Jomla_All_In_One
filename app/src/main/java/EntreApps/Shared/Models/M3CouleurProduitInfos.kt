@@ -96,14 +96,6 @@ M3CouleurProduitInfos(
             return M3CouleurProduitInfos()
         }
 
-        /**
-         * Finds an existing image filename by decrementing the numeric suffix if the original file doesn't exist.
-         * For example: if "image_5" doesn't exist, tries "image_4", then "image_3", etc.
-         *
-         * @param nomImageFichieSansEtansion The image filename without extension
-         * @param extensionDisponible The file extension (e.g., "webp")
-         * @return The filename (without extension) of the first existing file found, or null if no valid file exists
-         */
         fun decrementing_file_name_si_non_trouve(
             nomImageFichieSansEtansion: String,
             extensionDisponible: String
@@ -161,3 +153,12 @@ M3CouleurProduitInfos(
         }
     }
 }
+
+data class Ref_list_Filtred_Keys_M3Couleur_Main_Values(
+    val nom: String,
+    val classment: Int,
+    val activated: Boolean,
+    val parentProduitKeyID: String = "",
+    val parentProduitDebugName: String = "",
+    val parentProduitClassement: Int = 0
+)

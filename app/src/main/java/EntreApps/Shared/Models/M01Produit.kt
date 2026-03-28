@@ -28,6 +28,8 @@ data class M01Produit(
     var idParentCategorie: Long = 0,
     var positionDonSonCesFrereCategorieProduits: Int = 0,
 
+    var classement_By_FilterKeys_M3: Int = 0,
+
 
     // Section InfosDeBase
     var nom: String = "",

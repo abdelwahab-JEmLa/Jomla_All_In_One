@@ -7,7 +7,6 @@ import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
 import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import EntreApps.Shared.Models.Home.CentraleMainGetter_NewProtoPattern
 import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
@@ -34,7 +33,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 
 @SuppressLint("StaticFieldLeak")
 class A_ViewModel_NewProtoPatterns(
@@ -52,6 +50,7 @@ class A_ViewModel_NewProtoPatterns(
     val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
 
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val activeOnVent_M8BonVent_flow: StateFlow<M8BonVent?> by lazy {
         appDatabase.dao_M9AppCompt()
@@ -68,20 +67,6 @@ class A_ViewModel_NewProtoPatterns(
         FocusedValues_NewProtoPatterns(
             list_Datas = _uiStateNewProtoPatterns.map { it.list_Datas }
                 .stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, initialValue = null)
-        )
-
-    val centraleMainGetter_NewProtoPattern: CentraleMainGetter_NewProtoPattern =
-        CentraleMainGetter_NewProtoPattern(
-            context = context,
-            appDatabase = appDatabase,
-            on_Progress_Datas = { progress ->
-                _uiStateNewProtoPatterns.update { state ->
-                    state.copy(
-                        initDatasProgressEtate = progress,
-                        active_Central_Values = state.active_Central_Values.copy(mainInitDataBaseProgressEtate = progress)
-                    )
-                }
-            },
         )
 
     private fun getActiveCentralValues(): ActiveCentralValues_app2 {
@@ -129,8 +114,8 @@ class A_ViewModel_NewProtoPatterns(
 
     init {
         fragmentNavigationHandler.closeAllActiveFragments()
-        centraleMainGetter_NewProtoPattern
-        Initializer(this).run()
+
+            Initializer_ViewModel(this@A_ViewModel_NewProtoPatterns).run()
     }
 
     fun maybeCreateEditedPourClientTariff(
@@ -170,7 +155,7 @@ class A_ViewModel_NewProtoPatterns(
         return true
     }
 
-    //────────────Setter_ViewModel_NewProtoPatterns─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    //────────────Setter_ViewModel_NewProtoPatterns────────────────────────────────────────────────
     fun update_m1Produit(new: M01Produit) = updater.update_m1Produit(new)
     fun delete_m1Produit(produit: M01Produit) = updater.delete_m1Produit(produit)
     fun update_activeCentralValues(new: ActiveCentralValues) = focusedValues_NewProtoPatterns.update_activeCentralValues(new)
