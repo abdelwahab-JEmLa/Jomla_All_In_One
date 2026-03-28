@@ -6,12 +6,14 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import android.content.Context
 import android.net.ConnectivityManager
+import android.util.Log
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 
 
 object Empty_App_Initialize_M1_3_16_App4Proto2 {
+    private const val TAG = "SeedInit"
     enum class Repo { M1Produit, M16CategorieProduit, M3CouleurProduitInfos }
 
     suspend fun getReturne_M1_3_16(
@@ -35,24 +37,47 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
         var seededCategories = emptyList<M16CategorieProduit>()
 
         suspend fun seedColors() {
+            Log.d(TAG, "seedColors: fetching ref keys…")
             val refKeysSnap = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
                 .get().await()
             val allowedKeys = refKeysSnap.children.mapNotNull { it.key }.toSet()
+            Log.d(TAG, "seedColors: allowedKeys.size=${allowedKeys.size}  keys=$allowedKeys")
+
             seededFilterKeys = refKeysSnap.children
                 .mapNotNull { it.getValue(Ref_list_Filtred_Keys_M3Couleur_Main_Values::class.java) }
-            seededColors = M3CouleurProduitInfos.ref.get().await()
+            Log.d(TAG, "seedColors: seededFilterKeys.size=${seededFilterKeys.size}")
+
+            val allColors = M3CouleurProduitInfos.ref.get().await()
                 .children.mapNotNull { it.getValue(M3CouleurProduitInfos::class.java) }
-                .filter { it.keyID in allowedKeys }
+            Log.d(TAG, "seedColors: raw Firebase colors count=${allColors.size}")
+
+            seededColors = allColors.filter { it.keyID in allowedKeys }
+            Log.d(TAG, "seedColors: seededColors after filter=${seededColors.size}" +
+                    (if (seededColors.isEmpty() && allColors.isNotEmpty())
+                        " ⚠️ ALL FILTERED OUT — keyID mismatch? sample keyIDs=${allColors.take(3).map { it.keyID }}"
+                    else ""))
         }
 
         suspend fun seedProducts() {
+            Log.d(TAG, "seedProducts: seededColors.size=${seededColors.size}")
+            if (seededColors.isEmpty()) {
+                Log.w(TAG, "seedProducts: ⚠️ seededColors is empty — products will be empty too. Check seedColors logs above.")
+                return
+            }
+
             val m3ParentKeys = seededColors.map { it.parentBProduitInfosKeyID }.toSet()
+            Log.d(TAG, "seedProducts: m3ParentKeys.size=${m3ParentKeys.size}  sample=${ m3ParentKeys.take(3)}")
+
             val classementByProduitKey = seededFilterKeys
                 .map { it.parentProduitKeyID to it.parentProduitClassement }
                 .groupBy({ it.first }, { it.second })
                 .mapValues { (_, v) -> v.max() }
-            seededProducts = M01Produit.ref.get().await()
+
+            val allProducts = M01Produit.ref.get().await()
                 .children.mapNotNull { it.getValue(M01Produit::class.java) }
+            Log.d(TAG, "seedProducts: raw Firebase products count=${allProducts.size}")
+
+            seededProducts = allProducts
                 .filter { it.keyID in m3ParentKeys }
                 .map { produit ->
                     classementByProduitKey[produit.keyID]
@@ -60,29 +85,50 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
                         ?.let { produit.copy(classement_By_FilterKeys_M3 = it) }
                         ?: produit
                 }
+            Log.d(TAG, "seedProducts: seededProducts after filter=${seededProducts.size}" +
+                    (if (seededProducts.isEmpty() && allProducts.isNotEmpty())
+                        " ⚠️ ALL FILTERED OUT — parentBProduitInfosKeyID mismatch? sample product keyIDs=${allProducts.take(3).map { it.keyID }}"
+                    else ""))
         }
 
         suspend fun seedCategories() {
+            Log.d(TAG, "seedCategories: seededProducts.size=${seededProducts.size}")
             val m1CategoryIds = seededProducts.map { it.idParentCategorie }.toSet()
-            seededCategories = M16CategorieProduit.ref.get().await()
+            Log.d(TAG, "seedCategories: distinct category ids=${m1CategoryIds.size}  ids=$m1CategoryIds")
+            val allCats = M16CategorieProduit.ref.get().await()
                 .children.mapNotNull { it.getValue(M16CategorieProduit::class.java) }
-                .filter { it.id in m1CategoryIds }
+            Log.d(TAG, "seedCategories: raw Firebase categories count=${allCats.size}")
+            seededCategories = allCats.filter { it.id in m1CategoryIds }
+            Log.d(TAG, "seedCategories: seededCategories after filter=${seededCategories.size}")
         }
 
         suspend fun seedRepo(repo: Repo, isOnline: Boolean, block: suspend () -> Unit) {
-            if (!isOnline) { markComplete(repo.name); return }
-            try { setProgress(repo.name, 0.2f); block(); markComplete(repo.name) }
-            catch (_: Exception) { markComplete(repo.name) }
+            if (!isOnline) {
+                Log.w(TAG, "seedRepo: ${repo.name} SKIPPED — device is offline")
+                markComplete(repo.name); return
+            }
+            try {
+                setProgress(repo.name, 0.2f)
+                block()
+                markComplete(repo.name)
+            } catch (e: Exception) {
+                Log.e(TAG, "seedRepo: ${repo.name} FAILED — ${e::class.simpleName}: ${e.message}", e)
+                markComplete(repo.name)
+            }
         }
 
         mutex.withLock { Repo.entries.forEach { progress[it.name] = 0f } }
         val isOnline = isInternetAvailable(context)
+        Log.d(TAG, "getReturne_M1_3_16: isOnline=$isOnline")
 
         seedRepo(Repo.M3CouleurProduitInfos, isOnline) { seedColors() }
         seedRepo(Repo.M1Produit, isOnline) { seedProducts() }
         seedRepo(Repo.M16CategorieProduit, isOnline) { seedCategories() }
 
         on_Progress_Datas(1f)
+        Log.i(TAG, "getReturne_M1_3_16 DONE — " +
+                "colors=${seededColors.size} filterKeys=${seededFilterKeys.size} " +
+                "products=${seededProducts.size} categories=${seededCategories.size}")
         return SeedResult(seededColors, seededFilterKeys, seededProducts, seededCategories)
     }
 

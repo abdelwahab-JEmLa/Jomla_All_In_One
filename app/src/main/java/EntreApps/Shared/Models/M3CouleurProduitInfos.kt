@@ -155,9 +155,9 @@ M3CouleurProduitInfos(
 }
 
 data class Ref_list_Filtred_Keys_M3Couleur_Main_Values(
-    val nom: String,
-    val classment: Int,
-    val activated: Boolean,
+    val nom: String = "",
+    val classment: Int = 0,
+    val activated: Boolean = false,
     val parentProduitKeyID: String = "",
     val parentProduitDebugName: String = "",
     val parentProduitClassement: Int = 0

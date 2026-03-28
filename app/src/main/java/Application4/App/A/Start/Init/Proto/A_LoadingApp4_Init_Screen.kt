@@ -6,6 +6,7 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.ifTrue
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
+import android.util.Log
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -66,6 +67,20 @@ fun A_LoadingApp4_Init_Screen(
 
     fun setProgress(p: Float, job: String = currentJobName) {
         progress = p; currentJobName = job
+    }
+
+    // Log seed results whenever they are updated so we can diagnose empty products
+    LaunchedEffect(seedResult) {
+        Log.d("LoadingScreen", "SeedResult updated — " +
+                "products=${seedResult.products.size} " +
+                "colors=${seedResult.colors.size} " +
+                "categories=${seedResult.categories.size} " +
+                "filterKeys=${seedResult.filterKeys.size}"
+        )
+        if (seedResult.products.isEmpty() && seedResult.colors.isNotEmpty()) {
+            Log.w("LoadingScreen", "⚠️ products==0 but colors=${seedResult.colors.size} — " +
+                    "check parentBProduitInfosKeyID mapping in Empty_App_Initialize logs")
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -133,7 +148,7 @@ fun A_LoadingApp4_Init_Screen(
         initDone = true
     }
 
-    if (dev) {
+    if (!initDone || dev) {
         val logoAlpha by rememberInfiniteTransition(label = "").animateFloat(
             initialValue = 1f,
             targetValue = 0.25f,
@@ -153,8 +168,7 @@ fun A_LoadingApp4_Init_Screen(
 
                 .semantics(mergeDescendants = true) {
                     set(value = seedResult, key = SemanticsPropertyKey("seedResult"))
-                },            //<--
-                //TODO(1): cree logs au Empty_App_Initialize_M1_3_16_App4Proto2 pk ca .prodits ==0
+                },
             contentAlignment = Alignment.Center
         ) {
             Image(
