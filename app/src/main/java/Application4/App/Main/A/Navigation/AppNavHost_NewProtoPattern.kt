@@ -1,6 +1,6 @@
 package Application4.App.Main.A.Navigation
 
-import Application4.App.Fragment.ID1.Fragment.A_LoadingApp4_Init_Screen
+import Application4.App.A.Start.Init.Proto.A_LoadingApp4_Init_Screen
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
@@ -12,7 +12,9 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +45,7 @@ private val heavyModulesLoaded = AtomicBoolean(false)
 fun AppNavHost_NewProtoPattern(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    innerPadding: PaddingValues = PaddingValues(),
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
 ) {
@@ -55,7 +58,11 @@ fun AppNavHost_NewProtoPattern(
     // State flag: true only after heavy modules are confirmed loaded in Koin
     val heavyReady = remember { mutableStateOf(heavyModulesLoaded.get()) }
 
-    Surface(modifier = modifier.fillMaxSize()) {
+    Surface(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+    ) {
         NavHost(
             navController = navController,
             startDestination = Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route,
@@ -71,7 +78,7 @@ fun AppNavHost_NewProtoPattern(
                             }
                     }
                 }
-                A_LoadingApp4_Init_Screen()
+                A_LoadingApp4_Init_Screen(innerPadding = innerPadding)
             }
 
             composable(route = Screen_NewProtoPattern.Panier.route) {

@@ -14,7 +14,6 @@ import java.io.File
 import java.io.FileOutputStream
 
 object DropBox_Init {
-
     val rootFolder: String = "/images"
     val localImagesBaseDir: File = File(M00CentralParametresOfAllApps.images_central_Local_storageLink)
 

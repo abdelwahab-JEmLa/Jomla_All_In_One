@@ -1,8 +1,6 @@
-package Application4.App.Fragment.ID1.Fragment
+package Application4.App.A.Start.Init.Proto
 
-import Application4.App.A.Start.Init.Proto.DropBox_Init
-import Application4.App.A.Start.Init.Proto.Empty_App_Initialize_M1_3_16_App4Proto2
-import Application4.App.A.Start.Init.Proto.Init_LightDataBases
+import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import EntreApps.Shared.Models.Do
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.ifTrue
@@ -16,12 +14,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -42,6 +41,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -51,6 +51,9 @@ import org.koin.compose.koinInject
 @Composable
 fun A_LoadingApp4_Init_Screen(
     modifier: Modifier = Modifier,
+    // FIX TODO(1): accept inner padding from the Scaffold / NavHost so the
+    //              progress bar is never hidden behind the bottom nav bar.
+    innerPadding: PaddingValues = PaddingValues(),
     appDatabase: AppDatabase = koinInject()
 ) {
     val context = LocalContext.current
@@ -60,7 +63,7 @@ fun A_LoadingApp4_Init_Screen(
     var initDone by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }
     var currentJobName by remember { mutableStateOf("") }
-    var seedDebugInfos by remember { mutableStateOf("") }
+    var seedResult by remember { mutableStateOf(Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult()) }
 
     fun setProgress(p: Float, job: String = currentJobName) {
         progress = p; currentJobName = job
@@ -88,14 +91,12 @@ fun A_LoadingApp4_Init_Screen(
             }
             deleteJob.join()
 
-            var seedResult = Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult()
             val seedJob = launch(Dispatchers.IO) {
                 seedResult = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16(
                     context = context,
                     on_Progress_Datas = { p -> setProgress(p, "Chargement produits…") },
                 )
-                seedDebugInfos =
-                    "colors:${seedResult.colors.size} products:${seedResult.products.size} categories:${seedResult.categories.size}"
+
                 launch {
                     DropBox_Init.syncAll(seedResult.colors) { p ->
                         setProgress(p, "Sync images…")
@@ -141,24 +142,23 @@ fun A_LoadingApp4_Init_Screen(
             label = ""
         )
         Box(
-            Modifier
+            modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .semantics(mergeDescendants = true) {
-                    set(
-                        value = activeCompt?.get_DebugInfos(),
-                        key = SemanticsPropertyKey("activeCompt?.get_DebugInfos()")
-                    )
+                    set(value = activeCompt, key = SemanticsPropertyKey("activeCompt"))
                 }
                 .semantics(mergeDescendants = true) {
-                    set(value = seedDebugInfos, key = SemanticsPropertyKey("seedDebugInfos"))
+                    set(value = seedResult, key = SemanticsPropertyKey("seedResult"))
                 },
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(com.example.clientjetpack.R.drawable.logo),
+                painter = painterResource(R.drawable.logo),
                 contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(220.dp)
+                    .fillMaxSize()
                     .alpha(logoAlpha)
             )
             Column(

@@ -1,6 +1,6 @@
 package Application4.App.Screen
 
-import Application4.App.Fragment.ID1.Fragment.A_LoadingApp4_Init_Screen
+import Application4.App.A.Start.Init.Proto.A_LoadingApp4_Init_Screen
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
@@ -71,8 +71,8 @@ fun MainScreen_NewProtoPattern(
                     onClickImageToShowControles = {},
                 )
             }
-        ) {innerPadding ->
-            Column() {
+        ) { innerPadding ->
+            Column {
                 (!wifiState.isConnected).ifTrue {
                     ConnexionCardHost_App4(vm = viewModelNewProtoPatterns)
                 }
@@ -80,9 +80,9 @@ fun MainScreen_NewProtoPattern(
                     modifier = Modifier.fillMaxSize(),
                     viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                     navController = navController,
+                    innerPadding = innerPadding,
                 )
             }
-
         }
     }
 }
