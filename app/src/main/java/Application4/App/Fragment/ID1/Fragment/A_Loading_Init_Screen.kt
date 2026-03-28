@@ -37,6 +37,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.compose.koinInject
+
 
 @Composable
 fun A_Loading_Init_Screen(
@@ -55,6 +58,7 @@ fun A_Loading_Init_Screen(
     var initDone by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }
     var currentJobName by remember { mutableStateOf("") }
+    var seedDebugInfos by remember { mutableStateOf("") }
 
     fun setProgress(p: Float, job: String = currentJobName) {
         progress = p; currentJobName = job
@@ -66,6 +70,7 @@ fun A_Loading_Init_Screen(
             activeCompt = Z_AppCompt.ref.get().await()
                 .children.mapNotNull { it.getValue(Z_AppCompt::class.java) }
                 .find { it.keyID == key }
+            setProgress(progress, "Compt: ${activeCompt?.get_DebugInfos() ?: "?"}")
         }.join()
 
         (activeCompt?.next_start == Do.DeleteInsertAll_Active_Key).ifTrue {
@@ -75,6 +80,8 @@ fun A_Loading_Init_Screen(
                     context = context,
                     on_Progress_Datas = { p -> setProgress(p, "Chargement produits…") },
                 )
+                seedDebugInfos =
+                    "colors:${seedResult.colors.size} products:${seedResult.products.size} categories:${seedResult.categories.size}"
                 launch {
                     DropBox_Init.syncAll(seedResult.colors) { p ->
                         setProgress(
@@ -121,7 +128,20 @@ fun A_Loading_Init_Screen(
             animationSpec = infiniteRepeatable(tween(900), RepeatMode.Reverse),
             label = ""
         )
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .semantics(mergeDescendants = true) {
+                    set(
+                        value = activeCompt?.get_DebugInfos(),
+                        key = SemanticsPropertyKey("activeCompt?.get_DebugInfos()")
+                    )
+                }
+                .semantics(mergeDescendants = true) {
+                    set(value = seedDebugInfos, key = SemanticsPropertyKey("seedDebugInfos"))
+                },
+            contentAlignment = Alignment.Center
+        ) {
             Image(
                 painter = painterResource(com.example.clientjetpack.R.drawable.logo),
                 contentDescription = null,
