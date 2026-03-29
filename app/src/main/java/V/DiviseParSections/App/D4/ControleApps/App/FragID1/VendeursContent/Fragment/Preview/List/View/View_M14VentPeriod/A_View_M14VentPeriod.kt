@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.filtersAndSorts_Central.calculateClientSalesSummary
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M14VentPeriode
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.background
@@ -51,7 +51,7 @@ fun View_M14VentPeriod(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     relative_M14VentPeriode: M14VentPeriode,
-    relative_M9AppCompt: Z_AppCompt?,
+    relative_M9AppCompt: M09AppCompt?,
     onCalculatedAchatClick: () -> Unit = {}
 ) {
 

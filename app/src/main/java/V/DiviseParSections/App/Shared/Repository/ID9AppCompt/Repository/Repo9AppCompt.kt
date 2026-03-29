@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository
 
 import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import android.content.Context
 import android.widget.Toast
@@ -23,7 +23,7 @@ class Repo9AppCompt(
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-    private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
+    private val _datas = mutableStateOf<List<M09AppCompt>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
     val currentAppCompt by derivedStateOf {
@@ -39,7 +39,7 @@ class Repo9AppCompt(
         }
     }
 
-    fun addNew(data: Z_AppCompt) {
+    fun addNew(data: M09AppCompt) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
@@ -54,7 +54,7 @@ class Repo9AppCompt(
         ancienRepo.addOrUpdatedDataBase(-1, dataUpdate)
     }
 
-    fun update(data: Z_AppCompt) {
+    fun update(data: M09AppCompt) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ancien.keyID == data.keyID
         }
@@ -85,7 +85,7 @@ class Repo9AppCompt(
         ancienRepo.addOrUpdatedDataBase(existingIndex, updatedItem)
     }
 
-    fun upsert(data: Z_AppCompt) {
+    fun upsert(data: M09AppCompt) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ancien.keyID == data.keyID
         }

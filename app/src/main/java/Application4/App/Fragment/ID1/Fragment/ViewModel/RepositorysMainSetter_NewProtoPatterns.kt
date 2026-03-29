@@ -5,7 +5,7 @@ import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.content.Context
@@ -204,7 +204,7 @@ class RepositorysMainSetter_NewProtoPatterns(
     // -------------------------------------------------------------------------
 
     fun insert_M9AppCompt(
-        data: Z_AppCompt,
+        data: M09AppCompt,
         onSuccess: () -> Unit = {}
     ) {
         if (data.keyID.isBlank()) {
@@ -223,7 +223,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             try {
                 appDatabase.dao_M9AppCompt().insert(data)
                 val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
-                Z_AppCompt.Companion.ref.updateChildren(updates).await()
+                M09AppCompt.Companion.ref.updateChildren(updates).await()
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -238,7 +238,7 @@ class RepositorysMainSetter_NewProtoPatterns(
     }
 
     fun update_M9AppCompt(
-        data: Z_AppCompt,
+        data: M09AppCompt,
         onSuccess: () -> Unit = {}
     ) {
         if (data.keyID.isBlank()) {
@@ -257,7 +257,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             try {
                 appDatabase.dao_M9AppCompt().update(data)
                 val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
-                Z_AppCompt.Companion.ref.updateChildren(updates).await()
+                M09AppCompt.Companion.ref.updateChildren(updates).await()
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -273,7 +273,7 @@ class RepositorysMainSetter_NewProtoPatterns(
 
     fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
         produit: M01Produit,
-        currentAppCompt: Z_AppCompt
+        currentAppCompt: M09AppCompt
     ) {
         val updatedAppCompt = currentAppCompt.copy(
             activeFocuce_TariffPrixDifineur_M1ProduitKeyID = produit.keyID,
@@ -282,7 +282,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_M9AppCompt().upsert(updatedAppCompt)
             val updates = mutableMapOf<String, Any>(updatedAppCompt.keyID to updatedAppCompt)
-            Z_AppCompt.Companion.ref.updateChildren(updates).await()
+            M09AppCompt.Companion.ref.updateChildren(updates).await()
         }
     }
 

@@ -1,8 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel
 
-import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
-import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -46,7 +44,7 @@ class ViewModelPresistantButtonsSec8FWinID1(
     ))
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun update_M9(data: Z_AppCompt): Unit {
+    fun update_M9(data: M09AppCompt): Unit {
        aCentralFacade.repositorysMainSetter.update_M9AppCompt(data)
     }
 }

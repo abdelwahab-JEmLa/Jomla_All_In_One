@@ -7,7 +7,7 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -133,7 +133,7 @@ class RepositorysMainGetter(
         repo8BonVent.datasValue.find { it.keyID == keyID }
 
     //--------------M9AppCompt----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun find_M9AppCompt_By_KeyID(keyID: String): Z_AppCompt? =
+    fun find_M9AppCompt_By_KeyID(keyID: String): M09AppCompt? =
         repo9AppCompt.datasValue.find { it.keyID == keyID }
 
     //--------------M10----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -348,7 +348,7 @@ class RepositorysMainGetter(
         }
 
         fun createCouleurOnVentKey(
-            compt: Z_AppCompt,
+            compt: M09AppCompt,
             bProduitDataBase: M01Produit,
             indexCouleur: Int,
         ): String {

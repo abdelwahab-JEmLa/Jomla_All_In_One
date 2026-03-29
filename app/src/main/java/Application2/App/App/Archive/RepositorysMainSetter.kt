@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
@@ -38,7 +38,7 @@ class RepositorysMainSetter_app2(
     //--------------------Repo9----------------------------------------------------------------------------------------------------------------------------
     fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
     produit: M01Produit,
-    currentAppCompt: Z_AppCompt
+    currentAppCompt: M09AppCompt
     ) {
         val updatedAppCompt = currentAppCompt.copy(
             activeFocuce_TariffPrixDifineur_M1ProduitKeyID = produit.keyID,
@@ -84,7 +84,7 @@ class RepositorysMainSetter_app2(
 
 
 
-    fun addAuRepoM9AppComptParFacade(defaultGeneratedCompt: Z_AppCompt) {
+    fun addAuRepoM9AppComptParFacade(defaultGeneratedCompt: M09AppCompt) {
         repo9AppCompt.addNew(defaultGeneratedCompt)
     }
 
@@ -120,7 +120,7 @@ class RepositorysMainSetter_app2(
         repo8BonVent.delete(data)
     }
 
-    fun update_M9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
+    fun update_M9AppCompt(data: M09AppCompt) = repo9AppCompt.upsert(data)
 
     //--------------------------------------m10--------------------------------------------------------------------------------------------------------
     fun update_M10OperationVentCouleur(data: M10OperationVentCouleur) =

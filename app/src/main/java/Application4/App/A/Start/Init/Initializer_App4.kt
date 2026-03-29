@@ -1,13 +1,12 @@
 package Application4.App.A.Start.Init
 
-import Application4.App.A.Start.Init.DropboxImageSyncer
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
@@ -130,7 +129,7 @@ object Initializer_App4 {
             launch(Dispatchers.IO) {
                 seedRepo("Z_AppCompt") {
                     if (dao_M9AppCompt.getAll().isNotEmpty()) return@seedRepo
-                    Z_AppCompt.ref.get().await().children.mapNotNull { it.getValue(Z_AppCompt::class.java) }
+                    M09AppCompt.ref.get().await().children.mapNotNull { it.getValue(M09AppCompt::class.java) }
                         .takeIf { it.isNotEmpty() }?.let { dao_M9AppCompt.insertAll(it) }
                 }
             }

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import EntreApps.Shared.Modules.Base.AppDatabase
@@ -343,7 +343,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
     }
 
     override fun upsertUneDataEtReturnVID_1_5_Vendeur(
-        data: Z_AppCompt,
+        data: M09AppCompt,
         onSuccess: (Long) -> Unit,
     ): Unit {
     }

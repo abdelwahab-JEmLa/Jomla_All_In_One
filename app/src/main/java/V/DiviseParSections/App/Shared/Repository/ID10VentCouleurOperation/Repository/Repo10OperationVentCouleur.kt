@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadFromFireBase
@@ -139,7 +139,7 @@ class Repo10OperationVentCouleur(
     }
 
     fun acheterUneCouleur(
-        zCompt: Z_AppCompt,
+        zCompt: M09AppCompt,
         relatedVentOperation: M3CouleurProduitInfos,
         quantity: Int,
     ) {
@@ -161,7 +161,7 @@ class Repo10OperationVentCouleur(
 
     private fun createSafeCouleurVentOperation(
         relatedCouleur: M3CouleurProduitInfos,
-        zCompt: Z_AppCompt,
+        zCompt: M09AppCompt,
         quantity: Int
     ): M10OperationVentCouleur {
         return M10OperationVentCouleur(

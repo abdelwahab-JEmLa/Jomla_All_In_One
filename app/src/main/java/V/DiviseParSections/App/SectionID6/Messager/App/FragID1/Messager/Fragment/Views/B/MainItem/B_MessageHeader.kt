@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +35,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun MessageHeader(
-    relative_M9AppCompt: Z_AppCompt?,
+    relative_M9AppCompt: M09AppCompt?,
     relative_M17MessageVocale: M17MessageVocale,
     viewModel: ViewModelMessageur,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,

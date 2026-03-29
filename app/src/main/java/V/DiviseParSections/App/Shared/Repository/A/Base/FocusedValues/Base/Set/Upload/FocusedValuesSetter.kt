@@ -13,7 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import androidx.compose.runtime.Stable
 
@@ -31,7 +31,7 @@ class FocusedValuesSetter(
 
     fun upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
         updatedDefaultId8BonVent: M8BonVent,
-        newCurrentM9AppCompt: Z_AppCompt?
+        newCurrentM9AppCompt: M09AppCompt?
     ) {
         this.update_M8BonVent(updatedDefaultId8BonVent)
 
@@ -60,7 +60,7 @@ class FocusedValuesSetter(
         repo10OperationVentCouleur.addOrUpdateData(it)
     }
 
-    fun updateFocuceM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
+    fun updateFocuceM9AppCompt(data: M09AppCompt) = repo9AppCompt.upsert(data)
 
     fun active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(
         m10OperationVentCouleur: M10OperationVentCouleur

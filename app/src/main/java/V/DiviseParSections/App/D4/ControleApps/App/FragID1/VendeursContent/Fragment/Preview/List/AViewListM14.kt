@@ -4,7 +4,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod.View_M14VentPeriod
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M14VentPeriode
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 fun ViewList_M14VentPeriod(
     viewModel: ViewModel_M14VentPeriod,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
-    relative_M9AppCompt: Z_AppCompt?,
+    relative_M9AppCompt: M09AppCompt?,
     list_M14VentPeriode: List<M14VentPeriode>,
     onCalculatedAchatClick: () -> Unit = {}
 ) {

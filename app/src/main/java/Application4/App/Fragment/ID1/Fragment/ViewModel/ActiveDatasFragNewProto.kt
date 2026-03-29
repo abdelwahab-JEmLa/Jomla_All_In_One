@@ -5,7 +5,7 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -21,7 +21,7 @@ class ActiveDatasFragNewProto {
 
     // ── Raw stored values ─────────────────────────────────────────────────
 
-    var active_M9Compt: Z_AppCompt? by mutableStateOf(null)
+    var active_M9Compt: M09AppCompt? by mutableStateOf(null)
     var affiche_Dialog_Fast_Affiche_Panie: Boolean? by mutableStateOf(null)
 
     var section_ToggleButton_TagPrioriter__start_Collapsed: Boolean? by mutableStateOf(null)

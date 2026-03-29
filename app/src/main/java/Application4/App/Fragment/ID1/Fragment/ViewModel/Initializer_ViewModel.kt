@@ -2,7 +2,7 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
@@ -76,7 +76,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     }
 
     private fun seedActiveDatas(
-        appCompt: Z_AppCompt,
+        appCompt: M09AppCompt,
         bonVent: List<M8BonVent>,
         clients: List<M2Client>,
     ) {

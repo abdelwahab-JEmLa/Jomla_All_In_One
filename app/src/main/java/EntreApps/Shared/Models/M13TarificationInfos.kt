@@ -18,7 +18,7 @@ import com.google.firebase.database.database
 @Entity
 data class M13TarificationInfos(
     @PrimaryKey
-    val keyID: String = Z_AppCompt.Companion.getPushFireBase(ref),
+    val keyID: String = M09AppCompt.Companion.getPushFireBase(ref),
 
     val id: Long = 0L,
     var creationTimestamps: Long =  System.currentTimeMillis(),

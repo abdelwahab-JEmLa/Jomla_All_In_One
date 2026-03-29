@@ -6,7 +6,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fra
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,7 +42,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun View_M9AppCompt(
-    relative_M9AppCompt: Z_AppCompt,
+    relative_M9AppCompt: M09AppCompt,
     viewModel: ViewModel_M9AppCompt,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
@@ -129,9 +129,9 @@ fun View_M9AppCompt(
 
 @Composable
 private fun SettingsDialog(
-    relative_M9AppCompt: Z_AppCompt,
+    relative_M9AppCompt: M09AppCompt,
     onDismiss: () -> Unit,
-    onUpdateAppCompt: (Z_AppCompt) -> Unit,
+    onUpdateAppCompt: (M09AppCompt) -> Unit,
     viewModel: ViewModel_M9AppCompt,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
 ) {

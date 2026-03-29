@@ -3,12 +3,12 @@ package EntreApps.Shared.Modules.Base
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
@@ -105,7 +105,7 @@ import java.util.Date
         M2Client::class,
 
         M10OperationVentCouleur::class,
-        Z_AppCompt::class,
+        M09AppCompt::class,
         M8BonVent::class,
         M14VentPeriode::class,
         M15Grossist::class,

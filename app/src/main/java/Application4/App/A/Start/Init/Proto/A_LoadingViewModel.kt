@@ -1,10 +1,10 @@
 package Application4.App.A.Start.Init.Proto
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.Do
-import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -27,7 +27,7 @@ class A_LoadingViewModel(
         val initDone: Boolean = false,
         val progress: Float = 0f,
         val currentJobName: String = "",
-        val activeCompt: Z_AppCompt? = null,
+        val activeCompt: M09AppCompt? = null,
         val seedResult: Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult =
             Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult(),
         val lightDataBasesResult: Init_LightDataBases.LightDataBasesResult =
@@ -54,14 +54,13 @@ class A_LoadingViewModel(
     private suspend fun runInit() {
         fun setProgress(p: Float, job: String = _uiState.value.currentJobName) =
             _uiState.update { it.copy(progress = p, currentJobName = job) }
-
         viewModelScope.launch(Dispatchers.IO) {
             val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
-            val snap = Z_AppCompt.ref.get().await()
+            val snap = M09AppCompt.ref.get().await()
             val compt = snap.children
                 .mapNotNull { child ->
                     try {
-                        child.getValue(Z_AppCompt::class.java)
+                        child.getValue(M09AppCompt::class.java)
                     } catch (_: Exception) {
                         @Suppress("UNCHECKED_CAST")
                         val raw = child.getValue(Object::class.java) as? Map<String, Any?>
@@ -70,7 +69,7 @@ class A_LoadingViewModel(
                         val safeDo = Do.entries.firstOrNull { it.name == rawDo }
                             ?: Do.StandartInit_Sans_RienFair
                         try {
-                            Z_AppCompt(
+                            M09AppCompt(
                                 keyID = raw["keyID"] as? String ?: return@mapNotNull null,
                                 nom = raw["nom"] as? String ?: "",
                                 next_start = safeDo,
@@ -81,6 +80,8 @@ class A_LoadingViewModel(
                     }
                 }
                 .find { it.keyID == key }
+
+            compt?.let { appDatabase.dao_M9AppCompt().upsert(it) }
 
             _uiState.update {
                 it.copy(
@@ -102,11 +103,11 @@ class A_LoadingViewModel(
                             else Do.DeleteInsertAll_Active_Key
                     )
                     _uiState.update { it.copy(activeCompt = updated) }
+                    appDatabase.dao_M9AppCompt().upsert(updated)
                     repo.update_M9AppCompt(updated)
                 }
             }
         }.join()
-
         suspend fun deleteAllLocal(label: String = "Suppression données locales…") {
             setProgress(_uiState.value.progress, label)
             with(appDatabase) {
@@ -177,10 +178,7 @@ class A_LoadingViewModel(
                     val result = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16_AllRefs(
                         context = appContext,
                         on_Progress_Datas = { p ->
-                            setProgress(
-                                p,
-                                "Chargement toutes données ref…"
-                            )
+                            setProgress(p, "Chargement toutes données ref…")
                         },
                     )
                     _uiState.update { it.copy(seedResult = result) }
@@ -189,9 +187,7 @@ class A_LoadingViewModel(
                 }.join()
             }
 
-            // StandartInit or null (incl. stale enum fallback): skip everything.
-            Do.StandartInit_Sans_RienFair, null -> { /* nothing */
-            }
+            Do.StandartInit_Sans_RienFair, null -> { /* nothing */ }
         }
 
         setProgress(1f, "Prêt ✓")
@@ -199,6 +195,7 @@ class A_LoadingViewModel(
         _uiState.value.activeCompt?.let { compt ->
             val updated = compt.copy(next_start = Do.StandartInit_Sans_RienFair)
             _uiState.update { it.copy(activeCompt = updated) }
+            appDatabase.dao_M9AppCompt().upsert(updated)
             repo.update_M9AppCompt(updated)
         }
 

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -49,8 +49,8 @@ class TariffsButtonsViewModelSec7ID2(
     private val allAppComptsFlow = appDatabase.dao_M9AppCompt().getAllFlow()
 
     // Exposed as StateFlow for the Composable to observe if needed
-    private val _activeAppCompt = MutableStateFlow<Z_AppCompt?>(null)
-    val activeAppCompt: StateFlow<Z_AppCompt?> = _activeAppCompt.asStateFlow()
+    private val _activeAppCompt = MutableStateFlow<M09AppCompt?>(null)
+    val activeAppCompt: StateFlow<M09AppCompt?> = _activeAppCompt.asStateFlow()
 
     val getter = aCentralFacade.repositorysMainGetter
     val setter = aCentralFacade.repositorysMainSetter

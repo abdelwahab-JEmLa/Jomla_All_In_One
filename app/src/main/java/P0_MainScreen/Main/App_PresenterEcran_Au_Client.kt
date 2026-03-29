@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
@@ -114,7 +114,7 @@ fun App_PresenterEcran_Au_Client(
 
     fun handelClick(
         repositorysMainSetter: RepositorysMainSetter,
-        relative_M9AppCompt: Z_AppCompt,
+        relative_M9AppCompt: M09AppCompt,
         isClicked: Boolean,
         couleur: M3CouleurProduitInfos
     ) {
@@ -127,7 +127,7 @@ fun App_PresenterEcran_Au_Client(
 
     fun handleCloseClick(
         repositorysMainSetter: RepositorysMainSetter,
-        relative_M9AppCompt: Z_AppCompt
+        relative_M9AppCompt: M09AppCompt
     ) {
         repositorysMainSetter.update_M9AppCompt(
             relative_M9AppCompt.copy(

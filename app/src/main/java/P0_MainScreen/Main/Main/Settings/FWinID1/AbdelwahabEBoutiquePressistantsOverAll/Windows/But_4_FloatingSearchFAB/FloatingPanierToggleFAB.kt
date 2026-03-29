@@ -1,7 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -55,7 +55,7 @@ fun FloatingPanierToggleFAB(
     val isPanierOpen = focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie
 
     val allAppCompts by appDatabase.dao_M9AppCompt().getAllFlow().collectAsState(initial = emptyList())
-    val m9: Z_AppCompt? = allAppCompts.find {
+    val m9: M09AppCompt? = allAppCompts.find {
         it.keyID == M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
     }
     val affiche_Dialog_Fast_Affiche_Panie_App4: Boolean? = m9?.affiche_Dialog_Fast_Affiche_Panie_App4

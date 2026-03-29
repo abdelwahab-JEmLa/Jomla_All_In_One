@@ -9,7 +9,7 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model.FilterState_Facad_Boutique_FragId5
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -69,7 +69,7 @@ data class ActiveCentralValues(
 
     //-----------------M9-----------------------------------------------------------------------------------------------------------------------------------------
     val activeCompt_KeyID: String? = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId,
-    val activeCompt: Z_AppCompt? = null,
+    val activeCompt: M09AppCompt? = null,
 
     // Derived from activeCompt.its_Admin — set by FocusedValues_FluidApp flow, never set manually
     val currentApp_Est_Admin: Boolean = false,

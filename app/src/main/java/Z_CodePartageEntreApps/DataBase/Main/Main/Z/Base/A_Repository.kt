@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init.onLoadCategoriesFromCsv
@@ -23,7 +23,7 @@ class DataBaseInit_Z_AppCompt(
     val repoTAG = repoEntityName
     var isListenerRegistered = false
 
-    val repoRef = Z_AppCompt.ref
+    val repoRef = M09AppCompt.ref
 
 
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -36,7 +36,7 @@ class DataBaseInit_Z_AppCompt(
 
         updateRepoProgress(Repository.Z_AppComptEntity.name, 0.4f)
 
-        val data: List<Z_AppCompt> = if (isInternetAvailable) {
+        val data: List<M09AppCompt> = if (isInternetAvailable) {
 
             updateRepoProgress(Repository.Z_AppComptEntity.name, 0.6f)
 
@@ -67,7 +67,7 @@ class DataBaseInit_Z_AppCompt(
                         var updateCount = 0
                         for (child in snapshot.children) {
                             try {
-                                child.getValue(Z_AppCompt::class.java)?.let { entity ->
+                                child.getValue(M09AppCompt::class.java)?.let { entity ->
                                     val entityWithKey = entity.copy(keyID = child.key ?: "")
                                     val shouldUpdate = try {
                                         val localEntity = dao.getAll().find { it.keyID == entityWithKey.keyID }
@@ -100,7 +100,7 @@ class DataBaseInit_Z_AppCompt(
 
     fun addOrUpdatedDataBase(
         existingIndex: Int,
-        dataAvecTigerUpdate: Z_AppCompt
+        dataAvecTigerUpdate: M09AppCompt
     ) {
         composScope.launch {
             if (existingIndex >= 0) {
@@ -113,7 +113,7 @@ class DataBaseInit_Z_AppCompt(
         }
     }
 
-    private suspend fun batchFireBaseUpdateZ_AppCompt(datas: List<Z_AppCompt>) {
+    private suspend fun batchFireBaseUpdateZ_AppCompt(datas: List<M09AppCompt>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
             updates[data.keyID] = data

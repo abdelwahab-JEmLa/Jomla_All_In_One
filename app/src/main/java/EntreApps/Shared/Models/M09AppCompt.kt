@@ -16,7 +16,7 @@ enum class Do() {
 }
 
 @Entity
-data class Z_AppCompt(
+data class M09AppCompt(
     @PrimaryKey
     var keyID: String = generePushKey(),
     var creationTimestamp: Long = System.currentTimeMillis(),
@@ -136,7 +136,7 @@ data class Z_AppCompt(
         }
     }
 
-    fun Z_AppCompt.addStringAuNomsMutableTags(str: String): List<String> {
+    fun M09AppCompt.addStringAuNomsMutableTags(str: String): List<String> {
         val currentTags = if (autres_Noms_SepareParComma.isNotEmpty()) {
             autres_Noms_SepareParComma.split(",").map { it.trim() }
         } else {
@@ -224,7 +224,7 @@ data class Z_AppCompt(
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
-        fun get_Default() = Z_AppCompt()
+        fun get_Default() = M09AppCompt()
 
 
         val ref = Firebase.database.getReference(

@@ -1,6 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View
 
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.CreateNewClientIcon
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ZChildView.View_List_DropDownButtons.List.View_List_DropDownButtons
@@ -65,7 +65,7 @@ fun ID4ClientSearchButton(
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
-    currentActive_M9AppCompt: Z_AppCompt? = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    currentActive_M9AppCompt: M09AppCompt? = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
         .currentActive_M9AppCompt,
     onVentList: List<M10OperationVentCouleur> = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent,

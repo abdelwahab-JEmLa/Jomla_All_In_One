@@ -4,7 +4,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.FlowsFunctions_ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
@@ -113,7 +113,7 @@ class MapClientsViewModel(
             m2Client_In_ShowEditMarkerMode = m2Client_In_ShowEditMarkerMode,
         )
     }
-    fun update_active_Compt(compt: Z_AppCompt) {
+    fun update_active_Compt(compt: M09AppCompt) {
         active_Datas.active_M9Compt = compt
         repositorysMainSetter_NewProtoPatterns.update_M9AppCompt(compt)
     }

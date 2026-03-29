@@ -1,10 +1,10 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init
 
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import java.io.File
 
-fun DataBaseInit_Z_AppCompt.onLoadCategoriesFromCsv(): MutableList<Z_AppCompt> {
+fun DataBaseInit_Z_AppCompt.onLoadCategoriesFromCsv(): MutableList<M09AppCompt> {
     val imagesProduitsLocalExternalStorageBasePath =
         "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
     val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "$repoEntityName.csv")
@@ -13,7 +13,7 @@ fun DataBaseInit_Z_AppCompt.onLoadCategoriesFromCsv(): MutableList<Z_AppCompt> {
         return mutableListOf() // Return empty list instead of nothing
     }
 
-    val datas = mutableListOf<Z_AppCompt>()
+    val datas = mutableListOf<M09AppCompt>()
     var lineNumber = 0
     var isFirstLine = true
 
@@ -45,7 +45,7 @@ fun DataBaseInit_Z_AppCompt.onLoadCategoriesFromCsv(): MutableList<Z_AppCompt> {
     }
 }
 // For Z_AppComptEntity CSV
-fun parseCsvLine(line: String): Z_AppCompt {
+fun parseCsvLine(line: String): M09AppCompt {
     val values =
         Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.Init.parseCsvValues(line)
 
@@ -57,7 +57,7 @@ fun parseCsvLine(line: String): Z_AppCompt {
 }
 
 
-private fun zAppcompt(values: List<String>) = Z_AppCompt(
+private fun zAppcompt(values: List<String>) = M09AppCompt(
 )
 
 

@@ -9,7 +9,7 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.annotation.SuppressLint
@@ -130,13 +130,13 @@ class A_ViewModel_NewProtoPatterns(
             newTariff
         )
 
-    fun setActiveFocuceTariffPrixDifineur(produit: M01Produit, appCompt: Z_AppCompt) =
+    fun setActiveFocuceTariffPrixDifineur(produit: M01Produit, appCompt: M09AppCompt) =
         repositorysMainSetter_NewProtoPatterns.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
             produit,
             appCompt
         )
 
-    fun update_active_Compt(compt: Z_AppCompt) = updater.update_active_Compt(compt)
+    fun update_active_Compt(compt: M09AppCompt) = updater.update_active_Compt(compt)
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) =
         updater.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList)
 

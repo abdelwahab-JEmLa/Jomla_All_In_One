@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface GroupeRepositorysProtoAvJuin3 {
@@ -17,7 +17,7 @@ interface GroupeRepositorysProtoAvJuin3 {
 
     fun updateActiveIdDe_1_5_Vendeur(id: Long = -1L)
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
-    fun upsertUneDataEtReturnVID_1_5_Vendeur(data: Z_AppCompt, onSuccess: (Long) -> Unit = {})
+    fun upsertUneDataEtReturnVID_1_5_Vendeur(data: M09AppCompt, onSuccess: (Long) -> Unit = {})
 
 
 

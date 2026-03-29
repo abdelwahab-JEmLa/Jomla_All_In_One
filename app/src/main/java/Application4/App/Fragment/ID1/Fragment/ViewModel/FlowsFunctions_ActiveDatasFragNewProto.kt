@@ -6,7 +6,7 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
@@ -98,7 +98,7 @@ object FlowsFunctions_ActiveDatasFragNewProto {
     // Base overload — returns a plain flow, no side effects
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
         dao_M9AppCompt: Dao_M9AppCompt,
-    ): Flow<Z_AppCompt?> =
+    ): Flow<M09AppCompt?> =
         dao_M9AppCompt.getFlow_ByKeyID(
             M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
         )
@@ -107,7 +107,7 @@ object FlowsFunctions_ActiveDatasFragNewProto {
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
         dao_M9AppCompt: Dao_M9AppCompt,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
-    ): Flow<Z_AppCompt?> =
+    ): Flow<M09AppCompt?> =
         dao_M9AppCompt.getFlow_ByKeyID(
             M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
         ).onEach { activeDatasFragNewProto.active_M9Compt = it }

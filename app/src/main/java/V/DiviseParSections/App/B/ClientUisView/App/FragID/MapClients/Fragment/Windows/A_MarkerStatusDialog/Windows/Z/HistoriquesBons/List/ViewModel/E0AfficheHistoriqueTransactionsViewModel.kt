@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Z_AppCompt
+import EntreApps.Shared.Models.M09AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import androidx.lifecycle.ViewModel
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class SecID5FragID2UiState(
-    val activeCompt: Z_AppCompt? =null,
+    val activeCompt: M09AppCompt? =null,
     val B_ClientInfosProtoJuin3List: List<M2Client> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 )
