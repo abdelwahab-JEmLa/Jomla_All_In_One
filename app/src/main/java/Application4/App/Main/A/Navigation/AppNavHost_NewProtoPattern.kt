@@ -81,14 +81,12 @@ fun AppNavHost_NewProtoPattern(
                     }
                 }
 
-                // FIX(TODO-1): Gate between loading screen and A_Compact here in the nav graph.
-                // A_LoadingApp4_Init_Screen no longer embeds A_Compact directly — it fires
-                // onInitDone() when done, and we switch to A_Compact inside this composable.
                 var initDone by rememberSaveable { mutableStateOf(false) }
                 if (!initDone) {
                     A_LoadingApp4_Init_Screen(
                         innerPadding = innerPadding,
                         onInitDone = { initDone = true },
+                        appDatabase = koinInject ()
                     )
                 } else {
                     A_Compact_Presentoire_App_Produits_App4()
