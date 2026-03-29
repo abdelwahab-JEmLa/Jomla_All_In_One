@@ -56,7 +56,7 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.AllInOne
         } else {
-            AppType.AllInOne
+            AppType.JomLaElectroLivreurGrossist_VendeurHost
         }
     },
 
