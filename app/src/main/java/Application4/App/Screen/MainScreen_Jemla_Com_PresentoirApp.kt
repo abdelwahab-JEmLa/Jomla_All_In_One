@@ -1,6 +1,5 @@
 package Application4.App.Screen
 
-import Application4.App.A.Start.Init.Proto.A_LoadingApp4_Init_Screen
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
@@ -8,7 +7,6 @@ import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NewProt
 import Application4.App.Main.A.Navigation.Component.NavigationItems
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import android.annotation.SuppressLint
 import android.os.Build
@@ -20,9 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
@@ -49,34 +44,14 @@ fun MainScreen_NewProtoPattern(
     val currentFragment by fragmentNavigationHandler.currentFragment.collectAsState()
     val currentRoute = currentFragment?.route
 
-    var isInitDone by rememberSaveable { mutableStateOf(false) }
-
-    if (M00CentralParametresOfAllApps.get_Default().no_loadKoin_CrachComposReglement) {
-        if (!isInitDone) {
-            A_LoadingApp4_Init_Screen(
-                onInitDone = { isInitDone = true },
-                appDatabase = koinInject()
-            )
-        } else {
-            MainScaffold(
-                modifier = modifier,
-                wifiState = wifiState,
-                currentRoute = currentRoute,
-                navController = navController,
-                fragmentNavigationHandler = fragmentNavigationHandler,
-                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-            )
-        }
-    } else {
-        MainScaffold(
-            modifier = modifier,
-            wifiState = wifiState,
-            currentRoute = currentRoute,
-            navController = navController,
-            fragmentNavigationHandler = fragmentNavigationHandler,
-            viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-        )
-    }
+    MainScaffold(
+        modifier = modifier,
+        wifiState = wifiState,
+        currentRoute = currentRoute,
+        navController = navController,
+        fragmentNavigationHandler = fragmentNavigationHandler,
+        viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+    )
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
