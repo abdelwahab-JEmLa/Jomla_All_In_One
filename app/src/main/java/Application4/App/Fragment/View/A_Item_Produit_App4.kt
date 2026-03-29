@@ -145,7 +145,8 @@ fun A_Item_Produit_App4(
         )
     }
 
-    val isGrossist = centralValues.active_M9Compt?.travailleChezGrossisst3Ali == true
+    val activeM9compt = centralValues.active_M9Compt
+    val isGrossist = activeM9compt?.travailleChezGrossisst3Ali == true
 
     val datasValue_with_synthetic = if (!isGrossist &&
         datasValue_distinct_type.none { it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client } &&
@@ -219,6 +220,7 @@ fun A_Item_Produit_App4(
         modifier = modifier
             .semantics(mergeDescendants = true) {
                 set(value = supperGro, key = SemanticsPropertyKey("supperGro"))
+                set(value = activeM9compt, key = SemanticsPropertyKey("activeM9compt"))
             }
             .fillMaxWidth()
             .padding(cardPadding)
@@ -239,7 +241,7 @@ fun A_Item_Produit_App4(
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
                     onUpdateTariff = {
-                        centralValues.active_M9Compt?.let { appCompt ->
+                        activeM9compt?.let { appCompt ->
                             viewModel.setActiveFocuceTariffPrixDifineur(relative_M1produit, appCompt)
                         }
                     },

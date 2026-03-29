@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun A_Compact_Header_App4(
-
     modifier: Modifier = Modifier,
     relative_M1produit: M01Produit,
     isExpanded: Boolean,
@@ -93,7 +92,6 @@ fun A_Compact_Header_App4(
                 .padding(cardPadding),
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
-            // ── Priorité tag toggles (admin only) ─────────────────────────
             if (affiche_ProduitDataBaseEdites_ComposableViews) {
                 Section_ToggleButton_TagPreiorities(
                     start_Collapsed =section_ToggleButton_TagPreiorities__start_Collapsed ,
