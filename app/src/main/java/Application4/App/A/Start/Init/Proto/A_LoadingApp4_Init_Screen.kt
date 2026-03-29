@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -64,12 +63,6 @@ fun A_LoadingApp4_Init_Screen(
     }
 
     if (!uiState.initDone) {
-        val logoAlpha by rememberInfiniteTransition(label = "logo_pulse").animateFloat(
-            initialValue = 1f,
-            targetValue = 0.25f,
-            animationSpec = infiniteRepeatable(tween(900), RepeatMode.Reverse),
-            label = "logo_alpha"
-        )
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -87,7 +80,6 @@ fun A_LoadingApp4_Init_Screen(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(logoAlpha)
             )
             Column(
                 modifier = Modifier
