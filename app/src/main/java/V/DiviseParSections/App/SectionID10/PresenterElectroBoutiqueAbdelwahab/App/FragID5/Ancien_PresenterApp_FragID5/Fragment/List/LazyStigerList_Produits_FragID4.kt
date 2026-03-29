@@ -72,10 +72,18 @@ fun Etager_LazyColumn_FragID4(
             }
         }
 
-    // Build a map of parentProduitKeyID → classement (product index within its category).
-    // Each product gets its position index scoped to its own category's product list,
-    // which is then used as classment when uploading colour entries to Firebase.
-    val parentProduit_Classement: Map<String, Int> =
+    val parentProduit_Classement: Map<String, Int> =       //<--
+    //TODO(1): cree logs pk ca n update pas les parent produi par le index clasesemnt don cette lazy voici un sortie de exported active keys    
+        // 
+        //      "-Od4O2OxzMd_1Dxy3Luf": {
+    //    "activated": true,
+    //    "classment": 0,    <--
+    //        //    //TODO(1): ici c 0 ou un por tout c un erreur 
+    //    "nom": "",
+    //    "parentProduitClassement": 0,
+    //    "parentProduitDebugName": "scusa daffodil",
+    //    "parentProduitKeyID": "-OV3rmUj0Lh8T7rqgBn5"
+    //  }  
         cataloguesWithCategoriesAndProducts
             .flatMap { (_, cats) -> cats }
             .flatMap { (_, productColorPairs) ->

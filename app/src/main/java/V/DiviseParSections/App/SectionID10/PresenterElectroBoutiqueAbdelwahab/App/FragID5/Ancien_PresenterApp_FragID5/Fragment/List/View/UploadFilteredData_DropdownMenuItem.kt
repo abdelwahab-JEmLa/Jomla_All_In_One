@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View
 
-import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.compose.foundation.layout.size
@@ -30,9 +30,6 @@ import org.koin.compose.koinInject
 @Composable
 fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
     list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>,
-    // Map of parentProduitKeyID → classement (product's position index within its category).
-    // Built at the call site from the structured catalogue tree so that classment
-    // reflects the product order, not the flat colour index.
     parentProduit_Classement: Map<String, Int>,
     onDismissDropdown: () -> Unit,
     context: Context = koinInject(),

@@ -13,8 +13,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-object DropBox_Init {
-    val rootFolder: String = "/images"
+object DropBox_Init {          //<--
+//TODO(1): fait pour le progress de syc dropBox_key == non dispo de passe le init  
+    const val rootFolder: String = "/images"
     val localImagesBaseDir: File = File(M00CentralParametresOfAllApps.images_central_Local_storageLink)
 
     private val client: DbxClientV2 by lazy {

@@ -9,6 +9,7 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -45,6 +46,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+private const val TAG = "LazyGrid_Debug"
+
 @Composable
 fun Etager_LazyColumn(
     modifier: Modifier = Modifier,
@@ -52,38 +55,7 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {        //<--
-//TODO(1): pk mem si  Firestore network enabled
-//14:14:18.134 ProfileInstaller  Installing profile for com.example.clientjetpack
-//14:14:18.958 SeedInit          getReturne_M1_3_16: isOnline=true
-//14:14:18.961                   seedColors: fetching ref keys…
-//14:14:19.610                   seedColors: allowedKeys.size=11  keys=[-OWDMGWJE1IlVe7YkCgU, -OWDMGXQojQ1mNCpEcsm, -OWDMI15250V4yS6VuGN, -OWDMI1I8lW5kiKr0gB-, -OWDMI1PhERZd41GeVK5, -OWDMI2WGsY9y99veXeC, -OWDMJwZusjMEGv-M_GQ, -OWDMKvyl6_NwOtMXBNF, -OatXXVji-6A_OPcfUQa, -OatXcvef9wYkYbA5dC3, -Od4O2OxzMd_1Dxy3Luf]
-//14:14:19.628                   seedColors: seededFilterKeys.size=11
-//14:14:21.727 GoogleApiManager  Failed to get service from broker. 
-//java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
-//	at android.os.Parcel.createExceptionOrNull(Parcel.java:2376)
-//	at android.os.Parcel.createException(Parcel.java:2360)
-//	at android.os.Parcel.readException(Parcel.java:2343)
-//	at android.os.Parcel.readException(Parcel.java:2285)
-//	at bdli.a(:com.google.android.gms@260834022@26.08.34 (150400-876566425):36)
-//	at bdjj.z(:com.google.android.gms@260834022@26.08.34 (150400-876566425):150)
-//	at bcpp.run(:com.google.android.gms@260834022@26.08.34 (150400-876566425):42)
-//	at android.os.Handler.handleCallback(Handler.java:938)
-//	at android.os.Handler.dispatchMessage(Handler.java:99)
-//	at cqiw.me(:com.google.android.gms@260834022@26.08.34 (150400-876566425):1)
-//	at cqiw.dispatchMessage(:com.google.android.gms@260834022@26.08.34 (150400-876566425):5)
-//	at android.os.Looper.loop(Looper.java:236)
-//	at android.os.HandlerThread.run(HandlerThread.java:67)
-//14:14:21.729                   Not showing notification since connectionResult is not user-facing: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
-//14:14:22.978 SeedInit          seedColors: raw Firebase colors count=1
-//14:14:22.978                   seedColors: seededColors after filter=0 ⚠️ ALL FILTERED OUT — keyID mismatch? sample keyIDs=[-Ootin901pNKivDWlQIw]
-//14:14:22.982                   seedProducts: seededColors.size=0
-//14:14:22.982                   seedProducts: ⚠️ seededColors is empty — products will be empty too. Check seedColors logs above.
-//14:14:22.984                   seedCategories: seededProducts.size=0
-//14:14:22.984                   seedCategories: distinct category ids=0  ids=[]
-//14:14:24.235                   seedCategories: raw Firebase categories count=218
-//14:14:24.237                   seedCategories: seededCategories after filter=0 
-//rien ne s affiche ici 
+) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val activeDatas = viewModel.active_Datas
@@ -98,31 +70,85 @@ fun Etager_LazyColumn(
 
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
 
-    // Grouper M3 → M1, trier par classement_By_FilterKeys_M3.
-    // Aucune dépendance sur M16 ou M21 — la source unique est list_M03CouleurProduitInfos + list_M1Produit.
+    // ── LOG 1 : raw state of the two source lists ──────────────────────────
+    val rawM1   = activeDatas.list_M1Produit
+    val rawM3   = activeDatas.list_M03CouleurProduitInfos
+    val filter  = activeDatas.affiche_produits_Ou_On_TagPrioriter
+    Log.d(TAG, "=== Etager_LazyColumn recomposed ===")
+    Log.d(TAG, "  list_M1Produit        : ${rawM1?.size ?: "NULL"}")
+    Log.d(TAG, "  list_M03CouleurProduit: ${rawM3?.size ?: "NULL"}")
+    Log.d(TAG, "  activeFilter          : $filter")
+
     val productWithColorsList by remember {
         derivedStateOf {
-            val allColours = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
-            val allProducts = activeDatas.list_M1Produit ?: emptyList()
+            val allColours  = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
+            val allProducts = activeDatas.list_M1Produit              ?: emptyList()
             val activeFilter = activeDatas.affiche_produits_Ou_On_TagPrioriter
 
-            // Index M1 par keyID pour lookup O(1)
+            // ── LOG 2 : inputs at derivedStateOf evaluation time ──────────
+            Log.d(TAG, "  [derivedState] allColours.size =${allColours.size}")
+            Log.d(TAG, "  [derivedState] allProducts.size=${allProducts.size}")
+            Log.d(TAG, "  [derivedState] activeFilter    =$activeFilter")
+
             val productByKey = allProducts.associateBy { it.keyID }
 
-            // Grouper les couleurs par produit parent
-            allColours
+            // ── LOG 3 : grouping M3 → M1 ──────────────────────────────────
+            val grouped = allColours.groupBy { it.parentBProduitInfosKeyID }
+            Log.d(TAG, "  [derivedState] grouped M3 parentKeys count=${grouped.size}")
+            if (grouped.isNotEmpty()) {
+                Log.d(TAG, "  [derivedState] sample parentBProduitInfosKeyID=${grouped.keys.take(3)}")
+            }
+            Log.d(TAG, "  [derivedState] productByKey keys count=${productByKey.size}")
+            if (productByKey.isNotEmpty()) {
+                Log.d(TAG, "  [derivedState] sample product keyIDs=${productByKey.keys.take(3)}")
+            }
+
+            var droppedNoProduct   = 0
+            var droppedFilterMiss  = 0
+
+            val result = allColours
                 .groupBy { it.parentBProduitInfosKeyID }
                 .mapNotNull { (produitKeyID, colours) ->
-                    val product = productByKey[produitKeyID] ?: return@mapNotNull null
-                    if (!product.matchesPrioriteFilter(activeFilter)) return@mapNotNull null
+                    val product = productByKey[produitKeyID]
+                    if (product == null) {
+                        droppedNoProduct++
+                        // Log first few misses so we can spot the key mismatch
+                        if (droppedNoProduct <= 5)
+                            Log.w(TAG, "  [derivedState] ⚠️ no M1 found for parentKey=$produitKeyID")
+                        return@mapNotNull null
+                    }
+                    if (!product.matchesPrioriteFilter(activeFilter)) {
+                        droppedFilterMiss++
+                        return@mapNotNull null
+                    }
                     product to colours
                 }
-                // Trier par classement_By_FilterKeys_M3 ascending
                 .sortedBy { (product, _) -> product.classement_By_FilterKeys_M3 }
+
+            // ── LOG 4 : final result ───────────────────────────────────────
+            Log.d(TAG, "  [derivedState] RESULT size=${result.size}  " +
+                    "droppedNoProduct=$droppedNoProduct  droppedFilterMiss=$droppedFilterMiss")
+            if (result.isEmpty()) {
+                Log.w(TAG, "  [derivedState] ⚠️ productWithColorsList is EMPTY — grid will show nothing")
+                if (droppedNoProduct > 0)
+                    Log.w(TAG, "    → $droppedNoProduct colours had no matching M1 product (keyID mismatch?)")
+                if (droppedFilterMiss > 0)
+                    Log.w(TAG, "    → $droppedFilterMiss products were filtered out by matchesPrioriteFilter")
+                if (allColours.isEmpty())
+                    Log.w(TAG, "    → list_M03CouleurProduitInfos is empty (seeding not done yet?)")
+                if (allProducts.isEmpty())
+                    Log.w(TAG, "    → list_M1Produit is empty (seeding not done yet?)")
+            }
+
+            result
         }
     }
 
-    // Scroll vers le produit qui porte la couleur expansée
+    // ── LOG 5 : each time the final list changes ───────────────────────────
+    LaunchedEffect(productWithColorsList.size) {
+        Log.d(TAG, "  [LaunchedEffect] productWithColorsList.size changed → ${productWithColorsList.size}")
+    }
+
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
         if (!isHostPhone) return@LaunchedEffect
@@ -150,7 +176,6 @@ fun Etager_LazyColumn(
         tag = tag
     )
 
-    // Opérations de vente — lues une fois, utilisées pour les semantics
     var lenceVentOperations by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
     var all by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
     var activeBonVentKey by remember { mutableStateOf("") }
@@ -187,6 +212,9 @@ fun Etager_LazyColumn(
         verticalItemSpacing = 8.dp,
         userScrollEnabled = isScrollEnabled
     ) {
+        // ── LOG 6 : inside the grid lambda ────────────────────────────────
+        Log.d(TAG, "  [GridLambda] productWithColorsList.size=${productWithColorsList.size}")
+
         productWithColorsList.forEach { (product, colors) ->
             val isExpanded = wifiState.expanded_M1Produit?.keyID == product.keyID
             val justMoved = product.keyID == justMovedProductKeyID

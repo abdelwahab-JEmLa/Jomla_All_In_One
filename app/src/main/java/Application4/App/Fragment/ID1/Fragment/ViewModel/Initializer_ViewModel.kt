@@ -17,7 +17,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
 
     private fun collect_ListDatas() {
         load_then_Collect_Active_Datas()
-        collectListM16()          // toutes les catégories — sert au CategorySelectionDialog
+        collectListM16()
         collectListM1Produit()
         collectList_M3()
         collectList_M8BonVent()
@@ -40,15 +40,38 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
                 AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = p)
         }
-        progress(1 / 7f); val clients   = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
-        progress(2 / 7f); val categories = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAll()
-        progress(3 / 7f); val appCompt  = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().getBy_M00_Lence_Key_Flow().first()
-        progress(4 / 7f); val bonVent   = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
-        progress(5 / 7f); val ventPeriodes = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
-        progress(6 / 7f); val tarification = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
+
+        // FIX: M1Produit and M3CouleurProduitInfos are now loaded here (steps 1 & 2) so that
+        // active_Datas is populated BEFORE initDatasProgressEtate reaches 1f.
+        // Previously they were only fed by separate collect* coroutines that hadn't emitted yet
+        // when the grid rendered, resulting in both lists being NULL at first composition.
+        progress(1 / 9f)
+        val products  = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
+        progress(2 / 9f)
+        val colours   = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
+        progress(3 / 9f)
+        val clients   = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
+        progress(4 / 9f)
+        val categories = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAll()
+        progress(5 / 9f)
+        val appCompt  = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().getBy_M00_Lence_Key_Flow().first()
+        progress(6 / 9f)
+        val bonVent   = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
+        progress(7 / 9f)
+        val ventPeriodes   = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
+        progress(8 / 9f)
+        val tarification   = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
         val operationVentCouleurs = AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
 
-        seedActiveDatas(appCompt = appCompt, bonVent = bonVent, clients = clients, categories = categories)
+        // Seed active_Datas — M1 and M3 are now included so the grid has data immediately
+        seedActiveDatas(
+            appCompt   = appCompt,
+            bonVent    = bonVent,
+            clients    = clients,
+            categories = categories,
+            products   = products,
+            colours    = colours,
+        )
 
         AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
             AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(
@@ -69,11 +92,16 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         bonVent: List<M8BonVent>,
         clients: List<M2Client>,
         categories: List<EntreApps.Shared.Models.M16CategorieProduit>,
+        products: List<EntreApps.Shared.Models.M01Produit>,
+        colours: List<EntreApps.Shared.Models.M3CouleurProduitInfos>,
     ) {
-        AViewModel_NewProtoPatterns.active_Datas.active_M9Compt       = appCompt
-        AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent        = bonVent
-        AViewModel_NewProtoPatterns.active_Datas.list_M2Client         = clients
+        AViewModel_NewProtoPatterns.active_Datas.active_M9Compt          = appCompt
+        AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent           = bonVent
+        AViewModel_NewProtoPatterns.active_Datas.list_M2Client            = clients
         AViewModel_NewProtoPatterns.active_Datas.list_M16CategorieProduit = categories
+        // Seed M1 & M3 so the grid is populated as soon as the loading gate opens
+        AViewModel_NewProtoPatterns.active_Datas.list_M1Produit               = products
+        AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos   = colours
     }
 
     private suspend fun collectActiveM9Compt() {
@@ -83,8 +111,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         ).collect { }
     }
 
-    // Garde list_M16CategorieProduit à jour pour le CategorySelectionDialog.
-    // Plus de filtre par catalogue — toutes les catégories sont chargées.
     private fun collectListM16() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
             AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAllFlow()
