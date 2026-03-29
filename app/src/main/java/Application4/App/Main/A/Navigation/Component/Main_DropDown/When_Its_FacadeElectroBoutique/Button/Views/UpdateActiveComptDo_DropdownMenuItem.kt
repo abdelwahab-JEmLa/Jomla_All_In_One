@@ -22,7 +22,7 @@ fun UpdateActiveComptDo_DropdownMenuItem(
     onDismissDropdown: () -> Unit
 ) {
     val activeCompt = viewModelNewProtoPatterns.active_Datas.active_M9Compt
-    val currentDo = activeCompt?.next_start ?: Do.StandartInit
+    val currentDo = activeCompt?.next_start ?: Do.StandartInit_Sans_RienFair
 
     DropdownMenuItem(
         leadingIcon = {
@@ -43,7 +43,7 @@ fun UpdateActiveComptDo_DropdownMenuItem(
 
                 Do.entries.forEach { doOption ->
                     val label = when (doOption) {
-                        Do.StandartInit                                   -> "Standard Init"
+                        Do.StandartInit_Sans_RienFair                                   -> "Standard Init"
                         Do.DeleteInsertAll_Active_Key                     -> "Réinit clé active"
                         Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll     -> "Réinit toutes les données"
                         Do.DeleteInsertAll_Ref_All_Datas                  -> "Réinit toutes les données de référence"

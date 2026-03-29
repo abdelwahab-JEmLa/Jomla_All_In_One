@@ -9,7 +9,6 @@ import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.tasks.Tasks.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.tasks.await  // FIX(2): use coroutine-friendly await, not Tasks.await
 
 class A_LoadingViewModel(
     private val appDatabase: AppDatabase,
@@ -55,17 +55,13 @@ class A_LoadingViewModel(
         fun setProgress(p: Float, job: String = _uiState.value.currentJobName) =
             _uiState.update { it.copy(progress = p, currentJobName = job) }
 
+        // FIX(2): replaced Tasks.await + unsafe double-cast with clean coroutine await
         viewModelScope.launch(Dispatchers.IO) {
             val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
-            val compt = Z_AppCompt.ref.get()
-                .also { task -> await(task) }
-                .let { (it as com.google.android.gms.tasks.Task<*>).result }
-                .let { snap ->
-                    @Suppress("UNCHECKED_CAST")
-                    (snap as com.google.firebase.database.DataSnapshot)
-                        .children.mapNotNull { it.getValue(Z_AppCompt::class.java) }
-                        .find { it.keyID == key }
-                }
+            val snap = Z_AppCompt.ref.get().await()
+            val compt = snap.children
+                .mapNotNull { it.getValue(Z_AppCompt::class.java) }
+                .find { it.keyID == key }
             _uiState.update {
                 it.copy(
                     activeCompt = compt,
@@ -132,6 +128,7 @@ class A_LoadingViewModel(
         }
 
         when (_uiState.value.activeCompt?.next_start) {
+
             Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     deleteAllLocal()
@@ -157,12 +154,7 @@ class A_LoadingViewModel(
                 viewModelScope.launch(Dispatchers.IO) {
                     val result = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16_AllRefs(
                         context = appContext,
-                        on_Progress_Datas = { p ->
-                            setProgress(
-                                p,
-                                "Chargement toutes données ref…"
-                            )
-                        },
+                        on_Progress_Datas = { p -> setProgress(p, "Chargement toutes données ref…") },
                     )
                     _uiState.update { it.copy(seedResult = result) }
                     DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
@@ -170,13 +162,14 @@ class A_LoadingViewModel(
                 }.join()
             }
 
-            else -> {}
+            // StandartInit: skip everything, go straight to initDone.
+            Do.StandartInit_Sans_RienFair, null -> { /* nothing */ }
         }
 
         setProgress(1f, "Prêt ✓")
 
         _uiState.value.activeCompt?.let { compt ->
-            val updated = compt.copy(next_start = Do.StandartInit)
+            val updated = compt.copy(next_start = Do.StandartInit_Sans_RienFair)
             _uiState.update { it.copy(activeCompt = updated) }
             repo.update_M9AppCompt(updated)
         }

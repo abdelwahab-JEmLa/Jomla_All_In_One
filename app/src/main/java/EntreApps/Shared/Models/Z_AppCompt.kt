@@ -9,7 +9,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 
 enum class Do() {
-    StandartInit,
+    StandartInit_Sans_RienFair,
     DeleteInsertAll_Active_Key(),
     DeleteAll_To_Let_Ancien_Repositorys_GetAll(),
     DeleteInsertAll_Ref_All_Datas();   // deletes all local data then re-fetches ALL ref data without M3 active-key filtering
@@ -77,7 +77,7 @@ data class Z_AppCompt(
     //---------------------------------Centrale_Focuces_Values.----------------------------------------------------------------------------------------------------------------------------------
     val filter_marqueClient_Name: String = "no Filter",
 
-    val next_start: Do = Do.StandartInit,
+    val next_start: Do = Do.StandartInit_Sans_RienFair,
 
     val activeDialogSearchM1Produit: Boolean = false,
     val active_ProduitKeyID_Au_DroopDown_PresenterEcran: String = "",
