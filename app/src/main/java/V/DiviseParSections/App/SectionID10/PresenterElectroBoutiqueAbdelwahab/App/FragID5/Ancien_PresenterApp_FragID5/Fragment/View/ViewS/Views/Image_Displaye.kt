@@ -21,7 +21,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import org.koin.compose.koinInject
 import java.io.File
-
+enum class pourcentage{
+    max_possible,
+    standart,
+    min_possible
+}
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye(
@@ -30,20 +34,20 @@ fun Image_Displaye(
     modifier: Modifier = Modifier,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
-    on_pour_send_data: (String, String) -> Unit
+    on_pour_send_data: (String, String) -> Unit,
+    image_pourcetage_qualite : pourcentage= pourcentage.min_possible
+) {    val imageFile = remember(
+    relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
+    relative_M3CouleurProduitInfos.extensionDisponible
 ) {
-    val imageFile = remember(
-        relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
-        relative_M3CouleurProduitInfos.extensionDisponible
-    ) {
-        if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo") {
-            val fileName =
-                "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
-            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
-        } else {
-            null
-        }
+    if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo") {
+        val fileName =
+            "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
+        File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
+    } else {
+        null
     }
+}
 
     if (imageFile != null && imageFile.exists()) {
         // FIXED: Get the parent product for this color
@@ -109,7 +113,7 @@ fun Image_Displaye(
             modifier = completeModifier,
             contentScale = contentScale
         ) {
-            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos)
+            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, image_pourcetage_qualite)
         }
     } else {
         Box(modifier = modifier.fillMaxSize())
@@ -117,15 +121,32 @@ fun Image_Displaye(
 }
 
 private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
-    couleur: M3CouleurProduitInfos
+    couleur: M3CouleurProduitInfos,
+    qualite: pourcentage
 ) = this
     .dontAnimate()
     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-    .priority(Priority.NORMAL)
+    .priority(when (qualite) {
+        pourcentage.max_possible -> Priority.HIGH
+        pourcentage.standart     -> Priority.NORMAL
+        pourcentage.min_possible -> Priority.LOW
+    })
     .dontTransform()
     .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
-    .override(400, 400)
+    .override(when (qualite) {
+        pourcentage.max_possible -> 800
+        pourcentage.standart     -> 300
+        pourcentage.min_possible -> 150
+    })
     .disallowHardwareConfig()
-    .format(DecodeFormat.PREFER_RGB_565)
-    .encodeQuality(70)
+    .format(when (qualite) {
+        pourcentage.max_possible -> DecodeFormat.PREFER_ARGB_8888
+        pourcentage.standart     -> DecodeFormat.PREFER_RGB_565
+        pourcentage.min_possible -> DecodeFormat.PREFER_RGB_565
+    })
+    .encodeQuality(when (qualite) {
+        pourcentage.max_possible -> 100
+        pourcentage.standart     -> 50
+        pourcentage.min_possible -> 20
+    })
     .skipMemoryCache(false)

@@ -23,7 +23,11 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import java.io.File
-
+enum class pourcentage{
+    max_possible,
+    standart,
+    min_possible
+}
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye(
@@ -33,6 +37,7 @@ fun Image_Displaye(
     on_pour_send_data: (String, String) -> Unit,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     list_M1Produit: List<M01Produit>?,
+    image_pourcetage_qualite: pourcentage = pourcentage.min_possible
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
@@ -115,7 +120,7 @@ fun Image_Displaye(
             modifier = completeModifier,
             contentScale = contentScale
         ) {
-            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos)
+            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, image_pourcetage_qualite)
         }
     } else {
         Box(modifier = modifier.fillMaxSize())
@@ -123,15 +128,32 @@ fun Image_Displaye(
 }
 
 private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
-    couleur: M3CouleurProduitInfos
+    couleur: M3CouleurProduitInfos,
+    qualite: pourcentage
 ) = this
     .dontAnimate()
     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-    .priority(Priority.NORMAL)
+    .priority(when (qualite) {
+        pourcentage.max_possible -> Priority.HIGH
+        pourcentage.standart     -> Priority.NORMAL
+        pourcentage.min_possible -> Priority.LOW
+    })
     .dontTransform()
     .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
-    .override(400, 400)
+    .override(when (qualite) {
+        pourcentage.max_possible -> 800
+        pourcentage.standart     -> 300
+        pourcentage.min_possible -> 150
+    })
     .disallowHardwareConfig()
-    .format(DecodeFormat.PREFER_RGB_565)
-    .encodeQuality(70)
-    .skipMemoryCache(false)
+    .format(when (qualite) {
+        pourcentage.max_possible -> DecodeFormat.PREFER_ARGB_8888
+        pourcentage.standart     -> DecodeFormat.PREFER_RGB_565
+        pourcentage.min_possible -> DecodeFormat.PREFER_RGB_565
+    })
+    .encodeQuality(when (qualite) {
+        pourcentage.max_possible -> 100
+        pourcentage.standart     -> 50
+        pourcentage.min_possible -> 20
+    })
+    .skipMemoryCache(qualite == pourcentage.min_possible)
