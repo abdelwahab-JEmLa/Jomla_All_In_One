@@ -50,8 +50,20 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
                 .mapNotNull { it.getValue(Ref_list_Filtred_Keys_M3Couleur_Main_Values::class.java) }
             Log.d(TAG, "seedColors: seededFilterKeys.size=${seededFilterKeys.size}")
 
+            // FIX(TODO-1): Firebase stores each color under a node whose key is the canonical
+            // keyID, but the deserialized object's `keyID` field may be blank or stale when the
+            // field was never written back into the object's own map.  Use the snapshot child key
+            // as the authoritative keyID and patch the object so downstream code sees a consistent
+            // value.  Filter is then applied against that patched keyID, matching allowedKeys.
             val allColors = M3CouleurProduitInfos.ref.get().await()
-                .children.mapNotNull { it.getValue(M3CouleurProduitInfos::class.java) }
+                .children.mapNotNull { child ->
+                    val nodeKey = child.key ?: return@mapNotNull null
+                    val color   = child.getValue(M3CouleurProduitInfos::class.java)
+                        ?: return@mapNotNull null
+                    // Patch keyID if it is blank or doesn't match the node key
+                    if (color.keyID.isBlank() || color.keyID != nodeKey) color.copy(keyID = nodeKey)
+                    else color
+                }
             Log.d(TAG, "seedColors: raw Firebase colors count=${allColors.size}")
 
             seededColors = allColors.filter { it.keyID in allowedKeys }
@@ -69,15 +81,22 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
             }
 
             val m3ParentKeys = seededColors.map { it.parentBProduitInfosKeyID }.toSet()
-            Log.d(TAG, "seedProducts: m3ParentKeys.size=${m3ParentKeys.size}  sample=${ m3ParentKeys.take(3)}")
+            Log.d(TAG, "seedProducts: m3ParentKeys.size=${m3ParentKeys.size}  sample=${m3ParentKeys.take(3)}")
 
             val classementByProduitKey = seededFilterKeys
                 .map { it.parentProduitKeyID to it.parentProduitClassement }
                 .groupBy({ it.first }, { it.second })
                 .mapValues { (_, v) -> v.max() }
 
+            // Same node-key patch applied to M1Produit for consistency
             val allProducts = M01Produit.ref.get().await()
-                .children.mapNotNull { it.getValue(M01Produit::class.java) }
+                .children.mapNotNull { child ->
+                    val nodeKey = child.key ?: return@mapNotNull null
+                    val product = child.getValue(M01Produit::class.java)
+                        ?: return@mapNotNull null
+                    if (product.keyID.isBlank() || product.keyID != nodeKey) product.copy(keyID = nodeKey)
+                    else product
+                }
             Log.d(TAG, "seedProducts: raw Firebase products count=${allProducts.size}")
 
             seededProducts = allProducts
@@ -162,8 +181,15 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
 
         suspend fun seedColors() {
             Log.d(TAG, "AllRefs.seedColors: fetching ALL M3 ref records (no key filter)…")
+            // FIX: same node-key patch as in getReturne_M1_3_16
             allColors = M3CouleurProduitInfos.ref.get().await()
-                .children.mapNotNull { it.getValue(M3CouleurProduitInfos::class.java) }
+                .children.mapNotNull { child ->
+                    val nodeKey = child.key ?: return@mapNotNull null
+                    val color   = child.getValue(M3CouleurProduitInfos::class.java)
+                        ?: return@mapNotNull null
+                    if (color.keyID.isBlank() || color.keyID != nodeKey) color.copy(keyID = nodeKey)
+                    else color
+                }
             Log.d(TAG, "AllRefs.seedColors: count=${allColors.size}")
         }
 
@@ -171,7 +197,13 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
             Log.d(TAG, "AllRefs.seedProducts: fetching ALL M1 ref records (no key filter)…")
             val colorParentKeys = allColors.map { it.parentBProduitInfosKeyID }.toSet()
             allProducts = M01Produit.ref.get().await()
-                .children.mapNotNull { it.getValue(M01Produit::class.java) }
+                .children.mapNotNull { child ->
+                    val nodeKey = child.key ?: return@mapNotNull null
+                    val product = child.getValue(M01Produit::class.java)
+                        ?: return@mapNotNull null
+                    if (product.keyID.isBlank() || product.keyID != nodeKey) product.copy(keyID = nodeKey)
+                    else product
+                }
                 .filter { it.keyID in colorParentKeys }   // keep referential integrity
             Log.d(TAG, "AllRefs.seedProducts: count=${allProducts.size}")
         }

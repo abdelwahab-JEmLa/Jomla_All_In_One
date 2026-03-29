@@ -3,10 +3,8 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -26,19 +24,15 @@ class ActiveDatasFragNewProto {
 
     var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(Prioriter.entries.toSet())
 
+    // Sources de données brutes — le grid groupe M3 → M1 directement depuis ces deux listes.
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>? by mutableStateOf(null)
 
-    var list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur:
-            List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>
-            by mutableStateOf(emptyList())
-    var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(null)
-    var active_M21Catalogue: M21CataloguesCategorie by mutableStateOf(
-        get_ListM21CataloguesCategorie().find { it.keyID == "t1" } ?: M21CataloguesCategorie()
-    )
-    var listM16_FilteredBy_active_M21Catalogue: List<M16CategorieProduit>? by mutableStateOf(null)
-    var lastKnownBonVentKey: String? = null
+    // Conservé uniquement pour le CategorySelectionDialog (déplacement de produit vers une catégorie).
+    var list_M16CategorieProduit: List<M16CategorieProduit>? by mutableStateOf(null)
 
+    var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(null)
+    var lastKnownBonVentKey: String? = null
 
     var list_M8BonVent: List<M8BonVent>? by mutableStateOf(null)
     var list_M2Client: List<M2Client>? by mutableStateOf(null)

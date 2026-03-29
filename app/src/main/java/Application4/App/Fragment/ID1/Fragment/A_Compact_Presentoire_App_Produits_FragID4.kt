@@ -45,17 +45,10 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
     val active_Datas = viewModelNewProtoPatterns.active_Datas
 
-    val groupe_Par_Catalogue by remember {
-        derivedStateOf {
-            active_Datas.list_filter_Priorite_M21Catalogues_To_M16Categories_To_M1Products_To_M03Couleur
-        }
-    }
-
     val allCategories: List<M16CategorieProduit>? by remember {
         derivedStateOf {
-            groupe_Par_Catalogue
-                .flatMap { (_, categoriesWithProducts) -> categoriesWithProducts.map { (category, _) -> category } }
-                .takeIf { it.isNotEmpty() }
+            active_Datas.list_M16CategorieProduit
+                ?.takeIf { it.isNotEmpty() }
         }
     }
 
@@ -85,7 +78,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
     } else {
         Content(
             modifier = modifier,
-            groupe_Par_Catalogue = groupe_Par_Catalogue,
             on_pour_send_data = on_pour_send_data,
             onClickImageToShowControles = onClickImageToShowControles,
             onProductCategoryClick = { product -> selectedProductForCategoryChange = product },

@@ -8,7 +8,7 @@ import Application4.App.Fragment.View.Components.SubColorCard_WithButton
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -43,33 +43,23 @@ fun A_Item_Produit_App4(
     modifier: Modifier = Modifier,
     onCategoryClick: (() -> Unit)? = null,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+    // Pre-filtered colour list passed in from the grid to avoid re-scanning the full list.
+    // Falls back to searching list_M03CouleurProduitInfos when called from outside the grid.
+    relative_ListM3Couleurs_override: List<M3CouleurProduitInfos>? = null,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
     val centralValues = viewModel.active_Datas
 
-    val allCategories = remember(uiState.list_M16CategorieProduit) {
-        uiState.list_M16CategorieProduit
-    }
-    val categoryMap = remember(allCategories) {
-        allCategories.associateBy { it.id }
-    }
-    val currentCategory = remember(relative_M1produit.idParentCategorie, allCategories) {
-        relative_M1produit.idParentCategorie?.let { categoryMap[it] }
-    }
-    val catalogues = remember { get_ListM21CataloguesCategorie() }
-    val currentCatalogue = remember(currentCategory, catalogues) {
-        currentCategory?.catalogueParentId?.let { catalogueId ->
-            catalogues.find { it.id.toLong() == catalogueId }
+    // Use the pre-filtered override when available (supplied by the staggered grid);
+    // fall back to scanning the full live list only when called from other call-sites.
+    val relative_ListM3Couleurs = relative_ListM3Couleurs_override
+        ?: remember(viewModel.active_Datas.list_M03CouleurProduitInfos) {
+            find_ListM3CouleurInfos_By_Parent_Produit_KeyID(
+                viewModel.active_Datas.list_M03CouleurProduitInfos ?: emptyList(),
+                relative_M1produit.keyID
+            )
         }
-    }
-
-    val relative_ListM3Couleurs = remember(viewModel.active_Datas.list_M03CouleurProduitInfos) {
-        find_ListM3CouleurInfos_By_Parent_Produit_KeyID(
-            viewModel.active_Datas.list_M03CouleurProduitInfos ?: emptyList(),
-            relative_M1produit.keyID
-        )
-    }
 
 
     val expanded_M1Produit = wifiState.expanded_M1Produit
@@ -250,8 +240,6 @@ fun A_Item_Produit_App4(
                             && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
                     onDelete = { viewModel.delete_m1Produit(it) },
                     modifier = modifier,
-                    catalogueName = currentCatalogue?.nom,
-                    categoryName = currentCategory?.nom,
                     onCategoryClick = categoryClickForHeader,
                     section_ToggleButton_TagPreiorities__start_Collapsed = viewModel.active_Datas.section_ToggleButton_TagPrioriter__start_Collapsed == true
                 )

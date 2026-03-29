@@ -68,12 +68,6 @@ fun UpdateActiveComptDo_DropdownMenuItem(
 
                 if (isExpanded) {
                     Do.entries.forEach { doOption ->
-                        val label = when (doOption) {
-                            Do.StandartInit_Sans_RienFair                                -> "Standard Init"
-                            Do.DeleteInsertAll_Active_Key                                -> "Réinit clé active"
-                            Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll                -> "Réinit toutes les données"
-                            Do.DeleteInsertAll_Ref_All_Datas                             -> "Réinit toutes les données de référence"
-                        }
                         FilterChip(
                             selected = currentDo == doOption,
                             onClick = {
@@ -85,7 +79,7 @@ fun UpdateActiveComptDo_DropdownMenuItem(
                             },
                             label = {
                                 Text(
-                                    text = label,
+                                    text = currentDo.name,
                                     style = MaterialTheme.typography.labelSmall
                                 )
                             },
