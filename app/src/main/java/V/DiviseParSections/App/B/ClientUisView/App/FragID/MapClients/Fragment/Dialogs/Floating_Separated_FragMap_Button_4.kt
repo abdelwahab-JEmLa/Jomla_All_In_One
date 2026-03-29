@@ -57,7 +57,7 @@ fun Floating_Separated_FragMap_Button_4(
         colors = Pair(Color.Red, Color.Green)
     )
 ) {
-    val filter_marqueClient_enum_entrie = mapClientsViewModel.active_Datas.filter_marqueClient_enum_entrie
+    val filter_marqueClient_enum_entrie = mapClientsViewModel.active_Datas.filter_marqueClient_enum_entries
     val keyID_currentActiveFocused_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
     val isAdmin = focusedValuesGetter.currentApp_Est_Admin
 

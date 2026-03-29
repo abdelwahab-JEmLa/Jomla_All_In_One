@@ -1,4 +1,4 @@
-package EntreApps.Shared.Models.Home
+package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-
 class RepositorysMainSetter_NewProtoPatterns(
     val appDatabase: AppDatabase,
     val context: Context
@@ -31,14 +30,14 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_M1Produit().update(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
-            M01Produit.ref.updateChildren(updates).await()
+            M01Produit.Companion.ref.updateChildren(updates).await()
         }
     }
 
     fun delete_M1Produit(data: M01Produit) {
         composScope.launch {
             appDatabase.dao_M1Produit().delete(data)
-            M01Produit.ref.child(data.keyID).removeValue().await()
+            M01Produit.Companion.ref.child(data.keyID).removeValue().await()
         }
     }
 
@@ -50,7 +49,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         keys: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>,
         onSuccess: () -> Unit = {}
     ) {
-        val ref_listKeys = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
+        val ref_listKeys = M3CouleurProduitInfos.Companion.ref_listKeys_M3CouleurProduitInfos
         composScope.launch {
             if (keys.isNotEmpty()) {
                 val updates: Map<String, Any> = keys.mapValues { (_, v) ->
@@ -73,7 +72,7 @@ class RepositorysMainSetter_NewProtoPatterns(
     fun deleteFireBase_listKeys_M3CouleurProduitInfos(
         onSuccess: () -> Unit = {}
     ) {
-        val ref_listKeys = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
+        val ref_listKeys = M3CouleurProduitInfos.Companion.ref_listKeys_M3CouleurProduitInfos
         composScope.launch {
             ref_listKeys.removeValue().await()
             withContext(Dispatchers.Main) { onSuccess() }
@@ -84,7 +83,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         keys: Map<String, Boolean>,
         onSuccess: () -> Unit = {}
     ) {
-        val ref_listKeys = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos
+        val ref_listKeys = M3CouleurProduitInfos.Companion.ref_listKeys_M3CouleurProduitInfos
         composScope.launch {
             ref_listKeys.removeValue().await()
             if (keys.isNotEmpty()) {
@@ -114,7 +113,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_M03CouleurProduitInfos().update(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
-            M3CouleurProduitInfos.ref.updateChildren(updates).await()
+            M3CouleurProduitInfos.Companion.ref.updateChildren(updates).await()
             withContext(Dispatchers.Main) { onSuccess() }
         }
     }
@@ -127,7 +126,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_16CategorieProduit().insert(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
-            M16CategorieProduit.ref.updateChildren(updates).await()
+            M16CategorieProduit.Companion.ref.updateChildren(updates).await()
         }
     }
 
@@ -147,7 +146,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_16CategorieProduit().update(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
-            M16CategorieProduit.ref.updateChildren(updates).await()
+            M16CategorieProduit.Companion.ref.updateChildren(updates).await()
         }
     }
 
@@ -171,7 +170,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_M13TarificationInfos().update(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
-            M13TarificationInfos.ref.updateChildren(updates).await()
+            M13TarificationInfos.Companion.ref.updateChildren(updates).await()
         }
     }
 
@@ -186,7 +185,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_M10OperationVentCouleur().upsert(operation)
             val opUpdates = mutableMapOf<String, Any>(operation.keyID to operation)
-            M10OperationVentCouleur.ref.updateChildren(opUpdates).await()
+            M10OperationVentCouleur.Companion.ref.updateChildren(opUpdates).await()
 
             val tariffWithDefaults = selectedTariff.copy(
                 defaultNonSaved_Entre = false,
@@ -196,7 +195,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             val tariffUpdates = mutableMapOf<String, Any>(
                 tariffWithDefaults.keyID to tariffWithDefaults.toFirebaseMap()
             )
-            M13TarificationInfos.ref.updateChildren(tariffUpdates).await()
+            M13TarificationInfos.Companion.ref.updateChildren(tariffUpdates).await()
         }
     }
 
@@ -223,8 +222,8 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             try {
                 appDatabase.dao_M9AppCompt().insert(data)
-                val updates = mutableMapOf<String, Any>(data.keyID to data)
-                Z_AppCompt.ref.updateChildren(updates).await()
+                val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
+                Z_AppCompt.Companion.ref.updateChildren(updates).await()
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -257,8 +256,8 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             try {
                 appDatabase.dao_M9AppCompt().update(data)
-                val updates = mutableMapOf<String, Any>(data.keyID to data)
-                Z_AppCompt.ref.updateChildren(updates).await()
+                val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
+                Z_AppCompt.Companion.ref.updateChildren(updates).await()
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -283,7 +282,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_M9AppCompt().upsert(updatedAppCompt)
             val updates = mutableMapOf<String, Any>(updatedAppCompt.keyID to updatedAppCompt)
-            Z_AppCompt.ref.updateChildren(updates).await()
+            Z_AppCompt.Companion.ref.updateChildren(updates).await()
         }
     }
 
@@ -310,7 +309,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             updated.forEach { op ->
                 appDatabase.dao_M10OperationVentCouleur().update(op)
                 val updates = mutableMapOf<String, Any>(op.keyID to op)
-                M10OperationVentCouleur.ref.updateChildren(updates).await()
+                M10OperationVentCouleur.Companion.ref.updateChildren(updates).await()
             }
         }
     }

@@ -1,6 +1,7 @@
 package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -12,16 +13,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+private const val TAG = "AfficheEdites"
+
 @Composable
-fun UpdateActiveCompt_DropdownMenuItem(
+fun Affiche_ProduitDataBaseEdites_ComposableViews_ActiveCompt_Update_DropdownMenuItem(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
     onDismissDropdown: () -> Unit
 ) {
     val activeCompt = viewModelNewProtoPatterns.active_Datas.active_M9Compt
     val showEditedProducts = activeCompt?.affiche_ProduitDataBaseEdites_ComposableViews ?: false
+
+    // Log every recomposition so we can confirm the state is being read fresh
+    LaunchedEffect(activeCompt, showEditedProducts) {
+        Log.d(TAG, "recomposed — activeCompt.keyID=${activeCompt?.keyID} | affiche_ProduitDataBaseEdites_ComposableViews=$showEditedProducts")
+    }
 
     DropdownMenuItem(
         leadingIcon = {
@@ -55,8 +64,11 @@ fun UpdateActiveCompt_DropdownMenuItem(
                         val updatedCompt = compt.copy(
                             affiche_ProduitDataBaseEdites_ComposableViews = isChecked
                         )
+                        Log.d(TAG, "Switch toggled → isChecked=$isChecked | keyID=${compt.keyID}")
+                        Log.d(TAG, "  before: affiche=${compt.affiche_ProduitDataBaseEdites_ComposableViews}")
+                        Log.d(TAG, "  after (optimistic): affiche=${updatedCompt.affiche_ProduitDataBaseEdites_ComposableViews}")
                         viewModelNewProtoPatterns.update_active_Compt(updatedCompt)
-                    }
+                    } ?: Log.e(TAG, "Switch toggled but activeCompt is NULL — update skipped!")
                     onDismissDropdown()
                 }
             )

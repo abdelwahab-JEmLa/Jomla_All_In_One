@@ -2,7 +2,7 @@ package Application4.App.A.Start.Init.Proto
 
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.Do
-import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase

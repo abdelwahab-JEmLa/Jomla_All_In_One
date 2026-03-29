@@ -1,7 +1,7 @@
 package Application4.App.Fragment.ID1.Fragment
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -31,8 +31,8 @@ fun Content(
     viewModel: A_ViewModel_NewProtoPatterns,
     uiStateNewProtoPatterns: UiState_NewProtoPatterns
 ) {
-    val active_Central_Values = uiStateNewProtoPatterns.active_Central_Values
-    val currentAppCompt = active_Central_Values.activeCompt
+    val affiche_Dialog_Fast_Affiche_Panie = viewModel.active_Datas.affiche_Dialog_Fast_Affiche_Panie
+    val currentAppCompt = viewModel.active_Datas.active_M9Compt
     val catalogueFilter = currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
 
@@ -47,7 +47,7 @@ fun Content(
         uiState_NewProtoPatterns_viewModel = Pair(uiStateNewProtoPatterns, viewModel),
     )
 
-    active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
+    affiche_Dialog_Fast_Affiche_Panie?.ifTrue {
         Dialog_Fast_Affiche_Panie()
     }
 }

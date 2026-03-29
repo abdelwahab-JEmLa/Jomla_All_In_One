@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.Components
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_FragID3
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
 import EntreApps.Shared.Models.M01Produit
@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -31,15 +28,6 @@ fun SubColorCard_WithButton(
 ) {
     val uiState = uiState_NewProtoPatterns_viewModel.first
 
-    val colorOperation by remember(
-        couleur.keyID,
-        uiState.active_Central_Values.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent?.size
-    ) {
-        derivedStateOf {
-            uiState.active_Central_Values.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                ?.find { it.parent_M3CouleurProduit_KeyID == couleur.keyID }
-        }
-    }
 
     Column(modifier = modifier
     ) {

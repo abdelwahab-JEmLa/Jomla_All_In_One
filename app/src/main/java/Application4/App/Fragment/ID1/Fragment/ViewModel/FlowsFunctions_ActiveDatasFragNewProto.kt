@@ -5,13 +5,17 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.Dao_M2Client
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.Dao_M8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -21,10 +25,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 object FlowsFunctions_ActiveDatasFragNewProto {
+
     fun getFlow_filter_marqueClient_enum_entrie(
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): MapClientsViewModel.VisibleClientsNow =
-        activeDatasFragNewProto.filter_marqueClient_enum_entrie
+        activeDatasFragNewProto.filter_marqueClient_enum_entries
             ?: MapClientsViewModel.VisibleClientsNow.showAll
 
     suspend fun get_list_M3CouleurProduitInfos(
@@ -118,4 +123,20 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): Flow<List<M01Produit>> =
         dao_M1Produit.getAllFlow().onEach { activeDatasFragNewProto.list_M1Produit = it }
+
+    // ── New flows for active_Datas.list_M8BonVent and list_M2Client ──────
+
+    fun getFlow_list_M8BonVent(
+        dao_M8BonVent: Dao_M8BonVent,
+        activeDatasFragNewProto: ActiveDatasFragNewProto,
+    ): Flow<List<M8BonVent>> =
+        dao_M8BonVent.getAllFlow()
+            .onEach { activeDatasFragNewProto.list_M8BonVent = it }
+
+    fun getFlow_list_M2Client(
+        dao_M2Client: Dao_M2Client,
+        activeDatasFragNewProto: ActiveDatasFragNewProto,
+    ): Flow<List<M2Client>> =
+        dao_M2Client.getAllFlow()
+            .onEach { activeDatasFragNewProto.list_M2Client = it }
 }

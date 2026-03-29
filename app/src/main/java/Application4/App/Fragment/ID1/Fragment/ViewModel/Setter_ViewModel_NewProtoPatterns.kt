@@ -7,7 +7,10 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import android.util.Log
 import kotlinx.coroutines.flow.update
+
+private const val TAG_SETTER = "Setter_ViewModel"
 
 class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatterns) {
     // M01 ─────────────────────────────────────────────────────────────────
@@ -76,8 +79,12 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
     // M09 ─────────────────────────────────────────────────────────────────
 
     fun update_active_Compt(compt: Z_AppCompt) {
+        Log.d(TAG_SETTER, "update_active_Compt — keyID=${compt.keyID} | affiche=${compt.affiche_ProduitDataBaseEdites_ComposableViews}")
         vm.active_Datas.active_M9Compt = compt
-        vm.repositorysMainSetter_NewProtoPatterns.update_M9AppCompt(compt)
+        Log.d(TAG_SETTER, "  active_Datas.active_M9Compt written ✓ → launching Room+Firebase persist")
+        vm.repositorysMainSetter_NewProtoPatterns.update_M9AppCompt(compt) {
+            Log.d(TAG_SETTER, "  Room+Firebase persist completed ✓ for keyID=${compt.keyID}")
+        }
     }
 
     // M10 ─────────────────────────────────────────────────────────────────

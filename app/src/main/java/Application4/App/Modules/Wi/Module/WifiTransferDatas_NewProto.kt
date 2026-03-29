@@ -1,6 +1,5 @@
 package Application4.App.Modules.Wi.Module
 
-import Application2.App.Base.Repository.ActiveCentralValues_app2
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.Manifest
@@ -36,8 +35,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 data class ProductDisplayController_NewProto(
     val mainGridScrollPosition: Int = 0,
+
     var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
     var expanded_M1Produit: M01Produit? = null,
+
     val newArregmentColorsJsonStruct: String = "",
     val clientWindowsDisplayedProductId: Long? = null,
     val searchWindowsDisplaye: String = "",
@@ -59,8 +60,6 @@ class WifiTransferDatas_NewProto(
     private val coroutineScope: CoroutineScope,
     var list_M1Produit: List<M01Produit>,
     var list_M3CouleurProduit: List<M3CouleurProduitInfos>,
-    private val onGetActiveCentralValues: () -> ActiveCentralValues_app2,
-    private val onUpdateActiveCentralValues: (ActiveCentralValues_app2) -> Unit,
 ) {
     private val _state = MutableStateFlow(ProductDisplayController_NewProto())
     val state: StateFlow<ProductDisplayController_NewProto> = _state.asStateFlow()
@@ -78,22 +77,14 @@ class WifiTransferDatas_NewProto(
 
     private enum class ConnectionMode { HOST, CLIENT, NONE }
 
-    init {
-        coroutineScope.launch {
-            _state.collect { s ->
-                val shouldHide = !s.isHostPhone && s.isConnected
-                val cur = onGetActiveCentralValues()
-                if (cur.hide_prix_lence_vent_buttons != shouldHide)
-                    onUpdateActiveCentralValues(cur.copy(hide_prix_lence_vent_buttons = shouldHide))
-            }
-        }
-    }
-
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
         coroutineScope.launch { sendData("$orderName$data") }
     }
 
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_NewProto, data: Any? = null) {
+    fun sendOrderToClientDisplayerT(
+        order: WifiUpdateClientDisplayerStats_NewProto,
+        data: Any? = null
+    ) {
         coroutineScope.launch { sendData("${order.prefix}$data") }
     }
 
@@ -104,7 +95,9 @@ class WifiTransferDatas_NewProto(
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() {
         coroutineScope.launch {
-            if (!checkRequiredPermissions()) { handleError("Permissions manquantes"); return@launch }
+            if (!checkRequiredPermissions()) {
+                handleError("Permissions manquantes"); return@launch
+            }
             lastConnectionMode = ConnectionMode.HOST
             _state.update { it.copy(isHostPhone = true) }
             try {
@@ -114,14 +107,18 @@ class WifiTransferDatas_NewProto(
                 ).addOnSuccessListener {
                     updateConnectionStatus("En attente de connexion...")
                 }.addOnFailureListener { e -> handleConnectionFailure("Erreur hôte: ${e.message}") }
-            } catch (e: Exception) { handleConnectionFailure(e.message ?: "Erreur inconnue") }
+            } catch (e: Exception) {
+                handleConnectionFailure(e.message ?: "Erreur inconnue")
+            }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() {
         coroutineScope.launch {
-            if (!checkRequiredPermissions()) { handleError("Permissions manquantes"); return@launch }
+            if (!checkRequiredPermissions()) {
+                handleError("Permissions manquantes"); return@launch
+            }
             lastConnectionMode = ConnectionMode.CLIENT
             _state.update { it.copy(isHostPhone = false) }
             try {
@@ -130,8 +127,11 @@ class WifiTransferDatas_NewProto(
                     DiscoveryOptions.Builder().setStrategy(strategy).build()
                 ).addOnSuccessListener {
                     updateConnectionStatus("Recherche d'appareils...")
-                }.addOnFailureListener { e -> handleConnectionFailure("Erreur recherche: ${e.message}") }
-            } catch (e: Exception) { handleConnectionFailure(e.message ?: "Erreur inconnue") }
+                }
+                    .addOnFailureListener { e -> handleConnectionFailure("Erreur recherche: ${e.message}") }
+            } catch (e: Exception) {
+                handleConnectionFailure(e.message ?: "Erreur inconnue")
+            }
         }
     }
 
@@ -142,12 +142,19 @@ class WifiTransferDatas_NewProto(
             Nearby.getConnectionsClient(context).apply {
                 stopAdvertising(); stopDiscovery(); stopAllEndpoints()
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
         endpointId = null
         lastConnectionMode = ConnectionMode.NONE
         retryCount = 0
         isReconnecting.set(false)
-        _state.update { it.copy(isConnected = false, connectionStatus = "Déconnecté", error = null) }
+        _state.update {
+            it.copy(
+                isConnected = false,
+                connectionStatus = "Déconnecté",
+                error = null
+            )
+        }
     }
 
     fun cancel() = disconnect()
@@ -160,7 +167,8 @@ class WifiTransferDatas_NewProto(
                     else -> return
                 }
                 Nearby.getConnectionsClient(context).sendPayload(ep, payload)
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -169,35 +177,77 @@ class WifiTransferDatas_NewProto(
             ?.let { (type, content) ->
                 when (type) {
                     WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition ->
-                        _state.update { it.copy(mainGridScrollPosition = content.toIntOrNull() ?: it.mainGridScrollPosition) }
+                        _state.update {
+                            it.copy(
+                                mainGridScrollPosition = content.toIntOrNull()
+                                    ?: it.mainGridScrollPosition
+                            )
+                        }
+
                     WifiUpdateClientDisplayerStats_NewProto.ClientWindowsDisplayedProductId ->
                         _state.update { it.copy(clientWindowsDisplayedProductId = content.toLongOrNull()) }
+
                     WifiUpdateClientDisplayerStats_NewProto.DISMISS_PRODUCT_INFO ->
-                        _state.update { it.copy(clientWindowsDisplayedProductId = null, searchWindowsDisplaye = "") }
+                        _state.update {
+                            it.copy(
+                                clientWindowsDisplayedProductId = null,
+                                searchWindowsDisplaye = ""
+                            )
+                        }
+
                     WifiUpdateClientDisplayerStats_NewProto.SearchWindowsDisplaye ->
                         _state.update { it.copy(searchWindowsDisplaye = content) }
+
                     WifiUpdateClientDisplayerStats_NewProto.WindowsPickerDisplayedQuantity ->
-                        _state.update { it.copy(clientWindowsPickerDisplayedQuantity = content.toIntOrNull() ?: it.clientWindowsPickerDisplayedQuantity) }
+                        _state.update {
+                            it.copy(
+                                clientWindowsPickerDisplayedQuantity = content.toIntOrNull()
+                                    ?: it.clientWindowsPickerDisplayedQuantity
+                            )
+                        }
+
                     WifiUpdateClientDisplayerStats_NewProto.ClientWindowsSelectedColorId ->
-                        _state.update { it.copy(clientWindowsSelectedColorId = content.toLongOrNull() ?: it.clientWindowsSelectedColorId) }
+                        _state.update {
+                            it.copy(
+                                clientWindowsSelectedColorId = content.toLongOrNull()
+                                    ?: it.clientWindowsSelectedColorId
+                            )
+                        }
+
                     WifiUpdateClientDisplayerStats_NewProto.ClientWindowsLazyRowSupColorsScrolle ->
-                        _state.update { it.copy(clientWindowsLazyRowSupColorsScroll = content.toIntOrNull() ?: it.clientWindowsLazyRowSupColorsScroll) }
+                        _state.update {
+                            it.copy(
+                                clientWindowsLazyRowSupColorsScroll = content.toIntOrNull()
+                                    ?: it.clientWindowsLazyRowSupColorsScroll
+                            )
+                        }
+
                     WifiUpdateClientDisplayerStats_NewProto.NewArregmentColorsJsonStruct ->
                         _state.update { it.copy(newArregmentColorsJsonStruct = content) }
+
                     WifiUpdateClientDisplayerStats_NewProto.FilterProduitsParCatalogueBsonID_ET_Autres_Types ->
                         _state.update { it.copy(filterProduitsParCatalogueBsonID = content) }
+
                     WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ->
-                        list_M3CouleurProduit.find { it.keyID == content }?.let { toggleExpandedCouleur(it) }
+                        list_M3CouleurProduit.find { it.keyID == content }
+                            ?.let { toggleExpandedCouleur(it) }
+
                     else -> Unit
                 }
             }
     }
 
     fun toggleExpandedCouleur(couleur: M3CouleurProduitInfos) {
-                                  val cur = onGetActiveCentralValues()
-        val newColor = if (cur.expanded_M3CouleurProduitInfos?.keyID == couleur.keyID) null else couleur
-        val newProduit = newColor?.let { list_M1Produit.find { p -> p.keyID == couleur.parentBProduitInfosKeyID } }
-        onUpdateActiveCentralValues(cur.copy(expanded_M3CouleurProduitInfos = newColor, expanded_M1Produit = newProduit))
+        _state.update { cur ->
+            val newColor =
+                if (cur.expanded_M3CouleurProduitInfos?.keyID == couleur.keyID) null else couleur
+            val newProduit =
+                newColor?.let { list_M1Produit.find { p -> p.keyID == couleur.parentBProduitInfosKeyID } }
+            cur.copy(
+                expanded_M3CouleurProduitInfos = newColor,
+                expanded_M1Produit = newProduit
+            )
+        }
     }
 
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
@@ -216,6 +266,7 @@ class WifiTransferDatas_NewProto(
                     startConnectionMonitoring()
                     sendData("Connection established")
                 }
+
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> handleConnectionFailure("Connexion rejetée")
                 ConnectionsStatusCodes.STATUS_ERROR -> handleConnectionFailure("Erreur de connexion")
                 else -> handleConnectionFailure("Code inconnu: ${result.status.statusCode}")
@@ -238,21 +289,29 @@ class WifiTransferDatas_NewProto(
                 .requestConnection("ClientAchteur Device", endpointId, connectionLifecycleCallback)
                 .addOnFailureListener { e -> handleConnectionFailure("Erreur connexion: ${e.message}") }
         }
+
         override fun onEndpointLost(endpointId: String) = Unit
     }
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES)
-                try { handlePayload(String(payload.asBytes()!!)) } catch (_: Exception) {}
+                try {
+                    handlePayload(String(payload.asBytes()!!))
+                } catch (_: Exception) {
+                }
         }
-        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) = Unit
+
+        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) =
+            Unit
     }
 
     private fun startConnectionMonitoring() {
         connectionMonitorJob?.cancel()
         connectionMonitorJob = coroutineScope.launch {
-            while (isActive) { delay(5000); endpointId?.let { sendData("ping") } }
+            while (isActive) {
+                delay(5000); endpointId?.let { sendData("ping") }
+            }
         }
     }
 
@@ -286,7 +345,12 @@ class WifiTransferDatas_NewProto(
 
     private fun handleFinalDisconnection() {
         disconnect()
-        _state.update { it.copy(error = "Connexion perdue après plusieurs tentatives", connectionStatus = "Déconnecté définitivement") }
+        _state.update {
+            it.copy(
+                error = "Connexion perdue après plusieurs tentatives",
+                connectionStatus = "Déconnecté définitivement"
+            )
+        }
     }
 
     private fun updateConnectionStatus(status: String) {
@@ -305,10 +369,12 @@ class WifiTransferDatas_NewProto(
             Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.NEARBY_WIFI_DEVICES,
         )
+
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> arrayOf(
             Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,
         )
+
         else -> arrayOf(
             Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.ACCESS_COARSE_LOCATION,

@@ -36,11 +36,6 @@ fun CategoryStickyHeader(
     viewModel: A_ViewModel_NewProtoPatterns,
     uiStateNewProtoPatterns: UiState_NewProtoPatterns
 ) {
-    val filterState = uiStateNewProtoPatterns.active_Central_Values.filterState_Facad_Boutique
-
-    if (filterState?.hide_header_categorie == true) {
-        return
-    }
 
     Box(
         modifier = modifier

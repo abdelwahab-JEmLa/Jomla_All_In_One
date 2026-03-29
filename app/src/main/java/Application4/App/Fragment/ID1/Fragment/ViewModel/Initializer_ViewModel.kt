@@ -15,23 +15,15 @@ import kotlinx.coroutines.launch
 // -------------------------------------------------------------------------
 class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoPatterns) {
     fun run() {
-        collectCentralValues()
         loadAllDatasOnce()
         collectActiveM9Compt()
         collectListM16FilteredByCatalogue()
         collectListM1Produit()
         collectList_M3()
+        collectList_M8BonVent()
+        collectList_M2Client()
         collectFilteredProductTree()
         collectM10OperationVentCouleur()
-    }
-
-    private fun collectCentralValues() {
-        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
-            AViewModel_NewProtoPatterns.focusedValues_NewProtoPatterns.active_Central_Values.collect { centralValues ->
-                AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
-                    AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(active_Central_Values = centralValues)
-            }
-        }
     }
 
     private fun loadAllDatasOnce() {
@@ -48,6 +40,11 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             progress(5 / 8f); val ventPeriodes = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
             progress(6 / 8f); val tarification = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
             progress(7 / 8f); val operationVentCouleurs = AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
+
+            // Seed active_Datas lists used by derived getters
+            AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent = bonVent
+            AViewModel_NewProtoPatterns.active_Datas.list_M2Client = clients
+
             AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
                 AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(
                     initDatasProgressEtate = 1f,
@@ -55,7 +52,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
                         m2Client = clients,
                         m14VentPeriode = ventPeriodes,
                         m16CategorieProduit = categories,
-                        m9AppCompt = appCompt,
                         m8BonVent = bonVent,
                         m13TarificationInfos = tarification,
                         m10OperationVentCouleur = operationVentCouleurs,
@@ -69,7 +65,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
                 dao_M9AppCompt = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt(),
                 activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
-            ).collect {  }
+            ).collect { }
         }
     }
 
@@ -100,6 +96,27 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
                 .collect {
                     AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = it
+                }
+        }
+    }
+
+    // Keeps active_Datas.list_M8BonVent live so that derived getters
+    // (activeOnVent_M8BonVent, filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod, …) stay fresh.
+    private fun collectList_M8BonVent() {
+        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
+            AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAllFlow()
+                .collect {
+                    AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent = it
+                }
+        }
+    }
+
+    // Keeps active_Datas.list_M2Client live so that activeOnVent_M2Client stays fresh.
+    private fun collectList_M2Client() {
+        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
+            AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAllFlow()
+                .collect {
+                    AViewModel_NewProtoPatterns.active_Datas.list_M2Client = it
                 }
         }
     }

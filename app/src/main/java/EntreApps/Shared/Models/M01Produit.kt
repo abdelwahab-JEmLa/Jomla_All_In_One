@@ -7,7 +7,6 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.firestore.DocumentSnapshot
 
 @Entity
 data class M01Produit(
@@ -201,6 +200,7 @@ data class M01Produit(
             // Category and position
             "idParentCategorie" to idParentCategorie,
             "positionDonSonCesFrereCategorieProduits" to positionDonSonCesFrereCategorieProduits,
+            "classement_By_FilterKeys_M3" to classement_By_FilterKeys_M3,
 
             // Names
             "nom" to nom,
@@ -343,152 +343,3 @@ data class M01Produit(
         }
     }
 }
-
-
-/**
- * Maps a Firestore [DocumentSnapshot] to [M01Produit].
- *
- * Fixes: `Unresolved reference 'toArticle'` in Initializer_Funcs_app2.seedProducts().
- *
- * Every field mirrors [M01Produit.toFirebaseMap()] in reverse, with safe
- * fallbacks so that missing / null Firestore fields never crash deserialization.
- */
-fun DocumentSnapshot.toArticle(): M01Produit? {
-    return try {
-        M01Produit(
-            id = getLong("id") ?: 0L,
-            keyID = getString("keyID") ?: id,   // Firestore doc-id as fallback
-            creationTimestamp = getLong("creationTimestamp") ?: System.currentTimeMillis(),
-            dernierTimeTampsSynchronisationAvecFireBase =
-                getLong("dernierTimeTampsSynchronisationAvecFireBase") ?: System.currentTimeMillis(),
-
-            bsonObjectId = getString("bsonObjectId") ?: "",
-            dernierFireBaseUpdateTimestamps = getLong("dernierFireBaseUpdateTimestamps") ?: 0L,
-
-            count_Don_Depot = getLong("count_Don_Depot")?.toInt() ?: 0,
-
-            // Process positioning
-            processPositioningInFactory = getString("processPositioningInFactory")
-                ?.let { name -> runCatching { M01Produit.ProcessPositioningInFactoryID1.valueOf(name) }.getOrNull() }
-                ?: M01Produit.ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
-
-            // Category & position
-            idParentCategorie = getLong("idParentCategorie") ?: 0L,
-            positionDonSonCesFrereCategorieProduits =
-                getLong("positionDonSonCesFrereCategorieProduits")?.toInt() ?: 0,
-
-            // Names
-            nom = getString("nom") ?: "",
-            nomMutable = getString("nomMutable") ?: "",
-            nomArab = getString("nomArab") ?: "",
-            autreNomDarticle = getString("autreNomDarticle"),
-
-            // Fusion state
-            etateActuelleOnFusionAvecBaseDonne = getString("etateActuelleOnFusionAvecBaseDonne")
-                ?.let { name -> runCatching { M01Produit.EtateActuelleOnFusionAvecBaseDonne.valueOf(name) }.getOrNull() }
-                ?: M01Produit.EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
-            // Fall back to Dernier_VentAchat_Est_Trop_Luin for products with no tag stored yet
-            tag_prioriter_str = getString("tag_prioriter_str")
-                ?.takeIf { it.isNotBlank() }
-                ?: Prioriter.Dernier_VentAchat_Est_Trop_Luin.name,
-
-            // Units / cartons
-            nombreUniteInt = getLong("nombreUniteInt")?.toInt() ?: 1,
-            nombreProduitDonSonCarton = getLong("nombreProduitDonSonCarton")?.toInt() ?: 1,
-            its_Carton = getBoolean("its_Carton") ?: false,
-            cartonState = getString("cartonState") ?: "",
-
-            // Priority / position
-            heldPrioriteDemandAuGrossist = getBoolean("heldPrioriteDemandAuGrossist") ?: false,
-            position_store_3jamale = getLong("position_store_3jamale")?.toInt() ?: 0,
-            dernier_timeTamps_position_store_3jamale =
-                getLong("dernier_timeTamps_position_store_3jamale") ?: 0L,
-
-            // Prices
-            prixDefiniParGerant = getDouble("prixDefiniParGerant") ?: 0.0,
-            prixVent = getDouble("prixVent") ?: 0.0,
-            cachePrixVent = getBoolean("cachePrixVent") ?: false,
-            pourcentage_Prix_Progressive = getLong("pourcentage_Prix_Progressive")?.toInt() ?: 60,
-            prixAchat = getDouble("prixAchat") ?: 0.0,
-            prixAchatDernierTimeTempUpdate = getLong("prixAchatDernierTimeTempUpdate") ?: 0L,
-            clientPrixVentUnite = getDouble("clientPrixVentUnite") ?: 0.0,
-            afficheUniteAuPrint = getBoolean("afficheUniteAuPrint") ?: false,
-
-            // Images
-            actualiseSonImage = getLong("actualiseSonImage")?.toInt() ?: 0,
-            actualiseSonImageTest2 = getLong("actualiseSonImageTest2")?.toInt() ?: 0,
-            afficheCesDetailPourComptBsonId = getString("afficheCesDetailPourComptBsonId") ?: "",
-
-            // Disponibility
-            disponibilityEtates = getString("disponibilityEtates")
-                ?.let { name -> runCatching { DisponibilityEtates.valueOf(name) }.getOrNull() }
-                ?: DisponibilityEtates.NON_DISPO,
-            disponibilityEtates_Pour_presentaion_par_Camion =
-                getString("disponibilityEtates_Pour_presentaion_par_Camion")
-                    ?.let { name -> runCatching { DisponibilityEtates.valueOf(name) }.getOrNull() }
-                    ?: DisponibilityEtates.NON_DISPO,
-
-            keyFireBase = getString("keyFireBase") ?: "",
-
-            // Colours (string labels)
-            couleur1 = getString("couleur1"),
-            couleur2 = getString("couleur2"),
-            couleur3 = getString("couleur3"),
-            couleur4 = getString("couleur4"),
-            couleur5 = getString("couleur5"),
-            couleur6 = getString("couleur6"),
-            couleur7 = getString("couleur7"),
-            couleur8 = getString("couleur8"),
-            couleur9 = getString("couleur9"),
-
-            // Colour IDs
-            idcolor1 = getLong("idcolor1") ?: 1L,
-            idcolor2 = getLong("idcolor2") ?: 0L,
-            idcolor3 = getLong("idcolor3") ?: 0L,
-            idcolor4 = getLong("idcolor4") ?: 0L,
-            idcolor5 = getLong("idcolor5") ?: 0L,
-            idcolor6 = getLong("idcolor6") ?: 0L,
-            idcolor7 = getLong("idcolor7") ?: 0L,
-            idcolor8 = getLong("idcolor8") ?: 0L,
-            idcolor9 = getLong("idcolor9") ?: 0L,
-
-            // Misc
-            nomCategorie2 = getString("nomCategorie2"),
-            affichageUniteState = getBoolean("affichageUniteState") ?: false,
-            commmentSeVent = getString("commmentSeVent"),
-            afficheBoitSiUniter = getString("afficheBoitSiUniter"),
-            minQuan = getLong("minQuan")?.toInt() ?: 0,
-            monBenfice = getDouble("monBenfice") ?: 0.0,
-            neaon2 = getString("neaon2") ?: "",
-            funChangeImagsDimention = getBoolean("funChangeImagsDimention") ?: false,
-            nomCategorie = getString("nomCategorie") ?: "",
-            neaon1 = getDouble("neaon1") ?: 0.0,
-            lastUpdateState = getString("lastUpdateState") ?: "",
-            dateCreationCategorie = getString("dateCreationCategorie") ?: "",
-            prixDeVentTotaleChezClient = getDouble("prixDeVentTotaleChezClient") ?: 0.0,
-            benficeTotaleEntreMoiEtClien = getDouble("benficeTotaleEntreMoiEtClien") ?: 0.0,
-            benificeTotaleEn2 = getDouble("benificeTotaleEn2") ?: 0.0,
-            monPrixAchatUniter = getDouble("monPrixAchatUniter") ?: 0.0,
-            monPrixVentUniter = getDouble("monPrixVentUniter") ?: 0.0,
-            articleHaveUniteImages = getBoolean("articleHaveUniteImages") ?: false,
-            itsNewArrivale = getBoolean("itsNewArrivale") ?: false,
-            imageDimention = getString("imageDimention") ?: "",
-            idForSearchArticles = getLong("idForSearchArticles") ?: 0L,
-
-            // Quantity representation
-            setIN_Vent_Its_Quantity_Represent = getString("setIN_Vent_Its_Quantity_Represent")
-                ?.let { name ->
-                    runCatching {
-                        M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.valueOf(name)
-                    }.getOrNull()
-                } ?: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
-            quantite_Boit_Par_Carton = getLong("quantite_Boit_Par_Carton")?.toInt() ?: 1,
-
-            prioriter = getString("prioriter")
-                ?.let { name -> runCatching { Prioriter.valueOf(name) }.getOrNull() },
-        )
-    } catch (e: Exception) {
-        null   // Return null so mapNotNull() silently skips malformed documents
-    }
-}
-

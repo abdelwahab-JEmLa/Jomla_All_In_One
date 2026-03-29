@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.FlowsFunctions_ActiveDatasFragNewProto
-import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
@@ -137,7 +137,7 @@ class MapClientsViewModel(
                 ).collect { compt ->
                     compt?.filter_marqueClient_Name
                         ?.let { name -> VisibleClientsNow.entries.find { it.name == name } }
-                        ?.let { active_Datas.filter_marqueClient_enum_entrie = it }
+                        ?.let { active_Datas.filter_marqueClient_enum_entries = it }
                 }
         }
     }

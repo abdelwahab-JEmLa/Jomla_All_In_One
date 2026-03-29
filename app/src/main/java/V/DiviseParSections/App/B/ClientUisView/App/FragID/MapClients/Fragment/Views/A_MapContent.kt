@@ -68,7 +68,7 @@ fun MapContent(
     val showMarkerDetails by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
 
-    val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entrie
+    val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
         ?: MapClientsViewModel.VisibleClientsNow.showAll
 
     // Location tracker initialization

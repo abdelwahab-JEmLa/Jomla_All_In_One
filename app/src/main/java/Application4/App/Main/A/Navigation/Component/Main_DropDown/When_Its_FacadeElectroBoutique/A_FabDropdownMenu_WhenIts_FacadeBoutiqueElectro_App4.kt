@@ -4,7 +4,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatt
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.PrioriterToggle_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.SyncDropboxImages_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.UpdateActiveComptDo_DropdownMenuItem
-import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.UpdateActiveCompt_DropdownMenuItem
+import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.Affiche_ProduitDataBaseEdites_ComposableViews_ActiveCompt_Update_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.UploadFilteredData_DropdownMenuItem.View.Upload_Filtered_M03Couleurs_DropdownMenuItem_App4
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -31,7 +31,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
                 onDismissDropdown = onDismissDropdown
             )
 
-            UpdateActiveCompt_DropdownMenuItem(
+            Affiche_ProduitDataBaseEdites_ComposableViews_ActiveCompt_Update_DropdownMenuItem(
                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                 onDismissDropdown = onDismissDropdown
             )

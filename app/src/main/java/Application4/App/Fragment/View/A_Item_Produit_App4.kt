@@ -24,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +45,8 @@ fun A_Item_Produit_App4(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
-    val centralValues = uiState.active_Central_Values
+    val wifiState by viewModel.wifiState.collectAsState()
+    val centralValues = viewModel.active_Datas
 
     val allCategories = remember(uiState.list_M16CategorieProduit) {
         uiState.list_M16CategorieProduit
@@ -69,11 +71,9 @@ fun A_Item_Produit_App4(
         )
     }
 
-    val onVentList = centralValues.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-        ?: emptyList()
 
-    val expanded_M1Produit = centralValues.expanded_M1Produit
-    val expanded_M3CouleurProduitInfos = centralValues.expanded_M3CouleurProduitInfos
+    val expanded_M1Produit = wifiState.expanded_M1Produit
+    val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
 
     val isThisProductExpanded = remember(expanded_M1Produit) {
         expanded_M1Produit?.keyID == relative_M1produit.keyID
@@ -145,7 +145,7 @@ fun A_Item_Produit_App4(
         )
     }
 
-    val isGrossist = centralValues.activeCompt?.travailleChezGrossisst3Ali == true
+    val isGrossist = centralValues.active_M9Compt?.travailleChezGrossisst3Ali == true
 
     val datasValue_with_synthetic = if (!isGrossist &&
         datasValue_distinct_type.none { it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client } &&
@@ -239,7 +239,7 @@ fun A_Item_Produit_App4(
                     relative_M1produit = relative_M1produit,
                     isExpanded = isThisProductExpanded,
                     onUpdateTariff = {
-                        centralValues.activeCompt?.let { appCompt ->
+                        centralValues.active_M9Compt?.let { appCompt ->
                             viewModel.setActiveFocuceTariffPrixDifineur(relative_M1produit, appCompt)
                         }
                     },

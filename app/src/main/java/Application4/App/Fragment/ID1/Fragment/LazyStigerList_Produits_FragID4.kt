@@ -1,14 +1,14 @@
 package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.Components.Views.CategoryStickyHeader
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -73,7 +73,7 @@ fun Etager_LazyColumn(
     val isScrollEnabled = isHostPhone || !isConnected
 
     val expanded_M3CouleurProduitInfos =
-        uiState_NewProtoPatterns_viewModel.first.active_Central_Values.expanded_M3CouleurProduitInfos
+        wifiState.expanded_M3CouleurProduitInfos
 
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
@@ -177,7 +177,7 @@ fun Etager_LazyColumn(
                 }
 
                 productColorPairs.forEach { (product, colors) ->
-                    val isExpanded = uiState_NewProtoPatterns_viewModel.first.active_Central_Values.expanded_M1Produit?.keyID == product.keyID
+                    val isExpanded = wifiState.expanded_M1Produit?.keyID == product.keyID
                     val justMoved = product.keyID == justMovedProductKeyID
 
                     item(

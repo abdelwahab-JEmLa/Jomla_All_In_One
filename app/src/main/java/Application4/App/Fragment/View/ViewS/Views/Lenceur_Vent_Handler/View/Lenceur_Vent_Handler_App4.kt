@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,9 +48,8 @@ fun Lenceur_Vent_Handler_App4(
     isWifiClientConnected: Boolean = false,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
-    val centralValues = uiState.active_Central_Values
 
-    val activeOnVent_M8BonVent by viewModel.activeOnVent_M8BonVent_flow.collectAsState()
+    val activeOnVent_M8BonVent = viewModel.active_Datas.activeOnVent_M8BonVent
 
     val listM10OperationVentCouleur_FilteredBy_activeM8BonVent =
         viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
@@ -67,8 +65,10 @@ fun Lenceur_Vent_Handler_App4(
         }
     }
 
-    val isGrossist = centralValues.activeCompt?.travailleChezGrossisst3Ali == true
-    val isAdmin = centralValues.currentApp_Est_Admin
+    // Fixed TODO(1): read live values from active_Datas (Compose @Stable state) instead of
+    // the stale UiState snapshot via centralValues.
+    val isGrossist = viewModel.active_Datas.currentApp_ItsWorkChezGrossisst
+    val isAdmin    = viewModel.active_Datas.currentApp_Est_Admin
 
     var depotAlertInfo by remember { mutableStateOf<DepotUpdateResult?>(null) }
 
@@ -156,10 +156,7 @@ fun Lenceur_Vent_Handler_App4(
             else selectedCouleur.copy(count_Don_Depot = selectedCouleur.count_Don_Depot - quantityChange)
 
         if (updatedCouleur != null) {
-
             viewModel.update_m3couleur(updatedCouleur)
-        } else {
-
         }
 
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)

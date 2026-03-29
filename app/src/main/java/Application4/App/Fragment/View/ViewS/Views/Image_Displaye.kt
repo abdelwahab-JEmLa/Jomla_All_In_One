@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.ViewS.Views
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
@@ -10,6 +10,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -33,7 +35,8 @@ fun Image_Displaye(
     list_M1Produit: List<M01Produit>?,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
-    val centralValues = uiState.active_Central_Values
+    val wifiState by viewModel.wifiState.collectAsState()
+    val centralValues = wifiState
 
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
@@ -49,7 +52,6 @@ fun Image_Displaye(
     }
 
     if (imageFile != null && imageFile.exists()) {
-        // Sourced from uiState — no direct repository injection needed
         val parentProduct = remember(
             relative_M3CouleurProduitInfos.parentBProduitInfosKeyID,
             list_M1Produit
@@ -73,15 +75,12 @@ fun Image_Displaye(
                         currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
 
                     if (isSameProductExpanded && isDifferentColor) {
-                        // CASE 1: Same product, different color → Update only the selected color
-                        viewModel.update_activeCentralValues(
-                            centralValues.copy(
-                                expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
-                                // Keep expanded_M1Produit unchanged
-                            )
+                        viewModel.sendOrderToClientDisplayerT(
+                            WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+                            relative_M3CouleurProduitInfos.keyID
                         )
                     } else {
-                        // CASE 2: Different product OR same color → Toggle product expansion
+                        // CASE 2: Different product OR same color → Toggle product expansion.
                         val newProductValue =
                             if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
                                 // Same product, same color → Collapse
@@ -91,15 +90,15 @@ fun Image_Displaye(
                                 parentProduct
                             }
 
-                        viewModel.update_activeCentralValues(
-                            centralValues.copy(
-                                expanded_M1Produit = newProductValue,
-                                expanded_M3CouleurProduitInfos = if (newProductValue != null) {
-                                    relative_M3CouleurProduitInfos
-                                } else {
-                                    null
-                                }
-                            )
+
+                        val colorKeyToSend = if (newProductValue == null) {
+                            currentExpandedColor?.keyID ?: relative_M3CouleurProduitInfos.keyID
+                        } else {
+                            relative_M3CouleurProduitInfos.keyID
+                        }
+                        viewModel.sendOrderToClientDisplayerT(
+                            WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+                            colorKeyToSend
                         )
                     }
 

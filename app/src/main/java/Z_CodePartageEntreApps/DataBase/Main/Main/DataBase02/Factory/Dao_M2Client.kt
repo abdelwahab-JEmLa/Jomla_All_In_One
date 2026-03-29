@@ -11,7 +11,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface DaoM2Client {
+interface Dao_M2Client {
     @Query("SELECT COUNT(*) FROM M2Client")
     suspend fun isTableEmpty(): Boolean = getCount() == 0
 

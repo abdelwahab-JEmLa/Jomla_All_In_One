@@ -1,12 +1,11 @@
 package EntreApps.Shared.Modules.Base
 
 import EntreApps.Shared.Models.Components.AppType
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import Z_CodePartageEntreApps.DataBase.M18CentralParametresOfAllAppsDao
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
@@ -33,9 +32,10 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.DevicesTypeManagerDao
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.DiviseurDeDisplayProductForEachClientDao
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.SoldArticlesTabelleDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.M17MessageVocaleDao
+import Z_CodePartageEntreApps.DataBase.M18CentralParametresOfAllAppsDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.DaoM2Client
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.Dao_M2Client
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.Dao11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Dao15Grossist
@@ -164,7 +164,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dao_M13TarificationInfos(): Dao13TarificationInfos
     abstract fun dao_M14VentPeriode(): Dao14VentPeriode
     abstract fun dao_M10OperationVentCouleur(): Dao_M10OperationVentCouleur
-    abstract fun dao_M2Client(): DaoM2Client
+    abstract fun dao_M2Client(): Dao_M2Client
 
     object DatabaseModule {
 
