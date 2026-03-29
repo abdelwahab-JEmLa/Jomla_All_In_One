@@ -5,7 +5,6 @@ import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_Ne
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
 import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
-import EntreApps.Shared.Models.Home.FocusedValues_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
@@ -22,7 +21,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 @SuppressLint("StaticFieldLeak")
@@ -40,16 +38,6 @@ class A_ViewModel_NewProtoPatterns(
 
     val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
-
-    val focusedValues_NewProtoPatterns: FocusedValues_NewProtoPatterns =
-        FocusedValues_NewProtoPatterns(
-            list_Datas = _uiStateNewProtoPatterns.map { it.list_Datas }
-                .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.Eagerly,
-                    initialValue = null
-                )
-        )
 
     val wifi = WifiTransferDatas_NewProto(
         context = context,
