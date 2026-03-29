@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.tasks.await  // FIX(2): use coroutine-friendly await, not Tasks.await
+import kotlinx.coroutines.tasks.await
 
 class A_LoadingViewModel(
     private val appDatabase: AppDatabase,
@@ -55,13 +55,31 @@ class A_LoadingViewModel(
         fun setProgress(p: Float, job: String = _uiState.value.currentJobName) =
             _uiState.update { it.copy(progress = p, currentJobName = job) }
 
-        // FIX(2): replaced Tasks.await + unsafe double-cast with clean coroutine await
         viewModelScope.launch(Dispatchers.IO) {
             val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             val snap = Z_AppCompt.ref.get().await()
             val compt = snap.children
-                .mapNotNull { it.getValue(Z_AppCompt::class.java) }
+                .mapNotNull { child ->
+                    try {
+                        child.getValue(Z_AppCompt::class.java)
+                    } catch (_: Exception) {
+                        @Suppress("UNCHECKED_CAST")
+                        val raw = child.getValue(Object::class.java) as? Map<String, Any?>
+                            ?: return@mapNotNull null
+                        val rawDo = raw["next_start"] as? String
+                        val safeDo = Do.entries.firstOrNull { it.name == rawDo }
+                            ?: Do.StandartInit_Sans_RienFair
+                        try {
+                            Z_AppCompt(
+                                keyID      = raw["keyID"] as? String ?: return@mapNotNull null,
+                                nom        = raw["nom"]   as? String ?: "",
+                                next_start = safeDo,
+                            )
+                        } catch (_: Exception) { null }
+                    }
+                }
                 .find { it.keyID == key }
+
             _uiState.update {
                 it.copy(
                     activeCompt = compt,
@@ -111,9 +129,7 @@ class A_LoadingViewModel(
                     if (r.m13TarificationInfos.isNotEmpty()) dao_M13TarificationInfos().insertAll(r.m13TarificationInfos)
                     if (r.m14VentPeriode.isNotEmpty()) dao_M14VentPeriode().insertAll(r.m14VentPeriode)
                     if (r.m8BonVent.isNotEmpty()) dao_M8BonVent().insertAll(r.m8BonVent)
-                    if (r.m10OperationVentCouleur.isNotEmpty()) dao_M10OperationVentCouleur().insertAll(
-                        r.m10OperationVentCouleur
-                    )
+                    if (r.m10OperationVentCouleur.isNotEmpty()) dao_M10OperationVentCouleur().insertAll(r.m10OperationVentCouleur)
                 }
             }
             viewModelScope.launch(Dispatchers.IO) {
@@ -162,7 +178,7 @@ class A_LoadingViewModel(
                 }.join()
             }
 
-            // StandartInit: skip everything, go straight to initDone.
+            // StandartInit or null (incl. stale enum fallback): skip everything.
             Do.StandartInit_Sans_RienFair, null -> { /* nothing */ }
         }
 
