@@ -71,11 +71,13 @@ class A_LoadingViewModel(
                             ?: Do.StandartInit_Sans_RienFair
                         try {
                             Z_AppCompt(
-                                keyID      = raw["keyID"] as? String ?: return@mapNotNull null,
-                                nom        = raw["nom"]   as? String ?: "",
+                                keyID = raw["keyID"] as? String ?: return@mapNotNull null,
+                                nom = raw["nom"] as? String ?: "",
                                 next_start = safeDo,
                             )
-                        } catch (_: Exception) { null }
+                        } catch (_: Exception) {
+                            null
+                        }
                     }
                 }
                 .find { it.keyID == key }
@@ -90,8 +92,8 @@ class A_LoadingViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             if (appDatabase.dao_M03CouleurProduitInfos().getAll().isEmpty()
-                ||  M00CentralParametresOfAllApps.get_Default().force_next_start == Do.DeleteInsertAll_Active_Key
-                ) {
+                || M00CentralParametresOfAllApps.get_Default().force_next_start_DeleteInsertAll
+            ) {
                 _uiState.value.activeCompt?.let { compt ->
                     val updated = compt.copy(
                         next_start =
@@ -131,7 +133,9 @@ class A_LoadingViewModel(
                     if (r.m13TarificationInfos.isNotEmpty()) dao_M13TarificationInfos().insertAll(r.m13TarificationInfos)
                     if (r.m14VentPeriode.isNotEmpty()) dao_M14VentPeriode().insertAll(r.m14VentPeriode)
                     if (r.m8BonVent.isNotEmpty()) dao_M8BonVent().insertAll(r.m8BonVent)
-                    if (r.m10OperationVentCouleur.isNotEmpty()) dao_M10OperationVentCouleur().insertAll(r.m10OperationVentCouleur)
+                    if (r.m10OperationVentCouleur.isNotEmpty()) dao_M10OperationVentCouleur().insertAll(
+                        r.m10OperationVentCouleur
+                    )
                 }
             }
             viewModelScope.launch(Dispatchers.IO) {
@@ -172,7 +176,12 @@ class A_LoadingViewModel(
                 viewModelScope.launch(Dispatchers.IO) {
                     val result = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16_AllRefs(
                         context = appContext,
-                        on_Progress_Datas = { p -> setProgress(p, "Chargement toutes données ref…") },
+                        on_Progress_Datas = { p ->
+                            setProgress(
+                                p,
+                                "Chargement toutes données ref…"
+                            )
+                        },
                     )
                     _uiState.update { it.copy(seedResult = result) }
                     DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
@@ -181,7 +190,8 @@ class A_LoadingViewModel(
             }
 
             // StandartInit or null (incl. stale enum fallback): skip everything.
-            Do.StandartInit_Sans_RienFair, null -> { /* nothing */ }
+            Do.StandartInit_Sans_RienFair, null -> { /* nothing */
+            }
         }
 
         setProgress(1f, "Prêt ✓")
