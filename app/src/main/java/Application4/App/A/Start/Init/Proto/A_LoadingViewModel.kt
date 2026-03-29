@@ -32,7 +32,6 @@ class A_LoadingViewModel(
     // Application context — safe to hold in a ViewModel (not an Activity context).
     private val appContext: Context,
 ) : ViewModel() {
-
     data class LoadingUiState(
         val initDone: Boolean = false,
         val progress: Float = 0f,
@@ -191,5 +190,8 @@ class A_LoadingViewModel(
         }
 
         _uiState.update { it.copy(initDone = true) }
+    }
+    public override fun onCleared() {
+        super.onCleared()
     }
 }

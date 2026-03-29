@@ -38,7 +38,6 @@ fun MainScreen_NewProtoPattern(
 ) {
     val wifiState by viewModelNewProtoPatterns.wifiState.collectAsState()
 
-    // Create NavController here so it's registered BEFORE AppNavHost tries to read it
     val navController = rememberNavController()
     LaunchedEffect(navController) {
         fragmentNavigationHandler.setNavController(navController)
@@ -50,18 +49,13 @@ fun MainScreen_NewProtoPattern(
     val currentFragment by fragmentNavigationHandler.currentFragment.collectAsState()
     val currentRoute = currentFragment?.route
 
-    var isFabVisible by rememberSaveable { mutableStateOf(true) }
-
-    // FIX(TODO-1): Track whether the loading phase is complete so we can gate between
-    // the loading screen and the main scaffold — in both the no_loadKoin and normal branches.
     var isInitDone by rememberSaveable { mutableStateOf(false) }
 
     if (M00CentralParametresOfAllApps.get_Default().no_loadKoin_CrachComposReglement) {
-        // FIX(TODO-1): Show loading screen until init is done, then show the main scaffold.
-        // Previously this branch only ever showed A_LoadingApp4_Init_Screen and never transitioned.
         if (!isInitDone) {
             A_LoadingApp4_Init_Screen(
-                onInitDone = { isInitDone = true }
+                onInitDone = { isInitDone = true },
+                appDatabase = koinInject()
             )
         } else {
             MainScaffold(
@@ -90,7 +84,7 @@ fun MainScreen_NewProtoPattern(
 @Composable
 private fun MainScaffold(
     modifier: Modifier,
-    wifiState: Any, // type matches ProductDisplayController_NewProto via wifiState
+    wifiState: Any,
     currentRoute: String?,
     navController: androidx.navigation.NavHostController,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
@@ -102,9 +96,7 @@ private fun MainScaffold(
             NavigationBarWithFab_NewProto(
                 items = NavigationItems.getItems(isAdmin = true),
                 currentRoute = currentRoute,
-                onNavigate = { route ->
-                    fragmentNavigationHandler.navigateTo(route)
-                },
+                onNavigate = { route -> fragmentNavigationHandler.navigateTo(route) },
                 modifier = modifier,
                 isFabVisible = true,
                 onToggleFabVisibility = {},

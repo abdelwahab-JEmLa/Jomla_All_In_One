@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 object FlowsFunctions_ActiveDatasFragNewProto {
-
     fun getFlow_filter_marqueClient_enum_entrie(
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): MapClientsViewModel.VisibleClientsNow =

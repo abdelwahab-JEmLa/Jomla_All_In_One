@@ -1,5 +1,6 @@
 package Application4.App.A.Start.Init.Proto
 
+import EntreApps.Shared.Modules.Base.AppDatabase
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -17,9 +18,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -33,39 +36,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clientjetpack.R
-import org.koin.androidx.compose.koinViewModel
-
-// FIX(TODO-1 root cause): The original implementation ran getReturne_M1_3_16 inside a
-// LaunchedEffect tied to the composable scope. Navigation/recomposition cancelled that coroutine
-// mid-Firebase-fetch → LeftCompositionCancellationException → colors=0 → retry loop.
-//
-// Fix: all init work now runs inside A_LoadingViewModel (a ViewModel), whose coroutineScope
-// (viewModelScope) is NOT tied to the composition lifecycle. The composable only observes
-// the resulting StateFlows and renders accordingly.
 
 @Composable
 fun A_LoadingApp4_Init_Screen(
-    modifier: Modifier = Modifier,
     innerPadding: PaddingValues = PaddingValues(),
     onInitDone: () -> Unit = {},
-    // FIX(FIXME): use the ViewModel instead of constructing AppDatabase / Repo inline here.
-    // koinViewModel() resolves the same scoped instance every time, so init runs exactly once.
-    loadingViewModel: A_LoadingViewModel = koinViewModel(),
+    appDatabase: AppDatabase,
 ) {
     val context = LocalContext.current
 
-    // Kick off init the first time this screen enters composition.
-    // Because loadingViewModel survives recomposition, this is effectively a no-op on subsequent
-    // calls — the ViewModel guards against double-init internally.
+    val loadingViewModel = remember(appDatabase) {
+        A_LoadingViewModel(appDatabase = appDatabase, appContext = context.applicationContext)
+    }
+
+    DisposableEffect(loadingViewModel) {
+        onDispose { loadingViewModel.onCleared() }
+    }
+
     LaunchedEffect(Unit) {
         loadingViewModel.startIfNeeded(context)
     }
 
     val uiState by loadingViewModel.uiState.collectAsState()
 
-    // FIX(TODO-1): When init is done, delegate to the caller via onInitDone() instead of
-    // directly composing A_Compact_Presentoire_App_Produits_App4 here.
-    // The loading screen's only responsibility is to show progress; navigation is the caller's job.
     LaunchedEffect(uiState.initDone) {
         if (uiState.initDone) onInitDone()
     }
@@ -83,10 +76,7 @@ fun A_LoadingApp4_Init_Screen(
                 .padding(innerPadding)
                 .semantics(mergeDescendants = true) {
                     set(value = uiState.activeCompt, key = SemanticsPropertyKey("activeCompt"))
-                    set(
-                        value = uiState.lightDataBasesResult,
-                        key = SemanticsPropertyKey("lightDataBasesResult")
-                    )
+                    set(value = uiState.lightDataBasesResult, key = SemanticsPropertyKey("lightDataBasesResult"))
                     set(value = uiState.seedResult, key = SemanticsPropertyKey("seedResult"))
                 },
             contentAlignment = Alignment.Center
