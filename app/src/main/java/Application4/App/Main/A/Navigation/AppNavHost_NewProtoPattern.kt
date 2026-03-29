@@ -1,6 +1,5 @@
 package Application4.App.Main.A.Navigation
 
-import Application4.App.A.Start.Init.Proto.A_LoadingApp4_Init_Screen
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
@@ -21,8 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -80,16 +77,8 @@ fun AppNavHost_NewProtoPattern(
                             }
                     }
                 }
-                var initDone by rememberSaveable { mutableStateOf(false) }
-                if (!initDone) {
-                    A_LoadingApp4_Init_Screen(
-                        innerPadding = innerPadding,
-                        onInitDone = { initDone = true },
-                        appDatabase = koinInject ()
-                    )
-                } else {
-                    A_Compact_Presentoire_App_Produits_App4()
-                }
+
+                A_Compact_Presentoire_App_Produits_App4()
             }
 
             composable(route = Screen_NewProtoPattern.Panier.route) {

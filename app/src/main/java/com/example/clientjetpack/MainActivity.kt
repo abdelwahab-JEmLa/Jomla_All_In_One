@@ -2,6 +2,7 @@ package com.example.clientjetpack
 
 import Application2.App.App.appModule_App2_ac_app1
 import Application2.App.MainScreen.MainScreen_Jemla_Com_PresentoirApp
+import Application4.App.A.Start.Init.Proto.A_LoadingApp4_Init_Screen
 import Application4.App.Screen.MainScreen_NewProtoPattern
 import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
@@ -21,9 +22,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
@@ -31,6 +34,7 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.compose.KoinAndroidContext
+import org.koin.compose.koinInject
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.context.startKoin
 
@@ -55,6 +59,7 @@ class MainActivity : ComponentActivity() {
                     if (M00CentralParametresOfAllApps().load_All_modules)
                         modules(appModule) else
                         modules(appModule_App2_ac_app1)
+
                 AppType.JomLaElectroLivreurGrossist_VendeurHost -> {}
                 else ->
                     modules(appModule)
@@ -101,31 +106,41 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
-                                when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
-                                    AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
-                                        MainScreen_Jemla_Com_PresentoirApp()
-                                    }
+                                var initDone by rememberSaveable { mutableStateOf(false) }
 
-                                    AppType.JomLaElectroLivreurGrossist_VendeurHost -> {
-                                        MainScreen_NewProtoPattern()
-                                    }
+                                if (!initDone) {
+                                    A_LoadingApp4_Init_Screen(
+                                        innerPadding = PaddingValues(),
+                                        onInitDone = { initDone = true },
+                                        appDatabase = koinInject()
+                                    )
+                                } else {
+                                    when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
+                                        AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
+                                            MainScreen_Jemla_Com_PresentoirApp()
+                                        }
 
-                                    else -> {
-                                        MainScreen_All()
+                                        AppType.JomLaElectroLivreurGrossist_VendeurHost -> {
+                                            MainScreen_NewProtoPattern()
+                                        }
+
+                                        else -> {
+                                            MainScreen_All()
+                                        }
                                     }
+                                }
+                                if (showStorageDialog) {
+                                    StoragePermissionDialog(
+                                        onOpenSettings = { permissionHandler.openStorageSettings() },
+                                        onDismiss = {
+                                            showStorageDialog = false
+                                            permissionsChecked = true
+                                            showPermissionDeniedMessage()
+                                        }
+                                    )
                                 }
                             }
 
-                            if (showStorageDialog) {
-                                StoragePermissionDialog(
-                                    onOpenSettings = { permissionHandler.openStorageSettings() },
-                                    onDismiss = {
-                                        showStorageDialog = false
-                                        permissionsChecked = true
-                                        showPermissionDeniedMessage()
-                                    }
-                                )
-                            }
                         }
                     }
                 }

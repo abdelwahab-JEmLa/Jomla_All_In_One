@@ -43,9 +43,10 @@ fun UpdateActiveComptDo_DropdownMenuItem(
 
                 Do.entries.forEach { doOption ->
                     val label = when (doOption) {
-                        Do.StandartInit                  -> "Standard Init"
-                        Do.DeleteInsertAll_Active_Key    -> "Réinit clé active"
-                        Do.DeleteInsertAll_Ref_All_Datas -> "Réinit toutes les données"
+                        Do.StandartInit                                   -> "Standard Init"
+                        Do.DeleteInsertAll_Active_Key                     -> "Réinit clé active"
+                        Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll     -> "Réinit toutes les données"
+                        Do.DeleteInsertAll_Ref_All_Datas                  -> "Réinit toutes les données de référence"
                     }
                     FilterChip(
                         selected = currentDo == doOption,

@@ -11,7 +11,8 @@ import com.google.firebase.database.database
 enum class Do() {
     StandartInit,
     DeleteInsertAll_Active_Key(),
-    DeleteInsertAll_Ref_All_Datas();
+    DeleteAll_To_Let_Ancien_Repositorys_GetAll(),
+    DeleteInsertAll_Ref_All_Datas();   // deletes all local data then re-fetches ALL ref data without M3 active-key filtering
 }
 
 @Entity
@@ -148,7 +149,6 @@ data class Z_AppCompt(
         }
     }
 
-    // Updated getList_autres_Noms_SepareParComma function in Z_AppCompt class
     fun getList_autres_Noms_SepareParComma(): List<String> {
         return if (autres_Noms_SepareParComma.isNotEmpty()) {
             autres_Noms_SepareParComma.split(",").map { it.trim() }.filter { it.isNotEmpty() }

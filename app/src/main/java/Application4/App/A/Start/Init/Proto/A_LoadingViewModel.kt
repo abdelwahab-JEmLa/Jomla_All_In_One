@@ -1,9 +1,9 @@
 package Application4.App.A.Start.Init.Proto
 
+import EntreApps.Shared.Models.Components.AppType
 import EntreApps.Shared.Models.Do
 import EntreApps.Shared.Models.Home.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.ifTrue
 import EntreApps.Shared.Models.Z_AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
@@ -66,45 +66,43 @@ class A_LoadingViewModel(
                         .children.mapNotNull { it.getValue(Z_AppCompt::class.java) }
                         .find { it.keyID == key }
                 }
-            _uiState.update { it.copy(activeCompt = compt, currentJobName = "Compt: ${compt?.get_DebugInfos() ?: "?"}") }
+            _uiState.update {
+                it.copy(
+                    activeCompt = compt,
+                    currentJobName = "Compt: ${compt?.get_DebugInfos() ?: "?"}"
+                )
+            }
         }.join()
 
         viewModelScope.launch(Dispatchers.IO) {
             if (appDatabase.dao_M03CouleurProduitInfos().getAll().isEmpty()) {
                 _uiState.value.activeCompt?.let { compt ->
-                    val updated = compt.copy(next_start = Do.DeleteInsertAll_Active_Key)
+                    val updated = compt.copy(
+                        next_start =
+                            if (M00CentralParametresOfAllApps.get_Default().its_AppType == AppType.AllInOne)
+                                Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll
+                            else Do.DeleteInsertAll_Active_Key
+                    )
                     _uiState.update { it.copy(activeCompt = updated) }
                     repo.update_M9AppCompt(updated)
                 }
             }
         }.join()
 
-        (_uiState.value.activeCompt?.next_start == Do.DeleteInsertAll_Active_Key).ifTrue {
+        suspend fun deleteAllLocal(label: String = "Suppression données locales…") {
+            setProgress(_uiState.value.progress, label)
+            with(appDatabase) {
+                dao_M03CouleurProduitInfos().deleteAll()
+                dao_M1Produit().deleteAll()
+                dao_16CategorieProduit().deleteAll()
+                dao_M13TarificationInfos().deleteAll()
+                dao_M14VentPeriode().deleteAll()
+                dao_M8BonVent().deleteAll()
+                dao_M10OperationVentCouleur().deleteAll()
+            }
+        }
 
-            viewModelScope.launch(Dispatchers.IO) {
-                setProgress(_uiState.value.progress, "Suppression données locales…")
-                with(appDatabase) {
-                    dao_M03CouleurProduitInfos().deleteAll()
-                    dao_M1Produit().deleteAll()
-                    dao_16CategorieProduit().deleteAll()
-                    dao_M13TarificationInfos().deleteAll()
-                    dao_M14VentPeriode().deleteAll()
-                    dao_M8BonVent().deleteAll()
-                    dao_M10OperationVentCouleur().deleteAll()
-                }
-            }.join()
-
-            viewModelScope.launch(Dispatchers.IO) {
-                val result = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16(
-                    context = appContext,
-                    on_Progress_Datas = { p -> setProgress(p, "Chargement produits…") },
-                )
-                _uiState.update { it.copy(seedResult = result) }
-                DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
-            }.join()
-
-            val currentSeed = _uiState.value.seedResult
-
+        suspend fun insertSeedAndLightDbs(seed: Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult) {
             val lightDbJob = viewModelScope.launch(Dispatchers.IO) {
                 setProgress(_uiState.value.progress, "Chargement tarifs…")
                 val r = Init_LightDataBases.returne_FireBase_LightDataBases()
@@ -115,20 +113,64 @@ class A_LoadingViewModel(
                     dao_M8BonVent().deleteAll()
                     dao_M10OperationVentCouleur().deleteAll()
                     if (r.m13TarificationInfos.isNotEmpty()) dao_M13TarificationInfos().insertAll(r.m13TarificationInfos)
-                    if (r.m14VentPeriode.isNotEmpty())        dao_M14VentPeriode().insertAll(r.m14VentPeriode)
-                    if (r.m8BonVent.isNotEmpty())             dao_M8BonVent().insertAll(r.m8BonVent)
-                    if (r.m10OperationVentCouleur.isNotEmpty()) dao_M10OperationVentCouleur().insertAll(r.m10OperationVentCouleur)
+                    if (r.m14VentPeriode.isNotEmpty()) dao_M14VentPeriode().insertAll(r.m14VentPeriode)
+                    if (r.m8BonVent.isNotEmpty()) dao_M8BonVent().insertAll(r.m8BonVent)
+                    if (r.m10OperationVentCouleur.isNotEmpty()) dao_M10OperationVentCouleur().insertAll(
+                        r.m10OperationVentCouleur
+                    )
                 }
             }
             viewModelScope.launch(Dispatchers.IO) {
                 setProgress(_uiState.value.progress, "Insertion locale…")
                 with(appDatabase) {
-                    if (currentSeed.colors.isNotEmpty())     dao_M03CouleurProduitInfos().insertAll(currentSeed.colors)
-                    if (currentSeed.products.isNotEmpty())   dao_M1Produit().insertAll(currentSeed.products)
-                    if (currentSeed.categories.isNotEmpty()) dao_16CategorieProduit().insertAll(currentSeed.categories)
+                    if (seed.colors.isNotEmpty()) dao_M03CouleurProduitInfos().insertAll(seed.colors)
+                    if (seed.products.isNotEmpty()) dao_M1Produit().insertAll(seed.products)
+                    if (seed.categories.isNotEmpty()) dao_16CategorieProduit().insertAll(seed.categories)
                 }
             }.join()
             lightDbJob.join()
+        }
+
+        when (_uiState.value.activeCompt?.next_start) {
+            Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    deleteAllLocal()
+                    setProgress(1f, "Suppression terminée ✓")
+                }.join()
+            }
+
+            Do.DeleteInsertAll_Active_Key -> {
+                viewModelScope.launch(Dispatchers.IO) { deleteAllLocal() }.join()
+                viewModelScope.launch(Dispatchers.IO) {
+                    val result = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16(
+                        context = appContext,
+                        on_Progress_Datas = { p -> setProgress(p, "Chargement produits…") },
+                    )
+                    _uiState.update { it.copy(seedResult = result) }
+                    DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
+                    insertSeedAndLightDbs(result)
+                }.join()
+            }
+
+            Do.DeleteInsertAll_Ref_All_Datas -> {
+                viewModelScope.launch(Dispatchers.IO) { deleteAllLocal() }.join()
+                viewModelScope.launch(Dispatchers.IO) {
+                    val result = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16_AllRefs(
+                        context = appContext,
+                        on_Progress_Datas = { p ->
+                            setProgress(
+                                p,
+                                "Chargement toutes données ref…"
+                            )
+                        },
+                    )
+                    _uiState.update { it.copy(seedResult = result) }
+                    DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
+                    insertSeedAndLightDbs(result)
+                }.join()
+            }
+
+            else -> {}
         }
 
         setProgress(1f, "Prêt ✓")
@@ -141,6 +183,7 @@ class A_LoadingViewModel(
 
         _uiState.update { it.copy(initDone = true) }
     }
+
     public override fun onCleared() {
         super.onCleared()
     }
