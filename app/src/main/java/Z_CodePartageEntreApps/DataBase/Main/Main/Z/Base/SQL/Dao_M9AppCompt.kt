@@ -44,7 +44,7 @@ interface Dao_M9AppCompt {
     fun getByKey_Flow(keyId: String): Flow<List<Z_AppCompt>>
 
     @Query("SELECT * FROM Z_AppCompt WHERE keyID = :keyId")
-    fun getBy_M00_Lence_Key_Flow(keyId: String = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId): Flow<List<Z_AppCompt>>
+    fun getBy_M00_Lence_Key_Flow(keyId: String = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId): Flow<Z_AppCompt>
 
     @Query("SELECT * FROM Z_AppCompt WHERE keyID = :keyId LIMIT 1")
     fun getFlow_ByKeyID(keyId: String): Flow<Z_AppCompt?>

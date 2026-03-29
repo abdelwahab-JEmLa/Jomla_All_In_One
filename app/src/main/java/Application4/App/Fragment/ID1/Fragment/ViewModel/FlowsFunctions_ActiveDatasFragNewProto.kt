@@ -108,8 +108,9 @@ object FlowsFunctions_ActiveDatasFragNewProto {
         dao_M9AppCompt: Dao_M9AppCompt,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): Flow<Z_AppCompt?> =
-        getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(dao_M9AppCompt)
-            .onEach { compt -> activeDatasFragNewProto.active_M9Compt = compt }
+        dao_M9AppCompt.getFlow_ByKeyID(
+            M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+        ).onEach { activeDatasFragNewProto.active_M9Compt = it }
 
     fun getFlow_listM16_FilteredBy_active_M21Catalogue(
         dao_M16CategorieProduit: Dao_M16CategorieProduit,

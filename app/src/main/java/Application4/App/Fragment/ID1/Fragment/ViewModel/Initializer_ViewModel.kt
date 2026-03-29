@@ -1,7 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -11,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
@@ -49,7 +49,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         progress(1 / 8f); val clients = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
         progress(2 / 8f); val categories = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAll()
             .filter { it.catalogueParentId == AViewModel_NewProtoPatterns.active_Datas.active_M21Catalogue.id }
-        progress(3 / 8f); val appCompt = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().getAll()
+        progress(3 / 8f); val appCompt = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().getBy_M00_Lence_Key_Flow().first()
         progress(4 / 8f); val bonVent = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
         progress(5 / 8f); val ventPeriodes = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
         progress(6 / 8f); val tarification = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
@@ -76,13 +76,11 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     }
 
     private fun seedActiveDatas(
-        appCompt: List<Z_AppCompt>,
+        appCompt: Z_AppCompt,
         bonVent: List<M8BonVent>,
         clients: List<M2Client>,
     ) {
-        val centralKey = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
-        AViewModel_NewProtoPatterns.active_Datas.active_M9Compt =
-            appCompt.find { it.keyID == centralKey && it.keyID.isNotBlank() }
+        AViewModel_NewProtoPatterns.active_Datas.active_M9Compt = appCompt
         AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent = bonVent
         AViewModel_NewProtoPatterns.active_Datas.list_M2Client = clients
     }
