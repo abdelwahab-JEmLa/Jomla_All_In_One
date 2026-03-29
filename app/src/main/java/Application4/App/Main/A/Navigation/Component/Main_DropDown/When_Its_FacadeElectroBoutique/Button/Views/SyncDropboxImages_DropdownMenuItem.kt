@@ -1,4 +1,4 @@
-package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique
+package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
