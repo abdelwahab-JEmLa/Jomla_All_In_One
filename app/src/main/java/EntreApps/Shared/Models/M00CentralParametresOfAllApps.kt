@@ -56,10 +56,9 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.AllInOne
         } else {
-            AppType.JomLaElectroLivreurGrossist_VendeurHost
+            AppType.AllInOne
         }
     },
-
 
     //---------------------------------App Settings----------------------------------------------------------------------------------------------------------------------------------
     val activeWindowsSearchProduit: Boolean = false,

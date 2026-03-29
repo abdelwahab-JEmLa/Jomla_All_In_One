@@ -31,6 +31,8 @@ class ActiveDatasFragNewProto {
     // Conservé uniquement pour le CategorySelectionDialog (déplacement de produit vers une catégorie).
     var list_M16CategorieProduit: List<M16CategorieProduit>? by mutableStateOf(null)
 
+    var parentProduit_Classement: Map<String, Int> by mutableStateOf(emptyMap())
+
     var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(null)
     var lastKnownBonVentKey: String? = null
 

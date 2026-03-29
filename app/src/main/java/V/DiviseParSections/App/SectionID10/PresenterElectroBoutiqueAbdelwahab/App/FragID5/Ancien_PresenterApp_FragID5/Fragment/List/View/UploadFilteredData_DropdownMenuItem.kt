@@ -85,18 +85,24 @@ fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
                         coroutineScope.launch(Dispatchers.IO) {
                             isUploading = true
 
-                            // associate replaces filter+map+toMap in one pass (no intermediate list).
+                            // parentProduit_Classement now carries classement_By_FilterKeys_M3
+                            // (fixed in LazyStigerList). We write the same value into both
+                            // `classment` (M3 color key sort field) AND `parentProduitClassement`
+                            // (parent M1 product sort field) so that getReturne_M1_3_16 can
+                            // restore the correct display order on next seed.
                             val keys: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values> =
                                 list_M03CouleurProduitInfos
                                     .filter { it.keyID.isNotBlank() }
                                     .associate { couleur ->
+                                        val produitClassement =
+                                            parentProduit_Classement[couleur.parentBProduitInfosKeyID] ?: 0
                                         couleur.keyID to Ref_list_Filtred_Keys_M3Couleur_Main_Values(
-                                            nom = couleur.nomCouleurStrSiSonImageDispo,
-                                            classment = parentProduit_Classement[couleur.parentBProduitInfosKeyID]
-                                                ?: 0,
-                                            activated = true,
-                                            parentProduitKeyID = couleur.parentBProduitInfosKeyID,
-                                            parentProduitDebugName = couleur.parentId1ProduitInfosDebugName
+                                            nom                   = couleur.nomCouleurStrSiSonImageDispo,
+                                            classment             = produitClassement,
+                                            activated             = true,
+                                            parentProduitKeyID    = couleur.parentBProduitInfosKeyID,
+                                            parentProduitDebugName = couleur.parentId1ProduitInfosDebugName,
+                                            parentProduitClassement = produitClassement,
                                         )
                                     }
 

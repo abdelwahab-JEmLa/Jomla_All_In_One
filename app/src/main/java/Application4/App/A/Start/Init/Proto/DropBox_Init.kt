@@ -13,8 +13,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-object DropBox_Init {          //<--
-//TODO(1): fait pour le progress de syc dropBox_key == non dispo de passe le init  
+object DropBox_Init {
     const val rootFolder: String = "/images"
     val localImagesBaseDir: File = File(M00CentralParametresOfAllApps.images_central_Local_storageLink)
 
@@ -33,9 +32,20 @@ object DropBox_Init {          //<--
 
     private suspend fun syncInternal(colors: List<M3CouleurProduitInfos>, onProgress: (Float) -> Unit) {
         onProgress(0.1f)
+
+        // Fast-path: skip the Dropbox index build entirely when there is nothing
+        // to download. A color is downloadable only when its filename is non-blank
+        // and is not the sentinel value "Non Dispo".
+        val downloadable = colors.filter { color ->
+            color.nomImageFichieSansEtansion.isNotBlank() &&
+                    color.nomImageFichieSansEtansion != "Non Dispo"
+        }
+        if (downloadable.isEmpty()) { onProgress(1f); return }
+
         val index = buildIndex().takeIf { it.isNotEmpty() } ?: run { onProgress(1f); return }
-        val total = colors.size.coerceAtLeast(1)
-        colors.forEachIndexed { i, color ->
+
+        val total = downloadable.size
+        downloadable.forEachIndexed { i, color ->
             syncImage(color, index)
             onProgress(0.2f + 0.8f * ((i + 1).toFloat() / total))
         }

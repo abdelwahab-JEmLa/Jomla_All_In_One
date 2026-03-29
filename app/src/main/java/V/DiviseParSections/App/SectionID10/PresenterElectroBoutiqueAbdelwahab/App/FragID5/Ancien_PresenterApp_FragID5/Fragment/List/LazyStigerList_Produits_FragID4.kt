@@ -71,27 +71,24 @@ fun Etager_LazyColumn_FragID4(
                 products.flatMap { (_, colors) -> colors }
             }
         }
-
-    val parentProduit_Classement: Map<String, Int> =       //<--
-    //TODO(1): cree logs pk ca n update pas les parent produi par le index clasesemnt don cette lazy voici un sortie de exported active keys    
-        // 
-        //      "-Od4O2OxzMd_1Dxy3Luf": {
-    //    "activated": true,
-    //    "classment": 0,    <--
-    //        //    //TODO(1): ici c 0 ou un por tout c un erreur 
-    //    "nom": "",
-    //    "parentProduitClassement": 0,
-    //    "parentProduitDebugName": "scusa daffodil",
-    //    "parentProduitKeyID": "-OV3rmUj0Lh8T7rqgBn5"
-    //  }  
+    // classement_By_FilterKeys_M3 starts at 0 for every product until a first upload has
+    // written distinct values to Firebase.  Using that field as the sort key therefore
+    // produces an all-zero map, which uploads nothing useful and perpetuates the problem.
+    // The display position in the already-filtered & grouped list IS the intended classement:
+    // it captures the order the user sees, and on next seed Firebase restores that order.
+    val parentProduit_Classement: Map<String, Int> =
         cataloguesWithCategoriesAndProducts
             .flatMap { (_, cats) -> cats }
-            .flatMap { (_, productColorPairs) ->
-                productColorPairs.mapIndexed { index, (product, _) ->
-                    product.keyID to index
-                }
-            }
+            .flatMap { (_, productColorPairs) -> productColorPairs }
+            .mapIndexed { index, (product, _) -> product.keyID to index }
             .toMap()
+            .also { map ->
+                Log.d(
+                    "parentProduit_Classement",
+                    "✅ ${map.size} products indexed by display position | " +
+                            "sample: ${map.entries.take(3).joinToString { "(${it.key.takeLast(6)} → ${it.value})" }}"
+                )
+            }
 
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModelHeadViewModel.uiState.collectAsState()

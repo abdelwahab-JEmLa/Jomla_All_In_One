@@ -149,6 +149,17 @@ fun Etager_LazyColumn(
         Log.d(TAG, "  [LaunchedEffect] productWithColorsList.size changed → ${productWithColorsList.size}")
     }
 
+    // FIX(TODO-2.C): Keep activeDatas.parentProduit_Classement in sync with the actual
+    // display order computed by this grid. The map (productKeyID → display index) is what
+    // Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button uses as classement when writing
+    // filter-keys back to Firebase, so it must reflect the real on-screen positions rather
+    // than the stale zeros stored in Firebase.
+    LaunchedEffect(productWithColorsList) {
+        activeDatas.parentProduit_Classement = productWithColorsList
+            .mapIndexed { index, (product, _) -> product.keyID to index }
+            .toMap()
+    }
+
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
         if (!isHostPhone) return@LaunchedEffect
