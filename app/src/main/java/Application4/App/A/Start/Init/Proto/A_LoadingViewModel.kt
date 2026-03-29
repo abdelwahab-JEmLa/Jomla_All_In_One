@@ -89,7 +89,9 @@ class A_LoadingViewModel(
         }.join()
 
         viewModelScope.launch(Dispatchers.IO) {
-            if (appDatabase.dao_M03CouleurProduitInfos().getAll().isEmpty()) {
+            if (appDatabase.dao_M03CouleurProduitInfos().getAll().isEmpty()
+                ||  M00CentralParametresOfAllApps.get_Default().force_next_start == Do.DeleteInsertAll_Active_Key
+                ) {
                 _uiState.value.activeCompt?.let { compt ->
                     val updated = compt.copy(
                         next_start =
