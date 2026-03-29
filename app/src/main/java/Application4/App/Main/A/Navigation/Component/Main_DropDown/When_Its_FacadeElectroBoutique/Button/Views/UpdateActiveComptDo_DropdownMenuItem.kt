@@ -97,15 +97,8 @@ fun UpdateActiveComptDo_DropdownMenuItem(
                         )
                     }
                 } else {
-                    // Show current selection when collapsed
-                    val currentLabel = when (currentDo) {
-                        Do.StandartInit_Sans_RienFair                                -> "Standard Init"
-                        Do.DeleteInsertAll_Active_Key                                -> "Réinit clé active"
-                        Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll                -> "Réinit toutes les données"
-                        Do.DeleteInsertAll_Ref_All_Datas                             -> "Réinit toutes les données de référence"
-                    }
                     Text(
-                        text = currentLabel,
+                        text = currentDo.name,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(top = 4.dp)
