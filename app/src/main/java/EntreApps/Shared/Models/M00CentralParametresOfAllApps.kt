@@ -60,6 +60,7 @@ data class M00CentralParametresOfAllApps(
         }
     },
 
+
     //---------------------------------App Settings----------------------------------------------------------------------------------------------------------------------------------
     val activeWindowsSearchProduit: Boolean = false,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
