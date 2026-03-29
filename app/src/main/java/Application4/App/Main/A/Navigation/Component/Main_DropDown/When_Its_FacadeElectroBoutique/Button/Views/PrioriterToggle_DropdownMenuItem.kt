@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PrioriterToggle_DropdownMenuItem(viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns) {
     val activeFilter = viewModelNewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter
-    // TODO(1): fait que ca start collapse - Starts collapsed by default
     var isExpanded by remember { mutableStateOf(false) }
 
     DropdownMenuItem(

@@ -76,7 +76,7 @@ data class Z_AppCompt(
     //---------------------------------Centrale_Focuces_Values.----------------------------------------------------------------------------------------------------------------------------------
     val filter_marqueClient_Name: String = "no Filter",
 
-    val next_start: Do = Do.DeleteInsertAll_Active_Key,
+    val next_start: Do = Do.StandartInit,
 
     val activeDialogSearchM1Produit: Boolean = false,
     val active_ProduitKeyID_Au_DroopDown_PresenterEcran: String = "",

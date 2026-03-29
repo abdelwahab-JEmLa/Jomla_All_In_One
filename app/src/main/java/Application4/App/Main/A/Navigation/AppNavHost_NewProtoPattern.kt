@@ -6,8 +6,6 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatt
 import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
-import EntreApps.Shared.Models.Z_AppCompt
-import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.centralDataBasesModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.classesHandlersModule
@@ -15,15 +13,12 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.composRepositorysModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.factoryDataBaseProtoAvantJuin3Module
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.viewModelModule
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,12 +28,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.core.context.GlobalContext
 import java.util.concurrent.atomic.AtomicBoolean
@@ -91,47 +80,12 @@ fun AppNavHost_NewProtoPattern(
                             }
                     }
                 }
-
-                val appDb: AppDatabase = koinInject()
-                val appComptList by appDb.dao_M9AppCompt()
-                    .getBy_M00_Lence_Key_Flow()
-                    .collectAsState(initial = emptyList())
-
-                val lastSyncTimestamp = appComptList.firstOrNull()?.dernierTimeTampsSynchronisationAvecFireBase
-
                 var initDone by rememberSaveable { mutableStateOf(false) }
-                LaunchedEffect(lastSyncTimestamp) {
-                    if (lastSyncTimestamp != null) {
-                        initDone = false
-                    }
-                }
-
-                // Firebase → Room alive listener: syncs Z_AppCompt ref changes into local DB
-                DisposableEffect(Unit) {
-                    val listener = object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            snapshot.children.forEach { child ->
-                                val updated = child.getValue(Z_AppCompt::class.java) ?: return@forEach
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    appDb.dao_M9AppCompt().upsert(updated)
-                                }
-                            }
-                        }
-                        override fun onCancelled(error: DatabaseError) {
-                            Log.w("Firebase", "Z_AppCompt listener cancelled", error.toException())
-                        }
-                    }
-                    Z_AppCompt.ref.addValueEventListener(listener)
-                    onDispose {
-                        Z_AppCompt.ref.removeEventListener(listener)
-                    }
-                }
-
                 if (!initDone) {
                     A_LoadingApp4_Init_Screen(
                         innerPadding = innerPadding,
                         onInitDone = { initDone = true },
-                        appDatabase = appDb
+                        appDatabase = koinInject ()
                     )
                 } else {
                     A_Compact_Presentoire_App_Produits_App4()
