@@ -141,4 +141,7 @@ class A_LoadingViewModel(
 
         _uiState.update { it.copy(initDone = true) }
     }
+    public override fun onCleared() {
+        super.onCleared()
+    }
 }
