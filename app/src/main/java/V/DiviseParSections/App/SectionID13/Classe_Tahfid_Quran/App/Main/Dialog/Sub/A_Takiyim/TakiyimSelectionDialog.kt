@@ -62,11 +62,9 @@ fun TakiyimSelectionDialog(
 ) {
     var selectedTakiyim by remember { mutableStateOf(currentTakiyim) }
 
-    // FIXED TODO(1): Get active Ousstad for new moulahadat
     val activeCentralValues = focusedValuesGetter.active_Central_Values
     val activeOusstad = activeCentralValues.active_Ousstad_Tahfid
 
-    // FIXED TODO(1): Make takiyim selection a dropdown menu
     var showTakiyimDropdown by remember { mutableStateOf(false) }
 
     // Get the most recent observation for this student to pre-populate moulahadat
@@ -142,7 +140,6 @@ fun TakiyimSelectionDialog(
 
                 Divider()
 
-                // FIXED TODO(1): Takiyim as dropdown menu instead of cards
                 Text(
                     text = "التقييم:",
                     style = MaterialTheme.typography.titleMedium,

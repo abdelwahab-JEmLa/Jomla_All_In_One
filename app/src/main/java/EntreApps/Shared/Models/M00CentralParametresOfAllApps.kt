@@ -77,10 +77,7 @@ data class M00CentralParametresOfAllApps(
             append("/storage/emulated/0/Abdelwahab_jeMla.com")
         }
 
-         val images_central_Local_storageLink = buildString {
-            append(central_Local_storageLink)
-            append("/IMGs/BaseDonne")
-        }
+         val images_central_Local_storageLink = M3CouleurProduitInfos.images_central_Local_storageLink
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 

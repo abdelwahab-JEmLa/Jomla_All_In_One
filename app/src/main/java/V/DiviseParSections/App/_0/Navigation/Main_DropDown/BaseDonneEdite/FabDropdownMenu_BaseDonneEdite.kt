@@ -2,6 +2,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos.Companion.rootFolder_DropBox
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -40,9 +41,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 object DropBox_Init_2 {
-    const val rootFolder: String = "/images"
-    val localImagesBaseDir: File =
-        File(M00CentralParametresOfAllApps.images_central_Local_storageLink)
+     val rootFolder: String = rootFolder_DropBox
 
     private val client: DbxClientV2 by lazy {
         DbxClientV2(
@@ -173,29 +172,6 @@ object DropBox_Init_2 {
             }
         }
 
-    private suspend fun syncImage(
-        color: M3CouleurProduitInfos,
-        index: Map<String, String>
-    ) {
-        val filename = color.nomImageFichieSansEtansion
-        if (!color.hasValidImage()) return
-        val localFile = File(
-            M00CentralParametresOfAllApps.images_central_Local_storageLink,
-            "$filename.${color.extensionDisponible}"
-        )
-        if (localFile.exists()) return
-        val dropboxPath = index[filename] ?: return
-        try {
-            withContext(Dispatchers.IO) {
-                localFile.parentFile?.mkdirs()
-                FileOutputStream(localFile).use {
-                    client.files().download(dropboxPath).download(it)
-                }
-            }
-        } catch (_: Exception) {
-            localFile.delete()
-        }
-    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Extension helpers
@@ -234,7 +210,25 @@ fun FabDropdownMenu_BaseDonneEdite(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
-            DropDownItemWBaseDonne_OrganiserParCatalogue(
+            DropDownItemWBaseDonne_OrganiserParCatalogue(  
+                
+                    //<--
+                    //TODO(1): utilise bar progress
+                             //<--
+                             //TODO(1): utilise Shape: Wavy voici les lien ou cherhce les infos de
+                //            https://developer.android.com/reference/kotlin/androidx/compose/material3/WavyProgressIndicatorDefaults
+                //<--
+                //TODO(1): cree fun separe de WavyProgressIndicator
+                // it // Note : Les variantes wavy sont disponibles dans les builds récents de M3
+                //WavyLinearProgressIndicator(
+                //    progress = { 0.7f },
+                //    modifier = Modifier.fillMaxWidth(),
+                //    wavelength = 20.dp,
+                //    amplitude = 4.dp
+                //)
+                // pour affiche le progress de cette operation 
+                //<--
+            //TODO(1): extract   et fait que ca utilise drp_image_folder_catalogue_path pour metre chque image don son catalogue et fait que images a mem nom que le drien date ecrase l ancien 
                 progress = organizeProgress,
                 enabled = organizeProgress == null,
                 onClick = {

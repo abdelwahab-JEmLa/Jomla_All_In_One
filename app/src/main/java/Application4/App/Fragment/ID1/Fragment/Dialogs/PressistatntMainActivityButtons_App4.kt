@@ -42,7 +42,6 @@ fun PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns: A_ViewModel_
         }
     }
 
-    // FIX TODO(1): start at center — offsets begin at 0 so the FAB appears
     // exactly where the Box's contentAlignment = Center places it.
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
@@ -51,13 +50,10 @@ fun PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns: A_ViewModel_
         MaterialTheme.colorScheme.primary
     else
         MaterialTheme.colorScheme.surfaceVariant
-
-    // FIX TODO(1): use Alignment.Center so the FAB starts in the middle of the screen.
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        // FIX TODO(1) label: wrap FAB + label in a draggable Row so both move together.
         Row(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
@@ -92,7 +88,6 @@ fun PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns: A_ViewModel_
                 )
             }
 
-            // FIX TODO(1) label: label with matching background color next to the FAB.
             Text(
                 text = if (isEchatillantsFilter) "Échantillons" else "Tous les produits",
                 modifier = Modifier

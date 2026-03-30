@@ -54,12 +54,10 @@ fun Boit_Quantity_Handler(
     val its_fournisseur = focusedValuesGetter.activeOnVentM2ClientInfos?.its_Fournisseur
     val achat_tariff = mainGetter.find_List_Tariffs_Du_Produit(produit.keyID, true)
 
-    // TODO(1) fixed: find the Achat tariff for this product (grossist only)
     val achat_Tariff_ItsWorkInGrossist: M13TarificationInfos? = achat_tariff.find {
         it.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_Achat
     }
 
-    // TODO(1) fixed: if its_fournisseur, display Tariff_ItsWorkInGrossist_Achat
     //   The resolved tariff to show in the price card for fournisseur clients:
     //     - use the real Achat tariff when available
     //     - fall back to a default 0.0 placeholder so the UI is never blank
@@ -72,7 +70,6 @@ fun Boit_Quantity_Handler(
         )
     } else null
 
-    // TODO(2) fixed: LaunchedEffect – when its_fournisseur and no Achat tariff exists yet,
     //   create one with prixCurrency = 0.0, persist it, then update every related vent
     //   so they all point to the new tariff.
     LaunchedEffect(produit.keyID, its_fournisseur) {

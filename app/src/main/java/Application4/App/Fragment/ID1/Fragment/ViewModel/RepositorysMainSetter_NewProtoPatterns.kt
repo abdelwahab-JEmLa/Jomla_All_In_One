@@ -1,13 +1,13 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
-import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import android.content.Context
 import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +26,20 @@ class RepositorysMainSetter_NewProtoPatterns(
     // M01Produit
     // -------------------------------------------------------------------------
 
+    fun fireBase_batch_set_list_M01Produit(
+        datas: List<M01Produit>,
+        onSuccess: () -> Unit = {}
+    ) {
+        composScope.launch {
+            if (datas.isNotEmpty()) {
+                datas.forEach { appDatabase.dao_M1Produit().update(it) }
+                val updates: Map<String, Any> = datas.associate { it.keyID to it.toFirebaseMap() }
+                M01Produit.Companion.ref.updateChildren(updates).await()
+            }
+            withContext(Dispatchers.Main) { onSuccess() }
+        }
+    }
+
     fun update_M1Produit(data: M01Produit) {
         composScope.launch {
             appDatabase.dao_M1Produit().update(data)
@@ -40,6 +54,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             M01Produit.Companion.ref.child(data.keyID).removeValue().await()
         }
     }
+
 
     // -------------------------------------------------------------------------
     // M3CouleurProduitInfos

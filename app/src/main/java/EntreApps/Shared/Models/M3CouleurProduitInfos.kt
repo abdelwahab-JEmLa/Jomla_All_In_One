@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -84,6 +85,17 @@ M3CouleurProduitInfos(
             .document("M3CouleurProduitInfos")
             .collection("Datas")
 
+        val images_central_Local_storageLink = buildString {
+            append(central_Local_storageLink)
+            append("/IMGs/BaseDonne")
+        }
+
+        val baseDir = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
+
+        val rootFolder_DropBox = buildString {
+            append("/images")
+        }
+
         fun compareEntre(
             ancien: M3CouleurProduitInfos,
             newData: M3CouleurProduitInfos
@@ -104,8 +116,12 @@ M3CouleurProduitInfos(
                 return null
             }
 
-            val baseDir = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
 
+
+            val images_central_Local_storageLink = buildString {
+                append(central_Local_storageLink)
+                append("/IMGs/BaseDonne")
+            }
             // Try the original filename first
             var currentFile = File(baseDir, "$nomImageFichieSansEtansion.$extensionDisponible")
             if (currentFile.exists()) {

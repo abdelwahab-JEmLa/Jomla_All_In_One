@@ -7,15 +7,9 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model.SortOrder_Facade_Boutique
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import androidx.compose.runtime.Composable
 
-/**
- * SortTunnel - Compact sorting and grouping logic with Catalogue support
- * FIXED: Now a regular function (not @Composable) so the caller's remember() controls
- *        invalidation — the same fix applied earlier to FilterTunnel.
- *        Previously the internal remember() could hold a stale sorted list even after
- *        onVentProduitKeyIDs changed, which meant en-vente products were never floated
- *        to the top (TODO-1 in LazyStigerList / M_FilterState).
- */
+
 fun SortTunnel(
     filteredProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     sortOrder: SortOrder_Facade_Boutique,

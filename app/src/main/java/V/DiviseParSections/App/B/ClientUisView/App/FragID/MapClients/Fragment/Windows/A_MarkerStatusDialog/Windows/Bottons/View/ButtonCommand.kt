@@ -4,13 +4,13 @@ import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_Ne
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.vibrateOnUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M2Client
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -112,7 +112,6 @@ fun CommandButton(
                 viewModel.updateLongAppSetting(relative_M2Client.id)
                 onUpdateLongAppSetting()
             } else {
-                // FIX TODO(1): was calling updateCurrentFragment() which only updates the state
                 // flow but never invokes the NavController — so the UI state changed but the
                 // screen never actually changed. navigateTo() does both: it updates
                 // _currentFragment AND calls _navController?.navigate(...).

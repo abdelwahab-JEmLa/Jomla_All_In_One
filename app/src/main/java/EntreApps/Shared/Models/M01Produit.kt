@@ -3,7 +3,6 @@ package EntreApps.Shared.Models
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -39,6 +38,7 @@ data class M01Produit(
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
     // default tag: Dernier_VentAchat_Est_Trop_Luin
     var tag_prioriter_str: String = Prioriter.Dernier_VentAchat_Est_Trop_Luin.name +",",
+    var its_in_echantiallants : Boolean? = null,
 
     //----------------------------------------------------------------------------------------------------------------------------------------
 

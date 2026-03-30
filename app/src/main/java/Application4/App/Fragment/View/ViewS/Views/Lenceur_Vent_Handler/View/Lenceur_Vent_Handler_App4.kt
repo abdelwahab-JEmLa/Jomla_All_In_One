@@ -65,8 +65,6 @@ fun Lenceur_Vent_Handler_App4(
         }
     }
 
-    // Fixed TODO(1): read live values from active_Datas (Compose @Stable state) instead of
-    // the stale UiState snapshot via centralValues.
     val isGrossist = viewModel.active_Datas.currentApp_ItsWorkChezGrossisst
     val isAdmin    = viewModel.active_Datas.currentApp_Est_Admin
 

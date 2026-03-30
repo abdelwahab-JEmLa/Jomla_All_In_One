@@ -231,7 +231,7 @@ val viewModelModule = module {
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get()) }
     viewModel { MapClientsViewModel(androidContext(),get(), get(), get(), get(), get()) }
-    viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
+    viewModel { E0AfficheHistoriqueTransactionsViewModel(androidContext(), get(), get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
     viewModel { ViewModelPresistantButtonsSec8FWinID1(get()) }
 

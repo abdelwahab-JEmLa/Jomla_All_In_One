@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun DropDownID2(
     sessionDate: SessionDate,     //<--
-    //TODO(1): regle que ca deele avant date
+    //(1): regle que ca deele avant date
     repo20Observation: Repo20ObsarvationEtudion,
     sessionObservations: List<M20ObsarvationEtudion>
 ) {

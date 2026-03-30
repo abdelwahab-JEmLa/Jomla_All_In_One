@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.AddToStockDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.ChangeDispoDialog
@@ -12,9 +14,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.annotation.SuppressLint
@@ -93,6 +93,19 @@ fun View_MainItem(
         repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
     val relative_Client =
         repositorysMainGetter.find_M2Client(relative_M8BonVent.parent_M2Client_KeyID)
+    val relative_list_ =
+        repositorysMainGetter.find_M2Client(relative_M8BonVent.parent_M2Client_KeyID)
+    fun get_relative_m8_list_m10vents() =
+        repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
+            it.parent_M8BonVent_KeyId == relative_M8BonVent.keyID
+        }
+
+    fun get_relative_list_m1() =
+        get_relative_m8_list_m10vents()
+            .mapNotNull { vent ->
+                repositorysMainGetter.find_M1Produit_ByKeyID(vent.parent_M1Produit_KeyId)
+            }
+            .distinctBy { it.keyID }
 
     val hasVoiceMessage =
         relative_M17Message?.nomDeSonOriginaleFichie != null && relative_M17Message.nomDeSonOriginaleFichie != "null"
@@ -176,6 +189,7 @@ fun View_MainItem(
     var showAddToStockDialog by remember { mutableStateOf(false) }
     var showChangeDispoDialog by remember { mutableStateOf(false) }
     var showSaveDispoDialog by remember { mutableStateOf(false) }
+    var showStockOptionsDialog by remember { mutableStateOf(false) }
 
     fun save_Current_Dispo_To_Camion_Presentation(): Unit {
         // Obtenir toutes les opérations de vente liées à ce bon
@@ -487,7 +501,7 @@ fun View_MainItem(
 
                     IconButton(
                         onClick = {
-                            showAddToStockDialog = true
+                            showStockOptionsDialog = true
                         }
                     ) {
                         Icon(
@@ -791,6 +805,98 @@ fun View_MainItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
+        )
+    }
+
+    if (showStockOptionsDialog) {
+        AlertDialog(
+            onDismissRequest = { showStockOptionsDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Receipt,
+                    contentDescription = "Stock Options",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text(
+                    text = "خيارات المخزون",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Button 1: open the regular AddToStock dialog
+                    Button(
+                        onClick = {
+                            showStockOptionsDialog = false
+                            showAddToStockDialog = true
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "إضافة إلى المخزون",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            showStockOptionsDialog = false
+                            val relatedM1KeyIDs = get_relative_m8_list_m10vents()
+                                .map { it.parent_M1Produit_KeyId }
+                                .toSet()
+                            val updatedList = repositorysMainGetter.repo1ProduitInfos.datasValue.map { prod ->
+                                prod.copy(
+                                    its_in_echantiallants = if (prod.keyID in relatedM1KeyIDs) true else null,
+                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                )
+                            }
+                            viewModel.fireBase_batch_set_list_M01Produit(updatedList)
+                            Toast.makeText(
+                                context,
+                                "تم تحديث ${relatedM1KeyIDs.size} منتج كعينات",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Save,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "تحديد كعينات (échantiallants)",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showStockOptionsDialog = false }) {
+                    Text("إلغاء", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
         )
     }
 

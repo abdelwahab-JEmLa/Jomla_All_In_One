@@ -47,7 +47,7 @@ private fun EditeBaseDonneMainScreenIdS9Prev() {
     EditeBaseDonneMainScreenIdS9()
 }
         //<--
-        //TODO(1):delpca tout les functions et relative sort et tiie
+        //(1):delpca tout les functions et relative sort et tiie
 @Composable
 fun EditeBaseDonneMainScreenIdS9(
     modifier: Modifier = Modifier,

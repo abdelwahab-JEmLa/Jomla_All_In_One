@@ -1,9 +1,9 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.Affich
 
 import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -40,8 +40,7 @@ fun AffichePresentedCatalogues(
     modifier: Modifier = Modifier
 ) {            
 
-    val affiche_animation = false        //<--
-    //TODO(1): fai que sifalse de ne pas affiche les animation
+    val affiche_animation = false
 
     val catalogues by remember {
         derivedStateOf { get_ListM21CataloguesCategorie() }

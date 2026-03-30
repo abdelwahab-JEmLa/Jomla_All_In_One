@@ -45,7 +45,11 @@ import java.io.FileOutputStream
 fun SyncDropboxImages_DropdownMenuItem(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
     onDismissDropdown: () -> Unit,
-) {
+) {          //<--
+//TODO(1): fait ici de cherche pour chaque couleur don ref_couleurs si le rela image don local imgs dernie temp modification != temp modification de image
+//don drp_image_folder_catalogue_path  de telecharge l image et ecrase le local image
+    //<--
+    //TODO(1): si la couleur n a pas de couleur de cherche don drop box images et de le telecharger si non trouve update non dispo
     val scope   = rememberCoroutineScope()
     var running  by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }

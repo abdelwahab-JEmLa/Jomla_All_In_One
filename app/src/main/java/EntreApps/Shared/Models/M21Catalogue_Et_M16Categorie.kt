@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models
 
+import EntreApps.Shared.Models.M3CouleurProduitInfos.Companion.rootFolder_DropBox
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import android.util.Log
 import androidx.compose.ui.graphics.Color
@@ -92,6 +93,7 @@ data class M21CataloguesCategorie(
     var keyID: String = BsonObjectId.Companion().toHexString(),
     val id: Long = 0,
     val nom: String = "",
+    val drp_image_folder_catalogue_path: String = "$rootFolder_DropBox/$keyID",
     val premierCategorieId: Long = 0,
     val position: Int = 0,
     val couleur: Color = Color(0xFF9C27B0)

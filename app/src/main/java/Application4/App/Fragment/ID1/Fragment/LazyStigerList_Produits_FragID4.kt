@@ -6,7 +6,6 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewPro
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
-import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
@@ -55,7 +54,7 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {
+) {        //<--
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val activeDatas = viewModel.active_Datas
@@ -109,24 +108,8 @@ fun Etager_LazyColumn(
             if (!isEchatillants) {
                 productWithColorsList
             } else {
-                // Prefer the pre-fetched filter-keys map (available at first composition).
-                // Each entry whose parentProduitKeyID belongs to the Echatillants client is
-                // identified via its_couleur_du_Jomla_ECHATILLANTS_Client being non-null.
-                // Fall back to list_M10OperationVentCouleur (also seeded at startup) when
-                // the map is not yet available.
-                val filterMap = activeDatas.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values
-                val echatillantsProductKeys: Set<String> = if (filterMap != null) {
-                    filterMap.values
-                        .filter { it.its_couleur_du_Jomla_ECHATILLANTS_Client != null }
-                        .map { it.parentProduitKeyID }
-                        .toSet()
-                } else {
-                    (activeDatas.list_M10OperationVentCouleur ?: emptyList())
-                        .filter { it.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID }
-                        .map { it.parent_M1Produit_KeyId }
-                        .toSet()
-                }
-                productWithColorsList.filter { (product, _) -> product.keyID in echatillantsProductKeys }
+                // Keep only products explicitly marked as échantillons via its_in_echantiallants.
+                productWithColorsList.filter { (product, _) -> product.its_in_echantiallants == true }
             }
         }
     }
@@ -179,11 +162,7 @@ fun Etager_LazyColumn(
         modifier = modifier
             .semantics(mergeDescendants = true) {
                 set(value = lenceVentOperations, key = SemanticsPropertyKey("lenceVentOperations"))
-            }
-            .semantics(mergeDescendants = true) {
                 set(value = activeBonVentKey, key = SemanticsPropertyKey("activeBonVentKey"))
-            }
-            .semantics(mergeDescendants = true) {
                 set(value = activeDatas.list_M10OperationVentCouleur ?: emptyList<M10OperationVentCouleur>(), key = SemanticsPropertyKey("all"))
             }
             .fillMaxWidth()
@@ -250,23 +229,4 @@ fun LazyStigerList_Produits_FragID4(
             modifier = modifier
         )
     }
-}
-
-@Composable
-fun Lazy_List(
-    modifier: Modifier = Modifier,
-    on_pour_send_data: (String, String) -> Unit,
-    onClickImageToShowControles: () -> Unit,
-    onProductCategoryClick: (M01Produit) -> Unit,
-    justMovedProductKeyID: String?,
-    viewModel: A_ViewModel_NewProtoPatterns,
-    uiStateNewProtoPatterns: UiState_NewProtoPatterns
-) {
-    Etager_LazyColumn(
-        modifier = modifier,
-        on_pour_send_data = on_pour_send_data,
-        onProductCategoryClick = onProductCategoryClick,
-        justMovedProductKeyID = justMovedProductKeyID,
-        uiState_NewProtoPatterns_viewModel = Pair(uiStateNewProtoPatterns, viewModel),
-    )
 }
