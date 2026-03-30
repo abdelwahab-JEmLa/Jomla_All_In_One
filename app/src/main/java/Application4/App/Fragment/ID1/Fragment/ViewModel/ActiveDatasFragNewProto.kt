@@ -2,12 +2,12 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -34,6 +34,10 @@ class ActiveDatasFragNewProto {
 
     var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(null)
     var lastKnownBonVentKey: String? = null
+
+    /** All M10 operations (not filtered by active bon vent). Seeded before the loading gate opens
+     *  so that the Echatillants filter has data on first composition. */
+    var list_M10OperationVentCouleur: List<M10OperationVentCouleur>? by mutableStateOf(null)
 
     var list_M8BonVent: List<M8BonVent>? by mutableStateOf(null)
     var list_M2Client: List<M2Client>? by mutableStateOf(null)

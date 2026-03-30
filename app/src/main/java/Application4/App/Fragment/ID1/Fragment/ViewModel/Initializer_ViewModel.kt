@@ -2,8 +2,8 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M8BonVent
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -22,6 +22,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         collectList_M3()
         collectList_M8BonVent()
         collectList_M2Client()
+        collectList_M10OperationVentCouleur_All()
     }
 
     private fun load_then_Collect_Active_DatasMutableStates() {
@@ -71,6 +72,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             categories = categories,
             products   = products,
             colours    = colours,
+            allOperations = operationVentCouleurs,
         )
 
         AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
@@ -94,6 +96,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         categories: List<EntreApps.Shared.Models.M16CategorieProduit>,
         products: List<EntreApps.Shared.Models.M01Produit>,
         colours: List<EntreApps.Shared.Models.M3CouleurProduitInfos>,
+        allOperations: List<EntreApps.Shared.Models.M10OperationVentCouleur>,
     ) {
         AViewModel_NewProtoPatterns.active_Datas.active_M9Compt          = appCompt
         AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent           = bonVent
@@ -102,6 +105,8 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         // Seed M1 & M3 so the grid is populated as soon as the loading gate opens
         AViewModel_NewProtoPatterns.active_Datas.list_M1Produit               = products
         AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos   = colours
+        // Seed ALL M10 ops so the Echatillants filter has data on first composition
+        AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur  = allOperations
     }
 
     private suspend fun collectActiveM9Compt() {
@@ -152,6 +157,17 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAllFlow()
                 .collect {
                     AViewModel_NewProtoPatterns.active_Datas.list_M2Client = it
+                }
+        }
+    }
+
+    /** Keeps active_Datas.list_M10OperationVentCouleur in sync with the Room table.
+     *  This powers the Echatillants filter which needs ALL operations, not just the active bon. */
+    private fun collectList_M10OperationVentCouleur_All() {
+        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
+            AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAllFlow()
+                .collect {
+                    AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = it
                 }
         }
     }

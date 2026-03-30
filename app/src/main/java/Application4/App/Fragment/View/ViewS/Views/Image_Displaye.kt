@@ -33,7 +33,6 @@ fun Image_Displaye(
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
-    on_pour_send_data: (String, String) -> Unit,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     list_M1Produit: List<M01Produit>?,
     image_pourcetage_qualite: pourcentage = pourcentage.min_possible

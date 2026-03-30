@@ -58,6 +58,15 @@ object Init_LightDataBases {
             } else raw
         } catch (_: Exception) {}
 
+        // Log M10 ops belonging to the Echatillants client (for debugging the filter)
+        val echatillantsM8Keys = m8List
+            .filter { it.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID }
+            .map { it.keyID }
+            .toSet()
+        android.util.Log.d(
+            "Init_LightDataBases",
+            "Echatillants bons (${echatillantsM8Keys.size}): $echatillantsM8Keys"
+        )
         // ── m10 OperationVentCouleur ─────────────────────────────────────────
         val m8Keys = m8List.map { it.keyID }.toSet()
         var m10List = emptyList<M10OperationVentCouleur>()
@@ -69,6 +78,13 @@ object Init_LightDataBases {
             } else raw
         } catch (_: Exception) {}
 
+        // Log all M10 ops that belong to the Echatillants client's bons
+        val echatillantsM10 = m10List.filter { it.parent_M8BonVent_KeyId in echatillantsM8Keys }
+        android.util.Log.d(
+            "Init_LightDataBases",
+            "Echatillants M10 ops (${echatillantsM10.size}): " +
+                    echatillantsM10.joinToString { "bon=${it.parent_M8BonVent_KeyId} prod=${it.parent_M1Produit_KeyId}" }
+        )
         // ── m13 TarificationInfos ────────────────────────────────────────────
         var m13List = emptyList<M13TarificationInfos>()
         try {

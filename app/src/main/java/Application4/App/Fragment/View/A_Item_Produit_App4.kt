@@ -70,7 +70,7 @@ fun A_Item_Produit_App4(
     val isThisProductExpanded = remember(expanded_M1Produit) {
         expanded_M1Produit?.keyID == relative_M1produit.keyID
     }
-    val shouldShowButtons = !isThisProductExpanded
+    val shouldShowButtons = true // compactMode = !isThisProductExpanded gère le layout
 
     val initialColorIndex = remember(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->

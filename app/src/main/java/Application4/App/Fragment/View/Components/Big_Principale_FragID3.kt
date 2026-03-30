@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.Components
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_FragID3
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
 import Application4.App.Fragment.View.ViewS.Views.Pricipale_Tariffs_Vendeurs_FragID3
@@ -9,6 +9,8 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -20,9 +22,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
+private val IMAGE_HEIGHT_NORMAL: Dp = 200.dp
+private val IMAGE_HEIGHT_EXPANDED: Dp = IMAGE_HEIGHT_NORMAL - 60.dp  // -60dp quand expanded
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
@@ -37,11 +44,18 @@ fun Big_Principale_FragID3(
     shouldShowButtons: Boolean,
     on_pour_send_data: (String, String) -> Unit
 ) {
+    val imageHeight by animateDpAsState(
+        targetValue = if (isThisProductExpanded) IMAGE_HEIGHT_EXPANDED else IMAGE_HEIGHT_NORMAL,
+        animationSpec = tween(durationMillis = 300),
+        label = "mainImageHeight"
+    )
+
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,
         isSelected = true,
         on_pour_send_data = on_pour_send_data,
-        modifier = Modifier.fillMaxWidth(),uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel
+        modifier = Modifier.fillMaxWidth().height(imageHeight),
+        uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel
     )
 
     Spacer(modifier = Modifier.height(2.dp))

@@ -69,14 +69,12 @@ fun A_Compact_Presentoire_App_Produits_App4(
         }
     } else {
         Box() {
-            Lazy_List(
+            Etager_LazyColumn(
                 modifier = modifier,
                 on_pour_send_data = on_pour_send_data,
-                onClickImageToShowControles = onClickImageToShowControles,
                 onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
                 justMovedProductKeyID = justMovedProductKeyID,
-                viewModel = viewModelNewProtoPatterns,
-                uiStateNewProtoPatterns = uiState,
+                uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),
             )
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)
         }

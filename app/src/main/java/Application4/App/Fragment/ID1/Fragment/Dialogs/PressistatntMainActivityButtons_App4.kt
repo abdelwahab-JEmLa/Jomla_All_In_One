@@ -44,8 +44,8 @@ fun PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns: A_ViewModel_
         }
     }
 
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
+    var offsetX by remember { mutableFloatStateOf(-50f) }
+    var offsetY by remember { mutableFloatStateOf(-50f) }
 
     Box(
         modifier = Modifier.fillMaxSize(),

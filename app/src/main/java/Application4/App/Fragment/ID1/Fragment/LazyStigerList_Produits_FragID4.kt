@@ -143,8 +143,11 @@ fun Etager_LazyColumn(
         if (targetKeyID.isBlank()) return@LaunchedEffect
         val foundIndex = displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
         if (foundIndex >= 0) {
-            delay(300)
-            coroutineScope.launch { gridState.animateScrollToItem(foundIndex) }
+            delay(400) // laisser le layout full-line s'établir (était 300ms)
+            coroutineScope.launch {
+                // Scroll un item avant → l'expanded apparaît en dessous du fold, plus lisible
+                gridState.animateScrollToItem((foundIndex - 1).coerceAtLeast(0))
+            }
         }
     }
 
