@@ -2,9 +2,7 @@ package Application2.App.View.Pro0.Proto.ViewS.Views
 
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -23,9 +21,9 @@ import java.io.File
 enum class ImageQualite { max_possible, standart, min_possible }
 
 private fun resolveQualite(expandState: ProduitExpandState) = when {
-    expandState.isExpanded -> ImageQualite.max_possible
+    expandState.isExpanded    -> ImageQualite.max_possible
     expandState.isAnyExpanded -> ImageQualite.min_possible
-    else -> ImageQualite.standart
+    else                      -> ImageQualite.standart
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -35,10 +33,6 @@ fun Image_Displaye_app2(
     expandState: ProduitExpandState,
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
-    onImageClick: (() -> Unit)? = null,
-    isHostPhone: Boolean = false,
-    isConnected: Boolean = false,
-    sendOrderToClientDisplayer: ((WifiUpdateClientDisplayerStats, Any?) -> Unit)? = null,
 ) {
     val qualite = resolveQualite(expandState)
 
@@ -47,10 +41,8 @@ fun Image_Displaye_app2(
         relative_M3CouleurProduitInfos.extensionDisponible
     ) {
         if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo")
-            File(
-                "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
-                "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
-            )
+            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
+                "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}")
         else null
     }
 
@@ -58,22 +50,7 @@ fun Image_Displaye_app2(
         GlideImage(
             model = imageFile,
             contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
-            modifier = modifier
-                .fillMaxSize()
-                .clickable {
-                    when {
-                        onImageClick != null -> onImageClick()
-                        isHostPhone && isConnected && sendOrderToClientDisplayer != null -> {
-                            expandState.onImageTap(relative_M3CouleurProduitInfos)
-                            sendOrderToClientDisplayer(
-                                WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
-                                relative_M3CouleurProduitInfos.keyID
-                            )
-                        }
-
-                        else -> expandState.onImageTap(relative_M3CouleurProduitInfos)
-                    }
-                },
+            modifier = modifier.fillMaxSize(),
             contentScale = contentScale
         ) { it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, qualite) }
     } else {
@@ -87,35 +64,27 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
 ) = this
     .dontAnimate()
     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-    .priority(
-        when (qualite) {
-            ImageQualite.max_possible -> Priority.HIGH
-            ImageQualite.standart -> Priority.NORMAL
-            ImageQualite.min_possible -> Priority.LOW
-        }
-    )
+    .priority(when (qualite) {
+        ImageQualite.max_possible -> Priority.HIGH
+        ImageQualite.standart     -> Priority.NORMAL
+        ImageQualite.min_possible -> Priority.LOW
+    })
     .dontTransform()
     .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
-    .override(
-        when (qualite) {
-            ImageQualite.max_possible -> 800
-            ImageQualite.standart -> 400
-            ImageQualite.min_possible -> 150
-        }
-    )
+    .override(when (qualite) {
+        ImageQualite.max_possible -> 800
+        ImageQualite.standart     -> 400
+        ImageQualite.min_possible -> 150
+    })
     .disallowHardwareConfig()
-    .format(
-        when (qualite) {
-            ImageQualite.max_possible -> DecodeFormat.PREFER_ARGB_8888
-            ImageQualite.standart -> DecodeFormat.PREFER_RGB_565
-            ImageQualite.min_possible -> DecodeFormat.PREFER_RGB_565
-        }
-    )
-    .encodeQuality(
-        when (qualite) {
-            ImageQualite.max_possible -> 100
-            ImageQualite.standart -> 70
-            ImageQualite.min_possible -> 20
-        }
-    )
+    .format(when (qualite) {
+        ImageQualite.max_possible -> DecodeFormat.PREFER_ARGB_8888
+        ImageQualite.standart     -> DecodeFormat.PREFER_RGB_565
+        ImageQualite.min_possible -> DecodeFormat.PREFER_RGB_565
+    })
+    .encodeQuality(when (qualite) {
+        ImageQualite.max_possible -> 100
+        ImageQualite.standart     -> 70
+        ImageQualite.min_possible -> 20
+    })
     .skipMemoryCache(qualite == ImageQualite.min_possible)

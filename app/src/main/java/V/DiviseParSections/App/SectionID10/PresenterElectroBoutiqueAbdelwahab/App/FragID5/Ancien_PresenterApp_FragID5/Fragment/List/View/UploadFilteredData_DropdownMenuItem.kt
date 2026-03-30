@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
+import EntreApps.Shared.Models.Client_Speciale
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import EntreApps.Shared.Modules.Base.AppDatabase
@@ -31,6 +32,7 @@ import org.koin.compose.koinInject
 fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
     list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>,
     parentProduit_Classement: Map<String, Int>,
+    jomlaEchatillantsCouleurKeyIDs: Set<String> = emptySet(),
     onDismissDropdown: () -> Unit,
     context: Context = koinInject(),
     appDatabase: AppDatabase = koinInject(),
@@ -85,11 +87,6 @@ fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
                         coroutineScope.launch(Dispatchers.IO) {
                             isUploading = true
 
-                            // parentProduit_Classement now carries classement_By_FilterKeys_M3
-                            // (fixed in LazyStigerList). We write the same value into both
-                            // `classment` (M3 color key sort field) AND `parentProduitClassement`
-                            // (parent M1 product sort field) so that getReturne_M1_3_16 can
-                            // restore the correct display order on next seed.
                             val keys: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values> =
                                 list_M03CouleurProduitInfos
                                     .filter { it.keyID.isNotBlank() }
@@ -103,6 +100,11 @@ fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
                                             parentProduitKeyID    = couleur.parentBProduitInfosKeyID,
                                             parentProduitDebugName = couleur.parentId1ProduitInfosDebugName,
                                             parentProduitClassement = produitClassement,
+                                            its_couleur_du_Jomla_ECHATILLANTS_Client =
+                                                if (couleur.keyID in jomlaEchatillantsCouleurKeyIDs)
+                                                    Client_Speciale.Jomla_ECHATILLANTS_Client
+                                                else
+                                                    null,
                                         )
                                     }
 

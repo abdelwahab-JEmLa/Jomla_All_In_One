@@ -3,11 +3,14 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoPatterns) {
     fun run() {
@@ -64,15 +67,28 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         val tarification   = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
         val operationVentCouleurs = AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
 
+        // Fetch the active M3 filter-keys map from the Firebase ref so the Echatillants
+        // filter has data at first composition, without needing a LaunchedEffect in the UI.
+        val filterKeysMap: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values> = try {
+            val snap = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos.get().await()
+            snap.children.mapNotNull { child ->
+                val key   = child.key ?: return@mapNotNull null
+                val value = child.getValue(Ref_list_Filtred_Keys_M3Couleur_Main_Values::class.java)
+                    ?: return@mapNotNull null
+                key to value
+            }.toMap()
+        } catch (_: Exception) { emptyMap() }
+
         // Seed active_Datas — M1 and M3 are now included so the grid has data immediately
         seedActiveDatas(
-            appCompt   = appCompt,
-            bonVent    = bonVent,
-            clients    = clients,
-            categories = categories,
-            products   = products,
-            colours    = colours,
+            appCompt      = appCompt,
+            bonVent       = bonVent,
+            clients       = clients,
+            categories    = categories,
+            products      = products,
+            colours       = colours,
             allOperations = operationVentCouleurs,
+            filterKeysMap = filterKeysMap,
         )
 
         AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
@@ -97,6 +113,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         products: List<EntreApps.Shared.Models.M01Produit>,
         colours: List<EntreApps.Shared.Models.M3CouleurProduitInfos>,
         allOperations: List<EntreApps.Shared.Models.M10OperationVentCouleur>,
+        filterKeysMap: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>,
     ) {
         AViewModel_NewProtoPatterns.active_Datas.active_M9Compt          = appCompt
         AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent           = bonVent
@@ -107,6 +124,8 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos   = colours
         // Seed ALL M10 ops so the Echatillants filter has data on first composition
         AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur  = allOperations
+        // Seed the active-key map so the Echatillants filter can use it immediately
+        AViewModel_NewProtoPatterns.active_Datas.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values = filterKeysMap
     }
 
     private suspend fun collectActiveM9Compt() {

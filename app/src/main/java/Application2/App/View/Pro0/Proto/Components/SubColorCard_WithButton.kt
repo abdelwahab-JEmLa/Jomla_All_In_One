@@ -17,8 +17,6 @@ fun SubColorCard_WithButton_app2(
     expandState: ProduitExpandState,
     isExpanded: Boolean = false,
     modifier: Modifier = Modifier,
-    // FIX: optional override so Item_Produit can inject its WiFi-aware tap handler
-    onTap: (() -> Unit)? = null,
 ) {
     Column(modifier = modifier) {
         ColorImageCard_AppEcranPresntoireJemlaCom(
@@ -26,8 +24,6 @@ fun SubColorCard_WithButton_app2(
             expandState = expandState,
             isSelected = false,
             modifier = Modifier.fillMaxWidth().height(if (isExpanded) 80.dp else 40.dp),
-            // If a WiFi-aware handler was provided use it, otherwise fall back to local selectColor
-            onImageClick = onTap ?: { expandState.selectColor(couleur) },
         )
     }
 }

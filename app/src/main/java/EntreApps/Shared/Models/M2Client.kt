@@ -175,3 +175,6 @@ object Jomla_Clients {
     const val ECHATILLANTS_KEY_ID = "-Oh4W0-igT_bXGOo-LC_"
     const val Au_Command_KEY_ID = ""
 }
+enum class Client_Speciale(keyID: String ="") {
+    Jomla_ECHATILLANTS_Client(Jomla_Clients.ECHATILLANTS_KEY_ID)
+}

@@ -85,8 +85,10 @@ fun Etager_LazyColumn(
         }
     }
 
+    // lenceVentOperations and activeBonVentKey are kept for the semantics tags below.
+    // `all` M10 ops are read from activeDatas.list_M10OperationVentCouleur (already seeded at
+    // startup) instead of being re-loaded from Room here — no extra LaunchedEffect needed.
     var lenceVentOperations by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
-    var all by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
     var activeBonVentKey by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
@@ -94,18 +96,11 @@ fun Etager_LazyColumn(
             val targetComptKeyId = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             activeBonVentKey = viewModel.appDatabase.dao_M9AppCompt().getAll()
                 .find { it.keyID == targetComptKeyId }?.onVentM8BonVentKey ?: ""
-            val allOps = viewModel.appDatabase.dao_M10OperationVentCouleur().getAll()
-            lenceVentOperations = allOps.filter { it.parent_M8BonVent_KeyId == activeBonVentKey }
-            all = allOps
+            lenceVentOperations = (activeDatas.list_M10OperationVentCouleur ?: emptyList())
+                .filter { it.parent_M8BonVent_KeyId == activeBonVentKey }
         }
     }
 
-    val isEchatillantsMode by remember {
-        derivedStateOf {
-            activeDatas.affiche_produits_Ou_On_TagPrioriter
-                ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true
-        }
-    }
 
     val displayList by remember {
         derivedStateOf {
@@ -114,10 +109,23 @@ fun Etager_LazyColumn(
             if (!isEchatillants) {
                 productWithColorsList
             } else {
-                val echatillantsProductKeys = all
-                    .filter { it.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID }
-                    .map { it.parent_M1Produit_KeyId }
-                    .toSet()
+                // Prefer the pre-fetched filter-keys map (available at first composition).
+                // Each entry whose parentProduitKeyID belongs to the Echatillants client is
+                // identified via its_couleur_du_Jomla_ECHATILLANTS_Client being non-null.
+                // Fall back to list_M10OperationVentCouleur (also seeded at startup) when
+                // the map is not yet available.
+                val filterMap = activeDatas.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values
+                val echatillantsProductKeys: Set<String> = if (filterMap != null) {
+                    filterMap.values
+                        .filter { it.its_couleur_du_Jomla_ECHATILLANTS_Client != null }
+                        .map { it.parentProduitKeyID }
+                        .toSet()
+                } else {
+                    (activeDatas.list_M10OperationVentCouleur ?: emptyList())
+                        .filter { it.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID }
+                        .map { it.parent_M1Produit_KeyId }
+                        .toSet()
+                }
                 productWithColorsList.filter { (product, _) -> product.keyID in echatillantsProductKeys }
             }
         }
@@ -176,7 +184,7 @@ fun Etager_LazyColumn(
                 set(value = activeBonVentKey, key = SemanticsPropertyKey("activeBonVentKey"))
             }
             .semantics(mergeDescendants = true) {
-                set(value = all, key = SemanticsPropertyKey("all"))
+                set(value = activeDatas.list_M10OperationVentCouleur ?: emptyList<M10OperationVentCouleur>(), key = SemanticsPropertyKey("all"))
             }
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),

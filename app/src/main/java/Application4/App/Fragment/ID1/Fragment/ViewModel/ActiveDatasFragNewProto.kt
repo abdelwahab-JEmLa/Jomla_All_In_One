@@ -7,6 +7,7 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -29,6 +30,11 @@ class ActiveDatasFragNewProto {
     var list_M16CategorieProduit: List<M16CategorieProduit>? by mutableStateOf(null)
 
     var parentProduit_Classement: Map<String, Int> by mutableStateOf(emptyMap())
+
+    /** Fetched from [M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos] at startup.
+     *  Maps each active M3Couleur keyID → its [Ref_list_Filtred_Keys_M3Couleur_Main_Values].
+     *  Used by the Echatillants filter to avoid re-loading all M10 ops at composition time. */
+    var map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>? by mutableStateOf(null)
 
     var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(null)
     var lastKnownBonVentKey: String? = null

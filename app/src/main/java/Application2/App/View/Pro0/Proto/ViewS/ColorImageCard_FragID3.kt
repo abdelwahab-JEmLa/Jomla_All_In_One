@@ -20,7 +20,6 @@ fun ColorImageCard_AppEcranPresntoireJemlaCom(
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     expandState: ProduitExpandState,
     isSelected: Boolean = false,
-    onImageClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp),
 ) {
@@ -38,7 +37,6 @@ fun ColorImageCard_AppEcranPresntoireJemlaCom(
                 expandState = expandState,
                 contentScale = if (isSelected) ContentScale.Fit else ContentScale.Crop,
                 modifier = Modifier,
-                onImageClick = onImageClick,
             )
         }
     }

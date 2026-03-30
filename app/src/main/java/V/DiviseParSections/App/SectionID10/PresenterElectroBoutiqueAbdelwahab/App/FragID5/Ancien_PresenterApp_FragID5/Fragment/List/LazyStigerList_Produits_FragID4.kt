@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List
 
+import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -101,6 +102,72 @@ fun Etager_LazyColumn_App0(
 
     var showUploadDropdown by remember { mutableStateOf(false) }
 
+    // Colours that are currently on a Jomla-ECHATILLANTS bon de vente
+    val jomlaEchatillantsCouleurKeyIDs: Set<String> = remember(
+        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.size,
+        focusedValuesGetter.activeOnVent_M8BonVent?.keyID,
+        allColors.size
+    ) {
+        // FIXED: Added debug log to verify this block executes
+        Log.d("ECHATILLANTS_DEBUG", "🔄 Computing jomlaEchatillantsCouleurKeyIDs...")
+
+        val isJomlaClientBon = focusedValuesGetter.activeOnVent_M8BonVent
+            ?.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID
+
+        // FIXED: Added log to show bon type
+        Log.d(
+            "ECHATILLANTS_DEBUG",
+            "Bon type: ${if (isJomlaClientBon) "JOMLA_ECHATILLANTS" else "autre client"} " +
+                    "(keyID=${focusedValuesGetter.activeOnVent_M8BonVent?.parent_M2Client_KeyID?.takeLast(6)})"
+        )
+
+        if (!isJomlaClientBon) {
+            Log.d("ECHATILLANTS_DEBUG", "⏭️ Skipping ECHATILLANTS check (not a JOMLA_ECHATILLANTS bon)")
+            emptySet()
+        } else {
+            val ventCouleurKeyIDs = focusedValuesGetter
+                .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+                .map { it.parent_M3CouleurProduit_KeyID }
+                .toSet()
+
+            val allColorKeyIDs = allColors.map { it.keyID }.toSet()
+            val missingFromRefActive = ventCouleurKeyIDs.filter { it !in allColorKeyIDs }
+
+            // FIXED: Always log the comparison result, not just when there are missing items
+            if (missingFromRefActive.isNotEmpty()) {
+                Log.w(
+                    "ECHATILLANTS_DEBUG",
+                    "⚠️ ${missingFromRefActive.size} couleur(s) présente(s) dans " +
+                            "onVent_M10VentCouleur ECHATILLANTS mais absentes du ref_active_m3:\n" +
+                            missingFromRefActive.joinToString("\n") { keyID ->
+                                val ventOp = focusedValuesGetter
+                                    .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+                                    .find { it.parent_M3CouleurProduit_KeyID == keyID }
+                                "  - couleurKey=...${keyID.takeLast(6).uppercase()}" +
+                                        " produit=${ventOp?.parent_M1Produit_DebugInfos ?: "?"}"
+                            }
+                )
+            } else {
+                Log.d(
+                    "ECHATILLANTS_DEBUG",
+                    "✅ Toutes les couleurs ECHATILLANTS sont présentes dans ref_active_m3" +
+                            " (${ventCouleurKeyIDs.size} couleur(s))"
+                )
+            }
+
+            // FIXED: Added summary log to verify the final result
+            Log.d(
+                "ECHATILLANTS_DEBUG",
+                "📊 Résumé: ventCouleurs=${ventCouleurKeyIDs.size}, " +
+                        "allColors=${allColorKeyIDs.size}, " +
+                        "missing=${missingFromRefActive.size}, " +
+                        "returning ${ventCouleurKeyIDs.size} keyIDs"
+            )
+
+            ventCouleurKeyIDs
+        }
+    }
+
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
         expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
         if (!isHostPhone) return@LaunchedEffect
@@ -181,6 +248,7 @@ fun Etager_LazyColumn_App0(
                     Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
                         list_M03CouleurProduitInfos = allColors,
                         parentProduit_Classement = parentProduit_Classement,
+                        jomlaEchatillantsCouleurKeyIDs = jomlaEchatillantsCouleurKeyIDs,
                         onDismissDropdown = { showUploadDropdown = false }
                     )
                     Delete_Ref_Active_Keys_M03Couleurs_Button(

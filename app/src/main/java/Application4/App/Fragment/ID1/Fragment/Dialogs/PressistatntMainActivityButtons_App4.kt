@@ -2,7 +2,6 @@ package Application4.App.Fragment.ID1.Fragment.Dialogs
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
-import EntreApps.Shared.Models.Home.ActiveCentralValues
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,14 +42,23 @@ fun PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns: A_ViewModel_
         }
     }
 
-    var offsetX by remember { mutableFloatStateOf(-50f) }
-    var offsetY by remember { mutableFloatStateOf(-50f) }
+    // FIX TODO(1): start at center — offsets begin at 0 so the FAB appears
+    // exactly where the Box's contentAlignment = Center places it.
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    var offsetY by remember { mutableFloatStateOf(0f) }
 
+    val fabColor = if (isEchatillantsFilter)
+        MaterialTheme.colorScheme.primary
+    else
+        MaterialTheme.colorScheme.surfaceVariant
+
+    // FIX TODO(1): use Alignment.Center so the FAB starts in the middle of the screen.
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomStart
+        contentAlignment = Alignment.Center
     ) {
-        FloatingActionButton(
+        // FIX TODO(1) label: wrap FAB + label in a draggable Row so both move together.
+        Row(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
                 .pointerInput(Unit) {
@@ -60,95 +67,41 @@ fun PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns: A_ViewModel_
                         offsetX += dragAmount.x
                         offsetY += dragAmount.y
                     }
-                }
-                .padding(16.dp)
-                .size(56.dp),
-            onClick = {
-                viewModelNewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter =
-                    if (isEchatillantsFilter) {
-                        null  // show all products
-                    } else {
-                        setOf(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS)
-                    }
-            },
-            containerColor = if (isEchatillantsFilter)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.surfaceVariant,
-        ) {
-            Icon(
-                imageVector = if (isEchatillantsFilter) Icons.Default.Check else Icons.Default.FilterList,
-                contentDescription = "Toggle Echatillants Filter",
-                tint = if (isEchatillantsFilter) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-fun FloatingFilterToggleFAB(
-    activeFilters: Set<ActiveCentralValues.ActiveFilter>,
-    onToggleFilter: () -> Unit,
-    showLabels: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val currentFilterState = when {
-        activeFilters.contains(ActiveCentralValues.ActiveFilter.premier_Check_Donne) ->
-            FilterState.PREMIER_CHECK
-        activeFilters.contains(ActiveCentralValues.ActiveFilter.non_premier_Check_Donne) ->
-            FilterState.NON_PREMIER_CHECK
-        else -> FilterState.AUCUN
-    }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
-    ) {
-        FloatingActionButton(
-            modifier = Modifier.size(40.dp),
-            onClick = onToggleFilter,
-            containerColor = when (currentFilterState) {
-                FilterState.PREMIER_CHECK -> Color(0xFF2196F3)
-                FilterState.NON_PREMIER_CHECK -> Color(0xFF9C27B0)
-                FilterState.AUCUN -> MaterialTheme.colorScheme.surfaceVariant
-            },
-        ) {
-            Icon(
-                imageVector = when (currentFilterState) {
-                    FilterState.PREMIER_CHECK -> Icons.Default.Check
-                    FilterState.NON_PREMIER_CHECK -> Icons.Default.Close
-                    FilterState.AUCUN -> Icons.Default.FilterList
                 },
-                contentDescription = "Toggle Filter",
-                tint = when (currentFilterState) {
-                    FilterState.PREMIER_CHECK, FilterState.NON_PREMIER_CHECK -> Color.White
-                    FilterState.AUCUN -> MaterialTheme.colorScheme.onSurfaceVariant
-                }
-            )
-        }
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(56.dp),
+                onClick = {
+                    viewModelNewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter =
+                        if (isEchatillantsFilter) {
+                            null  // show all products
+                        } else {
+                            setOf(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS)
+                        }
+                },
+                containerColor = fabColor,
+            ) {
+                Icon(
+                    imageVector = if (isEchatillantsFilter) Icons.Default.Check else Icons.Default.FilterList,
+                    contentDescription = "Toggle Echatillants Filter",
+                    tint = if (isEchatillantsFilter) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
-        if (showLabels) {
+            // FIX TODO(1) label: label with matching background color next to the FAB.
             Text(
-                text = when (currentFilterState) {
-                    FilterState.PREMIER_CHECK -> "Premier Check Donné"
-                    FilterState.NON_PREMIER_CHECK -> "Non Premier Check Donné"
-                    FilterState.AUCUN -> "Aucun Filtre"
-                },
+                text = if (isEchatillantsFilter) "Échantillons" else "Tous les produits",
                 modifier = Modifier
                     .background(
-                        color = when (currentFilterState) {
-                            FilterState.PREMIER_CHECK -> Color(0xFF2196F3)
-                            FilterState.NON_PREMIER_CHECK -> Color(0xFF9C27B0)
-                            FilterState.AUCUN -> MaterialTheme.colorScheme.surfaceVariant
-                        },
-                        shape = RoundedCornerShape(4.dp)
+                        color = fabColor,
+                        shape = RoundedCornerShape(6.dp)
                     )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = when (currentFilterState) {
-                    FilterState.PREMIER_CHECK, FilterState.NON_PREMIER_CHECK -> Color.White
-                    FilterState.AUCUN -> MaterialTheme.colorScheme.onSurfaceVariant
-                },
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                color = if (isEchatillantsFilter) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall
             )
         }
