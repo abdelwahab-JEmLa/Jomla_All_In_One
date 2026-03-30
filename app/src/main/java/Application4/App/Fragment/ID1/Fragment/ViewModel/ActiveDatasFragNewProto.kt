@@ -22,9 +22,7 @@ class ActiveDatasFragNewProto {
     var section_ToggleButton_TagPrioriter__start_Collapsed: Boolean? by mutableStateOf(true)
     var filter_marqueClient_enum_entries: MapClientsViewModel.VisibleClientsNow? by mutableStateOf(null)
 
-    var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(
-        setOf(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS)
-    )
+    var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(null)
 
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>? by mutableStateOf(null)

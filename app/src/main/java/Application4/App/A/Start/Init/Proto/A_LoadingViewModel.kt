@@ -3,10 +3,14 @@ package Application4.App.A.Start.Init.Proto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Do
+import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +26,6 @@ class A_LoadingViewModel(
     private val appDatabase: AppDatabase,
     private val appContext: Context,
 ) : ViewModel() {
-
     data class LoadingUiState(
         val initDone: Boolean = false,
         val progress: Float = 0f,
@@ -189,6 +192,8 @@ class A_LoadingViewModel(
                     DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
                     // Active-key mode: apply light-db filters scoped to the seeded products
                     insertSeedAndLightDbs(result, applyLightDbFilters = true)
+                    // Fetch and insert any Echatillants products/colors not covered by active ref keys
+                    insertMissingEchatillantsProductsAndColors()
                 }.join()
             }
 
@@ -221,6 +226,73 @@ class A_LoadingViewModel(
         }
 
         _uiState.update { it.copy(initDone = true) }
+    }
+
+    private suspend fun insertMissingEchatillantsProductsAndColors() {
+        // 1. Identify M8 bons belonging to the Echatillants client
+        val echatillantsM8Keys = appDatabase.dao_M8BonVent().getAll()
+            .filter { it.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID }
+            .map { it.keyID }
+            .toSet()
+
+        if (echatillantsM8Keys.isEmpty()) {
+            Log.d("A_LoadingViewModel", "insertMissingEchatillants: no Echatillants bons found — skipping")
+            return
+        }
+
+        // 2. Collect product keys referenced by Echatillants ops
+        val echatillantsProductKeys = appDatabase.dao_M10OperationVentCouleur().getAll()
+            .filter { it.parent_M8BonVent_KeyId in echatillantsM8Keys }
+            .map { it.parent_M1Produit_KeyId }
+            .toSet()
+
+        if (echatillantsProductKeys.isEmpty()) return
+
+        // 3. Keep only the ones not already in Room
+        val existingProductKeys = appDatabase.dao_M1Produit().getAll().map { it.keyID }.toSet()
+        val missingProductKeys  = echatillantsProductKeys - existingProductKeys
+
+        Log.d("A_LoadingViewModel",
+            "insertMissingEchatillants: echatillants products=${echatillantsProductKeys.size} " +
+                    "existing=${existingProductKeys.size} missing=${missingProductKeys.size}: $missingProductKeys")
+
+        if (missingProductKeys.isEmpty()) return
+
+        // 4. Fetch missing products from Firebase
+        val missingProducts = try {
+            M01Produit.ref.get().await().children.mapNotNull { child ->
+                val key = child.key ?: return@mapNotNull null
+                if (key !in missingProductKeys) return@mapNotNull null
+                val p = child.getValue(M01Produit::class.java) ?: return@mapNotNull null
+                if (p.keyID.isBlank() || p.keyID != key) p.copy(keyID = key) else p
+            }
+        } catch (e: Exception) {
+            Log.e("A_LoadingViewModel", "insertMissingEchatillants: M1 fetch failed — ${e.message}")
+            emptyList()
+        }
+
+        if (missingProducts.isNotEmpty()) {
+            appDatabase.dao_M1Produit().insertAll(missingProducts)
+            Log.d("A_LoadingViewModel", "insertMissingEchatillants: inserted ${missingProducts.size} products")
+        }
+
+        // 5. Fetch colors for those products from Firebase
+        val missingColors = try {
+            M3CouleurProduitInfos.ref.get().await().children.mapNotNull { child ->
+                val key = child.key ?: return@mapNotNull null
+                val c = child.getValue(M3CouleurProduitInfos::class.java) ?: return@mapNotNull null
+                val color = if (c.keyID.isBlank() || c.keyID != key) c.copy(keyID = key) else c
+                if (color.parentBProduitInfosKeyID in missingProductKeys) color else null
+            }
+        } catch (e: Exception) {
+            Log.e("A_LoadingViewModel", "insertMissingEchatillants: M3 fetch failed — ${e.message}")
+            emptyList()
+        }
+
+        if (missingColors.isNotEmpty()) {
+            appDatabase.dao_M03CouleurProduitInfos().insertAll(missingColors)
+            Log.d("A_LoadingViewModel", "insertMissingEchatillants: inserted ${missingColors.size} colors")
+        }
     }
 
     public override fun onCleared() {

@@ -1,8 +1,8 @@
 package Application2.App.View.Pro0.Proto.ViewS.Views
 
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -20,6 +20,14 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import java.io.File
 
+enum class ImageQualite { max_possible, standart, min_possible }
+
+private fun resolveQualite(expandState: ProduitExpandState) = when {
+    expandState.isExpanded -> ImageQualite.max_possible
+    expandState.isAnyExpanded -> ImageQualite.min_possible
+    else -> ImageQualite.standart
+}
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye_app2(
@@ -28,64 +36,86 @@ fun Image_Displaye_app2(
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
     onImageClick: (() -> Unit)? = null,
-    // NEW: pass these in so the image can broadcast the toggle over WiFi when acting as host
     isHostPhone: Boolean = false,
     isConnected: Boolean = false,
     sendOrderToClientDisplayer: ((WifiUpdateClientDisplayerStats, Any?) -> Unit)? = null,
 ) {
+    val qualite = resolveQualite(expandState)
+
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
         relative_M3CouleurProduitInfos.extensionDisponible
     ) {
-        if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo") {
+        if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo")
             File(
                 "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
                 "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
             )
-        } else null
+        else null
     }
 
     if (imageFile != null && imageFile.exists()) {
         GlideImage(
             model = imageFile,
             contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
-            modifier = modifier.fillMaxSize().clickable {
-                when {
-                    // Explicit override (e.g. from a parent that already knows what to do)
-                    onImageClick != null -> onImageClick()
+            modifier = modifier
+                .fillMaxSize()
+                .clickable {
+                    when {
+                        onImageClick != null -> onImageClick()
+                        isHostPhone && isConnected && sendOrderToClientDisplayer != null -> {
+                            expandState.onImageTap(relative_M3CouleurProduitInfos)
+                            sendOrderToClientDisplayer(
+                                WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+                                relative_M3CouleurProduitInfos.keyID
+                            )
+                        }
 
-                    // Host connected to a client → toggle locally AND broadcast so the client mirrors it
-                    isHostPhone && isConnected && sendOrderToClientDisplayer != null -> {
-                        expandState.onImageTap(relative_M3CouleurProduitInfos)
-                        sendOrderToClientDisplayer(
-                            WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
-                            relative_M3CouleurProduitInfos.keyID
-                        )
+                        else -> expandState.onImageTap(relative_M3CouleurProduitInfos)
                     }
-
-                    // Client connected to host OR standalone (no WiFi) → toggle locally only
-                    else -> expandState.onImageTap(relative_M3CouleurProduitInfos)
-                }
-            },
+                },
             contentScale = contentScale
-        ) {
-            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos)
-        }
+        ) { it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, qualite) }
     } else {
         Box(modifier = modifier.fillMaxSize())
     }
 }
 
 private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
-    couleur: M3CouleurProduitInfos
+    couleur: M3CouleurProduitInfos,
+    qualite: ImageQualite,
 ) = this
     .dontAnimate()
     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-    .priority(Priority.NORMAL)
+    .priority(
+        when (qualite) {
+            ImageQualite.max_possible -> Priority.HIGH
+            ImageQualite.standart -> Priority.NORMAL
+            ImageQualite.min_possible -> Priority.LOW
+        }
+    )
     .dontTransform()
     .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
-    .override(400, 400)
+    .override(
+        when (qualite) {
+            ImageQualite.max_possible -> 800
+            ImageQualite.standart -> 400
+            ImageQualite.min_possible -> 150
+        }
+    )
     .disallowHardwareConfig()
-    .format(DecodeFormat.PREFER_RGB_565)
-    .encodeQuality(70)
-    .skipMemoryCache(false)
+    .format(
+        when (qualite) {
+            ImageQualite.max_possible -> DecodeFormat.PREFER_ARGB_8888
+            ImageQualite.standart -> DecodeFormat.PREFER_RGB_565
+            ImageQualite.min_possible -> DecodeFormat.PREFER_RGB_565
+        }
+    )
+    .encodeQuality(
+        when (qualite) {
+            ImageQualite.max_possible -> 100
+            ImageQualite.standart -> 70
+            ImageQualite.min_possible -> 20
+        }
+    )
+    .skipMemoryCache(qualite == ImageQualite.min_possible)

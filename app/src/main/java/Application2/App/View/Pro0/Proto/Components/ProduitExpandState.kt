@@ -17,6 +17,9 @@ class ProduitExpandState(
     val isExpanded: Boolean
         get() = focusedValuesGetter.active_Central_Values.expanded_M1Produit?.keyID == relative_M1produit.keyID
 
+    val isAnyExpanded: Boolean
+        get() = focusedValuesGetter.active_Central_Values.expanded_M1Produit != null
+
     var bigPresenterIndex: Int by mutableIntStateOf(resolveInitialIndex())
         private set
 

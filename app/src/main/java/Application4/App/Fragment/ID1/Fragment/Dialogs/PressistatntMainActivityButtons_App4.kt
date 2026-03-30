@@ -66,7 +66,7 @@ fun PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns: A_ViewModel_
             onClick = {
                 viewModelNewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter =
                     if (isEchatillantsFilter) {
-                        Prioriter.entries.toSet() - Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS
+                        null  // show all products
                     } else {
                         setOf(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS)
                     }
