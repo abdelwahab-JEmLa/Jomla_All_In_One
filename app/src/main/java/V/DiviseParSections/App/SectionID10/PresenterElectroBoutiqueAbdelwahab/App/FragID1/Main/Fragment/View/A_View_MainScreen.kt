@@ -6,7 +6,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.M01Produit
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M2Client
 import V.DiviseParSections.App._0.Navigation.LoadingOverlay
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box

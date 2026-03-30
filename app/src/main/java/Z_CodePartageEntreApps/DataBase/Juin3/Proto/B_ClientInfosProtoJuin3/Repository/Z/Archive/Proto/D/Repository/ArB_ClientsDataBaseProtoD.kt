@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M2Client
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.material.icons.Icons

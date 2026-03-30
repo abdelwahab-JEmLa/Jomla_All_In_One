@@ -1,8 +1,5 @@
-package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository
+package EntreApps.Shared.Models
 
-import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.room.Entity
 import androidx.room.PrimaryKey

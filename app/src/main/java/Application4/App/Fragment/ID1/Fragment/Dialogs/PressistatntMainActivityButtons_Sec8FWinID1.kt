@@ -1,9 +1,9 @@
-package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB
+package Application4.App.Fragment.ID1.Fragment.Dialogs
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M13TarificationInfos
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View.ID4ClientSearchButton
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.B1CataloguesAffiche
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.BlinkingWarningCard
@@ -18,20 +18,13 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.CatalogueSelectionDialog
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.ID3RecordingButton
 import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurTelegram_MainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import V.DiviseParSections.App._0.Navigation.Screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -77,24 +70,13 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @Composable
-fun PressistatntMainActivityButtons_Sec8FWinID1(
-    aCentralFacade: ACentralFacade = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
-    focusedVarsHandlerFacade: FocusedActiveValuesFacade = aCentralFacade.focusedActiveValuesFacade,
-    its_Affiche_InfoProduit_Dialog: Boolean = false,
-    viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
-    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
-    viewModelHeadViewModel: HeadViewModel = koinViewModel(),
-    recordingViewModel: RecordingViewModel = koinViewModel(),
-    onClickAnulationButton: () -> Unit = {},
-    onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
-) {
+fun PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns) {
+    //<--
+//TODO(1): enlve tout les buttons
+    // et relative states et cree un button qui au click change vm active datas au Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS sinon revient a tout les tag au active - Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS
     var searchTextForFastPanier by remember { mutableStateOf("") }
 
     val uiState by viewModel.uiState.collectAsState()

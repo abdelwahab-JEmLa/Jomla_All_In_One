@@ -1,5 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View
 
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import android.content.Context
@@ -72,7 +73,7 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     val activeVents = focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter {
-            it.etateDelivery != V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur.EtateDelivery.NonTrouve
+            it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve
                     && it.quantity > 0
         }
 

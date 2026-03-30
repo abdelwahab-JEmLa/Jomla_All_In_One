@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.M09AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3

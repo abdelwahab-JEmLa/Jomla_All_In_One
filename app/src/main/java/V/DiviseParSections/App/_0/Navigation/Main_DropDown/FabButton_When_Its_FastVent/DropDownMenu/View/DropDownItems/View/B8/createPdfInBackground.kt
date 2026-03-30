@@ -3,7 +3,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_F
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App._0.Navigation.Buttons_Gps.PdfSaverUtility
 import android.content.Context
 import android.util.Log

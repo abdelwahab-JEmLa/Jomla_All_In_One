@@ -2,8 +2,8 @@ package Application2.App.Base.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import EntreApps.Shared.Models.Home.SortVentMode
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos

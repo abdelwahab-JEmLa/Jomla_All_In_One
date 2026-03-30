@@ -1,0 +1,172 @@
+package EntreApps.Shared.Models
+
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.withOutFireBaseInvalidCharacters
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import Z_CodePartageEntreApps.Modules.DatesHandler
+import android.R
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MonetizationOn
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import org.mongodb.kbson.BsonObjectId
+
+@Entity
+data class M2Client(
+    @PrimaryKey
+    var keyID: String = generePushKey(),
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
+    var creationTimestamps: Long = System.currentTimeMillis(),
+    //Infos De Base
+    var nom: String = "Non Defini",
+    var cretionTimestamps: Long = DatesHandler().getCurrentTimestamps(),
+    //Forging Keys
+    var its_Fournisseur: Boolean = false,
+    var parentComptCreateurKEyID: String = "",
+    // Section Etates Mutable
+    var numTelephone: String = "",
+    var couleur: String = "#FFFFFF",
+    var bonDuClientsSu: String = "",
+    var currentCreditBalance: Double = 0.0,
+    var positionDonClientsList: Int = 0,
+    var cUnClientTemporaire: Boolean = true,
+    var auFilterFAB: Boolean = false,
+    var typeDeSonMagasine: TypeDeSonMagasine = TypeDeSonMagasine.ATAYAT_MOUKASSARAT,
+    var clientTypeMode: ClientTypeMode = ClientTypeMode.NEVEAU,
+    var caMarqueGpsEstOuvert: Boolean = false,
+    var latitude: Double = getCurrentDefaultLatitude(),
+    var longitude: Double = getCurrentDefaultLongitude(),
+    var title: String = "",
+    var snippet: String = "",
+    var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
+    //Etates Mutable
+    var edite_Exact_Gps_est_fait: Boolean = false,
+    // Section Centralization Valeurs Pour Injection add_New TOu modules
+    var tagCeBonEstOuvertPourComptsIds: String = "",
+    // Section keyFireBase et dernierFireBaseUpdateTimestamps
+    var id: Long = 0L,
+    var keyByParent: String = "",
+    var bsonObjectId: String = BsonObjectId.Companion().toHexString(),
+
+    val nomPrenomArabe: String = "حمنيش عبد الوهاب",
+    val register_Commerce_Nm: String = "16/00 – 5138424 D20",
+    val nif_Num: String = "16291403036"
+) {
+    /**
+     * Get Arabic name with fallback to French name
+     */
+    fun getNomAffichage(): String {
+        return nomPrenomArabe.takeIf { it.isNotBlank() } ?: nom
+    }
+
+    /**
+     * Get full display name with both French and Arabic if available
+     */
+    fun getNomComplet(): String {
+        return if (nomPrenomArabe.isBlank()) {
+            nom
+        } else {
+            "$nom ($nomPrenomArabe)"
+        }
+    }
+
+
+    fun get_DebugInfos(): String {
+        return buildString {
+            append("(M2=")
+            append(nom)
+            append("[")
+            append(keyID.takeLast(3).uppercase())
+            append("])")
+        }
+    }
+
+    fun getTempKeyByParent(): String {
+        return this.nom.withOutFireBaseInvalidCharacters()
+    }
+
+    enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
+        NON_DEFINI(R.color.holo_orange_light, "غير محدد"),
+        ON_MODE_COMMEND_ACTUELLEMENT(R.color.holo_green_light, "نشط / متصل"),
+        VENDU_A_LUI(R.color.holo_purple, ""),
+        Cible(R.color.holo_red_light, "Cible"),
+        CIBLE_PRIORITE_2(R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
+        CIBLE_PRIORITE_3(R.color.holo_green_light, "CIBLE_PRIORITE_3"),
+        CIBLE_POUR_2(R.color.holo_blue_dark, "CIBLE_POUR_2"),
+        ACHETEUR_NON_DISPO(R.color.darker_gray, "الشاري غائب"),
+        AVEC_MARCHANDISE(R.color.holo_blue_light, "عندو سلعة"),
+        FERME(R.color.darker_gray, "مغلق"),
+        A_EVITE(R.color.black, "يتجنب"),
+        CLIENT_ABSENT(R.color.darker_gray, "عميل غائب"),
+    }
+
+    enum class TypeDeSonMagasine(val color: Int, val nomArabe: String) {
+        ATAYAT_MOUKASSARAT(R.color.holo_green_light, "عطارة ومكسرات"),
+        AlIMENTATION_GENERALE(R.color.holo_purple, "مواد غذائية")
+    }
+
+    enum class ClientTypeMode(
+        val icon: ImageVector,
+        val color: Color
+    ) {
+        NEVEAU(
+            icon = Icons.Default.Add,
+            color = Color.Companion.Red
+        ),
+        ANCIEN(
+            icon = Icons.Default.MonetizationOn,
+            color = Color.Companion.Blue
+        ),
+        EVITE(
+            icon = Icons.Default.Lock,
+            color = Color.Companion.Gray
+        )
+    }
+
+    fun with_Trigger_RealTime(): M2Client {
+        return this.copy(
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+    }
+
+    companion object {
+        fun generePushKey() = RepositorysMainSetter.Companion.genereUnPushKeyFireBase(ref)
+        const val keyModel = "ID2"
+
+        fun getCurrentDefaultLatitude(): Double {
+            return 0.0
+        }
+
+        fun extractClientNamePrefix(clientName: String): String {
+            return clientName.substringBefore(".", clientName).trim()
+        }
+
+        fun getCurrentDefaultLongitude(): Double {
+            return 0.0
+        }
+
+        val parent = Firebase.database.getReference(
+            "00_DataPrototype-04-02" +
+                    "/_1_developingRef" +
+                    "/C_InfosSqlDataBases"
+        )
+        val ref = parent.child("B_ClientInfosProtoJuin3")
+
+        fun safe_Remove_MainDatas_Ref(onDone: () -> Unit = {}) {
+            ref.removeValue().addOnSuccessListener { onDone() }
+        }
+
+        fun removeRef(preparedData: M2Client) {
+            ref.child(preparedData.keyID).removeValue()
+        }
+
+        fun get_default(): M2Client {
+            return M2Client()
+        }
+    }
+}

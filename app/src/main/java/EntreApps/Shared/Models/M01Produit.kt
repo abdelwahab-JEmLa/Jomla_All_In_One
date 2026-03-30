@@ -3,7 +3,7 @@ package EntreApps.Shared.Models
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.room.Entity
 import androidx.room.PrimaryKey

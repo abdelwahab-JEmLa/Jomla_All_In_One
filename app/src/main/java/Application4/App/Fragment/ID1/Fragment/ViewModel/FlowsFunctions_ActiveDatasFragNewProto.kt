@@ -7,8 +7,8 @@ import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M2Client
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.Dao_M2Client
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.Dao_M8BonVent

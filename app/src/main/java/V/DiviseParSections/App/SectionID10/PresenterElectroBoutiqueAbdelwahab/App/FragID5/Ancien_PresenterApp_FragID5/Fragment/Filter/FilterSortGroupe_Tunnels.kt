@@ -6,7 +6,7 @@ import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model.FilterState_Facad_Boutique_FragId5
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.Etager_LazyColumn_FragID4
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.Etager_LazyColumn_App0
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
@@ -37,15 +37,16 @@ fun FilterSortGroupe_Tunnels(
 
     val catalogueFilter = currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
-    // Apply all filters using the new FilterTunnel (regular function, not @Composable)
+    // ── Filter ────────────────────────────────────────────────────────────────
     val filteredProducts = remember(
-        groupe_Par_Catalogue, catalogueFilter, filterState.hide_non_couleurAuDepot,
+        groupe_Par_Catalogue, catalogueFilter,
+        filterState.hide_non_couleurAuDepot,
         filterState.hideQuiNeSontPas_cUnNeveauArrivage, filterState.hidePetiteProbability,
         filterState.hidePrixAchatZero, filterState.hidePrixAchatPositif,
         filterState.hidePrixVenteZero, filterState.hidePrixVentePositif,
         filterState.hideHeldPrioriteDemandAuGrossist, filterState.hideNonHeldPrioriteDemandAuGrossist,
         filterState.searchText, filterState.prixAchatTimeFilterDays, filterState.enablePrixAchatTimeFilter,
-        filterState.produit_a_Une_Couleur_Ac_Image, filterState.prioritiseProduitsEnVente
+        filterState.produit_a_Une_Couleur_Ac_Image
     ) {
         FilterTunnel(
             groupe_Par_Catalogue = groupe_Par_Catalogue,
@@ -54,25 +55,38 @@ fun FilterSortGroupe_Tunnels(
         )
     }
 
-    // Collect product keyIDs currently in the active sale (on vent)
-    val onVentProduitKeyIDs = remember(focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent) {
-        focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-            .map { it.parent_M1Produit_KeyId }
-            .toSet()
+    // ── En-vente key IDs ──────────────────────────────────────────────────────
+    // FIXED: No longer wrapped in remember() — computed inline so its freshest
+    // value is always visible to the sortedProducts remember() key below.
+    val onVentProduitKeyIDs = focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        .map { it.parent_M1Produit_KeyId }
+        .toSet()
+
+    // ── Sort + en-vente float ─────────────────────────────────────────────────
+    // FIXED: remember lives here, not inside SortTunnel (which is now a plain
+    // function). All keys that can change the output are listed, including
+    // prioritiseProduitsEnVente and onVentProduitKeyIDs, so the cache is
+    // invalidated as soon as the en-vente set or the toggle changes.
+    val sortedProducts = remember(
+        filteredProducts,
+        filterState.sortOrderFacadeBoutique,
+        filterState.enableCategoryGrouping,
+        filterState.prioritiseProduitsEnVente,
+        onVentProduitKeyIDs
+    ) {
+        SortTunnel(
+            filteredProducts = filteredProducts,
+            sortOrder = filterState.sortOrderFacadeBoutique,
+            enableCategoryGrouping = filterState.enableCategoryGrouping,
+            repositorysMainGetter = repositorysMainGetter,
+            prioritiseProduitsEnVente = filterState.prioritiseProduitsEnVente,
+            onVentProduitKeyIDs = onVentProduitKeyIDs
+        )
     }
 
-    // Apply sorting
-    val sortedProducts = SortTunnel(
-        filteredProducts = filteredProducts,
-        sortOrder = filterState.sortOrderFacadeBoutique,
-        enableCategoryGrouping = filterState.enableCategoryGrouping,
-        repositorysMainGetter = repositorysMainGetter,
-        prioritiseProduitsEnVente = filterState.prioritiseProduitsEnVente,
-        onVentProduitKeyIDs = onVentProduitKeyIDs
-    )
-
-    // Render
-    Etager_LazyColumn_FragID4(
+    // ── Render ────────────────────────────────────────────────────────────────
+    Etager_LazyColumn_App0(
         modifier = modifier.semantics(mergeDescendants = true) {
             set(value = catalogueFilter, key = SemanticsPropertyKey("catalogueFilter"))
         },
@@ -82,10 +96,10 @@ fun FilterSortGroupe_Tunnels(
         onProductCategoryClick = onProductCategoryClick,
         justMovedProductKeyID = justMovedProductKeyID,
         repositorysMainGetter = repositorysMainGetter,
-        isWifiClientConnected_1=isWifiClientConnected_1,
+        isWifiClientConnected_1 = isWifiClientConnected_1,
     )
 
-    // Dialogs
+    // ── Dialogs ───────────────────────────────────────────────────────────────
     focusedValuesGetter.active_Central_Values.affiche_Dialog_Fast_Affiche_Panie.ifTrue {
         Dialog_Fast_Affiche_Panie()
     }

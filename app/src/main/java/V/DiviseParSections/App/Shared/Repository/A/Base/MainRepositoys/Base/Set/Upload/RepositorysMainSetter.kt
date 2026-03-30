@@ -9,9 +9,9 @@ import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.toggleEtateDeliveryNonTrouveVentOu
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.updateListRelativeVentCouleurPrixVent
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent

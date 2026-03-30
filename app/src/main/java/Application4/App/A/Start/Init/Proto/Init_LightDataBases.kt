@@ -3,7 +3,7 @@ package Application4.App.A.Start.Init.Proto
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import kotlinx.coroutines.tasks.await
 
 object Init_LightDataBases {

@@ -3,11 +3,11 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -22,7 +22,8 @@ class ActiveDatasFragNewProto {
     var section_ToggleButton_TagPrioriter__start_Collapsed: Boolean? by mutableStateOf(true)
     var filter_marqueClient_enum_entries: MapClientsViewModel.VisibleClientsNow? by mutableStateOf(null)
 
-    var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(Prioriter.entries.toSet())
+    var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(Prioriter.entries.toSet())     //<--
+    //TODO(1): fait que ca statrt par Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS 
 
     // Sources de données brutes — le grid groupe M3 → M1 directement depuis ces deux listes.
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)

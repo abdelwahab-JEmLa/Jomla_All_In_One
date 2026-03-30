@@ -8,7 +8,7 @@ import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroad
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -47,7 +47,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val TAG = "LazyGrid_Debug"
-
+              //<--
+              //TODO(1): fait que si Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS de affiche le grid des prodist == 4 sinon 2
 @Composable
 fun Etager_LazyColumn(
     modifier: Modifier = Modifier,
@@ -55,7 +56,8 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {
+) {   //<--
+//TODO(1): enleve les commantaire et logs pour but de consise le max possible  tallie du code sans change le foctionemen 
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val activeDatas = viewModel.active_Datas
@@ -73,7 +75,9 @@ fun Etager_LazyColumn(
     // ── LOG 1 : raw state of the two source lists ──────────────────────────
     val rawM1   = activeDatas.list_M1Produit
     val rawM3   = activeDatas.list_M03CouleurProduitInfos
-    val filter  = activeDatas.affiche_produits_Ou_On_TagPrioriter
+    val filter  = activeDatas.affiche_produits_Ou_On_TagPrioriter         //<--
+    //TODO(1): //<--
+    ////TODO(1): fait que si Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS de cherche les vents ou leur parent client == ECHATILLANTS_KEY_ID et de n affiche que eux si 
     Log.d(TAG, "=== Etager_LazyColumn recomposed ===")
     Log.d(TAG, "  list_M1Produit        : ${rawM1?.size ?: "NULL"}")
     Log.d(TAG, "  list_M03CouleurProduit: ${rawM3?.size ?: "NULL"}")
@@ -285,4 +289,24 @@ fun LazyStigerList_Produits_FragID4(
             modifier = modifier
         )
     }
+}
+
+private const val TAG_CONTENT = "Content_FragID4"
+@Composable
+fun Lazy_List(
+    modifier: Modifier = Modifier,
+    on_pour_send_data: (String, String) -> Unit,
+    onClickImageToShowControles: () -> Unit,
+    onProductCategoryClick: (M01Produit) -> Unit,
+    justMovedProductKeyID: String?,
+    viewModel: A_ViewModel_NewProtoPatterns,
+    uiStateNewProtoPatterns: UiState_NewProtoPatterns
+) {
+    Etager_LazyColumn(
+        modifier = modifier,
+        on_pour_send_data = on_pour_send_data,
+        onProductCategoryClick = onProductCategoryClick,
+        justMovedProductKeyID = justMovedProductKeyID,
+        uiState_NewProtoPatterns_viewModel = Pair(uiStateNewProtoPatterns, viewModel),
+    )
 }

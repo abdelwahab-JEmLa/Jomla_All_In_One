@@ -54,7 +54,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
-fun Etager_LazyColumn_FragID4(
+fun Etager_LazyColumn_App0(
     modifier: Modifier = Modifier.Companion,
     cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     viewModelHeadViewModel: HeadViewModel,
@@ -71,11 +71,7 @@ fun Etager_LazyColumn_FragID4(
                 products.flatMap { (_, colors) -> colors }
             }
         }
-    // classement_By_FilterKeys_M3 starts at 0 for every product until a first upload has
-    // written distinct values to Firebase.  Using that field as the sort key therefore
-    // produces an all-zero map, which uploads nothing useful and perpetuates the problem.
-    // The display position in the already-filtered & grouped list IS the intended classement:
-    // it captures the order the user sees, and on next seed Firebase restores that order.
+
     val parentProduit_Classement: Map<String, Int> =
         cataloguesWithCategoriesAndProducts
             .flatMap { (_, cats) -> cats }

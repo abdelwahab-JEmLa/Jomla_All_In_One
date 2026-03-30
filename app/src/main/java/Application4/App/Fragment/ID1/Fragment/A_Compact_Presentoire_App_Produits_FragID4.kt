@@ -1,5 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment
 
+import Application4.App.Fragment.ID1.Fragment.Dialogs.PressistatntMainActivityButtons_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
 import EntreApps.Shared.Models.M01Produit
@@ -32,15 +33,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
     onClickImageToShowControles: () -> Unit = {},
 ) {
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
-
-    // FIX(TODO-1): The previous check also required mainInitDataBaseProgressEtate >= 1f, but
-    // that value was only ever set by the old composable-scope init (which was cancelled) and was
-    // therefore always stuck at 0f — keeping the screen in an infinite loading state even after
-    // the ViewModel's own init finished.
-    //
-    // Now that A_LoadingViewModel owns the full init sequence and flips initDone=true when done,
-    // A_Compact_Presentoire_App_Produits_App4 only needs to gate on the ViewModel's own
-    // initDatasProgressEtate (which Initializer_ViewModel sets to 1f once local DB reads finish).
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
     val active_Datas = viewModelNewProtoPatterns.active_Datas
@@ -76,15 +68,18 @@ fun A_Compact_Presentoire_App_Produits_App4(
             )
         }
     } else {
-        Content(
-            modifier = modifier,
-            on_pour_send_data = on_pour_send_data,
-            onClickImageToShowControles = onClickImageToShowControles,
-            onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
-            justMovedProductKeyID = justMovedProductKeyID,
-            viewModel = viewModelNewProtoPatterns,
-            uiStateNewProtoPatterns = uiState,
-        )
+        Box() {
+            Lazy_List(
+                modifier = modifier,
+                on_pour_send_data = on_pour_send_data,
+                onClickImageToShowControles = onClickImageToShowControles,
+                onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
+                justMovedProductKeyID = justMovedProductKeyID,
+                viewModel = viewModelNewProtoPatterns,
+                uiStateNewProtoPatterns = uiState,
+            )
+            PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)
+        }
     }
 
     selectedProductForCategoryChange?.let { product ->

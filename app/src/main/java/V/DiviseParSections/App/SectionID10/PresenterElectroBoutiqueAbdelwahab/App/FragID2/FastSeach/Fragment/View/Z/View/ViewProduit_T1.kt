@@ -12,7 +12,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.M01Produit
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

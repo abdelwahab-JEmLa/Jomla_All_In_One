@@ -19,7 +19,7 @@ import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.L
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M2Client
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.content.Context
 import androidx.compose.foundation.background

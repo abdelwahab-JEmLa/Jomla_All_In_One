@@ -3,9 +3,9 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Repo
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.RepositorysMainGetter.Download.RepositorysMainGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.RepositorysMainSetter.UploadHandler.RepositorysMainSetter.Companion.getListDesParentKeys
 import EntreApps.Shared.Models.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent

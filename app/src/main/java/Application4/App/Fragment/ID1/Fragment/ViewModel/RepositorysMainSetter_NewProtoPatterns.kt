@@ -7,7 +7,7 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import android.content.Context
 import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope

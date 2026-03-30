@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_4
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import EntreApps.Shared.Models.M2Client
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import EntreApps.Shared.Models.M01Produit
 
