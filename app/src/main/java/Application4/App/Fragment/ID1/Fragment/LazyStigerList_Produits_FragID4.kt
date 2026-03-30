@@ -1,14 +1,16 @@
 package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
-import Application4.App.Fragment.Z.Components.Modules.HandlePresenterClientScroll
-import Application4.App.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
+import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
+import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
+import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -46,9 +48,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private const val TAG = "LazyGrid_Debug"
-              //<--
-              //TODO(1): fait que si Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS de affiche le grid des prodist == 4 sinon 2
 @Composable
 fun Etager_LazyColumn(
     modifier: Modifier = Modifier,
@@ -56,8 +55,7 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {   //<--
-//TODO(1): enleve les commantaire et logs pour but de consise le max possible  tallie du code sans change le foctionemen 
+) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val activeDatas = viewModel.active_Datas
@@ -67,99 +65,73 @@ fun Etager_LazyColumn(
     val isHostPhone = wifiState.isHostPhone
     val isConnected = wifiState.isConnected
     val currentScrollPosition = wifiState.mainGridScrollPosition
-    val tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
     val isScrollEnabled = isHostPhone || !isConnected
-
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
-
-    // ── LOG 1 : raw state of the two source lists ──────────────────────────
-    val rawM1   = activeDatas.list_M1Produit
-    val rawM3   = activeDatas.list_M03CouleurProduitInfos
-    val filter  = activeDatas.affiche_produits_Ou_On_TagPrioriter         //<--
-    //TODO(1): //<--
-    ////TODO(1): fait que si Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS de cherche les vents ou leur parent client == ECHATILLANTS_KEY_ID et de n affiche que eux si 
-    Log.d(TAG, "=== Etager_LazyColumn recomposed ===")
-    Log.d(TAG, "  list_M1Produit        : ${rawM1?.size ?: "NULL"}")
-    Log.d(TAG, "  list_M03CouleurProduit: ${rawM3?.size ?: "NULL"}")
-    Log.d(TAG, "  activeFilter          : $filter")
 
     val productWithColorsList by remember {
         derivedStateOf {
-            val allColours  = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
-            val allProducts = activeDatas.list_M1Produit              ?: emptyList()
+            val allColours = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
+            val allProducts = activeDatas.list_M1Produit ?: emptyList()
             val activeFilter = activeDatas.affiche_produits_Ou_On_TagPrioriter
-
-            // ── LOG 2 : inputs at derivedStateOf evaluation time ──────────
-            Log.d(TAG, "  [derivedState] allColours.size =${allColours.size}")
-            Log.d(TAG, "  [derivedState] allProducts.size=${allProducts.size}")
-            Log.d(TAG, "  [derivedState] activeFilter    =$activeFilter")
-
             val productByKey = allProducts.associateBy { it.keyID }
-
-            // ── LOG 3 : grouping M3 → M1 ──────────────────────────────────
-            val grouped = allColours.groupBy { it.parentBProduitInfosKeyID }
-            Log.d(TAG, "  [derivedState] grouped M3 parentKeys count=${grouped.size}")
-            if (grouped.isNotEmpty()) {
-                Log.d(TAG, "  [derivedState] sample parentBProduitInfosKeyID=${grouped.keys.take(3)}")
-            }
-            Log.d(TAG, "  [derivedState] productByKey keys count=${productByKey.size}")
-            if (productByKey.isNotEmpty()) {
-                Log.d(TAG, "  [derivedState] sample product keyIDs=${productByKey.keys.take(3)}")
-            }
-
-            var droppedNoProduct   = 0
-            var droppedFilterMiss  = 0
-
-            val result = allColours
+            allColours
                 .groupBy { it.parentBProduitInfosKeyID }
                 .mapNotNull { (produitKeyID, colours) ->
-                    val product = productByKey[produitKeyID]
-                    if (product == null) {
-                        droppedNoProduct++
-                        // Log first few misses so we can spot the key mismatch
-                        if (droppedNoProduct <= 5)
-                            Log.w(TAG, "  [derivedState] ⚠️ no M1 found for parentKey=$produitKeyID")
-                        return@mapNotNull null
-                    }
-                    if (!product.matchesPrioriteFilter(activeFilter)) {
-                        droppedFilterMiss++
-                        return@mapNotNull null
-                    }
+                    val product = productByKey[produitKeyID] ?: return@mapNotNull null
+                    if (!product.matchesPrioriteFilter(activeFilter)) return@mapNotNull null
                     product to colours
                 }
                 .sortedBy { (product, _) -> product.classement_By_FilterKeys_M3 }
-
-            // ── LOG 4 : final result ───────────────────────────────────────
-            Log.d(TAG, "  [derivedState] RESULT size=${result.size}  " +
-                    "droppedNoProduct=$droppedNoProduct  droppedFilterMiss=$droppedFilterMiss")
-            if (result.isEmpty()) {
-                Log.w(TAG, "  [derivedState] ⚠️ productWithColorsList is EMPTY — grid will show nothing")
-                if (droppedNoProduct > 0)
-                    Log.w(TAG, "    → $droppedNoProduct colours had no matching M1 product (keyID mismatch?)")
-                if (droppedFilterMiss > 0)
-                    Log.w(TAG, "    → $droppedFilterMiss products were filtered out by matchesPrioriteFilter")
-                if (allColours.isEmpty())
-                    Log.w(TAG, "    → list_M03CouleurProduitInfos is empty (seeding not done yet?)")
-                if (allProducts.isEmpty())
-                    Log.w(TAG, "    → list_M1Produit is empty (seeding not done yet?)")
-            }
-
-            result
         }
     }
 
-    // ── LOG 5 : each time the final list changes ───────────────────────────
-    LaunchedEffect(productWithColorsList.size) {
-        Log.d(TAG, "  [LaunchedEffect] productWithColorsList.size changed → ${productWithColorsList.size}")
+    var lenceVentOperations by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
+    var all by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
+    var activeBonVentKey by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            val targetComptKeyId = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            activeBonVentKey = viewModel.appDatabase.dao_M9AppCompt().getAll()
+                .find { it.keyID == targetComptKeyId }?.onVentM8BonVentKey ?: ""
+            val allOps = viewModel.appDatabase.dao_M10OperationVentCouleur().getAll()
+            lenceVentOperations = allOps.filter { it.parent_M8BonVent_KeyId == activeBonVentKey }
+            all = allOps
+        }
     }
 
-    // FIX(TODO-2.C): Keep activeDatas.parentProduit_Classement in sync with the actual
-    // display order computed by this grid. The map (productKeyID → display index) is what
-    // Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button uses as classement when writing
-    // filter-keys back to Firebase, so it must reflect the real on-screen positions rather
-    // than the stale zeros stored in Firebase.
-    LaunchedEffect(productWithColorsList) {
-        activeDatas.parentProduit_Classement = productWithColorsList
+    val isEchatillantsMode by remember {
+        derivedStateOf {
+            activeDatas.affiche_produits_Ou_On_TagPrioriter
+                ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true
+        }
+    }
+
+    val displayList by remember {
+        derivedStateOf {
+            val isEchatillants = activeDatas.affiche_produits_Ou_On_TagPrioriter
+                ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true
+            if (!isEchatillants) {
+                productWithColorsList
+            } else {
+                val echatillantsProductKeys = all
+                    .filter { it.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID }
+                    .map { it.parent_M1Produit_KeyId }
+                    .toSet()
+                productWithColorsList.filter { (product, _) -> product.keyID in echatillantsProductKeys }
+            }
+        }
+    }
+
+    val gridColumns by remember {
+        derivedStateOf {
+            if (activeDatas.affiche_produits_Ou_On_TagPrioriter
+                    ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true) 4 else 2
+        }
+    }
+
+    LaunchedEffect(displayList) {
+        activeDatas.parentProduit_Classement = displayList
             .mapIndexed { index, (product, _) -> product.keyID to index }
             .toMap()
     }
@@ -169,9 +141,7 @@ fun Etager_LazyColumn(
         if (!isHostPhone) return@LaunchedEffect
         val targetKeyID = expanded_M3CouleurProduitInfos.parentBProduitInfosKeyID
         if (targetKeyID.isBlank()) return@LaunchedEffect
-
-        val foundIndex =
-            productWithColorsList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
+        val foundIndex = displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
         if (foundIndex >= 0) {
             delay(300)
             coroutineScope.launch { gridState.animateScrollToItem(foundIndex) }
@@ -188,27 +158,11 @@ fun Etager_LazyColumn(
         isHostPhone = isHostPhone,
         scrollPosition = currentScrollPosition,
         gridState = gridState,
-        tag = tag
+        tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
     )
 
-    var lenceVentOperations by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
-    var all by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
-    var activeBonVentKey by remember { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            val targetComptKeyId =
-                M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
-            activeBonVentKey = viewModel.appDatabase.dao_M9AppCompt().getAll()
-                .find { it.keyID == targetComptKeyId }?.onVentM8BonVentKey ?: ""
-            val allOps = viewModel.appDatabase.dao_M10OperationVentCouleur().getAll()
-            lenceVentOperations = allOps.filter { it.parent_M8BonVent_KeyId == activeBonVentKey }
-            all = allOps
-        }
-    }
-
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(2),
+        columns = StaggeredGridCells.Fixed(gridColumns),
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
@@ -227,17 +181,13 @@ fun Etager_LazyColumn(
         verticalItemSpacing = 8.dp,
         userScrollEnabled = isScrollEnabled
     ) {
-        // ── LOG 6 : inside the grid lambda ────────────────────────────────
-        Log.d(TAG, "  [GridLambda] productWithColorsList.size=${productWithColorsList.size}")
-
-        productWithColorsList.forEach { (product, colors) ->
+        displayList.forEach { (product, colors) ->
             val isExpanded = wifiState.expanded_M1Produit?.keyID == product.keyID
+            Log.d("FragID4Grid", "isExpanded=$isExpanded | product=${product.keyID} | expanded=${wifiState.expanded_M1Produit?.keyID}")
             val justMoved = product.keyID == justMovedProductKeyID
-
             item(
                 key = "product_${product.keyID}",
-                span = if (isExpanded) StaggeredGridItemSpan.FullLine
-                else StaggeredGridItemSpan.SingleLane
+                span = if (isExpanded) StaggeredGridItemSpan.FullLine else StaggeredGridItemSpan.SingleLane
             ) {
                 LazyStigerList_Produits_FragID4(
                     uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
@@ -291,7 +241,6 @@ fun LazyStigerList_Produits_FragID4(
     }
 }
 
-private const val TAG_CONTENT = "Content_FragID4"
 @Composable
 fun Lazy_List(
     modifier: Modifier = Modifier,

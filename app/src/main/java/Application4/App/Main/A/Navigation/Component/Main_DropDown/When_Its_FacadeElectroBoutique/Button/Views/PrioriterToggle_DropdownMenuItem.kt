@@ -68,12 +68,6 @@ fun PrioriterToggle_DropdownMenuItem(viewModelNewProtoPatterns: A_ViewModel_NewP
                 if (isExpanded) {
                     Prioriter.entries.forEach { prioriter ->
                         val isSelected = activeFilter?.contains(prioriter) == true
-                        val label = when (prioriter) {
-                            Prioriter.Dernier_VentAchat_Est_Trop_Luin    -> "Dernier vente/achat trop loin"
-                            Prioriter.Dernier_VentAchat_Est_Moin_Mois    -> "Dernier vente/achat < 1 mois"
-                            Prioriter.Dernier_VentAchat_Est_Moin_Semain  -> "Dernier vente/achat < 1 semaine"
-                            Prioriter.PlusDe80P_Ne_Le_Voit_Pas           -> "Plus de 80% ne le voient pas"
-                        }
                         FilterChip(
                             selected = isSelected,
                             onClick = {
@@ -84,7 +78,7 @@ fun PrioriterToggle_DropdownMenuItem(viewModelNewProtoPatterns: A_ViewModel_NewP
                             },
                             label = {
                                 Text(
-                                    text = label,
+                                    text = prioriter.name,
                                     style = MaterialTheme.typography.labelSmall,
                                     color = if (isSelected) Color.Red else MaterialTheme.colorScheme.onSurface,
                                 )

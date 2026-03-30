@@ -2,7 +2,6 @@ package Application4.App.Fragment.View.ViewS.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
-import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
@@ -70,47 +69,18 @@ fun Image_Displaye(
             .fillMaxSize()
             .then(
                 Modifier.clickable {
-
-                    val currentExpandedProduct = centralValues.expanded_M1Produit
-                    val currentExpandedColor = centralValues.expanded_M3CouleurProduitInfos
-
                     val isSameProductExpanded =
-                        currentExpandedProduct?.keyID == parentProduct?.keyID
-                    val isDifferentColor =
-                        currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
+                        centralValues.expanded_M1Produit?.keyID == parentProduct?.keyID
+                    val isSameColor =
+                        centralValues.expanded_M3CouleurProduitInfos?.keyID == relative_M3CouleurProduitInfos.keyID
 
-                    if (isSameProductExpanded && isDifferentColor) {
-                        viewModel.sendOrderToClientDisplayerT(
-                            WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
-                            relative_M3CouleurProduitInfos.keyID
-                        )
+                    if (isSameProductExpanded && isSameColor) {
+                        // Même produit, même couleur → fermer
+                        viewModel.updateExpandedProduitEtCouleur(null, null)
                     } else {
-                        // CASE 2: Different product OR same color → Toggle product expansion.
-                        val newProductValue =
-                            if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
-                                // Same product, same color → Collapse
-                                null
-                            } else {
-                                // Different product → Expand it
-                                parentProduct
-                            }
-
-
-                        val colorKeyToSend = if (newProductValue == null) {
-                            currentExpandedColor?.keyID ?: relative_M3CouleurProduitInfos.keyID
-                        } else {
-                            relative_M3CouleurProduitInfos.keyID
-                        }
-                        viewModel.sendOrderToClientDisplayerT(
-                            WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
-                            colorKeyToSend
-                        )
+                        // Nouveau produit OU nouvelle couleur → ouvrir/switcher
+                        viewModel.updateExpandedProduitEtCouleur(parentProduct, relative_M3CouleurProduitInfos)
                     }
-
-                    viewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
-                        relative_M3CouleurProduitInfos.keyID
-                    )
                 }
             )
 

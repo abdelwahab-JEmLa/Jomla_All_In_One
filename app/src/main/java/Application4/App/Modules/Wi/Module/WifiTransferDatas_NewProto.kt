@@ -36,8 +36,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 data class ProductDisplayController_NewProto(
     val mainGridScrollPosition: Int = 0,
 
-    var expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
-    var expanded_M1Produit: M01Produit? = null,
+    val expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
+    val expanded_M1Produit: M01Produit? = null,
 
     val newArregmentColorsJsonStruct: String = "",
     val clientWindowsDisplayedProductId: Long? = null,
@@ -85,7 +85,14 @@ class WifiTransferDatas_NewProto(
         order: WifiUpdateClientDisplayerStats_NewProto,
         data: Any? = null
     ) {
-        coroutineScope.launch { sendData("${order.prefix}$data") }
+        coroutineScope.launch {
+            sendData("${order.prefix}$data")
+            // Also apply the payload locally so the HOST's own UI reflects the change
+            // immediately — without this the HOST never calls handlePayload for its own sends.
+            if (order == WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran) {
+                handlePayload("${order.prefix}$data")
+            }
+        }
     }
 
     fun updateTypePhone(isHost: Boolean = false) {
@@ -247,6 +254,26 @@ class WifiTransferDatas_NewProto(
                 expanded_M3CouleurProduitInfos = newColor,
                 expanded_M1Produit = newProduit
             )
+        }
+    }
+
+    /**
+     * Met à jour directement [expanded_M1Produit] et [expanded_M3CouleurProduitInfos] sans
+     * logique de toggle. Passer null sur les deux pour fermer l'expansion.
+     * Envoie aussi l'ordre au CLIENT si [sendToClient] est true (défaut).
+     */
+    fun updateExpandedProduitEtCouleur(
+        produit: M01Produit?,
+        couleur: M3CouleurProduitInfos?,
+        sendToClient: Boolean = true,
+    ) {
+        _state.update { it.copy(expanded_M1Produit = produit, expanded_M3CouleurProduitInfos = couleur) }
+        if (sendToClient && couleur != null) {
+            coroutineScope.launch {
+                sendData(
+                    "${WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix}${couleur.keyID}"
+                )
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository
 
-import EntreApps.Shared.Models.Components.Jomla_Clients
+import EntreApps.Shared.Models.Jomla_Clients
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -12,7 +12,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Gr
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
-import EntreApps.Shared.Models.Components.Utilisateur
+import EntreApps.Shared.Models.Utilisateur
 import EntreApps.Shared.Models.Compts
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import androidx.compose.ui.graphics.Color

@@ -1,4 +1,4 @@
-package Application4.App.Fragment.Z.Components.Modules
+package Application4.App.Modules.Wi.Module
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats

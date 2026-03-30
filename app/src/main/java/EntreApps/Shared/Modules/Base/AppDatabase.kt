@@ -1,6 +1,6 @@
 package EntreApps.Shared.Modules.Base
 
-import EntreApps.Shared.Models.Components.AppType
+import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt

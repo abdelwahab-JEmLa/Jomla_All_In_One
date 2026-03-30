@@ -1,6 +1,6 @@
 package P0_MainScreen.Main
 
-import EntreApps.Shared.Models.Components.AppType
+import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.BlinkingWarningCard

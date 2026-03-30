@@ -1,7 +1,5 @@
 package EntreApps.Shared.Models
 
-import EntreApps.Shared.Models.Components.AppType
-import EntreApps.Shared.Models.Components.Utilisateur
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App._0.Navigation.Screen
 import androidx.room.Entity
@@ -132,4 +130,95 @@ data class M00CentralParametresOfAllApps(
             return utilisateur == Utilisateur.Admin
         }
     }
+}
+
+enum class Utilisateur(
+    val comp: String,
+    val ayam_tadriss: String = "dimanch/jeudi",
+    val nom_arab: String = "",
+    val num_telephone : String = "",
+) {
+    Admin("", "", "المسؤول"),
+    Abdelwahab_Osstad(
+        Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
+        "dimanch/jeudi",
+        "عبدالوهاب حمنيش",
+             "+213 553 88 50 37"
+    ),
+    kissm_intikali_madrasa_Compt_Osstad(
+        M00CentralParametresOfAllApps().kissm_intikali_madrasa_Compt_KeyId,
+        "dimanch/jeudi",
+        "قسم انتقالي"
+    ),
+    Abdelmoumen(
+        M00CentralParametresOfAllApps().abdelmomen_Compt_KeyId,
+        "dimanch/jeudi",
+        "عبدالمؤمن"
+    ),
+    Walid(
+        M00CentralParametresOfAllApps().walid_Compt_KeyId,
+        "dimanch/jeudi",
+        "وليد"
+    ),
+    Amine_Madrassa(
+        M00CentralParametresOfAllApps().amine_madrasa_Compt_KeyId,
+        "dimanch/jeudi",
+        "أمين"
+    );
+
+    override fun toString(): String {
+        return name
+    }
+
+    /**
+     * Toggle to next utilisateur in cycle
+     */
+    fun toggle(): Utilisateur {
+        return when (this) {
+            Admin -> Abdelwahab_Osstad
+            Abdelwahab_Osstad -> Abdelmoumen
+            Abdelmoumen -> Walid
+            Walid -> Amine_Madrassa
+            Amine_Madrassa -> Utilisateur.kissm_intikali_madrasa_Compt_Osstad
+            kissm_intikali_madrasa_Compt_Osstad -> Admin
+        }
+    }
+
+    /**
+     * Get display name for UI
+     */
+    fun getDisplayName(): String {
+        return when (this) {
+            Admin -> "Admin (Tous)"
+            Abdelwahab_Osstad -> "Abdelwahab Oustade"
+            Abdelmoumen -> "Abdelmoumen"
+            Amine_Madrassa -> "Amine Madrassa"
+            Walid -> "Walid"
+            kissm_intikali_madrasa_Compt_Osstad -> "kissm_intikali_madrasa_Compt_Osstad"
+        }
+    }
+
+
+    companion object {
+        /**
+         * Get next utilisateur from current, or return Admin if null
+         */
+        fun toggleFrom(current: Utilisateur?): Utilisateur {
+            return current?.toggle() ?: Abdelmoumen
+        }
+
+        /**
+         * Find utilisateur by comp ID
+         */
+        fun fromCompId(compId: String): Utilisateur? {
+            return values().find { it.comp == compId }
+        }
+    }
+}
+
+enum class AppType {
+    AllInOne,
+    GrossistRealSeller,
+    JomLaElectroLivreurGrossist_PresenterScreen,
+    JomLaElectroLivreurGrossist_VendeurHost,
 }

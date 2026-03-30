@@ -22,14 +22,12 @@ class ActiveDatasFragNewProto {
     var section_ToggleButton_TagPrioriter__start_Collapsed: Boolean? by mutableStateOf(true)
     var filter_marqueClient_enum_entries: MapClientsViewModel.VisibleClientsNow? by mutableStateOf(null)
 
-    var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(Prioriter.entries.toSet())     //<--
-    //TODO(1): fait que ca statrt par Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS 
+    var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(
+        setOf(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS)
+    )
 
-    // Sources de données brutes — le grid groupe M3 → M1 directement depuis ces deux listes.
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>? by mutableStateOf(null)
-
-    // Conservé uniquement pour le CategorySelectionDialog (déplacement de produit vers une catégorie).
     var list_M16CategorieProduit: List<M16CategorieProduit>? by mutableStateOf(null)
 
     var parentProduit_Classement: Map<String, Int> by mutableStateOf(emptyMap())

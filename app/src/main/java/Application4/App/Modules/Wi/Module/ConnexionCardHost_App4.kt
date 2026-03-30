@@ -35,7 +35,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ConnexionCardHost_App4(
     vm: A_ViewModel_NewProtoPatterns = koinViewModel(),
-    onClickToStartAsClient: () -> Unit = {},
 ) {
     val state by vm.wifiState.collectAsState()
     var isCollapsed by remember { mutableStateOf(true) }

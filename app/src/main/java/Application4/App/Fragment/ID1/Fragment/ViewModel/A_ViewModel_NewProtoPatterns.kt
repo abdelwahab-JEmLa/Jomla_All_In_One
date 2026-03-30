@@ -6,12 +6,12 @@ import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
 import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
@@ -72,6 +72,13 @@ class A_ViewModel_NewProtoPatterns(
         data: Any? = null
     ) =
         wifi.sendOrderToClientDisplayerT(order, data)
+
+    /** Setter direct de l'expansion (produit + couleur) — met à jour le state local ET notifie le client. */
+    fun updateExpandedProduitEtCouleur(
+        produit: M01Produit?,
+        couleur: M3CouleurProduitInfos?,
+        sendToClient: Boolean = true,
+    ) = wifi.updateExpandedProduitEtCouleur(produit, couleur, sendToClient)
 
     init {
         fragmentNavigationHandler.closeAllActiveFragments()

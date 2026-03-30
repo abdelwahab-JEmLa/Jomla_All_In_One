@@ -1,7 +1,7 @@
 package Application4.App.A.Start.Init.Proto
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
-import EntreApps.Shared.Models.Components.AppType
+import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Do
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
@@ -108,6 +108,7 @@ class A_LoadingViewModel(
                 }
             }
         }.join()
+
         suspend fun deleteAllLocal(label: String = "Suppression données locales…") {
             setProgress(_uiState.value.progress, label)
             with(appDatabase) {
@@ -121,10 +122,28 @@ class A_LoadingViewModel(
             }
         }
 
-        suspend fun insertSeedAndLightDbs(seed: Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult) {
+        /**
+         * Inserts [seed] data locally and fetches/stores the light databases.
+         *
+         * @param seed             The seeded colors/products/categories to insert.
+         * @param applyLightDbFilters When true (i.e. [Do.DeleteInsertAll_Active_Key] mode),
+         *   the light-database fetch is scoped to the seeded product keys so that only
+         *   relevant m14/m8/m10/m13 records are downloaded and stored locally.
+         *   When false (AllRefs mode) everything is fetched unfiltered.
+         */
+        suspend fun insertSeedAndLightDbs(
+            seed: Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult,
+            applyLightDbFilters: Boolean = false,
+        ) {
             val lightDbJob = viewModelScope.launch(Dispatchers.IO) {
                 setProgress(_uiState.value.progress, "Chargement tarifs…")
-                val r = Init_LightDataBases.returne_FireBase_LightDataBases()
+                val filteredProductKeys = if (applyLightDbFilters)
+                    seed.products.map { it.keyID }.toSet()
+                else
+                    null
+                val r = Init_LightDataBases.returne_FireBase_LightDataBases(
+                    filteredProductKeys = filteredProductKeys,
+                )
                 _uiState.update { it.copy(lightDataBasesResult = r) }
                 with(appDatabase) {
                     dao_M13TarificationInfos().deleteAll()
@@ -168,7 +187,8 @@ class A_LoadingViewModel(
                     )
                     _uiState.update { it.copy(seedResult = result) }
                     DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
-                    insertSeedAndLightDbs(result)
+                    // Active-key mode: apply light-db filters scoped to the seeded products
+                    insertSeedAndLightDbs(result, applyLightDbFilters = true)
                 }.join()
             }
 
@@ -183,7 +203,8 @@ class A_LoadingViewModel(
                     )
                     _uiState.update { it.copy(seedResult = result) }
                     DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
-                    insertSeedAndLightDbs(result)
+                    // AllRefs mode: no filtering — fetch everything
+                    insertSeedAndLightDbs(result, applyLightDbFilters = false)
                 }.join()
             }
 
