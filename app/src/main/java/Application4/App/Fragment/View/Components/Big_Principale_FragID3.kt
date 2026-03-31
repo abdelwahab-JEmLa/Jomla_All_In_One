@@ -25,11 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-private val IMAGE_HEIGHT_NORMAL: Dp = 200.dp
-private val IMAGE_HEIGHT_EXPANDED: Dp = IMAGE_HEIGHT_NORMAL - 60.dp  // -60dp quand expanded
+private const val IMAGE_HEIGHT_EXPANDED: Int = 370
+private const val IMAGE_HEIGHT_NORMAL: Int = 170
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
@@ -44,17 +43,37 @@ fun Big_Principale_FragID3(
     shouldShowButtons: Boolean,
     on_pour_send_data: (String, String) -> Unit
 ) {
+    val its_Grid4_Mode =
+        uiState_NewProtoPatterns_viewModel.second.active_Datas.its_Echatillants_Mode
+    val imageHeight by animateDpAsState(
+        targetValue = if (isThisProductExpanded) {
+            IMAGE_HEIGHT_EXPANDED.dp
+        } else {
+            if (its_Grid4_Mode != isThisProductExpanded) {
+                120.dp
+            } else {
+                IMAGE_HEIGHT_NORMAL.dp
+            }
+        },
+        animationSpec = tween(durationMillis = 300),
+        label = "mainImageHeight"
+    )
+
+    /*
     val imageHeight by animateDpAsState(
         targetValue = if (isThisProductExpanded) IMAGE_HEIGHT_EXPANDED else IMAGE_HEIGHT_NORMAL,
         animationSpec = tween(durationMillis = 300),
         label = "mainImageHeight"
     )
+     */
 
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,
         isSelected = true,
         on_pour_send_data = on_pour_send_data,
-        modifier = Modifier.fillMaxWidth().height(imageHeight),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(imageHeight),
         uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel
     )
 
@@ -74,7 +93,7 @@ fun Big_Principale_FragID3(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Lenceur_Vent_Handler_App4(
-                uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
+                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,
                 selectedCouleur = selectedCouleur,
                 selectedTariff = selectedTariff,
@@ -82,7 +101,7 @@ fun Big_Principale_FragID3(
             )
 
             Pricipale_Tariffs_Vendeurs_FragID3(
-                uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
+                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,
                 tariffsList = tariffsList,
                 selectedTariff = selectedTariff,

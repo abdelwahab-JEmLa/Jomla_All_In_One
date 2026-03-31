@@ -21,9 +21,16 @@ class ActiveDatasFragNewProto {
     var affiche_Dialog_Fast_Affiche_Panie: Boolean? by mutableStateOf(null)
 
     var section_ToggleButton_TagPrioriter__start_Collapsed: Boolean? by mutableStateOf(true)
-    var filter_marqueClient_enum_entries: MapClientsViewModel.VisibleClientsNow? by mutableStateOf(null)
+    var filter_marqueClient_enum_entries: MapClientsViewModel.VisibleClientsNow? by mutableStateOf(
+        null
+    )
 
     var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(null)
+
+    val its_Echatillants_Mode: Boolean by derivedStateOf {
+        affiche_produits_Ou_On_TagPrioriter
+            ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true
+    }
 
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>? by mutableStateOf(null)
@@ -31,16 +38,15 @@ class ActiveDatasFragNewProto {
 
     var parentProduit_Classement: Map<String, Int> by mutableStateOf(emptyMap())
 
-    /** Fetched from [M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos] at startup.
-     *  Maps each active M3Couleur keyID → its [Ref_list_Filtred_Keys_M3Couleur_Main_Values].
-     *  Used by the Echatillants filter to avoid re-loading all M10 ops at composition time. */
-    var map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>? by mutableStateOf(null)
+    var map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>? by mutableStateOf(
+        null
+    )
 
-    var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(null)
+    var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(
+        null
+    )
     var lastKnownBonVentKey: String? = null
 
-    /** All M10 operations (not filtered by active bon vent). Seeded before the loading gate opens
-     *  so that the Echatillants filter has data on first composition. */
     var list_M10OperationVentCouleur: List<M10OperationVentCouleur>? by mutableStateOf(null)
 
     var list_M8BonVent: List<M8BonVent>? by mutableStateOf(null)

@@ -29,6 +29,9 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     }
 
     private fun load_then_Collect_Active_DatasMutableStates() {
+//        AViewModel_NewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter = buildSet {
+//            Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS
+//        }
         collectM10OperationVentCouleur()
     }
 
@@ -42,51 +45,52 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     private suspend fun loadAllDatasOnce() {
         fun progress(p: Float) {
             AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
-                AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(initDatasProgressEtate = p)
+                AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(
+                    initDatasProgressEtate = p
+                )
         }
 
-        // FIX: M1Produit and M3CouleurProduitInfos are now loaded here (steps 1 & 2) so that
-        // active_Datas is populated BEFORE initDatasProgressEtate reaches 1f.
-        // Previously they were only fed by separate collect* coroutines that hadn't emitted yet
-        // when the grid rendered, resulting in both lists being NULL at first composition.
         progress(1 / 9f)
-        val products  = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
+        val products = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
         progress(2 / 9f)
-        val colours   = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
+        val colours = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
         progress(3 / 9f)
-        val clients   = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
+        val clients = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
         progress(4 / 9f)
         val categories = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAll()
         progress(5 / 9f)
-        val appCompt  = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().getBy_M00_Lence_Key_Flow().first()
+        val appCompt =
+            AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().getBy_M00_Lence_Key_Flow()
+                .first()
         progress(6 / 9f)
-        val bonVent   = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
+        val bonVent = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
         progress(7 / 9f)
-        val ventPeriodes   = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
+        val ventPeriodes = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
         progress(8 / 9f)
-        val tarification   = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
-        val operationVentCouleurs = AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
+        val tarification =
+            AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
+        val operationVentCouleurs =
+            AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
 
-        // Fetch the active M3 filter-keys map from the Firebase ref so the Echatillants
-        // filter has data at first composition, without needing a LaunchedEffect in the UI.
         val filterKeysMap: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values> = try {
             val snap = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos.get().await()
             snap.children.mapNotNull { child ->
-                val key   = child.key ?: return@mapNotNull null
+                val key = child.key ?: return@mapNotNull null
                 val value = child.getValue(Ref_list_Filtred_Keys_M3Couleur_Main_Values::class.java)
                     ?: return@mapNotNull null
                 key to value
             }.toMap()
-        } catch (_: Exception) { emptyMap() }
+        } catch (_: Exception) {
+            emptyMap()
+        }
 
-        // Seed active_Datas — M1 and M3 are now included so the grid has data immediately
         seedActiveDatas(
-            appCompt      = appCompt,
-            bonVent       = bonVent,
-            clients       = clients,
-            categories    = categories,
-            products      = products,
-            colours       = colours,
+            appCompt = appCompt,
+            bonVent = bonVent,
+            clients = clients,
+            categories = categories,
+            products = products,
+            colours = colours,
             allOperations = operationVentCouleurs,
             filterKeysMap = filterKeysMap,
         )
@@ -95,10 +99,10 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(
                 initDatasProgressEtate = 1f,
                 list_Datas = List_Datas(
-                    m2Client             = clients,
-                    m14VentPeriode       = ventPeriodes,
-                    m16CategorieProduit  = categories,
-                    m8BonVent            = bonVent,
+                    m2Client = clients,
+                    m14VentPeriode = ventPeriodes,
+                    m16CategorieProduit = categories,
+                    m8BonVent = bonVent,
                     m13TarificationInfos = tarification,
                     m10OperationVentCouleur = operationVentCouleurs,
                 )
@@ -115,17 +119,16 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         allOperations: List<EntreApps.Shared.Models.M10OperationVentCouleur>,
         filterKeysMap: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>,
     ) {
-        AViewModel_NewProtoPatterns.active_Datas.active_M9Compt          = appCompt
-        AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent           = bonVent
-        AViewModel_NewProtoPatterns.active_Datas.list_M2Client            = clients
+
+        AViewModel_NewProtoPatterns.active_Datas.active_M9Compt = appCompt
+        AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent = bonVent
+        AViewModel_NewProtoPatterns.active_Datas.list_M2Client = clients
         AViewModel_NewProtoPatterns.active_Datas.list_M16CategorieProduit = categories
-        // Seed M1 & M3 so the grid is populated as soon as the loading gate opens
-        AViewModel_NewProtoPatterns.active_Datas.list_M1Produit               = products
-        AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos   = colours
-        // Seed ALL M10 ops so the Echatillants filter has data on first composition
-        AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur  = allOperations
-        // Seed the active-key map so the Echatillants filter can use it immediately
-        AViewModel_NewProtoPatterns.active_Datas.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values = filterKeysMap
+        AViewModel_NewProtoPatterns.active_Datas.list_M1Produit = products
+        AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = colours
+        AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = allOperations
+        AViewModel_NewProtoPatterns.active_Datas.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values =
+            filterKeysMap
     }
 
     private suspend fun collectActiveM9Compt() {
@@ -200,12 +203,15 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
                 when {
                     filtered.isNotEmpty() -> {
                         AViewModel_NewProtoPatterns.active_Datas.lastKnownBonVentKey = emittedKey
-                        AViewModel_NewProtoPatterns.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = filtered
+                        AViewModel_NewProtoPatterns.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
+                            filtered
                     }
+
                     emittedKey == null -> Unit
                     emittedKey != AViewModel_NewProtoPatterns.active_Datas.lastKnownBonVentKey -> {
                         AViewModel_NewProtoPatterns.active_Datas.lastKnownBonVentKey = emittedKey
-                        AViewModel_NewProtoPatterns.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = emptyList()
+                        AViewModel_NewProtoPatterns.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
+                            emptyList()
                     }
                 }
             }
