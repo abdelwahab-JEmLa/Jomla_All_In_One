@@ -1,6 +1,7 @@
 package Application4.App.Fragment.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
@@ -20,9 +21,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,7 +52,7 @@ fun A_Item_Produit_App4(
 
     // Use the pre-filtered override when available (supplied by the staggered grid);
     // fall back to scanning the full live list only when called from other call-sites.
-    val relative_ListM3Couleurs = relative_ListM3Couleurs_override
+    val allColorsForProduit = relative_ListM3Couleurs_override
         ?: remember(viewModel.active_Datas.list_M03CouleurProduitInfos) {
             find_ListM3CouleurInfos_By_Parent_Produit_KeyID(
                 viewModel.active_Datas.list_M03CouleurProduitInfos ?: emptyList(),
@@ -62,6 +60,33 @@ fun A_Item_Produit_App4(
             )
         }
 
+    // FIX(TODO-1): filter the colour list according to the active display mode.
+    //   • Échantillons mode  → keep only colours flagged its_in_echantiallants == true
+    //   • Normal mode        → keep only colours present in the active ref-keys map
+    //                          (falls back to showing everything when the map is empty/null,
+    //                           e.g. on first load before Firebase has responded)
+    val isEchatillantsMode = centralValues.affiche_produits_Ou_On_TagPrioriter
+        ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true
+
+    val relative_ListM3Couleurs = remember(
+        allColorsForProduit,
+        isEchatillantsMode,
+        centralValues.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values
+    ) {
+        if (isEchatillantsMode) {
+            // Show only colours explicitly marked as échantillons
+            allColorsForProduit.filter { it.its_in_echantiallants == true }
+        } else {
+            val activeKeys = centralValues.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values
+            if (activeKeys.isNullOrEmpty()) {
+                // Map not yet loaded — show everything so the card is never blank
+                allColorsForProduit
+            } else {
+                // Normal mode: restrict to colours present in the active ref-keys list
+                allColorsForProduit.filter { it.keyID in activeKeys }
+            }
+        }
+    }
 
     val expanded_M1Produit = wifiState.expanded_M1Produit
     Log.d("A_Item_Produit", "wifiState expand — expanded_M1Produit=${expanded_M1Produit?.keyID} | thisProduit=${relative_M1produit.keyID}")
@@ -208,6 +233,9 @@ fun A_Item_Produit_App4(
             && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true
     val categoryClickForHeader: (() -> Unit)? = if (isAdmin) onCategoryClick else null
 
+    // FIX(TODO-1): removed the outer Card container — the grid's LazyStigerList_Produits_FragID4
+    // already wraps each item in a styled Box; a redundant Card here caused double elevation and
+    // unnecessary recomposition overhead.
     Column(
         modifier = modifier
             .semantics(mergeDescendants = true) {
@@ -217,105 +245,91 @@ fun A_Item_Produit_App4(
             .fillMaxWidth()
             .padding(cardPadding)
     ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = if (isThisProductExpanded) 8.dp else 4.dp
-            ),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(innerPadding)
-            ) {
-                A_Compact_Header_App4(
-                    relative_M1produit = relative_M1produit,
-                    isExpanded = isThisProductExpanded,
-                    onUpdateTariff = {
-                        activeM9compt?.let { appCompt ->
-                            viewModel.setActiveFocuceTariffPrixDifineur(relative_M1produit, appCompt)
-                        }
-                    },
-                    onUpdateProduit = { viewModel.update_m1Produit(it) },
-                    affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin
-                            && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
-                    onDelete = { viewModel.delete_m1Produit(it) },
-                    modifier = modifier,
-                    onCategoryClick = categoryClickForHeader,
-                    section_ToggleButton_TagPreiorities__start_Collapsed = viewModel.active_Datas.section_ToggleButton_TagPrioriter__start_Collapsed == true
-                )
+        A_Compact_Header_App4(
+            relative_M1produit = relative_M1produit,
+            isExpanded = isThisProductExpanded,
+            onUpdateTariff = {
+                activeM9compt?.let { appCompt ->
+                    viewModel.setActiveFocuceTariffPrixDifineur(relative_M1produit, appCompt)
+                }
+            },
+            onUpdateProduit = { viewModel.update_m1Produit(it) },
+            affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin
+                    && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
+            onDelete = { viewModel.delete_m1Produit(it) },
+            modifier = modifier,
+            onCategoryClick = categoryClickForHeader,
+            section_ToggleButton_TagPreiorities__start_Collapsed = viewModel.active_Datas.section_ToggleButton_TagPrioriter__start_Collapsed == true
+        )
 
-                val filteredAndSortedTariffs = datasValue_with_synthetic
-                    .filter { tariff ->
-                        tariff.prixCurrency != 0.0 ||
-                                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client ||
-                                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable
+        val filteredAndSortedTariffs = datasValue_with_synthetic
+            .filter { tariff ->
+                tariff.prixCurrency != 0.0 ||
+                        tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client ||
+                        tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable
+            }
+            .sortedByDescending { it.typeChoisi.profitabilityScore }
+
+        Big_Principale_FragID3(
+            uiState_NewProtoPatterns_viewModel,
+            relative_M1produit = relative_M1produit,
+            selectedCouleur = selectedCouleur,
+            selectedTariff = selectedTariff,
+            onTariffSelected = { newTariff ->
+                selectedTariff = newTariff
+                viewModel.updateTariffForProductOperations(
+                    relative_M1produit.keyID,
+                    newTariff
+                )
+            },
+            tariffsList = filteredAndSortedTariffs,
+            isThisProductExpanded = isThisProductExpanded,
+            shouldShowButtons = shouldShowButtons,
+            on_pour_send_data = on_pour_send_data
+        )
+
+        if (relative_ListM3Couleurs.size > 1) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (isThisProductExpanded) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    maxItemsInEachRow = 4
+                ) {
+                    relative_ListM3Couleurs.forEachIndexed { index, couleur ->
+                        if (index != big_presenter_couleur_produit) {
+                            SubColorCard_WithButton(
+                                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+                                couleur = couleur,
+                                relative_M1produit = relative_M1produit,
+                                selectedTariff = selectedTariff,
+                                on_pour_send_data = on_pour_send_data,
+                                isExpanded = true,
+                                modifier = Modifier.weight(1f, fill = false),
+                                shouldShowButtons = shouldShowButtons,
+                            )
+                        }
                     }
-                    .sortedByDescending { it.typeChoisi.profitabilityScore }
-
-                Big_Principale_FragID3(
-                    uiState_NewProtoPatterns_viewModel,
-                    relative_M1produit = relative_M1produit,
-                    selectedCouleur = selectedCouleur,
-                    selectedTariff = selectedTariff,
-                    onTariffSelected = { newTariff ->
-                        selectedTariff = newTariff
-                        viewModel.updateTariffForProductOperations(
-                            relative_M1produit.keyID,
-                            newTariff
-                        )
-                    },
-                    tariffsList = filteredAndSortedTariffs,
-                    isThisProductExpanded = isThisProductExpanded,
-                    shouldShowButtons = shouldShowButtons,
-                    on_pour_send_data = on_pour_send_data
-                )
-
-                if (relative_ListM3Couleurs.size > 1) {
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    if (isThisProductExpanded) {
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            maxItemsInEachRow = 4
-                        ) {
-                            relative_ListM3Couleurs.forEachIndexed { index, couleur ->
-                                if (index != big_presenter_couleur_produit) {
-                                    SubColorCard_WithButton(
-                                        uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                                        couleur = couleur,
-                                        relative_M1produit = relative_M1produit,
-                                        selectedTariff = selectedTariff,
-                                        on_pour_send_data = on_pour_send_data,
-                                        isExpanded = true,
-                                        modifier = Modifier.weight(1f, fill = false),
-                                        shouldShowButtons = shouldShowButtons,
-                                    )
-                                }
-                            }
-                        }
-                    } else {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            relative_ListM3Couleurs.forEachIndexed { index, couleur ->
-                                if (index != big_presenter_couleur_produit) {
-                                    SubColorCard_WithButton(
-                                        uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                                        couleur = couleur,
-                                        relative_M1produit = relative_M1produit,
-                                        selectedTariff = selectedTariff,
-                                        on_pour_send_data = on_pour_send_data,
-                                        shouldShowButtons = shouldShowButtons,
-                                        isExpanded = false,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                }
-                            }
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    relative_ListM3Couleurs.forEachIndexed { index, couleur ->
+                        if (index != big_presenter_couleur_produit) {
+                            SubColorCard_WithButton(
+                                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+                                couleur = couleur,
+                                relative_M1produit = relative_M1produit,
+                                selectedTariff = selectedTariff,
+                                on_pour_send_data = on_pour_send_data,
+                                shouldShowButtons = shouldShowButtons,
+                                isExpanded = false,
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
                 }

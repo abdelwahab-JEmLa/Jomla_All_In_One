@@ -55,6 +55,7 @@ class RepositorysMainGetter(
     val repoM1Produit: RepoM1Produit,
     val repo1Produit: RepoM1Produit,
     val repo03CouleurProduitInfos: Repo03CouleurProduitInfos,
+    val repo3CouleurProduit: Repo03CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
 

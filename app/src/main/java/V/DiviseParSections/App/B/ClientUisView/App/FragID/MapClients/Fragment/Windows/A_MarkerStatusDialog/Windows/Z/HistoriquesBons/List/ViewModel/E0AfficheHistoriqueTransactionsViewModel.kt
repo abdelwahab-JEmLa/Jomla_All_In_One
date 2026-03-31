@@ -4,6 +4,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_Ne
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -83,6 +84,9 @@ class E0AfficheHistoriqueTransactionsViewModel(
         repositorysMainSetter_NewProtoPatterns.update_List_M1Produit_BathFireBase(datas)
     }
 
+    fun fireBase_batch_set_list_M3CouleurProduitInfos(datas: List<M3CouleurProduitInfos>) {
+        repositorysMainSetter_NewProtoPatterns.update_List_M3CouleurProduitInfos_BathFireBase(datas)
+    }
     // FIXED: Completed the empty function with proper implementation
     // This function notifies observers that data has changed and triggers a refresh
     fun notifyDataChanged() {

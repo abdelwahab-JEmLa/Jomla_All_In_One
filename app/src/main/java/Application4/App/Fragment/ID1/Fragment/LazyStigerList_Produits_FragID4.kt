@@ -1,6 +1,7 @@
 package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
@@ -54,7 +55,7 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {        //<--
+) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val activeDatas = viewModel.active_Datas
@@ -72,12 +73,18 @@ fun Etager_LazyColumn(
             val allColours = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
             val allProducts = activeDatas.list_M1Produit ?: emptyList()
             val activeFilter = activeDatas.affiche_produits_Ou_On_TagPrioriter
+
+            // In échantillons mode the priority-tag filter is skipped here;
+            // displayList handles visibility via the M3 ref-keys map instead.
+            val isEchatillantsMode = activeFilter
+                ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true
+
             val productByKey = allProducts.associateBy { it.keyID }
             allColours
                 .groupBy { it.parentBProduitInfosKeyID }
                 .mapNotNull { (produitKeyID, colours) ->
                     val product = productByKey[produitKeyID] ?: return@mapNotNull null
-                    if (!product.matchesPrioriteFilter(activeFilter)) return@mapNotNull null
+                    if (!isEchatillantsMode && !product.matchesPrioriteFilter(activeFilter)) return@mapNotNull null
                     product to colours
                 }
                 .sortedBy { (product, _) -> product.classement_By_FilterKeys_M3 }
@@ -97,7 +104,6 @@ fun Etager_LazyColumn(
         }
     }
 
-
     val displayList by remember {
         derivedStateOf {
             val isEchatillants = activeDatas.affiche_produits_Ou_On_TagPrioriter
@@ -105,8 +111,11 @@ fun Etager_LazyColumn(
             if (!isEchatillants) {
                 productWithColorsList
             } else {
-                // Keep only products explicitly marked as échantillons via its_in_echantiallants.
-                productWithColorsList.filter { (product, _) -> product.its_in_echantiallants == true }
+                val echaKeys =get_echatilliantKeyM3(activeDatas)
+                productWithColorsList.mapNotNull { (product, colors) ->
+                    val echaColors = colors.filter { it.keyID in echaKeys }
+                    if (echaColors.isEmpty()) null else product to echaColors
+                }
             }
         }
     }
@@ -131,9 +140,8 @@ fun Etager_LazyColumn(
         if (targetKeyID.isBlank()) return@LaunchedEffect
         val foundIndex = displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
         if (foundIndex >= 0) {
-            delay(400) // laisser le layout full-line s'établir (était 300ms)
+            delay(400)
             coroutineScope.launch {
-                // Scroll un item avant → l'expanded apparaît en dessous du fold, plus lisible
                 gridState.animateScrollToItem((foundIndex - 1).coerceAtLeast(0))
             }
         }
@@ -158,10 +166,13 @@ fun Etager_LazyColumn(
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
             .semantics(mergeDescendants = true) {
-                set(value = activeDatas.list_M1Produit?.filter {
-                    it.its_in_echantiallants == true
-                }?.map {
-                    it.nom to it
+                set(value = run {
+                    val echaKeys = get_echatilliantKeyM3(activeDatas)
+                    val echaProductKeyIDs = activeDatas.list_M03CouleurProduitInfos
+                        ?.filter { it.keyID in echaKeys }
+                        ?.map { it.parentBProduitInfosKeyID }
+                        ?.toSet() ?: emptySet()
+                    activeDatas.list_M1Produit?.filter { it.keyID in echaProductKeyIDs }?.map { it.nom to it }
                 }, key = SemanticsPropertyKey("its_in_echantiallants"))
                 set(value = lenceVentOperations, key = SemanticsPropertyKey("lenceVentOperations"))
                 set(value = activeBonVentKey, key = SemanticsPropertyKey("activeBonVentKey"))
@@ -193,6 +204,10 @@ fun Etager_LazyColumn(
         }
     }
 }
+private fun get_echatilliantKeyM3(activeDatas: ActiveDatasFragNewProto): Collection<String> =
+    (activeDatas.list_M03CouleurProduitInfos?.filter { it.its_in_echantiallants == true }
+        ?.map { it.keyID }
+        ?: emptySet())
 
 @Composable
 fun LazyStigerList_Produits_FragID4(

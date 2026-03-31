@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.AddToStockDialog
@@ -529,7 +530,8 @@ fun View_MainItem(
                     }
 
                     Text(
-                        text = "  ${relative_M8BonVent.parent_M14VentPeriod_KeyId.takeLast(3).uppercase()
+                        text = "  ${
+                            relative_M8BonVent.parent_M14VentPeriod_KeyId.takeLast(3).uppercase()
                         }",
                         style = MaterialTheme.typography.bodyLarge, // Larger text
                         color = Color.White
@@ -807,7 +809,7 @@ fun View_MainItem(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Button 1: open the regular AddToStock dialog
+                    
                     Button(
                         onClick = {
                             showStockOptionsDialog = false
@@ -830,44 +832,45 @@ fun View_MainItem(
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    val datasValue_repo1ProduitInfos = repositorysMainGetter.repo1ProduitInfos.datasValue
-
-                    fun get_relative_m8_list_m10vents() =
+                    fun get_relative_oeprations_du_bon(): List<M10OperationVentCouleur> =
                         repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
                             it.parent_M8BonVent_KeyId == relative_M8BonVent.keyID
                         }
 
-                    fun get_relative_list_m1Produit_du_picked_m8Bon(): List<M01Produit> =
-                        get_relative_m8_list_m10vents()
-                            .mapNotNull { repositorysMainGetter.find_M1Produit_ByKeyID(it.parent_M1Produit_KeyId) }
-                            .distinctBy { it.keyID }
+
+                    fun get_updated_Colors(): List<M3CouleurProduitInfos> {
+                        return get_relative_oeprations_du_bon().mapNotNull { operation ->
+                            repositorysMainGetter
+                                .find_M3CouleurInfos_By_KeyID(operation.parent_M3CouleurProduit_KeyID)
+                                ?.copy(
+                                    its_in_echantiallants = true
+                                )
+                        }
+                    }
+
+                    val updatedColors = get_updated_Colors()
                     Button(
-                        modifier = Modifier.fillMaxWidth()
-                          ,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics(mergeDescendants = true) {
+                                set(value = updatedColors.filter { it.its_in_echantiallants == true }.map {
+                                    it.parentId1ProduitInfosDebugName
+                                }, key = SemanticsPropertyKey(""))
+                                set(
+                                    value = get_relative_oeprations_du_bon()
+                                        .map {
+                                            it.keyID.takeLast(3) to
+                                                    (it.parent_M3CouleurProduit_KeyID.takeLast(3) to it.parent_M3CouleurProduit_DebugInfos)
+                                        },
+                                    key = SemanticsPropertyKey("getSet_parent_M3CouleurProduit_DebugInfos()")
+                                )
+                            },
                         onClick = {
                             showStockOptionsDialog = false
-                            val relatedProducts = get_relative_list_m1Produit_du_picked_m8Bon()
-                            val relatedM1KeyIDs = relatedProducts.map { it.keyID }.toSet()
-                            val updatedList = datasValue_repo1ProduitInfos.mapNotNull { prod ->
-                                val shouldBeEchantillon = prod.keyID in relatedM1KeyIDs
-                                if (prod.its_in_echantiallants == shouldBeEchantillon) {
-                                    null
-                                } else {
-                                    android.util.Log.d(
-                                        "Echantillants",
-                                        "Updating '${prod.nom}' [${prod.keyID.takeLast(4)}]: " +
-                                                "its_in_echantiallants ${prod.its_in_echantiallants} → $shouldBeEchantillon"
-                                    )
-                                    prod.copy(
-                                        its_in_echantiallants = shouldBeEchantillon,
-                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                    )
-                                }
-                            }
-                            viewModel.fireBase_batch_set_list_M01Produit(updatedList)
+                            viewModel.fireBase_batch_set_list_M3CouleurProduitInfos(updatedColors)
                             Toast.makeText(
                                 context,
-                                "تم تحديث ${relatedM1KeyIDs.size} منتج كعينات",
+                                "تم التحديث: ${updatedColors.size} لون — صحيح للعينات، إزالة من الباقي",
                                 Toast.LENGTH_SHORT
                             ).show()
                         },
@@ -882,12 +885,17 @@ fun View_MainItem(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "تحديد كعينات (échantiallants)",
+                            text = "تحديث العينات: تعيين صحيح وإزالة من الأخرى",    //<--
+                            //TODO(1): chage a add au active echatillait 
                             color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
                     }
+                    //<--
+                    //TODO(1): ajjout nutton au cilick metre its echat pout tou a nuull et pdate 
                 }
+                
+                
             },
             confirmButton = {},
             dismissButton = {

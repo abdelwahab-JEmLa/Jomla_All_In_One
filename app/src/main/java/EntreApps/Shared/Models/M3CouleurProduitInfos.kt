@@ -28,6 +28,9 @@ M3CouleurProduitInfos(
 
     val nomCouleurStrSiSonImageDispo: String = "",
 
+    //-------------------------------Filters---------------------------------------------------------------------------------------------------------------------------------
+    var its_in_echantiallants : Boolean? = null,
+
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
     var parentBProduitInfosKeyID: String = "",
 
@@ -39,11 +42,14 @@ M3CouleurProduitInfos(
     val extensionDisponible: String = "webp", // Default extension
 ) {
 
+    // FIX(TODO-1): added "its_in_echantiallants" so the field is persisted to Firebase
+    // and round-trips correctly back from a snapshot.
     fun toFirebaseMap(): Map<String, Any?> = mapOf(
         "keyID"                                         to keyID,
         "debugInfos"                                    to debugInfos,
         "creationTimestamp"                             to creationTimestamp,
         "dernierTimeTampsSynchronisationAvecFireBase"   to dernierTimeTampsSynchronisationAvecFireBase,
+        "its_in_echantiallants"                         to its_in_echantiallants,
         "processPositioningInFactory"                   to processPositioningInFactory.name,
         "aAffiche"                                      to aAffiche.name,
         "nomImageFichieSansEtansion"                    to nomImageFichieSansEtansion,
@@ -65,7 +71,7 @@ M3CouleurProduitInfos(
             append("{${keyID.takeLast(4).uppercase()}}\n")
             append(" To ")
             append("[")
-            append("{${parentBProduitInfosKeyID.takeLast(4).uppercase()}}\n")
+            append("{${parentId1ProduitInfosDebugName.takeLast(4).uppercase()}}\n")
             append("]")
             append("]")
         }
@@ -115,8 +121,6 @@ M3CouleurProduitInfos(
             if (nomImageFichieSansEtansion == "Non Dispo") {
                 return null
             }
-
-
 
             val images_central_Local_storageLink = buildString {
                 append(central_Local_storageLink)

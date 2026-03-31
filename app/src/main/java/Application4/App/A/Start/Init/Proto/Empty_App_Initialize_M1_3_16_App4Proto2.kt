@@ -11,7 +11,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 
 object Empty_App_Initialize_M1_3_16_App4Proto2 {
-
     enum class Repo { M1Produit, M16CategorieProduit, M3CouleurProduitInfos }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -61,6 +60,12 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
 
             val m3ParentKeys = seededColors.map { it.parentBProduitInfosKeyID }.toSet()
 
+            // Derive echatillant product keys from M3 colours (source of truth is now M3, not M1)
+            val echatillantProductKeys = allColorsFetched
+                .filter { it.its_in_echantiallants == true }
+                .map { it.parentBProduitInfosKeyID }
+                .toSet()
+
             val classementByProduitKey = seededFilterKeys
                 .map { it.parentProduitKeyID to it.parentProduitClassement }
                 .groupBy({ it.first }, { it.second })
@@ -74,8 +79,9 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
                     else product
                 }
 
+            // Include products referenced by active M3 keys OR by echatillant M3 colours
             seededProducts = allProducts
-                .filter { it.keyID in m3ParentKeys }
+                .filter { it.keyID in m3ParentKeys || it.keyID in echatillantProductKeys }
                 .map { produit ->
                     classementByProduitKey[produit.keyID]
                         ?.takeIf { it != produit.classement_By_FilterKeys_M3 }
@@ -83,12 +89,7 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
                         ?: produit
                 }
 
-            // Include all colors for échantillant products, even those outside the active key filter
-            val echatillantProductKeys = seededProducts
-                .filter { it.its_in_echantiallants == true }
-                .map { it.keyID }
-                .toSet()
-
+            // Include all colours for echatillant products even if outside the active key filter
             if (echatillantProductKeys.isNotEmpty()) {
                 val existingColorKeys = seededColors.map { it.keyID }.toSet()
                 val extraColors = allColorsFetched.filter {

@@ -36,11 +36,25 @@ class RepositorysMainSetter_NewProtoPatterns(
         }
     }
 
+    fun update_List_M3CouleurProduitInfos_BathFireBase(
+        datas: List<M3CouleurProduitInfos>,
+        onSuccess: () -> Unit = {}
+    ) {
+        composScope.launch {
+            if (datas.isNotEmpty()) {
+                datas.forEach { appDatabase.dao_M03CouleurProduitInfos().update(it) }
+                val updates: Map<String, Any> = datas.associate { it.keyID to it.toFirebaseMap() }
+                M3CouleurProduitInfos.ref.updateChildren(updates).await()
+            }
+            withContext(Dispatchers.Main) { onSuccess() }
+        }
+    }
+
     fun update_M1Produit(data: M01Produit) {
         composScope.launch {
             appDatabase.dao_M1Produit().update(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
-            M01Produit.Companion.ref.updateChildren(updates).await()
+            M01Produit.ref.updateChildren(updates).await()
         }
     }
 

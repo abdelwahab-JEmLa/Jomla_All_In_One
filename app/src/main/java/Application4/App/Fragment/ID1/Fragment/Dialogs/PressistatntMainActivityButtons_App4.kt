@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
 @Composable
-fun PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns) {
+fun PressistatntMainActivityButtons_App4(
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
+) {
     val isEchatillantsFilter by remember {
         derivedStateOf {
             viewModelNewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter
