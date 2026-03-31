@@ -77,3 +77,7 @@ class ActiveDatasFragNewProto {
         active_M9Compt?.travailleChezGrossisst3Ali == true
     }
 }
+
+enum class Prioriter {
+    Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS,
+}

@@ -4,14 +4,8 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.Dao_M2Client
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.Dao_M8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -21,26 +15,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 object FlowsFunctions_ActiveDatasFragNewProto {
-    fun getFlow_filter_marqueClient_enum_entrie(
-        activeDatasFragNewProto: ActiveDatasFragNewProto,
-    ): MapClientsViewModel.VisibleClientsNow =
-        activeDatasFragNewProto.filter_marqueClient_enum_entries
-            ?: MapClientsViewModel.VisibleClientsNow.showAll
-
-    suspend fun get_list_M3CouleurProduitInfos(
-        dao: Dao_M03CouleurProduitInfos,
-        activeDatasFragNewProto: ActiveDatasFragNewProto,
-    ) {
-        activeDatasFragNewProto.list_M03CouleurProduitInfos = dao.getAll()
-    }
-
-    suspend fun get_list_M1Produit(
-        dao_M1Produit: Dao_M1Produit,
-        activeDatasFragNewProto: ActiveDatasFragNewProto,
-    ) {
-        activeDatasFragNewProto.list_M1Produit = dao_M1Produit.getAll()
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getFlow_listM10OperationVentCouleur_By_active_Central_Values(
         dao_M10OperationVentCouleur: Dao_M10OperationVentCouleur,
@@ -59,13 +33,6 @@ object FlowsFunctions_ActiveDatasFragNewProto {
 
     fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
         dao_M9AppCompt: Dao_M9AppCompt,
-    ): Flow<M09AppCompt?> =
-        dao_M9AppCompt.getFlow_ByKeyID(
-            M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
-        )
-
-    fun getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
-        dao_M9AppCompt: Dao_M9AppCompt,
         activeDatasFragNewProto: ActiveDatasFragNewProto,
     ): Flow<M09AppCompt?> =
         dao_M9AppCompt.getFlow_ByKeyID(
@@ -78,17 +45,4 @@ object FlowsFunctions_ActiveDatasFragNewProto {
     ): Flow<List<M01Produit>> =
         dao_M1Produit.getAllFlow().onEach { activeDatasFragNewProto.list_M1Produit = it }
 
-    fun getFlow_list_M8BonVent(
-        dao_M8BonVent: Dao_M8BonVent,
-        activeDatasFragNewProto: ActiveDatasFragNewProto,
-    ): Flow<List<M8BonVent>> =
-        dao_M8BonVent.getAllFlow()
-            .onEach { activeDatasFragNewProto.list_M8BonVent = it }
-
-    fun getFlow_list_M2Client(
-        dao_M2Client: Dao_M2Client,
-        activeDatasFragNewProto: ActiveDatasFragNewProto,
-    ): Flow<List<M2Client>> =
-        dao_M2Client.getAllFlow()
-            .onEach { activeDatasFragNewProto.list_M2Client = it }
 }

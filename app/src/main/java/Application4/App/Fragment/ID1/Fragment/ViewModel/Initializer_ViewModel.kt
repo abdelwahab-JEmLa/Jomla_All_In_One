@@ -3,14 +3,11 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoPatterns) {
     fun run() {
@@ -46,7 +43,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
                     initDatasProgressEtate = p
                 )
         }
-
         progress(1 / 9f)
         val products = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
         progress(2 / 9f)
@@ -69,18 +65,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         val operationVentCouleurs =
             AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
 
-        val filterKeysMap: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values> = try {
-            val snap = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos.get().await()
-            snap.children.mapNotNull { child ->
-                val key = child.key ?: return@mapNotNull null
-                val value = child.getValue(Ref_list_Filtred_Keys_M3Couleur_Main_Values::class.java)
-                    ?: return@mapNotNull null
-                key to value
-            }.toMap()
-        } catch (_: Exception) {
-            emptyMap()
-        }
-
         seedActiveDatas(
             appCompt = appCompt,
             bonVent = bonVent,
@@ -89,7 +73,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             products = products,
             colours = colours,
             allOperations = operationVentCouleurs,
-            filterKeysMap = filterKeysMap,
         )
 
         AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
@@ -114,9 +97,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         products: List<EntreApps.Shared.Models.M01Produit>,
         colours: List<EntreApps.Shared.Models.M3CouleurProduitInfos>,
         allOperations: List<EntreApps.Shared.Models.M10OperationVentCouleur>,
-        filterKeysMap: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>,
     ) {
-
         AViewModel_NewProtoPatterns.active_Datas.active_M9Compt = appCompt
         AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent = bonVent
         AViewModel_NewProtoPatterns.active_Datas.list_M2Client = clients

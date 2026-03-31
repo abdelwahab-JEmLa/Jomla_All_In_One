@@ -11,7 +11,6 @@ import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -70,10 +69,6 @@ fun A_Item_Produit_App4(
     }
 
     val expanded_M1Produit = wifiState.expanded_M1Produit
-    Log.d(
-        "A_Item_Produit",
-        "wifiState expand — expanded_M1Produit=${expanded_M1Produit?.keyID} | thisProduit=${relative_M1produit.keyID}"
-    )
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
 
     val isThisProductExpanded = remember(expanded_M1Produit) {
@@ -201,7 +196,6 @@ fun A_Item_Produit_App4(
     ) {
         mutableStateOf(finale_Tariff)
     }
-
 
     if (relative_ListM3Couleurs.isEmpty()) return
 

@@ -1,7 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
@@ -10,7 +9,6 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -39,8 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -67,37 +63,31 @@ fun Etager_LazyColumn(
     val isScrollEnabled = isHostPhone || !isConnected
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
 
-    val list_M03CouleurProduitInfos = activeDatas.list_M03CouleurProduitInfos
 
-    // Single derivedStateOf owns both join + échantillons filter so all mutableStateOf
-    // properties are captured as dependencies inside the same lambda.
     val displayList by remember {
         derivedStateOf {
             val allColours = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
             val allProducts = activeDatas.list_M1Produit ?: emptyList()
             val isEchatillantsMode = activeDatas.isEchatillantsMode
-
+            val echaKeys = allColours
+                .filter { it.its_in_echantiallants == true }
+                .map { it.keyID }
+                .toSet()
             val productByKey = allProducts.associateBy { it.keyID }
 
-            val grouped = allColours
+            allColours
                 .groupBy { it.parentBProduitInfosKeyID }
                 .mapNotNull { (produitKeyID, colours) ->
                     val product = productByKey[produitKeyID] ?: return@mapNotNull null
                     product to colours
                 }
-
-            if (!isEchatillantsMode) {
-                grouped
-            } else {
-                val echaKeys = allColours
-                    .filter { it.its_in_echantiallants == true }
-                    .map { it.keyID }
-                    .toSet()
-                grouped.mapNotNull { (product, colors) ->
-                    val echaColors = colors.filter { it.keyID in echaKeys }
-                    if (echaColors.isEmpty()) null else product to echaColors
+                .mapNotNull { (product, colors) ->
+                    val filtered = if (isEchatillantsMode)
+                        colors.filter { it.keyID in echaKeys }
+                    else
+                        colors.filter { it.keyID !in echaKeys }
+                    if (filtered.isEmpty()) null else product to filtered
                 }
-            }
         }
     }
 
@@ -106,7 +96,8 @@ fun Etager_LazyColumn(
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            val targetComptKeyId = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            val targetComptKeyId =
+                M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             activeBonVentKey = viewModel.appDatabase.dao_M9AppCompt().getAll()
                 .find { it.keyID == targetComptKeyId }?.onVentM8BonVentKey ?: ""
             lenceVentOperations = (activeDatas.list_M10OperationVentCouleur ?: emptyList())
@@ -122,28 +113,6 @@ fun Etager_LazyColumn(
         activeDatas.parentProduit_Classement = displayList
             .mapIndexed { index, (product, _) -> product.keyID to index }
             .toMap()
-
-        Log.d("ProductWithColorsList",
-            "displayList=${displayList.size} produits | isEchatillantsMode=${activeDatas.isEchatillantsMode}")
-        displayList.forEachIndexed { index, (product, colors) ->
-            Log.d("ProductWithColorsList",
-                "  [$index] nom=${product.nom} | keyID=${product.keyID.take(8)} | colors=${colors.size}")
-        }
-
-        // ── Duplicate keyID detection ─────────────────────────────────────────
-        // LazyGrid uses key="product_${keyID}" — duplicate keyIDs cause the second
-        // product to be silently dropped from the UI even though it is in displayList.
-        val seenKeys = mutableMapOf<String, String>() // keyID → first nom
-        displayList.forEach { (product, _) ->
-            val prev = seenKeys[product.keyID]
-            if (prev != null) {
-                Log.e("ProductWithColorsList",
-                    "⚠️ DUPLICATE keyID=${product.keyID} → \"$prev\" ET \"${product.nom}\" " +
-                            "— le second sera INVISIBLE dans LazyGrid (clé dupliquée)")
-            } else {
-                seenKeys[product.keyID] = product.nom
-            }
-        }
     }
 
     LaunchedEffect(expanded_M3CouleurProduitInfos) {
@@ -151,7 +120,8 @@ fun Etager_LazyColumn(
         if (!isHostPhone) return@LaunchedEffect
         val targetKeyID = expanded_M3CouleurProduitInfos.parentBProduitInfosKeyID
         if (targetKeyID.isBlank()) return@LaunchedEffect
-        val foundIndex = displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
+        val foundIndex =
+            displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
         if (foundIndex >= 0) {
             delay(400)
             coroutineScope.launch {
@@ -178,20 +148,6 @@ fun Etager_LazyColumn(
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
-            .semantics(mergeDescendants = true) {
-                set(value = list_M03CouleurProduitInfos, key = SemanticsPropertyKey("list_M03CouleurProduitInfos"))
-                set(value = run {
-                    val echaKeys = get_echatilliantKeyM3(activeDatas)
-                    val echaProductKeyIDs = list_M03CouleurProduitInfos
-                        ?.filter { it.keyID in echaKeys }
-                        ?.map { it.parentBProduitInfosKeyID }
-                        ?.toSet() ?: emptySet()
-                    activeDatas.list_M1Produit?.filter { it.keyID in echaProductKeyIDs }?.map { it.nom to it }
-                }, key = SemanticsPropertyKey("its_in_echantiallants"))
-                set(value = lenceVentOperations, key = SemanticsPropertyKey("lenceVentOperations"))
-                set(value = activeBonVentKey, key = SemanticsPropertyKey("activeBonVentKey"))
-                set(value = activeDatas.list_M10OperationVentCouleur ?: emptyList<M10OperationVentCouleur>(), key = SemanticsPropertyKey("all"))
-            }
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -217,11 +173,6 @@ fun Etager_LazyColumn(
         }
     }
 }
-
-private fun get_echatilliantKeyM3(activeDatas: ActiveDatasFragNewProto): Collection<String> =
-    (activeDatas.list_M03CouleurProduitInfos?.filter { it.its_in_echantiallants == true }
-        ?.map { it.keyID }
-        ?: emptySet())
 
 @Composable
 fun LazyStigerList_Produits_FragID4(
