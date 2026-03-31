@@ -1,7 +1,6 @@
 package Application4.App.Fragment.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
@@ -42,16 +41,12 @@ fun A_Item_Produit_App4(
     modifier: Modifier = Modifier,
     onCategoryClick: (() -> Unit)? = null,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
-    // Pre-filtered colour list passed in from the grid to avoid re-scanning the full list.
-    // Falls back to searching list_M03CouleurProduitInfos when called from outside the grid.
     relative_ListM3Couleurs_override: List<M3CouleurProduitInfos>? = null,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
     val centralValues = viewModel.active_Datas
 
-    // Use the pre-filtered override when available (supplied by the staggered grid);
-    // fall back to scanning the full live list only when called from other call-sites.
     val allColorsForProduit = relative_ListM3Couleurs_override
         ?: remember(viewModel.active_Datas.list_M03CouleurProduitInfos) {
             find_ListM3CouleurInfos_By_Parent_Produit_KeyID(
@@ -60,36 +55,25 @@ fun A_Item_Produit_App4(
             )
         }
 
-    // FIX(TODO-1): filter the colour list according to the active display mode.
-    //   • Échantillons mode  → keep only colours flagged its_in_echantiallants == true
-    //   • Normal mode        → keep only colours present in the active ref-keys map
-    //                          (falls back to showing everything when the map is empty/null,
-    //                           e.g. on first load before Firebase has responded)
-    val isEchatillantsMode = centralValues.affiche_produits_Ou_On_TagPrioriter
-        ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true
+    val isEchatillantsMode = centralValues.isEchatillantsMode
+
 
     val relative_ListM3Couleurs = remember(
         allColorsForProduit,
         isEchatillantsMode,
-        centralValues.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values
     ) {
         if (isEchatillantsMode) {
-            // Show only colours explicitly marked as échantillons
             allColorsForProduit.filter { it.its_in_echantiallants == true }
         } else {
-            val activeKeys = centralValues.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values
-            if (activeKeys.isNullOrEmpty()) {
-                // Map not yet loaded — show everything so the card is never blank
-                allColorsForProduit
-            } else {
-                // Normal mode: restrict to colours present in the active ref-keys list
-                allColorsForProduit.filter { it.keyID in activeKeys }
-            }
+            allColorsForProduit
         }
     }
 
     val expanded_M1Produit = wifiState.expanded_M1Produit
-    Log.d("A_Item_Produit", "wifiState expand — expanded_M1Produit=${expanded_M1Produit?.keyID} | thisProduit=${relative_M1produit.keyID}")
+    Log.d(
+        "A_Item_Produit",
+        "wifiState expand — expanded_M1Produit=${expanded_M1Produit?.keyID} | thisProduit=${relative_M1produit.keyID}"
+    )
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
 
     val isThisProductExpanded = remember(expanded_M1Produit) {
@@ -233,9 +217,6 @@ fun A_Item_Produit_App4(
             && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true
     val categoryClickForHeader: (() -> Unit)? = if (isAdmin) onCategoryClick else null
 
-    // FIX(TODO-1): removed the outer Card container — the grid's LazyStigerList_Produits_FragID4
-    // already wraps each item in a styled Box; a redundant Card here caused double elevation and
-    // unnecessary recomposition overhead.
     Column(
         modifier = modifier
             .semantics(mergeDescendants = true) {

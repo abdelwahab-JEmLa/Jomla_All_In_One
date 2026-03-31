@@ -1,7 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment.Dialogs
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -39,8 +38,7 @@ fun PressistatntMainActivityButtons_App4(
 ) {
     val isEchatillantsFilter by remember {
         derivedStateOf {
-            viewModelNewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter
-                ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true
+            viewModelNewProtoPatterns.active_Datas.isEchatillantsMode
         }
     }
 
@@ -74,12 +72,8 @@ fun PressistatntMainActivityButtons_App4(
                     .padding(16.dp)
                     .size(56.dp),
                 onClick = {
-                    viewModelNewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter =
-                        if (isEchatillantsFilter) {
-                            null  // show all products
-                        } else {
-                            setOf(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS)
-                        }
+                    viewModelNewProtoPatterns.active_Datas.isEchatillantsMode =
+                        !isEchatillantsFilter
                 },
                 containerColor = fabColor,
             ) {

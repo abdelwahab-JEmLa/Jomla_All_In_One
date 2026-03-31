@@ -3,7 +3,6 @@ package Application4.App.A.Start.Init.Proto
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
@@ -30,42 +29,30 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
             mutex.withLock { progress[name] = 1f; emitAggregatedProgress() }
 
         var seededColors     = emptyList<M3CouleurProduitInfos>()
-        var allColorsFetched = emptyList<M3CouleurProduitInfos>()
-        var seededFilterKeys = emptyList<Ref_list_Filtred_Keys_M3Couleur_Main_Values>()
         var seededProducts   = emptyList<M01Produit>()
         var seededCategories = emptyList<M16CategorieProduit>()
 
         suspend fun seedColors() {
-            val refKeysSnap = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos.get().await()
-
-            seededFilterKeys = refKeysSnap.children
-                .mapNotNull { it.getValue(Ref_list_Filtred_Keys_M3Couleur_Main_Values::class.java) }
-
-            allColorsFetched = M3CouleurProduitInfos.ref.get().await()
+            seededColors = M3CouleurProduitInfos.ref.get().await()
                 .children.mapNotNull { child ->
                     val nodeKey = child.key ?: return@mapNotNull null
                     val color = child.getValue(M3CouleurProduitInfos::class.java) ?: return@mapNotNull null
                     if (color.keyID.isBlank() || color.keyID != nodeKey) color.copy(keyID = nodeKey) else color
                 }
 
-            Log.d("SeedColors", "allColorsFetched total=${allColorsFetched.size}")
-            Log.d("SeedColors", "  its_pour_affiche_au_presenter=true  : ${allColorsFetched.count { it.its_pour_affiche_au_presenter == true }}")
-            Log.d("SeedColors", "  its_pour_affiche_au_presenter=false/null: ${allColorsFetched.count { it.its_pour_affiche_au_presenter != true }}")
-            if (allColorsFetched.isNotEmpty()) {
+            Log.d("SeedColors", "allColorsFetched total=${seededColors.size}")
+            Log.d("SeedColors", "  its_pour_affiche_au_presenter=true  : ${seededColors.count { it.its_pour_affiche_au_presenter == true }}")
+            Log.d("SeedColors", "  its_pour_affiche_au_presenter=false/null: ${seededColors.count { it.its_pour_affiche_au_presenter != true }}")
+            if (seededColors.isNotEmpty()) {
                 Log.d("SeedColors", "  sample its_pour_affiche_au_presenter values (first 5): " +
-                        allColorsFetched.take(5).map { "${it.keyID.take(6)}→${it.its_pour_affiche_au_presenter}" })
+                        seededColors.take(5).map { "${it.keyID.take(6)}→${it.its_pour_affiche_au_presenter}" })
             }
 
-            seededColors = allColorsFetched
+            seededColors = seededColors
                 .filter { it.its_pour_affiche_au_presenter == true }
                 .sortedBy { it.parentProduit_Classement }
 
             Log.d("SeedColors", "seededColors after presenter-filter + sort by parentProduit_Classement: ${seededColors.size}")
-            if (seededColors.isEmpty() && allColorsFetched.isNotEmpty()) {
-                Log.w("SeedColors",
-                    "WARNING: seededColors is empty but allColorsFetched has ${allColorsFetched.size} records. " +
-                            "Check that its_pour_affiche_au_presenter is stored as a Boolean (not String/Int) in Firebase.")
-            }
         }
 
         suspend fun seedProducts() {
@@ -74,15 +61,11 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
             val m3ParentKeys = seededColors.map { it.parentBProduitInfosKeyID }.toSet()
 
             // Derive echatillant product keys from M3 colours (source of truth is now M3, not M1)
-            val echatillantProductKeys = allColorsFetched
+            val echatillantProductKeys = seededColors
                 .filter { it.its_in_echantiallants == true }
                 .map { it.parentBProduitInfosKeyID }
                 .toSet()
 
-            val classementByProduitKey = seededFilterKeys
-                .map { it.parentProduitKeyID to it.parentProduitClassement }
-                .groupBy({ it.first }, { it.second })
-                .mapValues { (_, v) -> v.max() }
 
             val allProducts = M01Produit.ref.get().await()
                 .children.mapNotNull { child ->
@@ -95,17 +78,11 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
             // Include products referenced by active M3 keys OR by echatillant M3 colours
             seededProducts = allProducts
                 .filter { it.keyID in m3ParentKeys || it.keyID in echatillantProductKeys }
-                .map { produit ->
-                    classementByProduitKey[produit.keyID]
-                        ?.takeIf { it != produit.classement_By_FilterKeys_M3 }
-                        ?.let { produit.copy(classement_By_FilterKeys_M3 = it) }
-                        ?: produit
-                }
 
             // Include all colours for echatillant products even if outside the active key filter
             if (echatillantProductKeys.isNotEmpty()) {
                 val existingColorKeys = seededColors.map { it.keyID }.toSet()
-                val extraColors = allColorsFetched.filter {
+                val extraColors = seededColors.filter {
                     it.parentBProduitInfosKeyID in echatillantProductKeys && it.keyID !in existingColorKeys
                 }
                 if (extraColors.isNotEmpty()) seededColors = seededColors + extraColors
@@ -137,21 +114,12 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
 
         seedRepo(Repo.M1Produit, isOnline) {
             seedProducts()
-            val classementByProductKey = seededProducts.associateBy(
-                keySelector    = { it.keyID },
-                valueTransform = { it.classement_By_FilterKeys_M3 }
-            )
-            seededFilterKeys = seededFilterKeys.map { key ->
-                val updated = classementByProductKey[key.parentProduitKeyID] ?: return@map key
-                if (updated != key.parentProduitClassement) key.copy(parentProduitClassement = updated)
-                else key
-            }
         }
 
         seedRepo(Repo.M16CategorieProduit, isOnline) { seedCategories() }
 
         on_Progress_Datas(1f)
-        return SeedResult(seededColors, seededFilterKeys, seededProducts, seededCategories)
+        return SeedResult(seededColors, seededProducts, seededCategories)
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -224,7 +192,7 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
         seedRepo(Repo.M16CategorieProduit,   isOnline) { seedCategories() }
 
         on_Progress_Datas(1f)
-        return SeedResult(allColors, emptyList(), allProducts, allCategories)
+        return SeedResult(allColors, allProducts, allCategories)
     }
 
     private fun isInternetAvailable(context: Context): Boolean = try {
@@ -235,7 +203,6 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
 
     data class SeedResult(
         val colors: List<M3CouleurProduitInfos> = emptyList(),
-        val filterKeys: List<Ref_list_Filtred_Keys_M3Couleur_Main_Values> = emptyList(),
         val products: List<M01Produit> = emptyList(),
         val categories: List<M16CategorieProduit> = emptyList(),
     )

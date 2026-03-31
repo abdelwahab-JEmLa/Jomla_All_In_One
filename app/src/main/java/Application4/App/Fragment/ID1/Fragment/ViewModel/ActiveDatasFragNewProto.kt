@@ -25,22 +25,13 @@ class ActiveDatasFragNewProto {
         null
     )
 
-    var affiche_produits_Ou_On_TagPrioriter: Set<Prioriter>? by mutableStateOf(null)
-
-    val its_Echatillants_Mode: Boolean by derivedStateOf {
-        affiche_produits_Ou_On_TagPrioriter
-            ?.contains(Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS) == true
-    }
+    var isEchatillantsMode: Boolean by mutableStateOf(false)
 
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>? by mutableStateOf(null)
     var list_M16CategorieProduit: List<M16CategorieProduit>? by mutableStateOf(null)
 
     var parentProduit_Classement: Map<String, Int> by mutableStateOf(emptyMap())
-
-    var map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>? by mutableStateOf(
-        null
-    )
 
     var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(
         null

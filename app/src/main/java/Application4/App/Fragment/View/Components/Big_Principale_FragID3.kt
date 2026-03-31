@@ -44,7 +44,7 @@ fun Big_Principale_FragID3(
     on_pour_send_data: (String, String) -> Unit
 ) {
     val its_Grid4_Mode =
-        uiState_NewProtoPatterns_viewModel.second.active_Datas.its_Echatillants_Mode
+        uiState_NewProtoPatterns_viewModel.second.active_Datas.isEchatillantsMode
     val imageHeight by animateDpAsState(
         targetValue = if (isThisProductExpanded) {
             IMAGE_HEIGHT_EXPANDED.dp

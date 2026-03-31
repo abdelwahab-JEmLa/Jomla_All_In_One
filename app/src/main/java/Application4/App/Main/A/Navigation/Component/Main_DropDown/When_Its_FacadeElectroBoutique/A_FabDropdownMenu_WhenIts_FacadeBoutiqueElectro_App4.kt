@@ -2,7 +2,6 @@ package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_Faca
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.Affiche_ProduitDataBaseEdites_ComposableViews_ActiveCompt_Update_DropdownMenuItem
-import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.PrioriterToggle_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.SyncDropboxImages_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.UpdateActiveComptDo_DropdownMenuItem
 import androidx.compose.foundation.layout.Box
@@ -37,7 +36,7 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
 
             SyncDropboxImages_DropdownMenuItem(viewModelNewProtoPatterns, onDismissDropdown)
 
-            PrioriterToggle_DropdownMenuItem(viewModelNewProtoPatterns)
+        //    PrioriterToggle_DropdownMenuItem(viewModelNewProtoPatterns)
                 /*
             Upload_Filtered_M03Couleurs_DropdownMenuItem_App4(
                 viewModelNewProtoPatterns,

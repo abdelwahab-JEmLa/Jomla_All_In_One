@@ -29,9 +29,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     }
 
     private fun load_then_Collect_Active_DatasMutableStates() {
-//        AViewModel_NewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter = buildSet {
-//            Prioriter.Affiche_Que_Les_Produits_De_Jomla_Clients_ECHATILLANTS
-//        }
         collectM10OperationVentCouleur()
     }
 
@@ -127,8 +124,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         AViewModel_NewProtoPatterns.active_Datas.list_M1Produit = products
         AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = colours
         AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = allOperations
-        AViewModel_NewProtoPatterns.active_Datas.map_m3couleur_to_ref_list_Filtred_Keys_M3Couleur_Main_Values =
-            filterKeysMap
     }
 
     private suspend fun collectActiveM9Compt() {

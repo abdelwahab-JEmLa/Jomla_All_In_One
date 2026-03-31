@@ -1,7 +1,6 @@
 package Application4.App.Fragment.View.Components.A_Header.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.ViewS.Views.Image_Displaye
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.CategoryBadge
@@ -274,14 +273,6 @@ fun A_Compact_Header_App4(
     }
 }
 
-fun Prioriter.label(): String = when (this) {
-    Prioriter.Dernier_VentAchat_Est_Moin_Mois -> "< Mois"
-    Prioriter.Dernier_VentAchat_Est_Moin_Semain -> "< Sem"
-    Prioriter.PlusDe80P_Ne_Le_Voit_Pas -> "80%"
-    else -> {
-        ""
-    }
-}
 
 @Composable
 private fun InfoCard(

@@ -1,5 +1,5 @@
 package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views
-
+  /*
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import androidx.compose.foundation.clickable
@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun PrioriterToggle_DropdownMenuItem(viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns) {
-    val activeFilter = viewModelNewProtoPatterns.active_Datas.affiche_produits_Ou_On_TagPrioriter
+    val activeFilter = viewModelNewProtoPatterns.active_Datas.isEchatillantsMode
     var isExpanded by remember { mutableStateOf(false) }
 
     DropdownMenuItem(
@@ -107,3 +107,4 @@ fun PrioriterToggle_DropdownMenuItem(viewModelNewProtoPatterns: A_ViewModel_NewP
         onClick = {}
     )
 }
+                 */

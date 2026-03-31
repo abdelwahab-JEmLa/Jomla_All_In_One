@@ -6,10 +6,12 @@ import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProt
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -23,12 +25,13 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import java.io.File
-enum class pourcentage{
+
+enum class pourcentage {
     max_possible,
     standart,
     min_possible
-}             //<--
-//TODO(1): fait que si its mode echang et its ecpanded produit de affiche ces couleur max et les atres couleurs min
+}
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye(
@@ -39,9 +42,19 @@ fun Image_Displaye(
     list_M1Produit: List<M01Produit>?,
     image_pourcetage_qualite: pourcentage = pourcentage.min_possible
 ) {
-    val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
+    val (_, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
     val centralValues = wifiState
+
+    // In échantillons mode: expanded product's colors → max quality; all others → min.
+    // Outside échantillons mode the caller-supplied quality is respected as-is.
+    val effectiveQuality: pourcentage = if (viewModel.active_Datas.isEchatillantsMode) {
+        val isExpandedProduct =
+            centralValues.expanded_M1Produit?.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
+        if (isExpandedProduct) pourcentage.max_possible else pourcentage.min_possible
+    } else {
+        image_pourcetage_qualite
+    }
 
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
@@ -54,6 +67,27 @@ fun Image_Displaye(
         } else {
             null
         }
+    }
+
+    // Log every composition — shows produit name, whether the image file exists, and
+    // effective quality. Use this to confirm that "wassim"-type products reach this
+    // composable and to see why they are invisible (image missing = empty Box).
+    SideEffect {
+        val parentNom = list_M1Produit
+            ?.find { it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID }
+            ?.nom ?: "?"
+        val fileStatus = when {
+            imageFile == null          -> "Non Dispo (pas de fichier)"
+            !imageFile.exists()        -> "⚠️ FICHIER ABSENT → Box vide invisible (${imageFile.name})"
+            else                       -> "OK (${imageFile.name})"
+        }
+        Log.d(
+            "Image_Displaye",
+            "produit=$parentNom" +
+                    " | couleur=${relative_M3CouleurProduitInfos.keyID.take(8)}" +
+                    " | qualite=$effectiveQuality" +
+                    " | image=$fileStatus"
+        )
     }
 
     if (imageFile != null && imageFile.exists()) {
@@ -94,7 +128,7 @@ fun Image_Displaye(
             modifier = completeModifier,
             contentScale = contentScale
         ) {
-            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, image_pourcetage_qualite)
+            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, effectiveQuality)
         }
     } else {
         Box(modifier = modifier.fillMaxSize())

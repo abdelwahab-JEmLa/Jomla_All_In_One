@@ -71,7 +71,7 @@ fun Section_ToggleButton_TagPreiorities(
                 )
                 Text(
                     text = if (hasAnyTag)
-                        activeTags.joinToString(" · ") { it.label() }
+                        activeTags.joinToString(" · ") { it.name }
                     else
                         "Tags priorité",
                     fontSize = 8.sp,

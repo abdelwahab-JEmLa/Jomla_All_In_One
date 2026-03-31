@@ -26,8 +26,6 @@ data class M01Produit(
     var idParentCategorie: Long = 0,
     var positionDonSonCesFrereCategorieProduits: Int = 0,
 
-    var classement_By_FilterKeys_M3: Int = 0,
-
 
     // Section InfosDeBase
     var nom: String = "",
@@ -37,7 +35,7 @@ data class M01Produit(
     val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
     // default tag: Dernier_VentAchat_Est_Trop_Luin
-    var tag_prioriter_str: String = Prioriter.Dernier_VentAchat_Est_Trop_Luin.name +",",
+    var tag_prioriter_str: String = "",
 
     //----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -199,7 +197,6 @@ data class M01Produit(
             // Category and position
             "idParentCategorie" to idParentCategorie,
             "positionDonSonCesFrereCategorieProduits" to positionDonSonCesFrereCategorieProduits,
-            "classement_By_FilterKeys_M3" to classement_By_FilterKeys_M3,
 
             // Names
             "nom" to nom,
