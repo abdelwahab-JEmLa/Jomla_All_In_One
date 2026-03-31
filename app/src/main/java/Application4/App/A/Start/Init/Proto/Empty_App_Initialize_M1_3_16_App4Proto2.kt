@@ -12,14 +12,12 @@ import kotlinx.coroutines.tasks.await
 
 object Empty_App_Initialize_M1_3_16_App4Proto2 {
     enum class Repo { M1Produit, M16CategorieProduit, M3CouleurProduitInfos }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Filtered by active M3 keys (used by DeleteInsertAll_Active_Key)
-    // ─────────────────────────────────────────────────────────────────────────
-    suspend fun getReturne_M1_3_16(
+    suspend fun getReturn_Filtred_For_Presenter_M1_3_16(
         context: Context,
         on_Progress_Datas: (Float) -> Unit,
-    ): SeedResult {
+    ): SeedResult {      //<--
+//TODO(1): change la logique d seed couleur a seed tout les datas de refm3 et filter ou its_pour_affiche_au_presenter == true fait que le sort de add soit par parentProduit_Classement
+
         val mutex = Mutex()
         val progress = mutableMapOf<String, Float>()
 
@@ -40,7 +38,6 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
 
         suspend fun seedColors() {
             val refKeysSnap = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos.get().await()
-            val allowedKeys = refKeysSnap.children.mapNotNull { it.key }.toSet()
 
             seededFilterKeys = refKeysSnap.children
                 .mapNotNull { it.getValue(Ref_list_Filtred_Keys_M3Couleur_Main_Values::class.java) }
@@ -52,7 +49,9 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
                     if (color.keyID.isBlank() || color.keyID != nodeKey) color.copy(keyID = nodeKey) else color
                 }
 
-            seededColors = allColorsFetched.filter { it.keyID in allowedKeys }
+            seededColors = allColorsFetched
+                .filter { it.its_pour_affiche_au_presenter == true }
+                .sortedBy { it.parentProduit_Classement }
         }
 
         suspend fun seedProducts() {

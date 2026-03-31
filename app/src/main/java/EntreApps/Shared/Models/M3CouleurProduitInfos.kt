@@ -29,9 +29,12 @@ M3CouleurProduitInfos(
     val nomCouleurStrSiSonImageDispo: String = "",
 
     //-------------------------------Filters---------------------------------------------------------------------------------------------------------------------------------
-    var its_in_echantiallants : Boolean? = null,
+    var its_pour_affiche_au_presenter: Boolean? = null,
+    var its_in_echantiallants: Boolean? = null,
 
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
+    var parentProduit_Classement: Int? = null,
+
     var parentBProduitInfosKeyID: String = "",
 
     var parentBProduitOldID: Long = 0,
@@ -42,26 +45,28 @@ M3CouleurProduitInfos(
     val extensionDisponible: String = "webp", // Default extension
 ) {
 
-    // FIX(TODO-1): added "its_in_echantiallants" so the field is persisted to Firebase
-    // and round-trips correctly back from a snapshot.
     fun toFirebaseMap(): Map<String, Any?> = mapOf(
-        "keyID"                                         to keyID,
-        "debugInfos"                                    to debugInfos,
-        "creationTimestamp"                             to creationTimestamp,
-        "dernierTimeTampsSynchronisationAvecFireBase"   to dernierTimeTampsSynchronisationAvecFireBase,
-        "its_in_echantiallants"                         to its_in_echantiallants,
-        "processPositioningInFactory"                   to processPositioningInFactory.name,
-        "aAffiche"                                      to aAffiche.name,
-        "nomImageFichieSansEtansion"                    to nomImageFichieSansEtansion,
-        "telephone_Prise_depuit"                        to telephone_Prise_depuit,
-        "count_Don_Depot"                               to count_Don_Depot,
-        "a_cammende_depuit_grossist"                    to a_cammende_depuit_grossist,
-        "nomCouleurStrSiSonImageDispo"                  to nomCouleurStrSiSonImageDispo,
-        "parentBProduitInfosKeyID"                      to parentBProduitInfosKeyID,
-        "parentBProduitOldID"                           to parentBProduitOldID,
-        "parentId1ProduitInfosDebugName"                to parentId1ProduitInfosDebugName,
-        "indexCouleurDansAncienProto"                   to indexCouleurDansAncienProto,
-        "extensionDisponible"                           to extensionDisponible,
+        "keyID" to keyID,
+        "debugInfos" to debugInfos,
+        "creationTimestamp" to creationTimestamp,
+        "dernierTimeTampsSynchronisationAvecFireBase" to dernierTimeTampsSynchronisationAvecFireBase,
+        "its_in_echantiallants" to its_in_echantiallants,
+
+        "its_pour_affiche_au_presenter" to its_pour_affiche_au_presenter,
+        "parentProduit_Classement" to parentProduit_Classement,
+
+        "processPositioningInFactory" to processPositioningInFactory.name,
+        "aAffiche" to aAffiche.name,
+        "nomImageFichieSansEtansion" to nomImageFichieSansEtansion,
+        "telephone_Prise_depuit" to telephone_Prise_depuit,
+        "count_Don_Depot" to count_Don_Depot,
+        "a_cammende_depuit_grossist" to a_cammende_depuit_grossist,
+        "nomCouleurStrSiSonImageDispo" to nomCouleurStrSiSonImageDispo,
+        "parentBProduitInfosKeyID" to parentBProduitInfosKeyID,
+        "parentBProduitOldID" to parentBProduitOldID,
+        "parentId1ProduitInfosDebugName" to parentId1ProduitInfosDebugName,
+        "indexCouleurDansAncienProto" to indexCouleurDansAncienProto,
+        "extensionDisponible" to extensionDisponible,
     )
 
     fun get_DebugsInfos(): String {
@@ -77,8 +82,8 @@ M3CouleurProduitInfos(
         }
     }
 
-    enum class Type { Nom,Image }
-    enum class ProcessPositioningInFactory { CreeDepuitRechercheRapid , CreeAuGeneralHandler }
+    enum class Type { Nom, Image }
+    enum class ProcessPositioningInFactory { CreeDepuitRechercheRapid, CreeAuGeneralHandler }
 
     companion object {
         val ref = M00CentralParametresOfAllApps.centralRef
@@ -139,7 +144,8 @@ M3CouleurProduitInfos(
 
             // Extract prefix and number
             val prefix = nomImageFichieSansEtansion.substringBeforeLast("_")
-            val initialNumber = nomImageFichieSansEtansion.substringAfterLast("_").toIntOrNull() ?: return null
+            val initialNumber =
+                nomImageFichieSansEtansion.substringAfterLast("_").toIntOrNull() ?: return null
 
             // Try decrementing the number until we find an existing file or reach 0
             for (number in (initialNumber - 1) downTo 0) {
@@ -166,7 +172,8 @@ M3CouleurProduitInfos(
 
             // Extract prefix and number
             val prefix = nomImageFichieSansEtansion.substringBeforeLast("_")
-            val currentNumber = nomImageFichieSansEtansion.substringAfterLast("_").toIntOrNull() ?: return null
+            val currentNumber =
+                nomImageFichieSansEtansion.substringAfterLast("_").toIntOrNull() ?: return null
 
             // Return incremented filename
             return "${prefix}_${currentNumber + 1}"

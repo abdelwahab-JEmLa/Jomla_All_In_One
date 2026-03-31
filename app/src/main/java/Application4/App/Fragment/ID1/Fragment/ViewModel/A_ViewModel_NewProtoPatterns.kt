@@ -64,9 +64,6 @@ class A_ViewModel_NewProtoPatterns(
 
     fun disconnect() = wifi.disconnect()
 
-    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
-        wifi.sendOrderToClientDisplayer(orderName, data)
-
     fun sendOrderToClientDisplayerT(
         order: WifiUpdateClientDisplayerStats_NewProto,
         data: Any? = null

@@ -2,6 +2,7 @@ package Application4.App.Fragment.View.ViewS.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
@@ -26,13 +27,14 @@ enum class pourcentage{
     max_possible,
     standart,
     min_possible
-}
+}             //<--
+//TODO(1): fait que si its mode echang et its ecpanded produit de affiche ces couleur max et les atres couleurs min
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye(
+    modifier: Modifier = Modifier,
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     contentScale: ContentScale = ContentScale.Fit,
-    modifier: Modifier = Modifier,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     list_M1Produit: List<M01Produit>?,
     image_pourcetage_qualite: pourcentage = pourcentage.min_possible
@@ -73,11 +75,14 @@ fun Image_Displaye(
                     val isSameColor =
                         centralValues.expanded_M3CouleurProduitInfos?.keyID == relative_M3CouleurProduitInfos.keyID
 
+                    viewModel.sendOrderToClientDisplayerT(
+                        WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+                        relative_M3CouleurProduitInfos.keyID
+                    )
+
                     if (isSameProductExpanded && isSameColor) {
-                        // Même produit, même couleur → fermer
                         viewModel.updateExpandedProduitEtCouleur(null, null)
                     } else {
-                        // Nouveau produit OU nouvelle couleur → ouvrir/switcher
                         viewModel.updateExpandedProduitEtCouleur(parentProduct, relative_M3CouleurProduitInfos)
                     }
                 }

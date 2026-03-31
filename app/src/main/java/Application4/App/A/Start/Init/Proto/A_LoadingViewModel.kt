@@ -184,7 +184,7 @@ class A_LoadingViewModel(
             Do.DeleteInsertAll_Active_Key -> {
                 viewModelScope.launch(Dispatchers.IO) { deleteAllLocal() }.join()
                 viewModelScope.launch(Dispatchers.IO) {
-                    val result = Empty_App_Initialize_M1_3_16_App4Proto2.getReturne_M1_3_16(
+                    val result = Empty_App_Initialize_M1_3_16_App4Proto2.getReturn_Filtred_For_Presenter_M1_3_16(
                         context = appContext,
                         on_Progress_Datas = { p -> setProgress(p, "Chargement produits…") },
                     )

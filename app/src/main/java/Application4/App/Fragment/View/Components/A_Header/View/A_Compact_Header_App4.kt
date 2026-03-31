@@ -403,9 +403,9 @@ fun ColorImageCard_FragID3(
             }
         ) {
             Image_Displaye(
+                modifier = Modifier.Companion,
                 relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
                 contentScale = if (isSelected) ContentScale.Companion.Fit else ContentScale.Companion.Crop,
-                modifier = Modifier.Companion,
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 list_M1Produit = uiState_NewProtoPatterns_viewModel.second.active_Datas
                     .list_M1Produit

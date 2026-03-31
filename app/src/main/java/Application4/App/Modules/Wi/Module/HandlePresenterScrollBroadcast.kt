@@ -1,7 +1,6 @@
 package Application4.App.Modules.Wi.Module
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.util.Log
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
@@ -66,16 +65,16 @@ fun HandlePresenterScrollBroadcast(
                         lastScrollPosition = position
                         onScrollHostChange(position)
                         Log.d(TAG, "Sending scroll position to client: $position")
-                        viewModel.sendOrderToClientDisplayer(
-                            WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
+                        viewModel.sendOrderToClientDisplayerT(
+                            WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition,
                             position
                         )
                     }
                 } else if (isScrollInProgress) {
                     isScrollInProgress = false
                     Log.d(TAG, "Final scroll position sent to client: $position")
-                    viewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
+                    viewModel.sendOrderToClientDisplayerT(
+                        WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition,
                         position
                     )
                 }

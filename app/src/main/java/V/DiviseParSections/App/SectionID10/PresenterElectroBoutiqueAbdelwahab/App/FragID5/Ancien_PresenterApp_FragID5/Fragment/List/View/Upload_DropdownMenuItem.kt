@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
-import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.compose.foundation.layout.size
@@ -28,11 +28,12 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
-fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
+fun Updated_list_m3couleurs_Affichable_Au_Presenters(
     onDismissDropdown: () -> Unit,
     context: Context = koinInject(),
     appDatabase: AppDatabase = koinInject(),
-    keys: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>,
+    updated_list_m3couleurs_Affichable_Au_Presenters: List<M3CouleurProduitInfos>,
+    updated_list_m3couleurs_Affichable_Au_Presenters_filtred: List<Pair<String, M3CouleurProduitInfos>>,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -57,7 +58,7 @@ fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
         },
         text = {
             Text(
-                text = if (isUploading) "Envoi en cours..." else "Envoyer produits filtrés → firebase",
+                text = if (isUploading) "Envoi en cours..." else "Updated_list_m3couleurs_Affichable_Au_Presenters",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -73,7 +74,7 @@ fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
             text = {
                 Text(
                     "Cette action va supprimer les données existantes dans firebase " +
-                            "(ref_Active_Filtred_Datas) et les remplacer par les produits/couleurs/catégories " +
+                            "et Updated_list_m3couleurs_Affichable_Au_Presenters" +
                             "actuellement filtrés. Continuer ?"
                 )
             },
@@ -85,12 +86,12 @@ fun Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
                         showConfirmDialog = false
                         coroutineScope.launch(Dispatchers.IO) {
                             isUploading = true
-
-
                             RepositorysMainSetter_NewProtoPatterns(
                                 appDatabase = appDatabase,
                                 context = context
-                            ).insertFireBase_list_Main_Values_M3CouleurProduitInfos(keys)
+                            ).update_List_M3CouleurProduitInfos_BathFireBase(
+                                updated_list_m3couleurs_Affichable_Au_Presenters
+                            )
 
                             isUploading = false
                             onDismissDropdown()

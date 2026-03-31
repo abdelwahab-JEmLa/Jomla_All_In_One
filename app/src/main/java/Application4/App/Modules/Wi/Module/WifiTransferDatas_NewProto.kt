@@ -77,18 +77,12 @@ class WifiTransferDatas_NewProto(
 
     private enum class ConnectionMode { HOST, CLIENT, NONE }
 
-    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
-        coroutineScope.launch { sendData("$orderName$data") }
-    }
-
     fun sendOrderToClientDisplayerT(
         order: WifiUpdateClientDisplayerStats_NewProto,
         data: Any? = null
     ) {
         coroutineScope.launch {
             sendData("${order.prefix}$data")
-            // Also apply the payload locally so the HOST's own UI reflects the change
-            // immediately — without this the HOST never calls handlePayload for its own sends.
             if (order == WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran) {
                 handlePayload("${order.prefix}$data")
             }
@@ -238,7 +232,6 @@ class WifiTransferDatas_NewProto(
                     WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ->
                         list_M3CouleurProduit.find { it.keyID == content }
                             ?.let { toggleExpandedCouleur(it) }
-
                     else -> Unit
                 }
             }

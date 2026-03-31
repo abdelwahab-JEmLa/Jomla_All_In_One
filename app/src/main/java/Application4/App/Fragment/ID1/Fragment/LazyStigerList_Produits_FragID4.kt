@@ -87,7 +87,6 @@ fun Etager_LazyColumn(
                     if (!isEchatillantsMode && !product.matchesPrioriteFilter(activeFilter)) return@mapNotNull null
                     product to colours
                 }
-                .sortedBy { (product, _) -> product.classement_By_FilterKeys_M3 }
         }
     }
 

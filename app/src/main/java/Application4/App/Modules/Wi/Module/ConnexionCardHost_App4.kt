@@ -92,7 +92,6 @@ fun ConnexionCardHost_App4(
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(onClick = {
                             if (messageText.isNotEmpty()) {
-                                vm.sendOrderToClientDisplayer("Message", messageText)
                                 messageText = ""
                             }
                         }, modifier = Modifier.weight(1f)) { Text("Envoyer") }

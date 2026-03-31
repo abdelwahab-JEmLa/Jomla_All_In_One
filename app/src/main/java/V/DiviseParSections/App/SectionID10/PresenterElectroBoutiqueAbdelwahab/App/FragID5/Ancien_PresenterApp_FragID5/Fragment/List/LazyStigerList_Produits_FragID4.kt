@@ -1,12 +1,15 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List
 
+import EntreApps.Shared.Models.Client_Speciale
 import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.CategoryStickyHeader
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Delete_Ref_Active_Keys_M03Couleurs_Button
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Updated_list_m3couleurs_Affichable_Au_Presenters
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.Item_Produit_FragID5
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Z.Components.Modules.HandlePresenterClientScroll
@@ -69,7 +72,9 @@ fun Etager_LazyColumn_App0(
     val allColors = cataloguesWithCategoriesAndProducts
         .flatMap { (_, cats) ->
             cats.flatMap { (_, products) ->
-                products.flatMap { (_, colors) -> colors }
+                products.flatMap { (_, colors) ->
+                    colors
+                }
             }
         }
 
@@ -77,13 +82,17 @@ fun Etager_LazyColumn_App0(
         cataloguesWithCategoriesAndProducts
             .flatMap { (_, cats) -> cats }
             .flatMap { (_, productColorPairs) -> productColorPairs }
+            .sortedBy { (_, colors) -> if (colors.any { it.its_in_echantiallants == true }) 0 else 1 }
             .mapIndexed { index, (product, _) -> product.keyID to index }
             .toMap()
             .also { map ->
                 Log.d(
                     "parentProduit_Classement",
                     "✅ ${map.size} products indexed by display position | " +
-                            "sample: ${map.entries.take(3).joinToString { "(${it.key.takeLast(6)} → ${it.value})" }}"
+                            "sample: ${
+                                map.entries.take(3)
+                                    .joinToString { "(${it.key.takeLast(6)} → ${it.value})" }
+                            }"
                 )
             }
 
@@ -98,7 +107,8 @@ fun Etager_LazyColumn_App0(
     val tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
     val isScrollEnabled = isHostPhone || !isConnected
 
-    val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
+    val expanded_M3CouleurProduitInfos =
+        focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
 
     var showUploadDropdown by remember { mutableStateOf(false) }
 
@@ -118,11 +128,18 @@ fun Etager_LazyColumn_App0(
         Log.d(
             "ECHATILLANTS_DEBUG",
             "Bon type: ${if (isJomlaClientBon) "JOMLA_ECHATILLANTS" else "autre client"} " +
-                    "(keyID=${focusedValuesGetter.activeOnVent_M8BonVent?.parent_M2Client_KeyID?.takeLast(6)})"
+                    "(keyID=${
+                        focusedValuesGetter.activeOnVent_M8BonVent?.parent_M2Client_KeyID?.takeLast(
+                            6
+                        )
+                    })"
         )
 
         if (!isJomlaClientBon) {
-            Log.d("ECHATILLANTS_DEBUG", "⏭️ Skipping ECHATILLANTS check (not a JOMLA_ECHATILLANTS bon)")
+            Log.d(
+                "ECHATILLANTS_DEBUG",
+                "⏭️ Skipping ECHATILLANTS check (not a JOMLA_ECHATILLANTS bon)"
+            )
             emptySet()
         } else {
             val ventCouleurKeyIDs = focusedValuesGetter
@@ -241,14 +258,60 @@ fun Etager_LazyColumn_App0(
                 ) {
                     Text(text = "⚙️ Options couleurs")
                 }
+
+
                 DropdownMenu(
                     expanded = showUploadDropdown,
                     onDismissRequest = { showUploadDropdown = false },
                 ) {
+                    fun repo3CouleurProduit_datasValue(): List<M3CouleurProduitInfos> =
+                        repositorysMainGetter.repo3CouleurProduit.datasValue
+
+                    fun get_Updated_list_m3couleurs_Affichable_Au_Presenters() =
+                        repo3CouleurProduit_datasValue()
+                            .map {
+                                it.copy(
+                                    its_pour_affiche_au_presenter =
+                                        if (it.count_Don_Depot > 0 || (it.its_in_echantiallants == true)) true else null,
+                                    parentProduit_Classement = parentProduit_Classement[it.parentBProduitInfosKeyID]
+                                )
+                            }
+
+
+                    Updated_list_m3couleurs_Affichable_Au_Presenters(
+                        updated_list_m3couleurs_Affichable_Au_Presenters = get_Updated_list_m3couleurs_Affichable_Au_Presenters(),
+                        updated_list_m3couleurs_Affichable_Au_Presenters_filtred = get_Updated_list_m3couleurs_Affichable_Au_Presenters()
+                            .filter {
+                                it.its_pour_affiche_au_presenter == true
+                            }.map {
+                                it.parentId1ProduitInfosDebugName to it
+                            },
+                        onDismissDropdown = { showUploadDropdown = false }
+                    )
+
+                    fun get_keys(): Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values> =
+                        allColors
+                            .filter { it.keyID.isNotBlank() }
+                            .associate { couleur ->
+                                val produitClassement =
+                                    parentProduit_Classement[couleur.parentBProduitInfosKeyID] ?: 0
+
+                                couleur.keyID to Ref_list_Filtred_Keys_M3Couleur_Main_Values(
+                                    nom = couleur.nomCouleurStrSiSonImageDispo,
+                                    classment = produitClassement,
+                                    activated = true,
+                                    parentProduitKeyID = couleur.parentBProduitInfosKeyID,
+                                    parentProduitDebugName = couleur.parentId1ProduitInfosDebugName,
+                                    parentProduitClassement = produitClassement,
+                                    its_couleur_du_Jomla_ECHATILLANTS_Client =
+                                        if (couleur.keyID in jomlaEchatillantsCouleurKeyIDs)
+                                            Client_Speciale.Jomla_ECHATILLANTS_Client
+                                        else
+                                            null,
+                                )
+                            }
                     Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
-                        list_M03CouleurProduitInfos = allColors,
-                        parentProduit_Classement = parentProduit_Classement,
-                        jomlaEchatillantsCouleurKeyIDs = jomlaEchatillantsCouleurKeyIDs,
+                        keys = get_keys(),
                         onDismissDropdown = { showUploadDropdown = false }
                     )
                     Delete_Ref_Active_Keys_M03Couleurs_Button(
