@@ -27,8 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -205,7 +203,6 @@ fun A_Item_Produit_App4(
 
 
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
-    val innerPadding = if (isThisProductExpanded) 8.dp else 4.dp
 
     val isAdmin = centralValues.currentApp_Est_Admin
             && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true
@@ -213,10 +210,6 @@ fun A_Item_Produit_App4(
 
     Column(
         modifier = modifier
-            .semantics(mergeDescendants = true) {
-                set(value = supperGro, key = SemanticsPropertyKey("supperGro"))
-                set(value = activeM9compt, key = SemanticsPropertyKey("activeM9compt"))
-            }
             .fillMaxWidth()
             .padding(cardPadding)
     ) {

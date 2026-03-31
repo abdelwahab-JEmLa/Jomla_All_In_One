@@ -202,12 +202,6 @@ fun Lenceur_Vent_Handler_App4(
         // ── Boit / unit handler ───────────────────────────────────────────
         Box(
             modifier = Modifier
-                .semantics(mergeDescendants = true) {
-                    set(
-                        value = listM10OperationVentCouleur_FilteredBy_activeM8BonVent,
-                        key = SemanticsPropertyKey("listM10OperationVentCouleur_FilteredBy_activeM8BonVent")
-                    )
-                }
                 .fillMaxWidth()
                 .clip(shape)
                 .background(containerColor.copy(alpha = 0.15f))
