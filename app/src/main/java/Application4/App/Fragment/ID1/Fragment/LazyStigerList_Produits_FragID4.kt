@@ -68,9 +68,11 @@ fun Etager_LazyColumn(
     val isScrollEnabled = isHostPhone || !isConnected
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
 
+    val list_M03CouleurProduitInfos = activeDatas.list_M03CouleurProduitInfos
+
     val productWithColorsList by remember {
         derivedStateOf {
-            val allColours = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
+            val allColours = list_M03CouleurProduitInfos ?: emptyList()
             val allProducts = activeDatas.list_M1Produit ?: emptyList()
             val activeFilter = activeDatas.affiche_produits_Ou_On_TagPrioriter
 
@@ -87,6 +89,7 @@ fun Etager_LazyColumn(
                     if (!isEchatillantsMode && !product.matchesPrioriteFilter(activeFilter)) return@mapNotNull null
                     product to colours
                 }
+                .sortedBy { (product, _) -> product.classement_By_FilterKeys_M3 }
         }
     }
 
@@ -165,9 +168,11 @@ fun Etager_LazyColumn(
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
             .semantics(mergeDescendants = true) {
+                set(value = list_M03CouleurProduitInfos, key = SemanticsPropertyKey("list_M03CouleurProduitInfos"))
+
                 set(value = run {
                     val echaKeys = get_echatilliantKeyM3(activeDatas)
-                    val echaProductKeyIDs = activeDatas.list_M03CouleurProduitInfos
+                    val echaProductKeyIDs = list_M03CouleurProduitInfos
                         ?.filter { it.keyID in echaKeys }
                         ?.map { it.parentBProduitInfosKeyID }
                         ?.toSet() ?: emptySet()

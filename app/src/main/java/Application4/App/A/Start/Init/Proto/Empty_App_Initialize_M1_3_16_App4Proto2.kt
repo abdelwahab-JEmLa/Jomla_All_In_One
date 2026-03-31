@@ -6,6 +6,7 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import android.content.Context
 import android.net.ConnectivityManager
+import android.util.Log
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
@@ -15,9 +16,7 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
     suspend fun getReturn_Filtred_For_Presenter_M1_3_16(
         context: Context,
         on_Progress_Datas: (Float) -> Unit,
-    ): SeedResult {      //<--
-//TODO(1): change la logique d seed couleur a seed tout les datas de refm3 et filter ou its_pour_affiche_au_presenter == true fait que le sort de add soit par parentProduit_Classement
-
+    ): SeedResult {
         val mutex = Mutex()
         val progress = mutableMapOf<String, Float>()
 
@@ -49,9 +48,24 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
                     if (color.keyID.isBlank() || color.keyID != nodeKey) color.copy(keyID = nodeKey) else color
                 }
 
+            Log.d("SeedColors", "allColorsFetched total=${allColorsFetched.size}")
+            Log.d("SeedColors", "  its_pour_affiche_au_presenter=true  : ${allColorsFetched.count { it.its_pour_affiche_au_presenter == true }}")
+            Log.d("SeedColors", "  its_pour_affiche_au_presenter=false/null: ${allColorsFetched.count { it.its_pour_affiche_au_presenter != true }}")
+            if (allColorsFetched.isNotEmpty()) {
+                Log.d("SeedColors", "  sample its_pour_affiche_au_presenter values (first 5): " +
+                        allColorsFetched.take(5).map { "${it.keyID.take(6)}→${it.its_pour_affiche_au_presenter}" })
+            }
+
             seededColors = allColorsFetched
                 .filter { it.its_pour_affiche_au_presenter == true }
                 .sortedBy { it.parentProduit_Classement }
+
+            Log.d("SeedColors", "seededColors after presenter-filter + sort by parentProduit_Classement: ${seededColors.size}")
+            if (seededColors.isEmpty() && allColorsFetched.isNotEmpty()) {
+                Log.w("SeedColors",
+                    "WARNING: seededColors is empty but allColorsFetched has ${allColorsFetched.size} records. " +
+                            "Check that its_pour_affiche_au_presenter is stored as a Boolean (not String/Int) in Firebase.")
+            }
         }
 
         suspend fun seedProducts() {
