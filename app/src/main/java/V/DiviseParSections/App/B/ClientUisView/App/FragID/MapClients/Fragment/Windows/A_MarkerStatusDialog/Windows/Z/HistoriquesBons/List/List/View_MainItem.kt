@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.AddToStockDialog
@@ -67,6 +68,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -95,17 +98,7 @@ fun View_MainItem(
         repositorysMainGetter.find_M2Client(relative_M8BonVent.parent_M2Client_KeyID)
     val relative_list_ =
         repositorysMainGetter.find_M2Client(relative_M8BonVent.parent_M2Client_KeyID)
-    fun get_relative_m8_list_m10vents() =
-        repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
-            it.parent_M8BonVent_KeyId == relative_M8BonVent.keyID
-        }
 
-    fun get_relative_list_m1() =
-        get_relative_m8_list_m10vents()
-            .mapNotNull { vent ->
-                repositorysMainGetter.find_M1Produit_ByKeyID(vent.parent_M1Produit_KeyId)
-            }
-            .distinctBy { it.keyID }
 
     val hasVoiceMessage =
         relative_M17Message?.nomDeSonOriginaleFichie != null && relative_M17Message.nomDeSonOriginaleFichie != "null"
@@ -145,6 +138,7 @@ fun View_MainItem(
             get_sum_Bon_Vents(repositorysMainGetter, relative_M8BonVent)
         }
     }
+
 
     LaunchedEffect(relative_M8BonVent.vid, isCurrentlyPlaying) {
         if (isCurrentlyPlaying) {
@@ -294,22 +288,6 @@ fun View_MainItem(
     ) {
         Box(
             modifier = Modifier
-                .getSemanticsTag(relative_M17Message, "relative_M17Message")
-                .getSemanticsTag(relative_M8BonVent, "relative_M8BonVent")
-                .getSemanticsTag(
-                    repo17MessageVocaleData,
-                    "repo17MessageVocale"
-                )
-                .getSemanticsTag(
-                    repo17MessageVocaleData
-                        .sortedByDescending { it.creationTimestamps }
-                        .map { it.getDebugInfos() },
-                    "repo17MessageVocale_mapped"
-                )
-                .getSemanticsTag(
-                    activeCentralValues,
-                    "activeCentralValues"
-                )
                 .fillMaxWidth()
         ) {
             // Top row with delete button and sum card
@@ -852,18 +830,39 @@ fun View_MainItem(
                             fontWeight = FontWeight.Bold
                         )
                     }
+                    val datasValue_repo1ProduitInfos = repositorysMainGetter.repo1ProduitInfos.datasValue
 
+                    fun get_relative_m8_list_m10vents() =
+                        repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
+                            it.parent_M8BonVent_KeyId == relative_M8BonVent.keyID
+                        }
+
+                    fun get_relative_list_m1Produit_du_picked_m8Bon(): List<M01Produit> =
+                        get_relative_m8_list_m10vents()
+                            .mapNotNull { repositorysMainGetter.find_M1Produit_ByKeyID(it.parent_M1Produit_KeyId) }
+                            .distinctBy { it.keyID }
                     Button(
+                        modifier = Modifier.fillMaxWidth()
+                          ,
                         onClick = {
                             showStockOptionsDialog = false
-                            val relatedM1KeyIDs = get_relative_m8_list_m10vents()
-                                .map { it.parent_M1Produit_KeyId }
-                                .toSet()
-                            val updatedList = repositorysMainGetter.repo1ProduitInfos.datasValue.map { prod ->
-                                prod.copy(
-                                    its_in_echantiallants = if (prod.keyID in relatedM1KeyIDs) true else null,
-                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                )
+                            val relatedProducts = get_relative_list_m1Produit_du_picked_m8Bon()
+                            val relatedM1KeyIDs = relatedProducts.map { it.keyID }.toSet()
+                            val updatedList = datasValue_repo1ProduitInfos.mapNotNull { prod ->
+                                val shouldBeEchantillon = prod.keyID in relatedM1KeyIDs
+                                if (prod.its_in_echantiallants == shouldBeEchantillon) {
+                                    null
+                                } else {
+                                    android.util.Log.d(
+                                        "Echantillants",
+                                        "Updating '${prod.nom}' [${prod.keyID.takeLast(4)}]: " +
+                                                "its_in_echantiallants ${prod.its_in_echantiallants} → $shouldBeEchantillon"
+                                    )
+                                    prod.copy(
+                                        its_in_echantiallants = shouldBeEchantillon,
+                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                    )
+                                }
                             }
                             viewModel.fireBase_batch_set_list_M01Produit(updatedList)
                             Toast.makeText(
@@ -872,7 +871,6 @@ fun View_MainItem(
                                 Toast.LENGTH_SHORT
                             ).show()
                         },
-                        modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary
                         )

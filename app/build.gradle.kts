@@ -1,6 +1,7 @@
 import com.android.build.gradle.ProguardFiles.getDefaultProguardFile
 import java.util.Properties
-
+          //<--
+          //TODO(1): searche au files les nessaissers lib et enleve tout les autres deplace tou ici no use ob tomel 
 val localProps = Properties().apply {
     val f = rootProject.file("local.properties")
     if (f.exists()) load(f.inputStream())

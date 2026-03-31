@@ -22,11 +22,7 @@ class RepositorysMainSetter_NewProtoPatterns(
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-    // -------------------------------------------------------------------------
-    // M01Produit
-    // -------------------------------------------------------------------------
-
-    fun fireBase_batch_set_list_M01Produit(
+    fun update_List_M1Produit_BathFireBase(
         datas: List<M01Produit>,
         onSuccess: () -> Unit = {}
     ) {
@@ -34,7 +30,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             if (datas.isNotEmpty()) {
                 datas.forEach { appDatabase.dao_M1Produit().update(it) }
                 val updates: Map<String, Any> = datas.associate { it.keyID to it.toFirebaseMap() }
-                M01Produit.Companion.ref.updateChildren(updates).await()
+                M01Produit.ref.updateChildren(updates).await()
             }
             withContext(Dispatchers.Main) { onSuccess() }
         }

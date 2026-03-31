@@ -80,7 +80,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
     }
 
     fun fireBase_batch_set_list_M01Produit(datas: List<M01Produit>) {
-        repositorysMainSetter_NewProtoPatterns.fireBase_batch_set_list_M01Produit(datas)
+        repositorysMainSetter_NewProtoPatterns.update_List_M1Produit_BathFireBase(datas)
     }
 
     // FIXED: Completed the empty function with proper implementation

@@ -38,7 +38,7 @@ data class M01Produit(
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
     // default tag: Dernier_VentAchat_Est_Trop_Luin
     var tag_prioriter_str: String = Prioriter.Dernier_VentAchat_Est_Trop_Luin.name +",",
-    var its_in_echantiallants : Boolean? = null,
+    var its_in_echantiallants : Boolean = false,
 
     //----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -211,6 +211,7 @@ data class M01Produit(
             // Fusion state
             "etateActuelleOnFusionAvecBaseDonne" to etateActuelleOnFusionAvecBaseDonne.name,
             "tag_prioriter_str" to tag_prioriter_str,
+            "its_in_echantiallants" to its_in_echantiallants,
 
             // Units / cartons
             "nombreUniteInt" to nombreUniteInt,
