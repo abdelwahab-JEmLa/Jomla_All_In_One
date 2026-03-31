@@ -84,9 +84,6 @@ fun Etager_LazyColumn(
         }
     }
 
-    // lenceVentOperations and activeBonVentKey are kept for the semantics tags below.
-    // `all` M10 ops are read from activeDatas.list_M10OperationVentCouleur (already seeded at
-    // startup) instead of being re-loaded from Room here — no extra LaunchedEffect needed.
     var lenceVentOperations by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
     var activeBonVentKey by remember { mutableStateOf("") }
 
@@ -161,6 +158,11 @@ fun Etager_LazyColumn(
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
             .semantics(mergeDescendants = true) {
+                set(value = activeDatas.list_M1Produit?.filter {
+                    it.its_in_echantiallants == true
+                }?.map {
+                    it.nom to it
+                }, key = SemanticsPropertyKey("its_in_echantiallants"))
                 set(value = lenceVentOperations, key = SemanticsPropertyKey("lenceVentOperations"))
                 set(value = activeBonVentKey, key = SemanticsPropertyKey("activeBonVentKey"))
                 set(value = activeDatas.list_M10OperationVentCouleur ?: emptyList<M10OperationVentCouleur>(), key = SemanticsPropertyKey("all"))

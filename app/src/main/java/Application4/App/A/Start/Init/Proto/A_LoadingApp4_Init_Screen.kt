@@ -95,6 +95,7 @@ fun A_LoadingApp4_Init_Screen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
+
                 LinearProgressIndicator(
                     progress = { uiState.progress },
                     modifier = Modifier

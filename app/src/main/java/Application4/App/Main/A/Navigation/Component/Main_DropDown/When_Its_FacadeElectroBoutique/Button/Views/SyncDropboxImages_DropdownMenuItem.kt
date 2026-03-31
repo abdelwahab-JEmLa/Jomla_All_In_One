@@ -45,12 +45,8 @@ import java.io.FileOutputStream
 fun SyncDropboxImages_DropdownMenuItem(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
     onDismissDropdown: () -> Unit,
-) {          //<--
-//TODO(1): fait ici de cherche pour chaque couleur don ref_couleurs si le rela image don local imgs dernie temp modification != temp modification de image
-//don drp_image_folder_catalogue_path  de telecharge l image et ecrase le local image
-    //<--
-    //TODO(1): si la couleur n a pas de couleur de cherche don drop box images et de le telecharger si non trouve update non dispo
-    val scope   = rememberCoroutineScope()
+) {
+    val scope    = rememberCoroutineScope()
     var running  by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }
 
@@ -63,7 +59,7 @@ fun SyncDropboxImages_DropdownMenuItem(
                     AnimatedVisibility(visible = running, enter = fadeIn(), exit = fadeOut()) {
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = if (progress < 0f) "…" else "${(progress * 100).toInt()} %",
+                            text  = if (progress < 0f) "…" else "${(progress * 100).toInt()} %",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -71,33 +67,18 @@ fun SyncDropboxImages_DropdownMenuItem(
                 }
                 AnimatedVisibility(visible = running, enter = fadeIn(), exit = fadeOut()) {
                     Spacer(Modifier.height(4.dp))
-                    if (progress < 0f) {
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth().height(2.dp))
-                    } else {
-                        LinearProgressIndicator(
-                            progress = { progress },
-                            modifier = Modifier.fillMaxWidth().height(2.dp),
-                        )
-                    }
+                    if (progress < 0f) LinearProgressIndicator(modifier = Modifier.fillMaxWidth().height(2.dp))
+                    else LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth().height(2.dp))
                 }
             }
         },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Sync,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-            )
-        },
+        leadingIcon = { Icon(imageVector = Icons.Default.Sync, contentDescription = null, modifier = Modifier.size(20.dp)) },
         onClick = {
             if (running) return@DropdownMenuItem
-            running = true
+            running  = true
             progress = 0f
             scope.launch {
-                syncMissingDropboxImages(
-                    vm = viewModelNewProtoPatterns,
-                    onProgress = { p -> progress = p },
-                )
+                syncMissingDropboxImages(vm = viewModelNewProtoPatterns, onProgress = { p -> progress = p })
                 running = false
                 onDismissDropdown()
             }
@@ -109,67 +90,53 @@ private suspend fun syncMissingDropboxImages(
     vm: A_ViewModel_NewProtoPatterns,
     onProgress: (Float) -> Unit,
 ) = withContext(Dispatchers.IO) {
-    val dao = vm.appDatabase.dao_M03CouleurProduitInfos()
-    val missing: List<M3CouleurProduitInfos> = dao.getAll().filter {
-        it.dropBox_key == "Non Dispo" &&
-                it.nomImageFichieSansEtansion != "Non Dispo" &&
-                it.nomImageFichieSansEtansion.isNotBlank()
-    }
-    if (missing.isEmpty()) { onProgress(1f); return@withContext }
+    val dao       = vm.appDatabase.dao_M03CouleurProduitInfos()
+    val toProcess = dao.getAll().filter { it.nomImageFichieSansEtansion != "Non Dispo" && it.nomImageFichieSansEtansion.isNotBlank() }
+    if (toProcess.isEmpty()) { onProgress(1f); return@withContext }
 
-    // Build client
     val client = DbxClientV2(
         DbxRequestConfig.newBuilder("jeMla-app/1.0").build(),
-        DbxCredential(
-            "",
-            -1L,
-            BuildConfig.DROPBOX_REFRESH_TOKEN,
-            BuildConfig.DROPBOX_APP_KEY,
-            BuildConfig.DROPBOX_APP_SECRET,
-        )
+        DbxCredential("", -1L, BuildConfig.DROPBOX_REFRESH_TOKEN, BuildConfig.DROPBOX_APP_KEY, BuildConfig.DROPBOX_APP_SECRET)
     )
 
-    // Indeterminate phase — building index
     onProgress(-1f)
 
-    val index = mutableMapOf<String, String>()
+    val indexMeta = mutableMapOf<String, FileMetadata>()
     var page = client.files().listFolderBuilder("/images").withRecursive(true).start()
     while (true) {
-        page.entries.filterIsInstance<FileMetadata>().forEach { entry ->
-            val path = entry.pathLower ?: return@forEach
-            index[entry.name.substringBeforeLast(".")] = path
-        }
+        page.entries.filterIsInstance<FileMetadata>().forEach { indexMeta[it.name.substringBeforeLast(".")] = it }
         if (!page.hasMore) break
         page = client.files().listFolderContinue(page.cursor)
     }
 
-    // Determinate phase — downloading
     val localBase = File(M00CentralParametresOfAllApps.images_central_Local_storageLink)
-    val total = missing.size.coerceAtLeast(1)
+    val total     = toProcess.size.coerceAtLeast(1)
 
-    missing.forEachIndexed { i, couleur ->
-        val filename    = couleur.nomImageFichieSansEtansion
-        val dropboxPath = index[filename] ?: run {
-            onProgress((i + 1).toFloat() / total)
-            return@forEachIndexed
+    toProcess.forEachIndexed { i, couleur ->
+        val meta = indexMeta[couleur.nomImageFichieSansEtansion]
+
+        if (meta == null) {
+            if (couleur.dropBox_key != "Non Dispo")
+                vm.repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur.copy(dropBox_key = "Non Dispo"))
+            onProgress((i + 1).toFloat() / total); return@forEachIndexed
         }
-        val localFile = File(localBase, "$filename.${couleur.extensionDisponible}")
 
-        if (!localFile.exists()) {
+        val dropboxPath  = meta.pathLower ?: run { onProgress((i + 1).toFloat() / total); return@forEachIndexed }
+        val dropboxModMs = meta.serverModified?.time ?: 0L
+        val localFile    = File(localBase, "${couleur.nomImageFichieSansEtansion}.${couleur.extensionDisponible}")
+
+        if (!localFile.exists() || dropboxModMs > localFile.lastModified()) {
             try {
                 localFile.parentFile?.mkdirs()
-                FileOutputStream(localFile).use { out ->
-                    client.files().download(dropboxPath).download(out)
-                }
+                FileOutputStream(localFile).use { client.files().download(dropboxPath).download(it) }
+                if (dropboxModMs > 0L) localFile.setLastModified(dropboxModMs)
             } catch (e: Exception) {
-                localFile.delete()
-                onProgress((i + 1).toFloat() / total)
-                return@forEachIndexed
+                localFile.delete(); onProgress((i + 1).toFloat() / total); return@forEachIndexed
             }
         }
 
-        vm.repositorysMainSetter_NewProtoPatterns
-            .update_M3CouleurProduitInfos(couleur.copy(dropBox_key = dropboxPath))
+        if (couleur.dropBox_key != dropboxPath)
+            vm.repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur.copy(dropBox_key = dropboxPath))
 
         onProgress((i + 1).toFloat() / total)
     }

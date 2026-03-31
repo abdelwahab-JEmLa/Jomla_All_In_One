@@ -1,6 +1,7 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos.Companion.rootFolder_DropBox
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
@@ -12,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
@@ -26,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.dropbox.core.DbxRequestConfig
 import com.dropbox.core.oauth.DbxCredential
@@ -41,89 +44,56 @@ import java.io.File
 import java.io.FileOutputStream
 
 object DropBox_Init_2 {
-     val rootFolder: String = rootFolder_DropBox
+    val rootFolder: String = rootFolder_DropBox
 
     private val client: DbxClientV2 by lazy {
         DbxClientV2(
             DbxRequestConfig.newBuilder("jeMla-app/1.0").build(),
-            DbxCredential(
-                "",
-                -1L,
-                BuildConfig.DROPBOX_REFRESH_TOKEN,
-                BuildConfig.DROPBOX_APP_KEY,
-                BuildConfig.DROPBOX_APP_SECRET
-            )
+            DbxCredential("", -1L, BuildConfig.DROPBOX_REFRESH_TOKEN, BuildConfig.DROPBOX_APP_KEY, BuildConfig.DROPBOX_APP_SECRET)
         )
     }
 
-
-    // ─────────────────────────────────────────────────────────────────────────
     suspend fun organizeByCategories(
-        catalogueGroups: Map<String, List<M3CouleurProduitInfos>>,
+        catalogueGroups: Map<M21CataloguesCategorie, List<M3CouleurProduitInfos>>,
         onProgress: (Float) -> Unit = {}
     ) = withContext(Dispatchers.IO) {
         onProgress(0f)
-
         val allColors = catalogueGroups.values.flatten().filter { it.hasValidImage() }
-        if (allColors.isEmpty()) {
-            onProgress(1f); return@withContext
-        }
+        if (allColors.isEmpty()) { onProgress(1f); return@withContext }
 
-        // ── Step 1 : build a full recursive index of /images ─────────────────
-        val index = buildIndex()          // filename-without-ext → dropboxPath
-        if (index.isEmpty()) {
-            onProgress(1f); return@withContext
-        }
+        val index = buildIndex()
+        if (index.isEmpty()) { onProgress(1f); return@withContext }
 
         val total = allColors.size.toFloat()
-        var done = 0
+        var done  = 0
 
-        // ── Step 2 : per-catalogue folder + download + move ──────────────────
-        for ((rawName, colors) in catalogueGroups) {
-            val catalogueName = rawName.toDropboxSafeName()
-            val folderPath = "$rootFolder/$catalogueName"
-
-            // Create the folder (ignore "already exists" errors)
+        for ((catalogue, colors) in catalogueGroups) {
+            val folderPath = catalogue.drp_image_folder_catalogue_path
             ensureDropboxFolder(folderPath)
 
             for (color in colors) {
-                if (!color.hasValidImage()) {
-                    done++; onProgress(done / total); continue
-                }
+                if (!color.hasValidImage()) { done++; onProgress(done / total); continue }
 
-                val filename = color.nomImageFichieSansEtansion
-                val extension = color.extensionDisponible
-                val fullName = "$filename.$extension"
+                val filename  = color.nomImageFichieSansEtansion
+                val fullName  = "$filename.${color.extensionDisponible}"
+                val meta      = index[filename]
+                val localFile = File(M00CentralParametresOfAllApps.images_central_Local_storageLink, fullName)
 
-                // ── 2a. Fetch locally if the file is missing ──────────────────
-                val localFile = File(
-                    M00CentralParametresOfAllApps.images_central_Local_storageLink,
-                    fullName
-                )
-                if (!localFile.exists()) {
-                    val dropboxPath = index[filename]
-                    if (dropboxPath != null) {
+                if (meta != null) {
+                    val dropboxPath  = meta.pathLower
+                    val dropboxModMs = meta.serverModified?.time ?: 0L
+
+                    if (dropboxPath != null && (!localFile.exists() || dropboxModMs > localFile.lastModified())) {
                         try {
                             localFile.parentFile?.mkdirs()
-                            FileOutputStream(localFile).use {
-                                client.files().download(dropboxPath).download(it)
-                            }
-                        } catch (_: Exception) {
-                            localFile.delete()
-                        }
+                            FileOutputStream(localFile).use { client.files().download(dropboxPath).download(it) }
+                            if (dropboxModMs > 0L) localFile.setLastModified(dropboxModMs)
+                        } catch (_: Exception) { localFile.delete() }
                     }
-                }
 
-                // ── 2b. Move in Dropbox to /images/{catalogue}/{file} ─────────
-                val currentDropboxPath = index[filename]
-                if (currentDropboxPath != null) {
                     val targetPath = "$folderPath/$fullName"
-                    // Skip if it's already in the right place
-                    if (!currentDropboxPath.equals(targetPath, ignoreCase = true)) {
-                        moveDropboxFile(fromPath = currentDropboxPath, toPath = targetPath)
-                        // Update the in-memory index so subsequent lookups use the new path
-                        index[filename] = targetPath.lowercase()
-                    }
+                    if (dropboxPath != null && !dropboxPath.equals(targetPath, ignoreCase = true))
+                        moveDropboxFile(fromPath = dropboxPath, toPath = targetPath)
                 }
 
                 done++
@@ -133,62 +103,31 @@ object DropBox_Init_2 {
         onProgress(1f)
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Private helpers
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /** Builds filename-without-extension → dropboxPathLower index for /images (recursive). */
-    private suspend fun buildIndex(): MutableMap<String, String> =
-        withContext(Dispatchers.IO) {
-            val index = mutableMapOf<String, String>()
-            try {
-                var result =
-                    client.files().listFolderBuilder(rootFolder).withRecursive(true).start()
-                while (true) {
-                    result.entries.filterIsInstance<FileMetadata>().forEach { entry ->
-                        val path = entry.pathLower ?: return@forEach
-                        index[entry.name.substringBeforeLast(".")] = path
-                    }
-                    if (!result.hasMore) break
-                    result = client.files().listFolderContinue(result.cursor)
-                }
-            } catch (_: Exception) {
+    private suspend fun buildIndex(): MutableMap<String, FileMetadata> = withContext(Dispatchers.IO) {
+        val index = mutableMapOf<String, FileMetadata>()
+        try {
+            var result = client.files().listFolderBuilder(rootFolder).withRecursive(true).start()
+            while (true) {
+                result.entries.filterIsInstance<FileMetadata>().forEach { index[it.name.substringBeforeLast(".")] = it }
+                if (!result.hasMore) break
+                result = client.files().listFolderContinue(result.cursor)
             }
-            index
-        }
-
-    private suspend fun ensureDropboxFolder(path: String) = withContext(Dispatchers.IO) {
-            client.files().createFolderV2(path)
+        } catch (_: Exception) {}
+        index
     }
 
-    /** Moves a file on Dropbox; silently skips if source is gone or target exists. */
-    private suspend fun moveDropboxFile(fromPath: String, toPath: String) =
-        withContext(Dispatchers.IO) {
-            try {
-                client.files().moveV2(fromPath, toPath)
-            } catch (_: RelocationErrorException) {
-                // e.g. source not found or destination already exists — skip
-            } catch (_: Exception) {
-            }
-        }
+    private suspend fun ensureDropboxFolder(path: String) = withContext(Dispatchers.IO) {
+        try { client.files().createFolderV2(path) } catch (_: Exception) {}
+    }
 
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Extension helpers
-    // ─────────────────────────────────────────────────────────────────────────
+    private suspend fun moveDropboxFile(fromPath: String, toPath: String) = withContext(Dispatchers.IO) {
+        try { client.files().moveV2(fromPath, toPath) }
+        catch (_: RelocationErrorException) {}
+        catch (_: Exception) {}
+    }
 
     private fun M3CouleurProduitInfos.hasValidImage() =
         nomImageFichieSansEtansion.isNotBlank() && nomImageFichieSansEtansion != "Non Dispo"
-
-    /** Converts a catalogue display name into a Dropbox-safe folder name. */
-    private fun String.toDropboxSafeName(): String =
-        trim()
-            .replace(Regex("[^a-zA-Z0-9_\\-àâäéèêëîïôùûüç]"), "_")
-            .replace(Regex("_+"), "_")
-            .trim('_')
-            .ifEmpty { "Divers" }
-
-    private fun Boolean?.orFalse() = this ?: false
 }
 
 @Composable
@@ -200,8 +139,6 @@ fun FabDropdownMenu_BaseDonneEdite(
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
-
-    // null → idle, 0f..1f → running
     var organizeProgress by remember { mutableStateOf<Float?>(null) }
 
     Box(modifier = modifier.offset(y = (-90).dp)) {
@@ -210,104 +147,47 @@ fun FabDropdownMenu_BaseDonneEdite(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
-            DropDownItemWBaseDonne_OrganiserParCatalogue(  
-                
-                    //<--
-                    //TODO(1): utilise bar progress
-                             //<--
-                             //TODO(1): utilise Shape: Wavy voici les lien ou cherhce les infos de
-                //            https://developer.android.com/reference/kotlin/androidx/compose/material3/WavyProgressIndicatorDefaults
-                //<--
-                //TODO(1): cree fun separe de WavyProgressIndicator
-                // it // Note : Les variantes wavy sont disponibles dans les builds récents de M3
-                //WavyLinearProgressIndicator(
-                //    progress = { 0.7f },
-                //    modifier = Modifier.fillMaxWidth(),
-                //    wavelength = 20.dp,
-                //    amplitude = 4.dp
-                //)
-                // pour affiche le progress de cette operation 
-                //<--
-            //TODO(1): extract   et fait que ca utilise drp_image_folder_catalogue_path pour metre chque image don son catalogue et fait que images a mem nom que le drien date ecrase l ancien 
+            DropDownItemWBaseDonne_OrganiserParCatalogue(
                 progress = organizeProgress,
-                enabled = organizeProgress == null,
-                onClick = {
+                enabled  = organizeProgress == null,
+                onClick  = {
                     coroutineScope.launch {
                         organizeProgress = 0f
 
-                        // ── Build Map<catalogueName, List<M3CouleurProduitInfos>> ──
                         val catalogueGroups = withContext(Dispatchers.Default) {
-                            val catalogues = get_ListM21CataloguesCategorie()   // static list
-                            val categories =
-                                repositorysMainGetter.repoM16CategorieProduit.datasValue
-                            val produits = repositorysMainGetter.repo1ProduitInfos.datasValue
-                            val couleurs =
-                                repositorysMainGetter.repo03CouleurProduitInfos.datasValue
-
-                            // catalogue.id → catalogue.nom
-                            val catalogueNameById = catalogues.associate { it.id to it.nom }
-
-                            // category.id → catalogue.nom
-                            val catalogueNomByCategId = categories.associate { cat ->
-                                cat.id to (catalogueNameById[cat.catalogueParentId]
-                                    ?: "Sans_Catalogue")
-                            }
-
-                            // produit.keyID → catalogue.nom
-                            val catalogueNomByProduitKey = produits.associate { p ->
-                                p.keyID to (catalogueNomByCategId[p.idParentCategorie]
-                                    ?: "Sans_Catalogue")
-                            }
-
-                            // Group valid colours by their catalogue name
+                            val catalogues      = get_ListM21CataloguesCategorie()
+                            val categories      = repositorysMainGetter.repoM16CategorieProduit.datasValue
+                            val produits        = repositorysMainGetter.repo1ProduitInfos.datasValue
+                            val couleurs        = repositorysMainGetter.repo03CouleurProduitInfos.datasValue
+                            val sansCatalogue   = catalogues.find { it.nom == "Sans Catalogue" }
+                                ?: M21CataloguesCategorie(keyID = "t4", id = 4, nom = "Sans Catalogue")
+                            val catalogueById           = catalogues.associateBy { it.id }
+                            val catalogueByCategorieId  = categories.associate { cat -> cat.id to (catalogueById[cat.catalogueParentId] ?: sansCatalogue) }
+                            val catalogueByProduitKey   = produits.associate { p -> p.keyID to (catalogueByCategorieId[p.idParentCategorie] ?: sansCatalogue) }
                             couleurs
-                                .filter {
-                                    it.nomImageFichieSansEtansion.isNotBlank() &&
-                                            it.nomImageFichieSansEtansion != "Non Dispo"
-                                }
-                                .groupBy { couleur ->
-                                    catalogueNomByProduitKey[couleur.parentBProduitInfosKeyID]
-                                        ?: "Sans_Catalogue"
-                                }
+                                .filter { it.nomImageFichieSansEtansion.isNotBlank() && it.nomImageFichieSansEtansion != "Non Dispo" }
+                                .groupBy { catalogueByProduitKey[it.parentBProduitInfosKeyID] ?: sansCatalogue }
                         }
 
-                        // ── Hand off to DropBox_Init ─────────────────────────
-                        DropBox_Init_2.organizeByCategories(
-                            catalogueGroups = catalogueGroups,
-                            onProgress = { p -> organizeProgress = p }
-                        )
-
+                        DropBox_Init_2.organizeByCategories(catalogueGroups = catalogueGroups, onProgress = { p -> organizeProgress = p })
                         organizeProgress = null
                         onDismissDropdown()
                     }
                 }
             )
-            // ────────────────────────────────────────────────────────────────
 
-            DropDownItemWBaseDonne_2(
-                nomFun = "FABs Mode Edites Produit",
-                onDismissDropdown = onDismissDropdown
-            )
-            DropDownItemWBaseDonne_1(
-                nomFun = "Givre le neveau Classement",
-                onDismissDropdown = onDismissDropdown
-            )
-            DropDownItem_WhenItsAchatsFragment_1(
-                nomFun = "",
-                onDismissDropdown = onDismissDropdown
-            )
+            DropDownItemWBaseDonne_2(nomFun = "FABs Mode Edites Produit", onDismissDropdown = onDismissDropdown)
+            DropDownItemWBaseDonne_1(nomFun = "Givre le neveau Classement", onDismissDropdown = onDismissDropdown)
+            DropDownItem_WhenItsAchatsFragment_1(nomFun = "", onDismissDropdown = onDismissDropdown)
         }
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Dropdown item: Organiser images par catalogue (with progress bar)
-// ─────────────────────────────────────────────────────────────────────────────
 @Composable
 private fun DropDownItemWBaseDonne_OrganiserParCatalogue(
     progress: Float?,
-    enabled: Boolean,
-    onClick: () -> Unit,
+    enabled:  Boolean,
+    onClick:  () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         DropdownMenuItem(
@@ -315,51 +195,45 @@ private fun DropDownItemWBaseDonne_OrganiserParCatalogue(
                 Text(
                     text = when {
                         progress == null -> "Organiser images par Catalogue"
-                        progress < 1f -> "Déplacement… ${(progress * 100).toInt()} %"
-                        else -> "Terminé ✓"
+                        progress < 1f    -> "Déplacement… ${(progress * 100).toInt()} %"
+                        else             -> "Terminé ✓"
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (enabled) MaterialTheme.colorScheme.onSurface
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                    else        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                 )
             },
             enabled = enabled,
             onClick = onClick
         )
-        if (progress != null) {
-            LinearProgressIndicator(
-                progress = { progress },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-            )
-        }
+        if (progress != null) SyncProgressIndicator(progress = progress, modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp))
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Other local dropdown items
-// ─────────────────────────────────────────────────────────────────────────────
+@Composable
+fun SyncProgressIndicator(progress: Float, modifier: Modifier = Modifier) {
+    LinearProgressIndicator(
+        progress    = { progress },
+        modifier    = modifier.height(6.dp),
+        color       = Color(0xFF4CAF50),
+        trackColor  = Color.Gray.copy(alpha = 0.25f),
+    )
+}
 
 @Composable
-fun DropDownItemWBaseDonne_2(
-
-    nomFun: String,
-    onDismissDropdown: () -> Unit,
-) {
+fun DropDownItemWBaseDonne_2(nomFun: String, onDismissDropdown: () -> Unit) {
     DropdownMenuItem(
-        text = { Text(text = nomFun, style = MaterialTheme.typography.bodyMedium) },
+        text    = { Text(text = nomFun, style = MaterialTheme.typography.bodyMedium) },
         onClick = { onDismissDropdown() }
     )
 }
 
 @Composable
-fun DropDownItemWBaseDonne_1(
-    nomFun: String,
-    onDismissDropdown: () -> Unit,
-) {
+fun DropDownItemWBaseDonne_1(nomFun: String, onDismissDropdown: () -> Unit) {
     DropdownMenuItem(
-        text = { Text(text = nomFun, style = MaterialTheme.typography.bodyMedium) },
+        text    = { Text(text = nomFun, style = MaterialTheme.typography.bodyMedium) },
         onClick = { onDismissDropdown() }
     )
 }
