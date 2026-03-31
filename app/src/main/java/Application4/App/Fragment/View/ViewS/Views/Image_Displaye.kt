@@ -6,12 +6,10 @@ import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProt
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -41,14 +39,11 @@ fun Image_Displaye(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     list_M1Produit: List<M01Produit>?,
     image_pourcetage_qualite: pourcentage = pourcentage.min_possible
-) {       //<--
-//TODO(1): enleve les commantaire et logs et sementics  pour but de consise le max possible  tallie du code sans change le foctionemen
+) {
     val (_, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
     val centralValues = wifiState
 
-    // In échantillons mode: expanded product's colors → max quality; all others → min.
-    // Outside échantillons mode the caller-supplied quality is respected as-is.
     val effectiveQuality: pourcentage = if (viewModel.active_Datas.isEchatillantsMode) {
         val isExpandedProduct =
             centralValues.expanded_M1Produit?.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
@@ -68,27 +63,6 @@ fun Image_Displaye(
         } else {
             null
         }
-    }
-
-    // Log every composition — shows produit name, whether the image file exists, and
-    // effective quality. Use this to confirm that "wassim"-type products reach this
-    // composable and to see why they are invisible (image missing = empty Box).
-    SideEffect {
-        val parentNom = list_M1Produit
-            ?.find { it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID }
-            ?.nom ?: "?"
-        val fileStatus = when {
-            imageFile == null          -> "Non Dispo (pas de fichier)"
-            !imageFile.exists()        -> "⚠️ FICHIER ABSENT → Box vide invisible (${imageFile.name})"
-            else                       -> "OK (${imageFile.name})"
-        }
-        Log.d(
-            "Image_Displaye",
-            "produit=$parentNom" +
-                    " | couleur=${relative_M3CouleurProduitInfos.keyID.take(8)}" +
-                    " | qualite=$effectiveQuality" +
-                    " | image=$fileStatus"
-        )
     }
 
     if (imageFile != null && imageFile.exists()) {

@@ -5,7 +5,6 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatt
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,23 +28,20 @@ import androidx.compose.ui.unit.sp
 import java.util.Locale
 
 private object TariffTextSizes {
-    // Compact mode sizes
     val COMPACT_MAIN_TEXT = 15.sp
     val COMPACT_SECONDARY_TEXT = 6.sp
-    val COMPACT_HORIZONTAL_PADDING = 6.dp  // FIXED: Increased from 1.dp to prevent clipping
+    val COMPACT_HORIZONTAL_PADDING = 6.dp
     val COMPACT_VERTICAL_PADDING = 4.dp
     val COMPACT_ICON_SIZE = 16.dp
     val COMPACT_ICON_SIZE_TARIFF_ITEM = 14.dp
 
-    // Normal mode sizes
     val NORMAL_MAIN_TEXT = 18.sp
     val NORMAL_SECONDARY_TEXT = 14.sp
     val NORMAL_HORIZONTAL_PADDING = 12.dp
     val NORMAL_VERTICAL_PADDING = 8.dp
     val NORMAL_ICON_SIZE = 20.dp
 
-    // FIXED: Border widths for selected state
-    val SELECTED_BORDER_WIDTH = 3.dp  // Thicker border for selected items
+    val SELECTED_BORDER_WIDTH = 3.dp
     val UNSELECTED_BORDER_WIDTH = 0.dp
 }
 
@@ -66,13 +62,11 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                 && !tariff.typeChoisi.ignore_affiche
     }
 
-    // Sorted LTR: Prix_Detaille (left) → Progressive (middle) → Prix_SupperGro (right)
     val sortedTariffs = filteredTariffs.sortedBy { tariff ->
         when (tariff.typeChoisi) {
             M13TarificationInfos.TypeChoisi.Prix_Detaille -> 0
             M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
             M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable -> 1
-
             M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> 2
             else -> tariff.typeChoisi.profitabilityScore
         }
@@ -80,7 +74,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
 
     LazyRow(
         modifier = modifier.fillMaxWidth(),
-        reverseLayout = true,  // commence à droite, scroll vers gauche
+        reverseLayout = true,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -111,7 +105,6 @@ private fun TariffItemSelector(
     val prix = tariff.prixCurrency
     val nombreUnite = relative_M1produit.nombreUniteInt
 
-    // FIXED: Added Edited_Pour_Client to the editable tariff types
     when {
         tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
                 tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive ||
@@ -153,39 +146,20 @@ private fun handleProgressivePriceUpdate(
     newPrice: Double,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
 ) {
-    Log.d(
-        "PricipaleTariffsVendeurs",
-        "handleProgressivePriceUpdate - Tariff: ${tariff.keyID}, New Price: $newPrice"
-    )
-
-    // FIXED: Added Edited_Pour_Client to the validation check
     if (tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable &&
         tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive &&
         tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Edited_Pour_Client
     ) {
-        Log.w(
-            "PricipaleTariffsVendeurs",
-            "Attempted to edit non-progressive tariff: ${tariff.typeChoisi}"
-        )
         return
     }
 
     if (newPrice <= 0) {
-        Log.w(
-            "PricipaleTariffsVendeurs",
-            "Invalid price value: $newPrice. Must be greater than 0."
-        )
         return
     }
 
     val updatedTariff = tariff.copy(
         prixCurrency = newPrice,
         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-    )
-
-    Log.d(
-        "PricipaleTariffsVendeurs",
-        "Saving updated tariff: ${updatedTariff.keyID} with price: ${updatedTariff.prixCurrency}"
     )
 
     uiState_NewProtoPatterns_viewModel.second.update_M13TarificationInfos(updatedTariff)
@@ -211,7 +185,6 @@ private fun EditableProgressiveTariffItem(
     onPriceUpdated: (Double) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Using constants for sizes
     val horizontalPadding = if (compactMode) {
         TariffTextSizes.COMPACT_HORIZONTAL_PADDING
     } else {
@@ -221,11 +194,6 @@ private fun EditableProgressiveTariffItem(
         TariffTextSizes.COMPACT_VERTICAL_PADDING
     } else {
         TariffTextSizes.NORMAL_VERTICAL_PADDING
-    }
-    val iconSize = if (compactMode) {
-        TariffTextSizes.COMPACT_ICON_SIZE
-    } else {
-        TariffTextSizes.NORMAL_ICON_SIZE
     }
     val fontSize = if (compactMode) {
         TariffTextSizes.COMPACT_MAIN_TEXT
@@ -241,7 +209,6 @@ private fun EditableProgressiveTariffItem(
     val borderColor = if (isSelected) Color.Red else Color.Transparent
 
     val backgroundColor = tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
-
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
 
     FlowRow(
@@ -259,13 +226,11 @@ private fun EditableProgressiveTariffItem(
             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.Center,
-        maxItemsInEachRow = Int.MAX_VALUE // Allow unlimited items per row
+        maxItemsInEachRow = Int.MAX_VALUE
     ) {
         Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
             value = prix,
             onValueChanged = { newValue ->
-                // FIXED: Auto-select tariff when entering edit mode for Edited_Pour_Client
-                // This ensures the tariff is selected and vents are updated before editing
                 if (!isSelected && tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
                     onClick()
                 }
@@ -278,7 +243,6 @@ private fun EditableProgressiveTariffItem(
             modifier = Modifier.align(Alignment.CenterVertically)
         )
 
-        // Show unit price if nombreUnite > 1
         if (nombreUnite > 1) {
             Text(
                 text = "(${formatPriceWithDecimals(prixUnitaire)}/u)",
@@ -290,8 +254,6 @@ private fun EditableProgressiveTariffItem(
     }
 }
 
-// FIXED: Edited_Pour_Client tariff now uses EditableProgressiveTariffItem (see line 115)
-// This allows the click outlined text edit field to display when editing client tariff
 @Composable
 private fun TariffItem(
     tariff: M13TarificationInfos,
@@ -323,18 +285,13 @@ private fun TariffItem(
                     relative_Prix_SupperGro_Et_PresentationService = supperGroTariff?.prixCurrency,
                     relative_produit = relative_M1produit
                 )
-            // Fall back to the stored prix only if SupperGro is completely missing
             recalculated?.prixCurrency ?: prix
         } else {
             prix
         }
 
-    // Nothing to display: the synthetic Edited_Pour_Client tariff has prixCurrency == 0
-    // and the live recalculation also returned null (both base prices are missing).
-    // Skip rendering so no empty pill appears.
     if (effectivePrix == 0.0) return
 
-    // Using constants for sizes
     val horizontalPadding = if (compactMode) {
         TariffTextSizes.COMPACT_HORIZONTAL_PADDING
     } else {
@@ -361,7 +318,6 @@ private fun TariffItem(
         TariffTextSizes.NORMAL_SECONDARY_TEXT
     }
 
-    // FIXED: Thicker border and red color for selected items
     val borderWidth = if (isSelected) {
         TariffTextSizes.SELECTED_BORDER_WIDTH
     } else {
@@ -369,7 +325,6 @@ private fun TariffItem(
     }
     val borderColor = if (isSelected) Color.Red else Color.Transparent
 
-    // FIXED: Override background color for Prix_SupperGro_Et_PresentationService
     val backgroundColor =
         if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
             Color.Black.copy(alpha = if (isSelected) 1f else 0.9f)
@@ -377,7 +332,6 @@ private fun TariffItem(
             tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
         }
 
-    // Calculate unit price if nombreUnite > 1
     val prixUnitaire = if (nombreUnite > 1) effectivePrix / nombreUnite else effectivePrix
 
     if (compactMode) {
@@ -394,13 +348,13 @@ private fun TariffItem(
                 )
                 .clickable(onClick = onClick)
                 .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-            verticalArrangement = Arrangement.spacedBy(0.dp) // FIXED: No spacing between price lines
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             Text(
                 text = formatPrice(effectivePrix),
                 color = tariff.typeChoisi.couleur_Text,
                 fontSize = fontSize,
-                lineHeight = fontSize // FIXED: Tight line height to reduce vertical spacing
+                lineHeight = fontSize
             )
 
             if (nombreUnite > 1) {
@@ -408,7 +362,7 @@ private fun TariffItem(
                     text = "(${formatPriceWithDecimals(prixUnitaire)}/u)",
                     color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
                     fontSize = secondaryFontSize,
-                    lineHeight = secondaryFontSize // FIXED: Tight line height
+                    lineHeight = secondaryFontSize
                 )
             }
         }
@@ -426,7 +380,7 @@ private fun TariffItem(
                 )
                 .clickable(onClick = onClick)
                 .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-            horizontalArrangement = Arrangement.spacedBy(4.dp), // FIXED: Reduced spacing between elements
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
