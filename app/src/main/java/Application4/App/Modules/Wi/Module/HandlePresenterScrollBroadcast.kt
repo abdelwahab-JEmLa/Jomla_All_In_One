@@ -6,12 +6,12 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -24,67 +24,55 @@ fun HandlePresenterScrollBroadcast(
     gridState: LazyStaggeredGridState,
     viewModel: A_ViewModel_NewProtoPatterns,
     onScrollHostChange: (Int) -> Unit = {}
-) {
-    var lastScrollPosition by remember { mutableStateOf(0) }
-    var isScrollInProgress by remember { mutableStateOf(false) }
+) {                         //<--
+
+    &
+//TODO(1): pk le scroll ne marche pas
+    var lastSentPosition by remember { mutableIntStateOf(-1) }
 
     LaunchedEffect(isHostPhone, isConnected) {
         if (!isHostPhone || !isConnected) {
-            Log.d(
-                TAG,
-                "HandlePresenterScrollBroadcast: Not handling scroll - isHost: $isHostPhone, isConnected: $isConnected"
-            )
+            Log.d(TAG, "HandlePresenterScrollBroadcast: inactive — isHost=$isHostPhone, isConnected=$isConnected")
             return@LaunchedEffect
         }
 
+        Log.d(TAG, "HandlePresenterScrollBroadcast: starting scroll observation")
+
         snapshotFlow {
-            gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset
+            Triple(
+                gridState.firstVisibleItemIndex,
+                gridState.firstVisibleItemScrollOffset,
+                gridState.isScrollInProgress   // replaces the manual isDragging heuristic
+            )
         }
             .distinctUntilChanged()
-            .collect { (position, offset) ->
+            .collect { (position, offset, isScrolling) ->
                 Log.d(
-                    TAG, """
-                    Scroll Update:
-                    - Position: $position
-                    - Offset: $offset
-                    - Last Position: $lastScrollPosition
-                    - Is Scrolling: $isScrollInProgress
-                """.trimIndent()
+                    TAG, "Scroll snapshot — position=$position, offset=$offset, " +
+                            "isScrollInProgress=$isScrolling, lastSent=$lastSentPosition"
                 )
 
-                val isDragging = when {
-                    gridState.layoutInfo.visibleItemsInfo.isEmpty() -> false
-                    offset > 0 -> true
-                    position != lastScrollPosition -> true
-                    else -> false
-                }
-
-                if (isDragging || position != lastScrollPosition) {
-                    isScrollInProgress = true
-                    if (position != lastScrollPosition) {
-                        lastScrollPosition = position
-                        onScrollHostChange(position)
-                        Log.d(TAG, "Sending scroll position to client: $position")
-                        viewModel.sendOrderToClientDisplayerT(
-                            WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition,
-                            position
-                        )
-                    }
-                } else if (isScrollInProgress) {
-                    isScrollInProgress = false
-                    Log.d(TAG, "Final scroll position sent to client: $position")
+                if (position != lastSentPosition) {
+                    lastSentPosition = position
+                    onScrollHostChange(position)
+                    Log.d(TAG, "Sending scroll position=$position to client (offset=$offset, scrolling=$isScrolling)")
                     viewModel.sendOrderToClientDisplayerT(
                         WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition,
                         position
                     )
+                } else {
+                    Log.v(TAG, "Position unchanged ($position), skipping send")
                 }
             }
     }
 }
 
 /**
- * Handle scroll receiving on CLIENT from HOST for FragID4 Presenter Grid
- * Now handles scroll updates more reliably after expand operations
+ * Handle scroll receiving on CLIENT from HOST for FragID4 Presenter Grid.
+ *
+ * Tracks the latest requested position so rapid updates from the host never
+ * cause the client to fall behind: even if a scroll is in progress, the next
+ * emission will always catch up to the most recent position.
  */
 @Composable
 fun HandlePresenterClientScroll(
@@ -94,36 +82,51 @@ fun HandlePresenterClientScroll(
     tag: String = TAG
 ) {
     val scope = rememberCoroutineScope()
-    var lastReceivedPosition by remember { mutableStateOf(-1) }
-    var isAnimating by remember { mutableStateOf(false) }
+    var lastAppliedPosition by remember { mutableIntStateOf(-1) }
+    // Always holds the freshest position requested by the host.
+    var pendingPosition by remember { mutableIntStateOf(-1) }
+    // True while a coroutine is driving the grid; it will drain pendingPosition before exiting.
+    var isScrolling by remember { mutableStateOf(false) }
 
     LaunchedEffect(scrollPosition) {
         if (isHostPhone) return@LaunchedEffect
+        if (scrollPosition == lastAppliedPosition) {
+            Log.v(tag, "Client: position $scrollPosition already applied, skipping")
+            return@LaunchedEffect
+        }
 
-        // Only scroll if position actually changed
-        if (scrollPosition == lastReceivedPosition) return@LaunchedEffect
+        Log.d(tag, "Client: received position=$scrollPosition (last applied=$lastAppliedPosition, scrolling=$isScrolling)")
 
-        Log.d(tag, "Client received scroll position: $scrollPosition (last: $lastReceivedPosition)")
+        // Always update the target — the running coroutine reads this before exiting.
+        pendingPosition = scrollPosition
 
-        lastReceivedPosition = scrollPosition
+        if (isScrolling) {
+            Log.d(tag, "Client: scroll already in progress, updated pendingPosition=$pendingPosition")
+            return@LaunchedEffect
+        }
 
-        try {
-            if (!isAnimating) {
-                isAnimating = true
-                scope.launch {
-                    // Cancel any ongoing animation first
-                    gridState.scrollToItem(scrollPosition, 0)
-                    delay(50)
-                    isAnimating = false
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(tag, "Error scrolling to position $scrollPosition", e)
-            isAnimating = false
+        isScrolling = true
+        scope.launch {
             try {
-                gridState.scrollToItem(scrollPosition)
-            } catch (e2: Exception) {
-                Log.e(tag, "Fallback scroll also failed", e2)
+                // Loop until we've caught up with every position that arrived
+                // while the coroutine was running (prevents falling behind on fast scrolls).
+                while (pendingPosition != lastAppliedPosition) {
+                    val target = pendingPosition
+                    Log.d(tag, "Client: scrolling to target=$target")
+                    gridState.scrollToItem(target, scrollOffset = 0)
+                    lastAppliedPosition = target
+                    Log.d(tag, "Client: reached target=$target")
+                }
+            } catch (e: Exception) {
+                Log.e(tag, "Client: error scrolling to $pendingPosition — ${e.message}", e)
+                try {
+                    gridState.scrollToItem(pendingPosition)
+                    lastAppliedPosition = pendingPosition
+                } catch (e2: Exception) {
+                    Log.e(tag, "Client: fallback scroll also failed — ${e2.message}", e2)
+                }
+            } finally {
+                isScrolling = false
             }
         }
     }

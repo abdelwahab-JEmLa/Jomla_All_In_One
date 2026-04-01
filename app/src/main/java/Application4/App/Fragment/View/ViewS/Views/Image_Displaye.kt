@@ -23,7 +23,9 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import java.io.File
-
+        //<--
+        //TODO(1):   //<--
+        ////TODO(1): fait que si its mode echang et its ecpanded produit de affiche ces couleur masx 
 enum class pourcentage {
     max_possible,
     standart,

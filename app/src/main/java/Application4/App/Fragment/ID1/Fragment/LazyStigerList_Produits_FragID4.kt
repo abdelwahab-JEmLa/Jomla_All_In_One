@@ -9,6 +9,7 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -34,14 +35,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private const val TAG_LAZY = "EtagerLazy"
 
 @Composable
 fun Etager_LazyColumn(
@@ -63,6 +68,24 @@ fun Etager_LazyColumn(
     val isScrollEnabled = isHostPhone || !isConnected
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
 
+    // ① Trace every wifiState change that matters for scroll
+    LaunchedEffect(isHostPhone, isConnected) {
+        Log.d(TAG_LAZY, "━━━ wifiState changed ━━━ isHost=$isHostPhone | isConnected=$isConnected | scrollPos=$currentScrollPosition")
+        if (isHostPhone && isConnected) {
+            Log.d(TAG_LAZY, "✅ HOST + CONNECTED → HandlePresenterScrollBroadcast should now be active")
+        } else if (!isHostPhone && isConnected) {
+            Log.d(TAG_LAZY, "✅ CLIENT + CONNECTED → HandlePresenterClientScroll active, watching scrollPos=$currentScrollPosition")
+        } else {
+            Log.w(TAG_LAZY, "⚠️ Not connected or role undefined — scroll broadcast is INACTIVE")
+        }
+    }
+
+    // ② Trace scrollPosition updates arriving on the client side
+    LaunchedEffect(currentScrollPosition) {
+        if (!isHostPhone && isConnected) {
+            Log.d(TAG_LAZY, "📩 CLIENT received new scrollPos=$currentScrollPosition from wifiState")
+        }
+    }
 
     val displayList by remember {
         derivedStateOf {
@@ -88,6 +111,20 @@ fun Etager_LazyColumn(
                         colors.filter { it.keyID !in echaKeys }
                     if (filtered.isEmpty()) null else product to filtered
                 }
+        }
+    }
+
+    // ③ Trace displayList — if empty the grid has nothing to scroll through
+    LaunchedEffect(displayList.size) {
+        if (displayList.isEmpty()) {
+            Log.e(
+                TAG_LAZY,
+                "❌ displayList EMPTY — colours=${activeDatas.list_M03CouleurProduitInfos?.size ?: "null"}" +
+                        " | produits=${activeDatas.list_M1Produit?.size ?: "null"}" +
+                        " | echatMode=${activeDatas.isEchatillantsMode}"
+            )
+        } else {
+            Log.d(TAG_LAZY, "📋 displayList ready — ${displayList.size} produits | isHost=$isHostPhone | isConnected=$isConnected")
         }
     }
 
@@ -128,6 +165,23 @@ fun Etager_LazyColumn(
                 gridState.animateScrollToItem((foundIndex - 1).coerceAtLeast(0))
             }
         }
+    }
+
+    // ④ Trace live gridState — key includes isHostPhone & isConnected so the log always
+    //    reflects the *current* connection state rather than the values captured at first launch.
+    LaunchedEffect(isHostPhone, isConnected) {
+        snapshotFlow {
+            gridState.firstVisibleItemIndex to gridState.isScrollInProgress
+        }
+            .distinctUntilChanged()
+            .collect { (index, scrolling) ->
+                Log.v(
+                    TAG_LAZY,
+                    "🔢 gridState — firstItem=$index | scrolling=$scrolling" +
+                            " | totalItems=${gridState.layoutInfo.totalItemsCount}" +
+                            " | isHost=$isHostPhone | isConnected=$isConnected"
+                )
+            }
     }
 
     HandlePresenterScrollBroadcast(

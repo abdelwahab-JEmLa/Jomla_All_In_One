@@ -46,7 +46,6 @@ data class M00CentralParametresOfAllApps(
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val itsDevMode: Boolean = false,
     val force_next_start_DeleteInsertAll: Boolean = false,
-
     val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
     } else {

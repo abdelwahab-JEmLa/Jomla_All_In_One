@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.gms.nearby.Nearby
@@ -32,6 +33,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
+
+private const val TAG_WIFI = "WifiTransferDatas"
 
 data class ProductDisplayController_NewProto(
     val mainGridScrollPosition: Int = 0,
@@ -81,10 +84,19 @@ class WifiTransferDatas_NewProto(
         order: WifiUpdateClientDisplayerStats_NewProto,
         data: Any? = null
     ) {
+        val isScrollOrder = order == WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition
+        if (isScrollOrder) {
+            Log.d(TAG_WIFI, "sendOrderToClientDisplayerT [SCROLL] → order=${order.prefix}, data=$data, endpointId=$endpointId, isConnected=${_state.value.isConnected}")
+        }
+
         coroutineScope.launch {
-            sendData("${order.prefix}$data")
+            val payload = "${order.prefix}$data"
+            if (isScrollOrder) {
+                Log.d(TAG_WIFI, "sendOrderToClientDisplayerT [SCROLL] launching sendData with payload=\"$payload\"")
+            }
+            sendData(payload)
             if (order == WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran) {
-                handlePayload("${order.prefix}$data")
+                handlePayload(payload)
             }
         }
     }
@@ -161,28 +173,40 @@ class WifiTransferDatas_NewProto(
     fun cancel() = disconnect()
 
     fun sendData(data: Any) {
-        endpointId?.let { ep ->
-            try {
-                val payload = when (data) {
-                    is String -> Payload.fromBytes(data.toByteArray())
-                    else -> return
+        val ep = endpointId
+        if (ep == null) {
+            Log.w(TAG_WIFI, "sendData: SKIPPED — endpointId is null. data=$data")
+            return
+        }
+        try {
+            val payload = when (data) {
+                is String -> Payload.fromBytes(data.toByteArray())
+                else -> {
+                    Log.w(TAG_WIFI, "sendData: unsupported type ${data::class.simpleName}, skipping.")
+                    return
                 }
-                Nearby.getConnectionsClient(context).sendPayload(ep, payload)
-            } catch (_: Exception) {
             }
+            Log.d(TAG_WIFI, "sendData: sending to endpoint=$ep, payload=\"$data\"")
+            Nearby.getConnectionsClient(context).sendPayload(ep, payload)
+                .addOnSuccessListener { Log.d(TAG_WIFI, "sendData: SUCCESS for payload=\"$data\"") }
+                .addOnFailureListener { e -> Log.e(TAG_WIFI, "sendData: FAILED for payload=\"$data\" — ${e.message}") }
+        } catch (e: Exception) {
+            Log.e(TAG_WIFI, "sendData: EXCEPTION — ${e.message}", e)
         }
     }
 
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats_NewProto.fromPayload(payload)
             ?.let { (type, content) ->
+                if (type == WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition) {
+                    Log.d(TAG_WIFI, "handlePayload [SCROLL]: raw=\"$payload\", parsed content=\"$content\", toInt=${content.toIntOrNull()}")
+                }
                 when (type) {
                     WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition ->
                         _state.update {
-                            it.copy(
-                                mainGridScrollPosition = content.toIntOrNull()
-                                    ?: it.mainGridScrollPosition
-                            )
+                            val newPos = content.toIntOrNull() ?: it.mainGridScrollPosition
+                            Log.d(TAG_WIFI, "handlePayload [SCROLL]: state update → mainGridScrollPosition=$newPos (was ${it.mainGridScrollPosition})")
+                            it.copy(mainGridScrollPosition = newPos)
                         }
 
                     WifiUpdateClientDisplayerStats_NewProto.ClientWindowsDisplayedProductId ->
@@ -234,7 +258,7 @@ class WifiTransferDatas_NewProto(
                             ?.let { toggleExpandedCouleur(it) }
                     else -> Unit
                 }
-            }
+            } ?: Log.w(TAG_WIFI, "handlePayload: no matching order for payload=\"$payload\"")
     }
 
     fun toggleExpandedCouleur(couleur: M3CouleurProduitInfos) {
@@ -317,8 +341,11 @@ class WifiTransferDatas_NewProto(
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES)
                 try {
-                    handlePayload(String(payload.asBytes()!!))
-                } catch (_: Exception) {
+                    val raw = String(payload.asBytes()!!)
+                    Log.d(TAG_WIFI, "payloadCallback.onPayloadReceived: raw=\"$raw\"")
+                    handlePayload(raw)
+                } catch (e: Exception) {
+                    Log.e(TAG_WIFI, "payloadCallback.onPayloadReceived: error parsing payload", e)
                 }
         }
 

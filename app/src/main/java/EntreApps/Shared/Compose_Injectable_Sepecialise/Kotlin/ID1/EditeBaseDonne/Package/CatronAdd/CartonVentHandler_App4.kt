@@ -30,7 +30,6 @@ fun CartonVentHandler_App4(
     horizontalPadding: Dp,
     verticalPadding: Dp,
     modifier: Modifier = Modifier,
-    onDepotUpdate: (newDepotCartons: Int) -> Unit,
     onVentUpdate: (newCartons: Int) -> Unit,
 ) {
     val cartonShape = RoundedCornerShape(
@@ -57,7 +56,6 @@ fun CartonVentHandler_App4(
                 show_depot_card_on_top_in_flow_row = true,
                 is_admin = isAdmin,
                 add_spacing_between_depot_and_sale = isAdmin,
-                on_admin_depot_update = onDepotUpdate,
                 on_Data_Update = onVentUpdate,
             )
         }

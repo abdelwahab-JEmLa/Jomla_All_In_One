@@ -90,11 +90,18 @@ fun ConnexionCardHost_App4(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = {
-                            if (messageText.isNotEmpty()) {
-                                messageText = ""
-                            }
-                        }, modifier = Modifier.weight(1f)) { Text("Envoyer") }
+                        Button(
+                            onClick = {
+                                if (messageText.isNotEmpty()) {
+                                    vm.sendOrderToClientDisplayerT(
+                                        WifiUpdateClientDisplayerStats_NewProto.SearchWindowsDisplaye,
+                                        messageText
+                                    )
+                                    messageText = ""
+                                }
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) { Text("Envoyer") }
                         Button(
                             onClick = { vm.disconnect() },
                             modifier = Modifier.weight(1f),
