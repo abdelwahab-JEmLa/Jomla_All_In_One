@@ -1,6 +1,5 @@
 package Application4.App.Main.A.Navigation.Component
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.R
 
-private const val TAG = "FAB_BUTTON"
 
 @Composable
 fun FabButton_newProto(
@@ -34,8 +32,6 @@ fun FabButton_newProto(
     onShowDropdown: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Log.d(TAG, "FabButton composé — showWarningState=$showWarningState | isFabVisible=$isFabVisible | its_Targeted_Frag=$its_Targeted_Frag")
-
     Surface(
         modifier = modifier
             .offset(y = (-28).dp)
@@ -57,14 +53,11 @@ fun FabButton_newProto(
                             shape = CircleShape
                         )
                         .clickable {
-                            Log.d(TAG, "⚡ CLICK — branche WARNING | its_Targeted_Frag=$its_Targeted_Frag")
                             when (its_Targeted_Frag) {
                                 false -> {
-                                    Log.d(TAG, "→ appel onToggleFabVisibility()")
                                     onToggleFabVisibility()
                                 }
                                 true -> {
-                                    Log.d(TAG, "→ appel onShowDropdown()")
                                     onShowDropdown()
                                 }
                             }
@@ -79,19 +72,15 @@ fun FabButton_newProto(
                     )
                 }
             } else {
-                Log.d(TAG, "FabButton — branche LOGO (showWarningState=false)")
                 Image(
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable {
-                            Log.d(TAG, "⚡ CLICK — branche LOGO | its_Targeted_Frag=$its_Targeted_Frag")
                             when (its_Targeted_Frag) {
                                 false -> {
-                                    Log.d(TAG, "→ appel onToggleFabVisibility()")
                                     onToggleFabVisibility()
                                 }
                                 true -> {
-                                    Log.d(TAG, "→ appel onShowDropdown()")
                                     onShowDropdown()
                                 }
                             }
