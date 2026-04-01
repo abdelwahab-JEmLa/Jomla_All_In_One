@@ -68,7 +68,7 @@ fun Item_Produit_FragID5(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesSetter: FocusedValuesSetter = koinInject(),
-    on_pour_send_data: (String, String) -> Unit,
+    
     modifier: Modifier = Modifier,
     headViewModel: HeadViewModel = koinInject(),
     wifiTransferDatas: WifiTransferDatas = koinInject(),
@@ -431,7 +431,7 @@ fun Item_Produit_FragID5(
                     tariffsList = filteredAndSortedTariffs,
                     isThisProductExpanded = isThisProductExpanded,
                     shouldShowButtons = shouldShowButtons,
-                    on_pour_send_data = on_pour_send_data
+                    
                 )
 
                 if (relative_ListM3Couleurs.size > 1) {
@@ -451,7 +451,7 @@ fun Item_Produit_FragID5(
                                         relative_M1produit = relative_M1produit,
                                         selectedTariff = selectedTariff,
                                         focusedValuesGetter = focusedValuesGetter,
-                                        on_pour_send_data = on_pour_send_data,
+                                        
                                         shouldShowButtons = shouldShowButtons,
                                         isExpanded = true,
                                         modifier = Modifier
@@ -472,7 +472,7 @@ fun Item_Produit_FragID5(
                                         relative_M1produit = relative_M1produit,
                                         selectedTariff = selectedTariff,
                                         focusedValuesGetter = focusedValuesGetter,
-                                        on_pour_send_data = on_pour_send_data,
+                                        
                                         shouldShowButtons = shouldShowButtons,
                                         isExpanded = false,
                                         modifier = Modifier

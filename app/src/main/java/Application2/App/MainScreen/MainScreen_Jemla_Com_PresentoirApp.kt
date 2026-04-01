@@ -3,6 +3,8 @@ package Application2.App.MainScreen
 import Application2.App.App.ViewModel.ViewModel_MainFragment
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import Application2.App.Fragment.Compact_Presentoire_App_Produits_App2
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import EntreApps.Shared.Modules.Base.AppDatabase
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
@@ -16,21 +18,37 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import org.koin.compose.koinInject
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainScreen_Jemla_Com_PresentoirApp(
     modifier: Modifier = Modifier,
-    vm: ViewModel_MainFragment = koinViewModel(),
+    appDatabase: AppDatabase = koinInject(),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     repositorysMainGetter_app2: RepositorysMainGetter_app2 = koinInject()
 ) {
+    val context = LocalContext.current
+    val vewModel_MainFragment: ViewModel_MainFragment = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                ViewModel_MainFragment(
+                    context = context.applicationContext,
+                    appDatabase = appDatabase,
+                    repositorysMainGetter_app2 = repositorysMainGetter_app2,
+                )
+            }
+        }
+    )
     val mainInitDataBaseProgressEtate =
         repositorysMainGetter_app2.active_Central_Values.mainInitDataBaseProgressEtate
 
-    val wifiState by vm.wifiState.collectAsState()
+    val wifiState by vewModel_MainFragment.wifiState.collectAsState()
     val isConnectedAsClient = wifiState.isConnected && !wifiState.isHostPhone
 
     val isInitDone = isConnectedAsClient || mainInitDataBaseProgressEtate >= 1f
@@ -47,7 +65,7 @@ fun MainScreen_Jemla_Com_PresentoirApp(
     } else {
         Compact_Presentoire_App_Produits_App2(
             modifier = Modifier,
-            vm = vm,
+            vm = vewModel_MainFragment,
         )
     }
 }

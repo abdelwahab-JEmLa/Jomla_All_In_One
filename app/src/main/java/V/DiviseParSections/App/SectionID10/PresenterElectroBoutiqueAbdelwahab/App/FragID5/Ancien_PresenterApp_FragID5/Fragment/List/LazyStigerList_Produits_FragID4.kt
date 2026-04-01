@@ -62,7 +62,7 @@ fun Etager_LazyColumn_App0(
     modifier: Modifier = Modifier.Companion,
     cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     viewModelHeadViewModel: HeadViewModel,
-    on_pour_send_data: (String, String) -> Unit,
+    
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     repositorysMainGetter: RepositorysMainGetter,
@@ -364,7 +364,7 @@ fun Etager_LazyColumn_App0(
                             isWifiClientConnected_1 = isWifiClientConnected_1,
                             product = product,
                             colors = colors,
-                            on_pour_send_data = on_pour_send_data,
+                            
                             onCategoryClick = {
                                 Log.d(
                                     "CategoryDialog_FragID4",
@@ -408,7 +408,7 @@ fun LazyStigerList_Produits_FragID4(
     product: M01Produit,
     colors: List<M3CouleurProduitInfos>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    on_pour_send_data: (String, String) -> Unit,
+    
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false,
     isWifiClientConnected_1: Boolean
@@ -446,7 +446,7 @@ fun LazyStigerList_Produits_FragID4(
     ) {
         Item_Produit_FragID5(
             relative_M1produit = product,
-            on_pour_send_data = on_pour_send_data,
+            
             onCategoryClick = onCategoryClick,
             modifier = modifier
         )

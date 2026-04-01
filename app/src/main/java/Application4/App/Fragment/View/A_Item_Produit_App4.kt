@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun A_Item_Produit_App4(
     relative_M1produit: M01Produit,
-    on_pour_send_data: (String, String) -> Unit,
+    
     modifier: Modifier = Modifier,
     onCategoryClick: (() -> Unit)? = null,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
@@ -253,7 +253,7 @@ fun A_Item_Produit_App4(
             tariffsList = filteredAndSortedTariffs,
             isThisProductExpanded = isThisProductExpanded,
             shouldShowButtons = shouldShowButtons,
-            on_pour_send_data = on_pour_send_data
+
         )
 
         if (relative_ListM3Couleurs.size > 1) {
@@ -273,7 +273,7 @@ fun A_Item_Produit_App4(
                                 couleur = couleur,
                                 relative_M1produit = relative_M1produit,
                                 selectedTariff = selectedTariff,
-                                on_pour_send_data = on_pour_send_data,
+                                
                                 isExpanded = true,
                                 modifier = Modifier.weight(1f, fill = false),
                                 shouldShowButtons = shouldShowButtons,
@@ -293,7 +293,7 @@ fun A_Item_Produit_App4(
                                 couleur = couleur,
                                 relative_M1produit = relative_M1produit,
                                 selectedTariff = selectedTariff,
-                                on_pour_send_data = on_pour_send_data,
+                                
                                 shouldShowButtons = shouldShowButtons,
                                 isExpanded = false,
                                 modifier = Modifier.fillMaxWidth()

@@ -17,20 +17,9 @@ val centralDataBasesModule_app2 = module {
 val classesHandlersModule_app2 = module {
 }
 
-val viewModelModule_app2 = module {
-    single {
-        ViewModel_MainFragment(
-            context = androidContext(),
-            get(),
-            get(),
-        )
-    }
-}
-
 val appModule_App2_ac_app1 = module {
     includes(
         classesHandlersModule_app2,
         centralDataBasesModule_app2,
-        viewModelModule_app2
     )
 }

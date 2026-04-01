@@ -10,13 +10,12 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
     onDismissDropdown: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = koinViewModel(),
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
     Box(modifier = modifier) {
         DropdownMenu(

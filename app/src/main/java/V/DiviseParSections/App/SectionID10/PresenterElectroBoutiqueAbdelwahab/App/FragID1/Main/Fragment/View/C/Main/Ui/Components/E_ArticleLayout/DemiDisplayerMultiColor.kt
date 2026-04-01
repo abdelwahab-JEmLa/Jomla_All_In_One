@@ -36,7 +36,7 @@ import org.koin.compose.koinInject
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos = koinInject(),
     viewModelInitApp: ViewModelInitApp,
     expandedColorIndex: Int? = null,
-    on_pour_send_data: (String, String) -> Unit,
+    
 ) {
     Column(modifier = modifier.padding(3.dp)) {
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone = lockHost)
@@ -55,7 +55,7 @@ import org.koin.compose.koinInject
             viewModelInitApp = viewModelInitApp,
             alwaysShowExpandIcon = true,
             contentScale = ContentScale.Companion.Fit ,
-        on_pour_send_data = on_pour_send_data
+        
         )
 
         if (secondaryColors.isNotEmpty()) {
@@ -90,7 +90,7 @@ import org.koin.compose.koinInject
                         viewModelInitApp = viewModelInitApp,
                         alwaysShowExpandIcon = true,
                         its_secondary_affiche = true
-                    , on_pour_send_data = on_pour_send_data
+                    , 
                     )
                 }
             }

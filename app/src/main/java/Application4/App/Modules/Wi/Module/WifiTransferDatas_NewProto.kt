@@ -7,7 +7,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.gms.nearby.Nearby
@@ -34,14 +33,10 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
-private const val TAG_WIFI = "WifiTransferDatas"
-
 data class ProductDisplayController_NewProto(
     val mainGridScrollPosition: Int = 0,
-
     val expanded_M3CouleurProduitInfos: M3CouleurProduitInfos? = null,
     val expanded_M1Produit: M01Produit? = null,
-
     val newArregmentColorsJsonStruct: String = "",
     val clientWindowsDisplayedProductId: Long? = null,
     val searchWindowsDisplaye: String = "",
@@ -80,20 +75,9 @@ class WifiTransferDatas_NewProto(
 
     private enum class ConnectionMode { HOST, CLIENT, NONE }
 
-    fun sendOrderToClientDisplayerT(
-        order: WifiUpdateClientDisplayerStats_NewProto,
-        data: Any? = null
-    ) {
-        val isScrollOrder = order == WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition
-        if (isScrollOrder) {
-            Log.d(TAG_WIFI, "sendOrderToClientDisplayerT [SCROLL] → order=${order.prefix}, data=$data, endpointId=$endpointId, isConnected=${_state.value.isConnected}")
-        }
-
+    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats_NewProto, data: Any? = null) {
         coroutineScope.launch {
             val payload = "${order.prefix}$data"
-            if (isScrollOrder) {
-                Log.d(TAG_WIFI, "sendOrderToClientDisplayerT [SCROLL] launching sendData with payload=\"$payload\"")
-            }
             sendData(payload)
             if (order == WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran) {
                 handlePayload(payload)
@@ -173,112 +157,54 @@ class WifiTransferDatas_NewProto(
     fun cancel() = disconnect()
 
     fun sendData(data: Any) {
-        val ep = endpointId
-        if (ep == null) {
-            Log.w(TAG_WIFI, "sendData: SKIPPED — endpointId is null. data=$data")
-            return
-        }
+        val ep = endpointId ?: return
         try {
             val payload = when (data) {
                 is String -> Payload.fromBytes(data.toByteArray())
-                else -> {
-                    Log.w(TAG_WIFI, "sendData: unsupported type ${data::class.simpleName}, skipping.")
-                    return
+                else -> return
+            }
+            Nearby.getConnectionsClient(context).sendPayload(ep, payload)
+        } catch (e: Exception) {
+        }
+    }
+
+    fun handlePayload(raw: String) {
+        WifiUpdateClientDisplayerStats_NewProto.fromPayload(raw)?.let { (order, data) ->
+            when (order) {
+                WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition ->
+                    _state.update { it.copy(mainGridScrollPosition = data.toIntOrNull() ?: 0) }
+                WifiUpdateClientDisplayerStats_NewProto.ClientWindowsLazyRowSupColorsScrolle ->
+                    _state.update { it.copy(clientWindowsLazyRowSupColorsScroll = data.toIntOrNull() ?: 0) }
+                WifiUpdateClientDisplayerStats_NewProto.ClientWindowsDisplayedProductId ->
+                    _state.update { it.copy(clientWindowsDisplayedProductId = data.toLongOrNull()) }
+                WifiUpdateClientDisplayerStats_NewProto.ClientWindowsSelectedColorId ->
+                    _state.update { it.copy(clientWindowsSelectedColorId = data.toLongOrNull() ?: 0) }
+                WifiUpdateClientDisplayerStats_NewProto.DISMISS_PRODUCT_INFO ->
+                    _state.update { it.copy(expanded_M1Produit = null, expanded_M3CouleurProduitInfos = null) }
+                WifiUpdateClientDisplayerStats_NewProto.WindowsPickerDisplayedQuantity ->
+                    _state.update { it.copy(clientWindowsPickerDisplayedQuantity = data.toIntOrNull() ?: 0) }
+                WifiUpdateClientDisplayerStats_NewProto.SearchWindowsDisplaye ->
+                    _state.update { it.copy(searchWindowsDisplaye = data) }
+                WifiUpdateClientDisplayerStats_NewProto.NewArregmentColorsJsonStruct ->
+                    _state.update { it.copy(newArregmentColorsJsonStruct = data) }
+                WifiUpdateClientDisplayerStats_NewProto.FilterProduitsParCatalogueBsonID_ET_Autres_Types ->
+                    _state.update { it.copy(filterProduitsParCatalogueBsonID = data) }
+                WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
+                    val couleur = list_M3CouleurProduit.find { it.keyID == data }
+                    val produit = couleur?.parentBProduitInfosKeyID?.let { pId ->
+                        list_M1Produit.find { it.keyID == pId }
+                    }
+                    _state.update {
+                        it.copy(
+                            expanded_M3CouleurProduitInfos = couleur,
+                            expanded_M1Produit = produit
+                        )
+                    }
                 }
             }
-            Log.d(TAG_WIFI, "sendData: sending to endpoint=$ep, payload=\"$data\"")
-            Nearby.getConnectionsClient(context).sendPayload(ep, payload)
-                .addOnSuccessListener { Log.d(TAG_WIFI, "sendData: SUCCESS for payload=\"$data\"") }
-                .addOnFailureListener { e -> Log.e(TAG_WIFI, "sendData: FAILED for payload=\"$data\" — ${e.message}") }
-        } catch (e: Exception) {
-            Log.e(TAG_WIFI, "sendData: EXCEPTION — ${e.message}", e)
         }
     }
 
-    private fun handlePayload(payload: String) {
-        WifiUpdateClientDisplayerStats_NewProto.fromPayload(payload)
-            ?.let { (type, content) ->
-                if (type == WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition) {
-                    Log.d(TAG_WIFI, "handlePayload [SCROLL]: raw=\"$payload\", parsed content=\"$content\", toInt=${content.toIntOrNull()}")
-                }
-                when (type) {
-                    WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition ->
-                        _state.update {
-                            val newPos = content.toIntOrNull() ?: it.mainGridScrollPosition
-                            Log.d(TAG_WIFI, "handlePayload [SCROLL]: state update → mainGridScrollPosition=$newPos (was ${it.mainGridScrollPosition})")
-                            it.copy(mainGridScrollPosition = newPos)
-                        }
-
-                    WifiUpdateClientDisplayerStats_NewProto.ClientWindowsDisplayedProductId ->
-                        _state.update { it.copy(clientWindowsDisplayedProductId = content.toLongOrNull()) }
-
-                    WifiUpdateClientDisplayerStats_NewProto.DISMISS_PRODUCT_INFO ->
-                        _state.update {
-                            it.copy(
-                                clientWindowsDisplayedProductId = null,
-                                searchWindowsDisplaye = ""
-                            )
-                        }
-
-                    WifiUpdateClientDisplayerStats_NewProto.SearchWindowsDisplaye ->
-                        _state.update { it.copy(searchWindowsDisplaye = content) }
-
-                    WifiUpdateClientDisplayerStats_NewProto.WindowsPickerDisplayedQuantity ->
-                        _state.update {
-                            it.copy(
-                                clientWindowsPickerDisplayedQuantity = content.toIntOrNull()
-                                    ?: it.clientWindowsPickerDisplayedQuantity
-                            )
-                        }
-
-                    WifiUpdateClientDisplayerStats_NewProto.ClientWindowsSelectedColorId ->
-                        _state.update {
-                            it.copy(
-                                clientWindowsSelectedColorId = content.toLongOrNull()
-                                    ?: it.clientWindowsSelectedColorId
-                            )
-                        }
-
-                    WifiUpdateClientDisplayerStats_NewProto.ClientWindowsLazyRowSupColorsScrolle ->
-                        _state.update {
-                            it.copy(
-                                clientWindowsLazyRowSupColorsScroll = content.toIntOrNull()
-                                    ?: it.clientWindowsLazyRowSupColorsScroll
-                            )
-                        }
-
-                    WifiUpdateClientDisplayerStats_NewProto.NewArregmentColorsJsonStruct ->
-                        _state.update { it.copy(newArregmentColorsJsonStruct = content) }
-
-                    WifiUpdateClientDisplayerStats_NewProto.FilterProduitsParCatalogueBsonID_ET_Autres_Types ->
-                        _state.update { it.copy(filterProduitsParCatalogueBsonID = content) }
-
-                    WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ->
-                        list_M3CouleurProduit.find { it.keyID == content }
-                            ?.let { toggleExpandedCouleur(it) }
-                    else -> Unit
-                }
-            } ?: Log.w(TAG_WIFI, "handlePayload: no matching order for payload=\"$payload\"")
-    }
-
-    fun toggleExpandedCouleur(couleur: M3CouleurProduitInfos) {
-        _state.update { cur ->
-            val newColor =
-                if (cur.expanded_M3CouleurProduitInfos?.keyID == couleur.keyID) null else couleur
-            val newProduit =
-                newColor?.let { list_M1Produit.find { p -> p.keyID == couleur.parentBProduitInfosKeyID } }
-            cur.copy(
-                expanded_M3CouleurProduitInfos = newColor,
-                expanded_M1Produit = newProduit
-            )
-        }
-    }
-
-    /**
-     * Met à jour directement [expanded_M1Produit] et [expanded_M3CouleurProduitInfos] sans
-     * logique de toggle. Passer null sur les deux pour fermer l'expansion.
-     * Envoie aussi l'ordre au CLIENT si [sendToClient] est true (défaut).
-     */
     fun updateExpandedProduitEtCouleur(
         produit: M01Produit?,
         couleur: M3CouleurProduitInfos?,
@@ -310,7 +236,6 @@ class WifiTransferDatas_NewProto(
                     startConnectionMonitoring()
                     sendData("Connection established")
                 }
-
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> handleConnectionFailure("Connexion rejetée")
                 ConnectionsStatusCodes.STATUS_ERROR -> handleConnectionFailure("Erreur de connexion")
                 else -> handleConnectionFailure("Code inconnu: ${result.status.statusCode}")
@@ -342,15 +267,12 @@ class WifiTransferDatas_NewProto(
             if (payload.type == Payload.Type.BYTES)
                 try {
                     val raw = String(payload.asBytes()!!)
-                    Log.d(TAG_WIFI, "payloadCallback.onPayloadReceived: raw=\"$raw\"")
                     handlePayload(raw)
-                } catch (e: Exception) {
-                    Log.e(TAG_WIFI, "payloadCallback.onPayloadReceived: error parsing payload", e)
+                } catch (_: Exception) {
                 }
         }
 
-        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) =
-            Unit
+        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) = Unit
     }
 
     private fun startConnectionMonitoring() {
@@ -416,12 +338,10 @@ class WifiTransferDatas_NewProto(
             Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.NEARBY_WIFI_DEVICES,
         )
-
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> arrayOf(
             Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,
         )
-
         else -> arrayOf(
             Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.ACCESS_COARSE_LOCATION,

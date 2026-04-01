@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,6 +20,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import org.koin.compose.koinInject
 import java.io.File
+
 enum class pourcentage{
     max_possible,
     standart,
@@ -34,7 +34,7 @@ fun Image_Displaye(
     modifier: Modifier = Modifier,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
-    on_pour_send_data: (String, String) -> Unit,
+
     image_pourcetage_qualite : pourcentage= pourcentage.min_possible
 ) {    val imageFile = remember(
     relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
@@ -99,11 +99,6 @@ fun Image_Displaye(
                         )
                     }
 
-                    // Send the data update
-                    on_pour_send_data(
-                        WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
-                        relative_M3CouleurProduitInfos.keyID
-                    )
                 }
             )
 

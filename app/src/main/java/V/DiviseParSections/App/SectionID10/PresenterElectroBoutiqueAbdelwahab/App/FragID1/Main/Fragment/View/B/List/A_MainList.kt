@@ -56,7 +56,7 @@ fun MainList(
     onClickToOpenWindos: (M01Produit, Int) -> Unit,
     currentClient: M2Client?,
     lockHost: Boolean,
-    on_pour_send_data: (String, String) -> Unit,
+    
     onClickImageToShowControles: () -> Unit,
 ) {
     val expanded_M3CouleurProduitInfos = focusedValuesGetter.active_Central_Values.expanded_M3CouleurProduitInfos
@@ -283,7 +283,7 @@ fun MainList(
                     isExpanded = isExpanded,
                     expandedElevation = elevation,
                     expandedColorIndex = expandedColorIndex,
-                    on_pour_send_data = on_pour_send_data
+                    
                 )
             }
         }

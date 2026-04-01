@@ -1,1 +1,1 @@
-enleve les commantaire et logs pour but de consise le max possible  tallie du code sans change le foctionemen
+enleve les commantaire et logs et les sementics pour but de consise le max possible  tallie du code sans change le foctionemen

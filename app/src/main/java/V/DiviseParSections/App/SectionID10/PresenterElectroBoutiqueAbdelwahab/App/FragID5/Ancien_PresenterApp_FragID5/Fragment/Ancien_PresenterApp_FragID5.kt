@@ -38,7 +38,6 @@ fun Ancien_PresenterApp_FragID5(
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     viewModelHeadViewModel: HeadViewModel= koinInject(),
     categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null,
-    on_pour_send_data: (String, String) -> Unit = { _, _ -> },
     onClickImageToShowControles: () -> Unit = {},
     isWifiClientConnected_1: Boolean =false
 ) {
@@ -86,7 +85,7 @@ fun Ancien_PresenterApp_FragID5(
         repositorysMainGetter = repositorysMainGetter,
         groupe_Par_Catalogue = groupe_Par_Catalogue,
         viewModelHeadViewModel = viewModelHeadViewModel,
-        on_pour_send_data = on_pour_send_data,
+        
         onClickImageToShowControles = onClickImageToShowControles,
         onProductCategoryClick = { product ->
             Log.d(

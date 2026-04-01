@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import EntreApps.Shared.Modules.Base.AViewModel_NewProtoPatterns
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Base.classes_NewProtoPatterns
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
@@ -248,6 +247,5 @@ val appModule = module {
         classes_NewProtoPatterns,
 
         viewModelModule,
-        AViewModel_NewProtoPatterns
     )
 }

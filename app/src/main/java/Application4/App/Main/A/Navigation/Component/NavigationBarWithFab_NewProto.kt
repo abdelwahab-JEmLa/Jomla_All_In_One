@@ -1,9 +1,9 @@
 package Application4.App.Main.A.Navigation.Component
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.Panie.FabDropdownMenu_WhenIts_Frag_Panie
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,6 +44,7 @@ fun NavigationBarWithFab_NewProto(
     onToggleFabVisibility: () -> Unit,
     showWarningState: Boolean = true,
     onClickImageToShowControles: () -> Unit = {},
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
 ) {
     val its_Panier = currentRoute == Screen_NewProtoPattern.Panier.route
     val its_A_Clients_LocationGps =
@@ -130,11 +131,9 @@ fun NavigationBarWithFab_NewProto(
                 showWarningState = showWarningState, isFabVisible = isFabVisible,
                 its_Targeted_Frag = true,
                 onToggleFabVisibility = {
-                    Log.d("FAB_PANIER", "▶ onToggleFabVisibility called → showFabDropdown_Panier = true")
                     showFabDropdown_Panier = true
                 },
                 onShowDropdown = {
-                    Log.d("FAB_PANIER", "▶ onShowDropdown called → showFabDropdown_Panier = true")
                     showFabDropdown_Panier = true
                 }
             )
@@ -150,6 +149,7 @@ fun NavigationBarWithFab_NewProto(
 
         if (showFabDropdown_Compact_Presentoire_App_Produits_FragID4 && its_Compact_Presentoire) {
             FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
+                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                 onDismissDropdown = {
                     showFabDropdown_Compact_Presentoire_App_Produits_FragID4 = false
                 },
@@ -157,10 +157,8 @@ fun NavigationBarWithFab_NewProto(
         }
 
         if (showFabDropdown_Panier && its_Panier) {
-            Log.d("FAB_PANIER", "✅ FabDropdownMenu_WhenIts_Frag_Panie — affiché")
             FabDropdownMenu_WhenIts_Frag_Panie(
                 onDismissDropdown = {
-                    Log.d("FAB_PANIER", "❌ dropdown dismissed → showFabDropdown_Panier = false")
                     showFabDropdown_Panier = false
                 },
                 onClick_to_initiateBackgroundPdfCreation = {

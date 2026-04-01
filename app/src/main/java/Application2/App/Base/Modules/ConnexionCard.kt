@@ -29,12 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ConnexionCard_App2(
-    vm: ViewModel_MainFragment = koinViewModel(),
+    vm: ViewModel_MainFragment,
     onClickToStartAsClient: () -> Unit = {},
 ) {
     val state by vm.wifiState.collectAsState()

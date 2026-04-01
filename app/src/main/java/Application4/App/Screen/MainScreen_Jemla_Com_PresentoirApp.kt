@@ -7,6 +7,8 @@ import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NewProt
 import Application4.App.Main.A.Navigation.Component.NavigationItems
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
+import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
+import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import android.annotation.SuppressLint
 import android.os.Build
@@ -19,8 +21,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -29,9 +35,21 @@ import org.koin.compose.koinInject
 fun MainScreen_NewProtoPattern(
     modifier: Modifier = Modifier,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = koinViewModel(),
+    appDatabase: AppDatabase =koinInject ()
 ) {
-    val wifiState by viewModelNewProtoPatterns.wifiState.collectAsState()
+    val context = LocalContext.current
+    val viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                A_ViewModel_NewProtoPatterns(
+                    context = context.applicationContext,
+                    appDatabase  = appDatabase,
+                    fragmentNavigationHandler  = fragmentNavigationHandler,
+                )
+            }
+        }
+    )
+    val wifiState = viewModelNewProtoPatterns.wifiState.collectAsState()
 
     val navController = rememberNavController()
     LaunchedEffect(navController) {
@@ -46,7 +64,7 @@ fun MainScreen_NewProtoPattern(
 
     MainScaffold(
         modifier = modifier,
-        wifiState = wifiState,
+        wifiState = wifiState.value,
         currentRoute = currentRoute,
         navController = navController,
         fragmentNavigationHandler = fragmentNavigationHandler,
@@ -59,9 +77,9 @@ fun MainScreen_NewProtoPattern(
 @Composable
 private fun MainScaffold(
     modifier: Modifier,
-    wifiState: Any,
+    wifiState: ProductDisplayController_NewProto,
     currentRoute: String?,
-    navController: androidx.navigation.NavHostController,
+    navController: NavHostController,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
 ) {
@@ -69,6 +87,7 @@ private fun MainScaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
             NavigationBarWithFab_NewProto(
+                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                 items = NavigationItems.getItems(isAdmin = true),
                 currentRoute = currentRoute,
                 onNavigate = { route -> fragmentNavigationHandler.navigateTo(route) },
@@ -81,7 +100,7 @@ private fun MainScaffold(
         }
     ) { innerPadding ->
         Column {
-            (!(wifiState as Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto).isConnected).ifTrue {
+            (!wifiState.isConnected).ifTrue {
                 ConnexionCardHost_App4(vm = viewModelNewProtoPatterns)
             }
             AppNavHost_NewProtoPattern(

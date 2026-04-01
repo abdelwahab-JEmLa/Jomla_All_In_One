@@ -48,7 +48,7 @@ import java.io.File
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     isSelected: Boolean,
     onIconClick: () -> Unit,
-    on_pour_send_data: (String, String) -> Unit,
+    
     modifier: Modifier = Modifier.Companion
 ) {
     val imageFile = remember(
@@ -86,7 +86,7 @@ import java.io.File
                             updateExpandedCouleur(
                                 relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
                                 focusedValuesGetter = focusedValuesGetter,
-                                on_pour_send_data = on_pour_send_data
+                                
                             )
                         },
                     contentScale = if (isSelected) ContentScale.Companion.Fit else ContentScale.Companion.Crop

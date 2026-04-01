@@ -91,13 +91,6 @@ fun A_Compact_Header_App4(
                 .padding(cardPadding),
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
-            if (affiche_ProduitDataBaseEdites_ComposableViews) {
-                Section_ToggleButton_TagPreiorities(
-                    start_Collapsed =section_ToggleButton_TagPreiorities__start_Collapsed ,
-                    produit = relative_M1produit,
-                    onAddDeleteTag_ToUpdate = { updatedProduit -> onUpdateProduit(updatedProduit) }
-                )
-            }
             if (onCategoryClick != null) {
                 CategoryBadge(
                     catalogueName = catalogueName,
@@ -370,7 +363,6 @@ private fun ClickableInfoCard(
 fun ColorImageCard_FragID3(
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     isSelected: Boolean,
-    on_pour_send_data: (String, String) -> Unit,
     modifier: Modifier = Modifier.Companion,
     roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp),
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>

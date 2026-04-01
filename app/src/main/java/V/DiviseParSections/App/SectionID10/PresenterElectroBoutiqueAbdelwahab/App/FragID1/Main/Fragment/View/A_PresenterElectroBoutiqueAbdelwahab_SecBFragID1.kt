@@ -56,7 +56,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
     currentClient: M2Client?,
-    on_pour_send_data: (String, String) -> Unit,
+    
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
@@ -106,7 +106,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
         lockHost = lockHost,
         onClickImageToShowControles = onClickImageToShowControles,
         viewModel = viewModel
-    , on_pour_send_data = on_pour_send_data
+    , 
     )
 }
 
@@ -270,7 +270,7 @@ fun ArticleGridWithScrollbar(
     viewModelInitApp: ViewModelInitApp,
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
-    on_pour_send_data: (String, String) -> Unit,
+    
     viewModelHeadViewModel: HeadViewModel
 ) {
     Box(modifier = modifier) {
@@ -297,7 +297,7 @@ fun ArticleGridWithScrollbar(
             lockHost = lockHost,
             viewModelInitApp = viewModelInitApp,
             onClickImageToShowControles = onClickImageToShowControles
-        , on_pour_send_data = on_pour_send_data
+        , 
         )
     }
 }

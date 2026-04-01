@@ -1,8 +1,8 @@
 package P0_MainScreen.Main
 
 import EntreApps.Shared.Models.AppType
-import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M14VentPeriode
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.BlinkingWarningCard
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
@@ -369,13 +369,7 @@ fun MainScreen_All(
                                     lockHost = isHostPhone,
                                     onClickImageToShowControles = {
                                         isControleFabVisible = !isControleFabVisible
-                                    }, on_pour_send_data = { it1, it2 ->
-                                        viewModel.sendOrderToClientDisplayer(
-                                            it1,
-                                            it2
-                                        )
-
-                                    }
+                                    },
                                 )
                             }
                         }

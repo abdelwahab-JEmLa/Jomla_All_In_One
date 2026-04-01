@@ -41,7 +41,7 @@ fun Big_Principale_FragID3(
     tariffsList: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
-    on_pour_send_data: (String, String) -> Unit
+    
 ) {
     val its_Grid4_Mode =
         uiState_NewProtoPatterns_viewModel.second.active_Datas.isEchatillantsMode
@@ -70,7 +70,7 @@ fun Big_Principale_FragID3(
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,
         isSelected = true,
-        on_pour_send_data = on_pour_send_data,
+        
         modifier = Modifier
             .fillMaxWidth()
             .height(imageHeight),

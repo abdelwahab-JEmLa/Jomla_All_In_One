@@ -91,7 +91,7 @@ fun ImageDisplayerProtoAvantJuin3(
     onClickToOpenWindow: () -> Unit = {},
     shouldShowExpandIcon: Boolean = false,
     its_secondary_affiche: Boolean = false,
-    on_pour_send_data: (String, String) -> Unit,
+    
 
     ) {
     val relative_list_M3Coleurs_Du_Produit = repositorysMainGetter
@@ -237,7 +237,7 @@ fun ImageDisplayerProtoAvantJuin3(
                             updateExpandedCouleur(
                                 relative_M3CouleurProduitInfos = it,
                                 focusedValuesGetter=focusedValuesGetter,
-                                on_pour_send_data = on_pour_send_data
+                                
                             )
                         }
                     }
@@ -269,7 +269,7 @@ fun ImageDisplayerProtoAvantJuin3(
         if (shouldShowExpandIcon && relative_M3CouleurProduitInfos != null) {
             Expand_Produit_Couleur(
                 relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
-                on_pour_send_data = on_pour_send_data
+                
             )
         }
 

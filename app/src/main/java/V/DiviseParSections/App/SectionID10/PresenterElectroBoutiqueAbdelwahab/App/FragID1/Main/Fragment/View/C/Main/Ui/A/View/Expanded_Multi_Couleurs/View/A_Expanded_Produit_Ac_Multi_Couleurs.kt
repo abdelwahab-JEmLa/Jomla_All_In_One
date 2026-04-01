@@ -1,5 +1,8 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View
 
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.ViewS.ColorImageCard
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler
@@ -7,11 +10,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.Expand_Produit_Couleur.updateExpandedCouleur
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M13TarificationInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +44,7 @@ fun A_Expanded_Produit_Ac_Multi_Couleurs(
     relative_M1produit: M01Produit,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    on_pour_send_data: (String, String) -> Unit,
+    
     modifier: Modifier = Modifier,
     wifiTransferDatas: WifiTransferDatas = koinInject()
 ) {
@@ -100,12 +99,7 @@ fun A_Expanded_Produit_Ac_Multi_Couleurs(
         updateExpandedCouleur(
             relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
             focusedValuesGetter = focusedValuesGetter,
-            on_pour_send_data = on_pour_send_data
-        )
-
-        on_pour_send_data(
-            WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
-            relative_M3CouleurProduitInfos.keyID
+            
         )
     }
 
@@ -125,7 +119,7 @@ fun A_Expanded_Produit_Ac_Multi_Couleurs(
                 onIconClick = {
                     onClick_Icon(selectedCouleur)
                 },
-                on_pour_send_data = on_pour_send_data,
+                
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -176,7 +170,7 @@ fun A_Expanded_Produit_Ac_Multi_Couleurs(
                                 top_presanted_prisipame_couleur = index
                                 onClick_Icon(couleur)
                             },
-                            on_pour_send_data = on_pour_send_data,
+                            
                             modifier = Modifier
                                 .weight(1f)
                                 .height(80.dp)

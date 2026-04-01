@@ -78,14 +78,14 @@ fun Big_Principale_FragID3(
     tariffsList: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
-    on_pour_send_data: (String, String) -> Unit,
+    
     aCentralFacade: ACentralFacade = koinInject(),
     modifier: Modifier = Modifier
 ) {
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,
         isSelected = true,
-        on_pour_send_data = on_pour_send_data,
+        
         modifier = Modifier.fillMaxWidth()
     )
 

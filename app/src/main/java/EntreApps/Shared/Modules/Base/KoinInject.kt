@@ -12,15 +12,6 @@ val appDatabase = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
 }
 
-val AViewModel_NewProtoPatterns = module {
-    viewModel { A_ViewModel_NewProtoPatterns(androidContext(), get(), get()) }
-    viewModel {
-        A_LoadingViewModel(
-            appDatabase = get(),          // already bound as single { } in your DB module
-            appContext = androidContext() // Koin's application context — never leaks Activity
-        )
-    }
-}
 val classes_NewProtoPatterns = module {
     single { FragmentNavigationHandler_NewProto() }
     single { PanelsGroupeButtonHandler() }
@@ -30,6 +21,5 @@ val modules_NewProtoPatterns = module {
     includes(
         appDatabase,
         classes_NewProtoPatterns,
-        AViewModel_NewProtoPatterns
     )
 }

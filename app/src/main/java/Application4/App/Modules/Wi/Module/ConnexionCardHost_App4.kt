@@ -29,12 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ConnexionCardHost_App4(
-    vm: A_ViewModel_NewProtoPatterns = koinViewModel(),
+    vm: A_ViewModel_NewProtoPatterns
 ) {
     val state by vm.wifiState.collectAsState()
     var isCollapsed by remember { mutableStateOf(true) }

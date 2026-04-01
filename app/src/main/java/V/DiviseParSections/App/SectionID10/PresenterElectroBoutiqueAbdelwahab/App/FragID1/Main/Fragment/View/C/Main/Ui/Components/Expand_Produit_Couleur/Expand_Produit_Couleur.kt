@@ -24,7 +24,7 @@ import org.koin.compose.koinInject
 fun Expand_Produit_Couleur(
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    on_pour_send_data: (String, String) -> Unit,
+    
 ) {
 
     Row(
@@ -45,7 +45,7 @@ fun Expand_Produit_Couleur(
                     updateExpandedCouleur(
                         relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
                         focusedValuesGetter=focusedValuesGetter,
-                        on_pour_send_data = on_pour_send_data
+                        
                     )
                 }
                 .padding(4.dp)

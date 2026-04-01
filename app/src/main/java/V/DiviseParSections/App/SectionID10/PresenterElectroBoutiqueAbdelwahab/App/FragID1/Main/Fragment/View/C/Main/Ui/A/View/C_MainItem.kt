@@ -1,10 +1,12 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View
 
+import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.A_Expanded_Produit_Ac_Multi_Couleurs
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.E_ArticleLayout.E_ArticleLayout
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M01Produit
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.UiState
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,8 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
-import V.DiviseParSections.App.Shared.ViewModel.UiState
 import org.koin.compose.koinInject
 
 @Composable
@@ -35,7 +35,7 @@ fun ArticleItem(
     onClickToOpenWindos: (M01Produit, Int) -> Unit,
     isExpanded: Boolean = false,
     expandedElevation: Dp = 4.dp,
-    on_pour_send_data: (String, String) -> Unit,
+    
     expandedColorIndex: Int? = null
 ) {
 
@@ -65,7 +65,6 @@ fun ArticleItem(
             A_Expanded_Produit_Ac_Multi_Couleurs(
                 relative_M1produit = relative_M1produit,
                 repositorysMainGetter = repositorysMainGetter ,
-                on_pour_send_data=on_pour_send_data
             )
         } else {
             val layout = when {
@@ -88,7 +87,7 @@ fun ArticleItem(
                 lockHost = lockHost,
                 viewModelInitApp = viewModelInitApp,
                 expandedColorIndex = expandedColorIndex
-            , on_pour_send_data = on_pour_send_data
+            , 
             )
         }
     }

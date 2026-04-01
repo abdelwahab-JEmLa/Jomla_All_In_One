@@ -43,7 +43,7 @@ fun SubColorCard_WithButton(
     relative_M1produit: M01Produit,
     selectedTariff: M13TarificationInfos,
     focusedValuesGetter: FocusedValuesGetter,
-    on_pour_send_data: (String, String) -> Unit,
+    
     isExpanded: Boolean,
     wifiTransferDatas: WifiTransferDatas = koinInject(),
     modifier: Modifier = Modifier,
@@ -83,7 +83,7 @@ fun SubColorCard_WithButton(
         ColorImageCard_FragID3(
             relative_M3CouleurProduitInfos = couleur,
             isSelected = false, // Sub-colors are never "selected"
-            on_pour_send_data = on_pour_send_data,
+            
             modifier = Modifier
                 .fillMaxWidth()
                 .height(if (isExpanded) 80.dp else 40.dp)

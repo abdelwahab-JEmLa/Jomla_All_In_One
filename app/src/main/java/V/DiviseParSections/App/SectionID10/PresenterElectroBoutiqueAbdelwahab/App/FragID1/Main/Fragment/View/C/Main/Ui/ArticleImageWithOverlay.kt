@@ -61,7 +61,7 @@ fun ArticleImageWithOverlay(
     onClickToOpenWindow: (M01Produit, Int) -> Unit,
     alwaysShowExpandIcon: Boolean = false,
     its_secondary_affiche: Boolean = false,
-    on_pour_send_data: (String, String) -> Unit,
+    
 ) {
 
     val mode_edite_dispo = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.mode_edite_dispo
@@ -192,7 +192,7 @@ fun ArticleImageWithOverlay(
                 },
                 shouldShowExpandIcon = alwaysShowExpandIcon,
                 its_secondary_affiche = its_secondary_affiche
-            , on_pour_send_data = on_pour_send_data
+            , 
             )
 
             AfficheKeyCouleurAvecVent(viewModel, article, colorIndex)

@@ -23,7 +23,7 @@ fun ColorImageCard_FragID3(
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
     isSelected: Boolean,
-    on_pour_send_data: (String, String) -> Unit,
+    
     modifier: Modifier = Modifier.Companion,
     roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp) // Default: all corners rounded
 ) {
@@ -51,7 +51,7 @@ fun ColorImageCard_FragID3(
                 relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
                 contentScale = if (isSelected) ContentScale.Companion.Fit else ContentScale.Companion.Crop,
                 modifier = Modifier.Companion ,
-                on_pour_send_data = on_pour_send_data
+                
             )
         }
     }

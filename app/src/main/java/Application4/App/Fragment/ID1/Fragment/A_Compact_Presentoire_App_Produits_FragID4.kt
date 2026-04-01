@@ -23,13 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun A_Compact_Presentoire_App_Produits_App4(
     modifier: Modifier = Modifier,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = koinViewModel(),
-    on_pour_send_data: (String, String) -> Unit = { _, _ -> },
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns ,
     onClickImageToShowControles: () -> Unit = {},
 ) {
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
@@ -71,7 +69,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
         Box() {
             Etager_LazyColumn(
                 modifier = modifier,
-                on_pour_send_data = on_pour_send_data,
+                
                 onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
                 justMovedProductKeyID = justMovedProductKeyID,
                 uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),

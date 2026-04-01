@@ -25,7 +25,7 @@ fun FilterSortGroupe_Tunnels(
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     groupe_Par_Catalogue: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     viewModelHeadViewModel: HeadViewModel,
-    on_pour_send_data: (String, String) -> Unit,
+    
     onClickImageToShowControles: () -> Unit,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
@@ -92,7 +92,7 @@ fun FilterSortGroupe_Tunnels(
         },
         cataloguesWithCategoriesAndProducts = sortedProducts,
         viewModelHeadViewModel = viewModelHeadViewModel,
-        on_pour_send_data = on_pour_send_data,
+        
         onProductCategoryClick = onProductCategoryClick,
         justMovedProductKeyID = justMovedProductKeyID,
         repositorysMainGetter = repositorysMainGetter,

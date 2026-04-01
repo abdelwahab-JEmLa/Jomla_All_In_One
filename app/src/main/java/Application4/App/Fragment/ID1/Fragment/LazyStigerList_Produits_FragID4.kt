@@ -9,7 +9,6 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -46,12 +45,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private const val TAG_LAZY = "EtagerLazy"
-
 @Composable
 fun Etager_LazyColumn(
     modifier: Modifier = Modifier,
-    on_pour_send_data: (String, String) -> Unit,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
@@ -67,25 +63,6 @@ fun Etager_LazyColumn(
     val currentScrollPosition = wifiState.mainGridScrollPosition
     val isScrollEnabled = isHostPhone || !isConnected
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
-
-    // ① Trace every wifiState change that matters for scroll
-    LaunchedEffect(isHostPhone, isConnected) {
-        Log.d(TAG_LAZY, "━━━ wifiState changed ━━━ isHost=$isHostPhone | isConnected=$isConnected | scrollPos=$currentScrollPosition")
-        if (isHostPhone && isConnected) {
-            Log.d(TAG_LAZY, "✅ HOST + CONNECTED → HandlePresenterScrollBroadcast should now be active")
-        } else if (!isHostPhone && isConnected) {
-            Log.d(TAG_LAZY, "✅ CLIENT + CONNECTED → HandlePresenterClientScroll active, watching scrollPos=$currentScrollPosition")
-        } else {
-            Log.w(TAG_LAZY, "⚠️ Not connected or role undefined — scroll broadcast is INACTIVE")
-        }
-    }
-
-    // ② Trace scrollPosition updates arriving on the client side
-    LaunchedEffect(currentScrollPosition) {
-        if (!isHostPhone && isConnected) {
-            Log.d(TAG_LAZY, "📩 CLIENT received new scrollPos=$currentScrollPosition from wifiState")
-        }
-    }
 
     val displayList by remember {
         derivedStateOf {
@@ -114,27 +91,12 @@ fun Etager_LazyColumn(
         }
     }
 
-    // ③ Trace displayList — if empty the grid has nothing to scroll through
-    LaunchedEffect(displayList.size) {
-        if (displayList.isEmpty()) {
-            Log.e(
-                TAG_LAZY,
-                "❌ displayList EMPTY — colours=${activeDatas.list_M03CouleurProduitInfos?.size ?: "null"}" +
-                        " | produits=${activeDatas.list_M1Produit?.size ?: "null"}" +
-                        " | echatMode=${activeDatas.isEchatillantsMode}"
-            )
-        } else {
-            Log.d(TAG_LAZY, "📋 displayList ready — ${displayList.size} produits | isHost=$isHostPhone | isConnected=$isConnected")
-        }
-    }
-
     var lenceVentOperations by remember { mutableStateOf<List<M10OperationVentCouleur>>(emptyList()) }
     var activeBonVentKey by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            val targetComptKeyId =
-                M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            val targetComptKeyId = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             activeBonVentKey = viewModel.appDatabase.dao_M9AppCompt().getAll()
                 .find { it.keyID == targetComptKeyId }?.onVentM8BonVentKey ?: ""
             lenceVentOperations = (activeDatas.list_M10OperationVentCouleur ?: emptyList())
@@ -157,8 +119,7 @@ fun Etager_LazyColumn(
         if (!isHostPhone) return@LaunchedEffect
         val targetKeyID = expanded_M3CouleurProduitInfos.parentBProduitInfosKeyID
         if (targetKeyID.isBlank()) return@LaunchedEffect
-        val foundIndex =
-            displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
+        val foundIndex = displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
         if (foundIndex >= 0) {
             delay(400)
             coroutineScope.launch {
@@ -167,21 +128,12 @@ fun Etager_LazyColumn(
         }
     }
 
-    // ④ Trace live gridState — key includes isHostPhone & isConnected so the log always
-    //    reflects the *current* connection state rather than the values captured at first launch.
     LaunchedEffect(isHostPhone, isConnected) {
         snapshotFlow {
             gridState.firstVisibleItemIndex to gridState.isScrollInProgress
         }
             .distinctUntilChanged()
-            .collect { (index, scrolling) ->
-                Log.v(
-                    TAG_LAZY,
-                    "🔢 gridState — firstItem=$index | scrolling=$scrolling" +
-                            " | totalItems=${gridState.layoutInfo.totalItemsCount}" +
-                            " | isHost=$isHostPhone | isConnected=$isConnected"
-                )
-            }
+            .collect { (_, _) -> }
     }
 
     HandlePresenterScrollBroadcast(
@@ -193,8 +145,7 @@ fun Etager_LazyColumn(
     HandlePresenterClientScroll(
         isHostPhone = isHostPhone,
         scrollPosition = currentScrollPosition,
-        gridState = gridState,
-        tag = if (isHostPhone) "📱 ServerScreen_FragID4" else "📱 ClientScreen_FragID4"
+        gridState = gridState
     )
 
     LazyVerticalStaggeredGrid(
@@ -219,7 +170,6 @@ fun Etager_LazyColumn(
                     uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                     product = product,
                     colors = colors,
-                    on_pour_send_data = on_pour_send_data,
                     onCategoryClick = { onProductCategoryClick(product) },
                     justMoved = justMoved
                 )
@@ -233,7 +183,6 @@ fun LazyStigerList_Produits_FragID4(
     modifier: Modifier = Modifier,
     product: M01Produit,
     colors: List<M3CouleurProduitInfos>,
-    on_pour_send_data: (String, String) -> Unit,
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
@@ -245,10 +194,7 @@ fun LazyStigerList_Produits_FragID4(
     )
     val scale by animateFloatAsState(
         targetValue = if (justMoved) 1.05f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
         label = "scaleAnimation"
     )
     Box(
@@ -260,7 +206,6 @@ fun LazyStigerList_Produits_FragID4(
             uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
             relative_M1produit = product,
             relative_ListM3Couleurs_override = colors,
-            on_pour_send_data = on_pour_send_data,
             onCategoryClick = onCategoryClick,
             modifier = modifier
         )

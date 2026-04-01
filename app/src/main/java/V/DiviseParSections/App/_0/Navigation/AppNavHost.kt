@@ -75,7 +75,7 @@ fun AppNavHost(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
-    on_pour_send_data: (String, String) -> Unit,
+    
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
     isWifiClientConnected_1: Boolean,
 ) {
@@ -183,7 +183,7 @@ fun AppNavHost(
                                 targetCategoryId = targetCategoryId,
                                 lockHost = lockHost,
                                 onClickImageToShowControles = onClickImageToShowControles,
-                                on_pour_send_data = on_pour_send_data
+                                
                             )
                         }
 
@@ -200,7 +200,7 @@ fun AppNavHost(
                     route = Screen.Compact_Presentoire_App_Produits_FragID5.route,
                 ) {
                     Ancien_PresenterApp_FragID5(
-                        on_pour_send_data = on_pour_send_data,
+                        
                         onClickImageToShowControles = onClickImageToShowControles,
                     )
                 }
@@ -238,7 +238,6 @@ fun AppNavHost(
                 composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
                     Compact_Presentoir_Echantilliants_FragID3(
                         isWifiClientConnected_1=isWifiClientConnected_1,
-                        on_pour_send_data= on_pour_send_data,
                     )
                 }
 

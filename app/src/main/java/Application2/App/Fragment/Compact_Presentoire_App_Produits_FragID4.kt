@@ -26,12 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Compact_Presentoire_App_Produits_App2(
-    vm: ViewModel_MainFragment = koinViewModel(),
+    vm: ViewModel_MainFragment,
     modifier: Modifier,
 ) {
     val uiState by vm.uiState.collectAsState()

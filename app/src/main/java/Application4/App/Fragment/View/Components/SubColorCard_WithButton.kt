@@ -20,7 +20,7 @@ fun SubColorCard_WithButton(
     couleur: M3CouleurProduitInfos,
     relative_M1produit: M01Produit,
     selectedTariff: M13TarificationInfos,
-    on_pour_send_data: (String, String) -> Unit,
+    
     isExpanded: Boolean,
     modifier: Modifier = Modifier,
     shouldShowButtons: Boolean,
@@ -35,7 +35,7 @@ fun SubColorCard_WithButton(
             uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
             relative_M3CouleurProduitInfos = couleur,
             isSelected = false,
-            on_pour_send_data = on_pour_send_data,
+            
             modifier = Modifier
                 .fillMaxWidth()
                 .height(if (isExpanded) 80.dp else 40.dp),

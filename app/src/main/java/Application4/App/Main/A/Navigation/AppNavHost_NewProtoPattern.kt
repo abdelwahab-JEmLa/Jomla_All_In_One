@@ -78,7 +78,9 @@ fun AppNavHost_NewProtoPattern(
                     }
                 }
 
-                A_Compact_Presentoire_App_Produits_App4()
+                A_Compact_Presentoire_App_Produits_App4(
+                    viewModelNewProtoPatterns=viewModelNewProtoPatterns
+                )
             }
 
             composable(route = Screen_NewProtoPattern.Panier.route) {

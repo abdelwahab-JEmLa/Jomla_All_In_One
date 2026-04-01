@@ -35,7 +35,7 @@ fun SmallDisplayerMultiColor(
     expandedColorIndex: Int? = null,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
 
-    on_pour_send_data: (String, String) -> Unit,
+    
     repo03CouleurProduitInfos: Repo03CouleurProduitInfos = koinInject()
 ) {
     val allColorsForProduct = remember(article.keyID, repo03CouleurProduitInfos.datasValue.size, reloadTrigger) {
@@ -86,7 +86,7 @@ fun SmallDisplayerMultiColor(
             qualityImagePourcentage = 48,
             viewModelInitApp = viewModelInitApp,
             alwaysShowExpandIcon = true
-        , on_pour_send_data = on_pour_send_data
+        , 
         )
 
         // Secondary images (all other colors)
@@ -105,7 +105,7 @@ fun SmallDisplayerMultiColor(
                 viewModelInitApp = viewModelInitApp,
                 alwaysShowExpandIcon = true,
                 its_secondary_affiche = true
-            , on_pour_send_data = on_pour_send_data
+            , 
             )
         }
 
