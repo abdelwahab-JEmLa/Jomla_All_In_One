@@ -1,8 +1,8 @@
 package com.example.clientjetpack
 
-import Application2.App.App.appModule_App2_ac_app1
-import Application2.App.MainScreen.MainScreen_Jemla_Com_PresentoirApp
 import A_Main.Shared.Proto.A_LoadingApp4_Init_Screen
+import Application2.App.App.appModule_App2_ac_app1
+import Application2.App.Fragment.Compact_Presentoire_App_Produits_App2
 import Application4.App.Screen.MainScreen_NewProtoPattern
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
@@ -117,7 +117,7 @@ class MainActivity : ComponentActivity() {
                                 } else {
                                     when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
                                         AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
-                                            MainScreen_Jemla_Com_PresentoirApp()
+                                            Compact_Presentoire_App_Produits_App2()
                                         }
 
                                         AppType.JomLaElectroLivreurGrossist_VendeurHost -> {

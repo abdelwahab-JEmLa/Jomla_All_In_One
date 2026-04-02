@@ -25,10 +25,8 @@ import kotlinx.coroutines.tasks.await
 class A_LoadingViewModel(
     private val appDatabase: AppDatabase,
     private val appContext: Context,
-) : ViewModel() {      //<--
-//TODO(1): fait que si l app est presenter de    //<--
-////TODO(1): ajout un filter de ne pas seed les couleurs ou ler parent == its echant  produits ou leur it echant ignor les //<--
-//TODO(1): fait aussi de ne pas gete les light datas et les categories si app est presenter cree log pk quand c app est presenter les datas ne se gete pas si empty
+) : ViewModel() {
+
     data class LoadingUiState(
         val initDone: Boolean = false,
         val progress: Float = 0f,
@@ -60,6 +58,7 @@ class A_LoadingViewModel(
     private suspend fun runInit() {
         fun setProgress(p: Float, job: String = _uiState.value.currentJobName) =
             _uiState.update { it.copy(progress = p, currentJobName = job) }
+
         viewModelScope.launch(Dispatchers.IO) {
             val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             val snap = M09AppCompt.ref.get().await()
@@ -101,16 +100,23 @@ class A_LoadingViewModel(
             if (appDatabase.dao_M03CouleurProduitInfos().getAll().isEmpty()
                 || M00CentralParametresOfAllApps.get_Default().force_next_start_DeleteInsertAll
             ) {
-                _uiState.value.activeCompt?.let { compt ->
-                    val updated = compt.copy(
-                        next_start =
-                            if (M00CentralParametresOfAllApps.get_Default().its_AppType == AppType.AllInOne)
-                                Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll
-                            else Do.DeleteInsertAll_Active_Key
-                    )
+                val nextDo =
+                    if (M00CentralParametresOfAllApps.get_Default().its_AppType == AppType.AllInOne)
+                        Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll
+                    else Do.DeleteInsertAll_Active_Key
+
+                val currentCompt = _uiState.value.activeCompt
+                if (currentCompt != null) {
+                    val updated = currentCompt.copy(next_start = nextDo)
                     _uiState.update { it.copy(activeCompt = updated) }
                     appDatabase.dao_M9AppCompt().upsert(updated)
                     repo.update_M9AppCompt(updated)
+                } else {
+                    // ✅ FIX : aucun M09AppCompt trouvé en Firebase (cas Presenter typique).
+                    // On force quand même le chargement avec un compt temporaire en mémoire.
+                    Log.w("A_LoadingViewModel",
+                        "activeCompt null — DB vide ou force flag actif, forcing $nextDo")
+                    _uiState.update { it.copy(activeCompt = M09AppCompt(next_start = nextDo)) }
                 }
             }
         }.join()
@@ -136,12 +142,27 @@ class A_LoadingViewModel(
          *   the light-database fetch is scoped to the seeded product keys so that only
          *   relevant m14/m8/m10/m13 records are downloaded and stored locally.
          *   When false (AllRefs mode) everything is fetched unfiltered.
+         *
+         * NOTE: In [AppType.JomLaElectroLivreurGrossist_PresenterScreen] mode the entire
+         *   light-database step (m13/m14/m8/m10) is skipped — the presenter screen only
+         *   needs colors and products, not pricing or sales data.
          */
         suspend fun insertSeedAndLightDbs(
             seed: Empty_App_Initialize_M1_3_16_App4Proto2.SeedResult,
             applyLightDbFilters: Boolean = false,
         ) {
+            val isPresenter = M00CentralParametresOfAllApps.get_Default().its_AppType ==
+                    AppType.JomLaElectroLivreurGrossist_PresenterScreen
+
             val lightDbJob = viewModelScope.launch(Dispatchers.IO) {
+                if (isPresenter) {
+                    Log.d(
+                        "A_LoadingViewModel",
+                        "insertSeedAndLightDbs: Presenter mode — skipping light-database fetch " +
+                                "(m13/m14/m8/m10 are unused in the presenter screen)"
+                    )
+                    return@launch
+                }
                 setProgress(_uiState.value.progress, "Chargement tarifs…")
                 val filteredProductKeys = if (applyLightDbFilters)
                     seed.products.map { it.keyID }.toSet()
@@ -195,8 +216,22 @@ class A_LoadingViewModel(
                     DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
                     // Active-key mode: apply light-db filters scoped to the seeded products
                     insertSeedAndLightDbs(result, applyLightDbFilters = true)
-                    // Fetch and insert any Echatillants products/colors not covered by active ref keys
-                    insertMissingEchatillantsProductsAndColors()
+
+                    // Fetch and insert any Échatillants products/colors not covered by active ref keys.
+                    // Skipped in presenter mode: échantillon colors are excluded at seed level
+                    // (filtered by its_in_echantiallants) so there is nothing missing to backfill.
+                    val isPresenter = M00CentralParametresOfAllApps.get_Default().its_AppType ==
+                            AppType.JomLaElectroLivreurGrossist_PresenterScreen
+                    if (isPresenter) {
+                        Log.d(
+                            "A_LoadingViewModel",
+                            "DeleteInsertAll_Active_Key: Presenter mode — skipping " +
+                                    "insertMissingEchatillantsProductsAndColors (échantillons are " +
+                                    "excluded from the seed by its_in_echantiallants filter)"
+                        )
+                    } else {
+                        insertMissingEchatillantsProductsAndColors()
+                    }
                 }.join()
             }
 

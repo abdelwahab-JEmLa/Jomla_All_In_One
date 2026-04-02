@@ -273,8 +273,8 @@ fun Produit_Vent(
 
                     val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
-                    if (currentApp_ItsWorkChezGrossisst) {
-                        Display_Tariff_ModeWorckChezGro(
+                    if (true) {
+                        Display_Tariff(
                             relative_List_M10OperationVentCouleur = ventList,
                             relative_produit = nonNullProduit,
                             allNonTrouve = allNonTrouve,

@@ -5,10 +5,7 @@ import Application2.App.Base.Modules.WifiTransferDatas_App2
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
@@ -27,10 +24,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val grpList_cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> = emptyList(),
+    val list_ProductWithColors: List<Pair<M01Produit, List<M3CouleurProduitInfos>>> = emptyList(),
     val active_Central_Values: ActiveCentralValues_app2 = ActiveCentralValues_app2.get_Default(),
     val list_M1Produit: List<M01Produit> = emptyList(),
-    val list_M16CategorieProduit: List<M16CategorieProduit> = emptyList(),
     val list_M3CouleurProduit: List<M3CouleurProduitInfos> = emptyList(),
     val initDatasProgressEtate: Float = 0f,
 )
@@ -42,7 +38,6 @@ class ViewModel_MainFragment(
     private val repositorysMainGetter_app2: RepositorysMainGetter_app2,
 ) : ViewModel() {
     private val dao_M1Produit = appDatabase.dao_M1Produit()
-    private val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
     private val dao_M3CouleurProduitInfos = appDatabase.dao_M03CouleurProduitInfos()
 
     private val _uiState = MutableStateFlow(UiState())
@@ -81,15 +76,12 @@ class ViewModel_MainFragment(
         wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
-        // Track how many of the 3 sources have emitted at least once, to drive progress (0f → 1f).
         val productsReady = MutableStateFlow(false)
-        val categoriesReady = MutableStateFlow(false)
         val colorsReady = MutableStateFlow(false)
 
-        // Update progress whenever the ready-flags change.
         viewModelScope.launch(Dispatchers.IO) {
-            combine(productsReady, categoriesReady, colorsReady) { p, c, col ->
-                listOf(p, c, col).count { it } / 3f
+            combine(productsReady, colorsReady) { p, col ->
+                listOf(p, col).count { it } / 2f
             }.collect { progress ->
                 _uiState.update { it.copy(initDatasProgressEtate = progress) }
             }
@@ -98,24 +90,17 @@ class ViewModel_MainFragment(
         viewModelScope.launch(Dispatchers.IO) {
             combine(
                 dao_M1Produit.getAllFlow(),
-                dao_16CategorieProduit.getAllFlow(),
                 dao_M3CouleurProduitInfos.getAllFlow()
-            ) { products, categories, colors ->
+            ) { products, colors ->
                 productsReady.value = true
-                categoriesReady.value = true
                 colorsReady.value = true
-                Triple(products, categories, colors)
-            }.collect { (products, categories, colors) ->
+                products to colors
+            }.collect { (products, colors) ->
                 _uiState.update {
                     it.copy(
                         list_M1Produit = products,
-                        list_M16CategorieProduit = categories,
                         list_M3CouleurProduit = colors,
-                        grpList_cataloguesWithCategoriesAndProducts = get_grouped_datas(
-                            colors,
-                            products,
-                            categories
-                        ),
+                        list_ProductWithColors = get_grouped_datas(colors, products),
                     )
                 }
                 wifi.list_M1Produit = products
@@ -127,29 +112,11 @@ class ViewModel_MainFragment(
     fun get_grouped_datas(
         allColors: List<M3CouleurProduitInfos>,
         allProducts: List<M01Produit>,
-        allCategories: List<M16CategorieProduit>,
-    ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
-
+    ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
         val colorsByProductId = allColors.groupBy { it.parentBProduitInfosKeyID }
-
-        // FIX: use allProducts as the base — don't drop products that have no colors
-        val productColorPairs = allProducts
+        return allProducts
             .sortedBy { it.nom }
             .map { product -> product to (colorsByProductId[product.keyID] ?: emptyList()) }
-
-        val categoryProductPairs = productColorPairs
-            .groupBy { (p, _) -> p.idParentCategorie }
-            .mapNotNull { (id, pairs) ->
-                allCategories.find { it.id == id }?.let { it to pairs }
-            }
-            .sortedBy { (c, _) -> c.positionDouble }
-
-        return get_ListM21CataloguesCategorie().sortedBy { it.position }.mapNotNull { catalogue ->
-            val cats = categoryProductPairs
-                .filter { (c, _) -> c.catalogueParentId == catalogue.id }
-                .sortedBy { (c, _) -> c.positionDouble }
-            if (cats.isNotEmpty()) catalogue to cats else null
-        }
     }
 
     override fun onCleared() {

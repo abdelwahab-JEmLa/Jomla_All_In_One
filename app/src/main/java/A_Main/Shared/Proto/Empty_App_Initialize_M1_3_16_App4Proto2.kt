@@ -1,5 +1,7 @@
 package A_Main.Shared.Proto
 
+import EntreApps.Shared.Models.AppType
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
@@ -12,12 +14,15 @@ import kotlinx.coroutines.tasks.await
 
 object Empty_App_Initialize_M1_3_16_App4Proto2 {
     enum class Repo { M1Produit, M16CategorieProduit, M3CouleurProduitInfos }
+
     suspend fun getReturn_Filtred_For_Presenter_M1_3_16(
         context: Context,
         on_Progress_Datas: (Float) -> Unit,
     ): SeedResult {
         val mutex = Mutex()
         val progress = mutableMapOf<String, Float>()
+        val isPresenter = M00CentralParametresOfAllApps.get_Default().its_AppType ==
+                AppType.JomLaElectroLivreurGrossist_PresenterScreen
 
         fun emitAggregatedProgress() =
             on_Progress_Datas(if (progress.isEmpty()) 0f else progress.values.average().toFloat())
@@ -50,9 +55,33 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
 
             seededColors = seededColors
                 .filter { it.its_pour_affiche_au_presenter == true }
+                .also { presenterFiltered ->
+                    // In presenter mode, additionally strip échantillon colors.
+                    // They are not shown in the main presenter list and will not be backfilled
+                    // by insertMissingEchatillantsProductsAndColors (also skipped in presenter mode).
+                    if (isPresenter) {
+                        val beforeEchant = presenterFiltered.size
+                        val afterEchant  = presenterFiltered.count { it.its_in_echantiallants != true }
+                        Log.d("SeedColors",
+                            "Presenter mode: excluding échantillon colors — " +
+                                    "before=$beforeEchant after=$afterEchant " +
+                                    "(${beforeEchant - afterEchant} dropped)")
+                    }
+                }
+                .filter { color ->
+                    // Drop échantillon colors in presenter mode
+                    if (isPresenter) color.its_in_echantiallants != true else true
+                }
                 .sortedBy { it.parentProduit_Classement }
 
             Log.d("SeedColors", "seededColors after presenter-filter + sort by parentProduit_Classement: ${seededColors.size}")
+
+            if (isPresenter) {
+                Log.d("PresenterSeed", "━━━ [1/3] COLORS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                Log.d("PresenterSeed", "  total seeded colors          : ${seededColors.size}")
+                Log.d("PresenterSeed", "  distinct parent product keys  : ${seededColors.map { it.parentBProduitInfosKeyID }.toSet().size}")
+                Log.d("PresenterSeed", "  échantillon colors (excluded) : ${seededColors.count { it.its_in_echantiallants == true }} (should be 0)")
+            }
         }
 
         suspend fun seedProducts() {
@@ -60,12 +89,13 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
 
             val m3ParentKeys = seededColors.map { it.parentBProduitInfosKeyID }.toSet()
 
-            // Derive echatillant product keys from M3 colours (source of truth is now M3, not M1)
+            // Derive echatillant product keys from M3 colours (source of truth is M3, not M1).
+            // In presenter mode this will always be empty because its_in_echantiallants colors
+            // were already filtered out in seedColors().
             val echatillantProductKeys = seededColors
                 .filter { it.its_in_echantiallants == true }
                 .map { it.parentBProduitInfosKeyID }
                 .toSet()
-
 
             val allProducts = M01Produit.ref.get().await()
                 .children.mapNotNull { child ->
@@ -87,9 +117,24 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
                 }
                 if (extraColors.isNotEmpty()) seededColors = seededColors + extraColors
             }
+
+            if (isPresenter) {
+                Log.d("PresenterSeed", "━━━ [2/3] PRODUCTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                Log.d("PresenterSeed", "  total fetched from Firebase   : ${allProducts.size}")
+                Log.d("PresenterSeed", "  seeded after m3 key filter    : ${seededProducts.size}")
+                Log.d("PresenterSeed", "  dropped (no matching color)   : ${allProducts.size - seededProducts.size}")
+                Log.d("PresenterSeed", "  echatillant product keys      : ${echatillantProductKeys.size} (should be 0 in presenter mode)")
+            }
         }
 
         suspend fun seedCategories() {
+            // Presenter screen does not display or use categories — skip the Firebase fetch.
+            // This saves bandwidth and avoids a pointless round-trip on every presenter boot.
+            if (isPresenter) {
+                Log.d("PresenterSeed", "━━━ [3/3] CATEGORIES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                Log.d("PresenterSeed", "  skipped (not used in presenter screen)")
+                return
+            }
             val m1CategoryIds = seededProducts.map { it.idParentCategorie }.toSet()
             seededCategories = M16CategorieProduit.ref.get().await()
                 .children.mapNotNull { it.getValue(M16CategorieProduit::class.java) }
@@ -111,14 +156,21 @@ object Empty_App_Initialize_M1_3_16_App4Proto2 {
         val isOnline = isInternetAvailable(context)
 
         seedRepo(Repo.M3CouleurProduitInfos, isOnline) { seedColors() }
-
-        seedRepo(Repo.M1Produit, isOnline) {
-            seedProducts()
-        }
-
+        seedRepo(Repo.M1Produit, isOnline) { seedProducts() }
         seedRepo(Repo.M16CategorieProduit, isOnline) { seedCategories() }
 
         on_Progress_Datas(1f)
+
+        if (isPresenter) {
+            Log.d("PresenterSeed", "━━━ SEED SUMMARY (Presenter mode) ━━━━━━━━━━━━━━━━━━")
+            Log.d("PresenterSeed", "  colors     : ${seededColors.size}")
+            Log.d("PresenterSeed", "  products   : ${seededProducts.size}")
+            Log.d("PresenterSeed", "  categories : ${seededCategories.size} (skipped)")
+            Log.d("PresenterSeed", "  light DBs  : skipped (m13/m14/m8/m10)")
+            Log.d("PresenterSeed", "  échantillons backfill : skipped")
+            Log.d("PresenterSeed", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        }
+
         return SeedResult(seededColors, seededProducts, seededCategories)
     }
 

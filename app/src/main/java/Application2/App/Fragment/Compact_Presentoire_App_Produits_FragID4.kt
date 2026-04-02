@@ -2,7 +2,9 @@ package Application2.App.Fragment
 
 import Application2.App.App.ViewModel.ViewModel_MainFragment
 import Application2.App.Base.Modules.ConnexionCard_App2
+import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.ifTrue
+import EntreApps.Shared.Modules.Base.AppDatabase
 import android.app.Activity
 import android.os.Build
 import android.view.WindowManager
@@ -26,18 +28,34 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import org.koin.compose.koinInject
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Compact_Presentoire_App_Produits_App2(
-    vm: ViewModel_MainFragment,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
+    appDatabase: AppDatabase = koinInject(),
+    repositorysMainGetter_app2: RepositorysMainGetter_app2 = koinInject()
 ) {
+    val context = LocalContext.current
+    val vm: ViewModel_MainFragment = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                ViewModel_MainFragment(
+                    context = context.applicationContext,
+                    appDatabase = appDatabase,
+                    repositorysMainGetter_app2 = repositorysMainGetter_app2,
+                )
+            }
+        }
+    )
     val uiState by vm.uiState.collectAsState()
     val wifiState by vm.wifiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
-    val context = LocalContext.current
     val view = LocalView.current
     val window = (context as? Activity)?.window
 
@@ -74,11 +92,9 @@ fun Compact_Presentoire_App_Produits_App2(
                 ConnexionCard_App2(vm = vm)
             }
             Etager_LazyColumn_App2(
-                cataloguesWithCategoriesAndProducts = uiState.grpList_cataloguesWithCategoriesAndProducts,
+                productWithColors = uiState.list_ProductWithColors,
                 viewModel = vm,
             )
         }
     }
 }
-
-

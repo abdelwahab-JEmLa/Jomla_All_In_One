@@ -115,12 +115,12 @@ fun Display_Tariff_NonGrossistContext(
             .filter { it.typeChoisi == TypeChoisi.Prix_Detaille && it.parent_M1Produit_KeyId == relative_produit.keyID }
             .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
-        val parentM13TarificationKeyID = relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
+        val parentM13TarificationKeyID =
+            relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
         val relative_Tariff = datasValue.find { it.keyID == parentM13TarificationKeyID }
 
-        // TODO(1) FIXED: blink when relative_Tariff is not found OR its price is 0.0
-        // TODO(1) FIXED: grossist tariff branch removed — always use Prix_Detaille logic
-        val effectiveAllNonTrouve = allNonTrouve || (relative_Tariff == null) || (relative_Tariff.prixCurrency == 0.0)
+        val effectiveAllNonTrouve =
+            allNonTrouve || (relative_Tariff == null) || (relative_Tariff.prixCurrency == 0.0)
         val displayTariff: M13TarificationInfos = relative_Tariff
             ?: find_Tariff_Prix_Detaille
             ?: M13TarificationInfos(
@@ -129,14 +129,8 @@ fun Display_Tariff_NonGrossistContext(
                 parent_M1Produit_KeyId = relative_produit.keyID,
                 parent_M1Produit_DebugInfos = relative_produit.nom
             )
-
-        // Click is intentionally disabled when effectiveAllNonTrouve=true:
-        // no valid tariff exists to save, so there is nothing meaningful to commit.
         Card(
             modifier = Modifier.clickable(enabled = !effectiveAllNonTrouve) {
-
-                // Non-grossist context (always): insert Prix_Detaille for each vent operation,
-                // defaulting prixCurrency to the last Tariff_ItsWorkInGrossist_Gro price.
                 val lastGroPrix = datasValue
                     .filter {
                         it.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_Gro &&
@@ -182,7 +176,8 @@ fun Display_Tariff_NonGrossistContext(
                     val tariffType = displayTariff.typeChoisi
                     val nom = tariffType.nomArabe.take(2)
                     val tariffIcon = tariffType.iconVector ?: Icons.Default.History
-                    val textColor = if (effectiveAllNonTrouve) Color.White else tariffType.couleur_Text
+                    val textColor =
+                        if (effectiveAllNonTrouve) Color.White else tariffType.couleur_Text
 
                     Text(
                         text = "$nom - ${displayTariff.prixCurrency}",

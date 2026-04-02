@@ -4,6 +4,9 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -131,8 +134,8 @@ data class M01Produit(
         M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
     var quantite_Boit_Par_Carton: Int = 1,
     var prioriter: Prioriter? = null,
-
-    ) {
+) {
+    var relative_tariff_key_detail_on_mode_non_gro: String by mutableStateOf("")
 
     fun getDebugInfos(): String {
         return nom + "[" + keyID.takeLast(4).uppercase() + "]"
@@ -317,7 +320,7 @@ data class M01Produit(
 
     companion object {
         fun get_Default(): M01Produit {
-            return  M01Produit()
+            return M01Produit()
         }
 
         fun safe_Remove_DataBase_Ref(): Unit {

@@ -1,7 +1,5 @@
 package Application2.App.Fragment
 
-import Application2.App.App.ViewModel.ViewModel_MainFragment
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.util.Log
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
@@ -11,65 +9,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 private const val TAG = "App2GridScroll"
 
-/**
- * HOST side — observes the grid scroll position and broadcasts it to the client
- * via WifiUpdateClientDisplayerStats_app2.ClientMainGridScrollPosition.
- * Only active when isHostPhone == true && isConnected == true.
- */
-@Composable
-fun HandlePresenterScrollBroadcast_app2(
-    isHostPhone: Boolean,
-    isConnected: Boolean,
-    gridState: LazyStaggeredGridState,
-    viewModel: ViewModel_MainFragment,
-) {
-    var lastScrollPosition by remember { mutableStateOf(0) }
-    var isScrollInProgress by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isHostPhone, isConnected) {
-        if (!isHostPhone || !isConnected) {
-            Log.d(TAG, "Broadcast skip — isHost=$isHostPhone isConnected=$isConnected")
-            return@LaunchedEffect
-        }
-
-        snapshotFlow { gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset }
-            .distinctUntilChanged()
-            .collect { (position, offset) ->
-                val isDragging = when {
-                    gridState.layoutInfo.visibleItemsInfo.isEmpty() -> false
-                    offset > 0 -> true
-                    position != lastScrollPosition -> true
-                    else -> false
-                }
-
-                if (isDragging || position != lastScrollPosition) {
-                    isScrollInProgress = true
-                    if (position != lastScrollPosition) {
-                        lastScrollPosition = position
-                        Log.d(TAG, "▶ Sending scroll pos to client: $position")
-                        viewModel.sendOrderToClientDisplayer(
-                            WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
-                            position
-                        )
-                    }
-                } else if (isScrollInProgress) {
-                    isScrollInProgress = false
-                    Log.d(TAG, "■ Final scroll pos to client: $position")
-                    viewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
-                        position
-                    )
-                }
-            }
-    }
-}
 
 /**
  * CLIENT side — receives a scroll position from the host and animates the grid to it.

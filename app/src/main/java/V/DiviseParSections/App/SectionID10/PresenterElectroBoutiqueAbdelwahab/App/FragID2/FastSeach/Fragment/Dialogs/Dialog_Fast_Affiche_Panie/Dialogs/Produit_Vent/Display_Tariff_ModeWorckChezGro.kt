@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
-fun Display_Tariff_ModeWorckChezGro(
+fun Display_Tariff(
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
     relative_produit: M01Produit,
     allNonTrouve: Boolean,
