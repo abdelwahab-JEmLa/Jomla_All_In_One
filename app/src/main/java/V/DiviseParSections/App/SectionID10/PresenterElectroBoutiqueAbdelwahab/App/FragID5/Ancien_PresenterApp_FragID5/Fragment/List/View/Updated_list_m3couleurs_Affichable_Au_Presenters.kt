@@ -7,6 +7,7 @@ import android.content.Context
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.LayersClear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -98,6 +99,83 @@ fun Updated_list_m3couleurs_Affichable_Au_Presenters(
                         }
                     }
                 ) { Text("Envoyer", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirmDialog = false }) { Text("Annuler") }
+            }
+        )
+    }
+}
+
+/** Resets [its_pour_affiche_au_presenter] to null for every colour in [allColors],
+ *  then batch-uploads the result to Firebase. */
+@Composable
+fun Reset_its_pour_affiche_au_presenter(
+    onDismissDropdown: () -> Unit,
+    allColors: List<M3CouleurProduitInfos>,
+    context: Context = koinInject(),
+    appDatabase: AppDatabase = koinInject(),
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    var isResetting by remember { mutableStateOf(false) }
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
+    DropdownMenuItem(
+        leadingIcon = {
+            if (isResetting) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.LayersClear,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
+        },
+        text = {
+            Text(
+                text = if (isResetting) "Réinitialisation..." else "Réinitialiser its_pour_affiche_au_presenter",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        enabled = !isResetting,
+        onClick = { showConfirmDialog = true }
+    )
+
+    if (showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showConfirmDialog = false },
+            title = { Text("Confirmer la réinitialisation") },
+            text = {
+                Text(
+                    "Cette action va mettre its_pour_affiche_au_presenter à null " +
+                            "pour toutes les couleurs (${allColors.size}) et envoyer vers Firebase. " +
+                            "Continuer ?"
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    modifier = Modifier.semantics(mergeDescendants = true) {},
+                    onClick = {
+                        showConfirmDialog = false
+                        coroutineScope.launch(Dispatchers.IO) {
+                            isResetting = true
+                            val resetColors = allColors.map { it.copy(its_pour_affiche_au_presenter = null) }
+                            RepositorysMainSetter_NewProtoPatterns(
+                                appDatabase = appDatabase,
+                                context = context
+                            ).update_List_M3CouleurProduitInfos_BathFireBase(resetColors)
+                            isResetting = false
+                            onDismissDropdown()
+                        }
+                    }
+                ) { Text("Réinitialiser", color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = {
                 TextButton(onClick = { showConfirmDialog = false }) { Text("Annuler") }

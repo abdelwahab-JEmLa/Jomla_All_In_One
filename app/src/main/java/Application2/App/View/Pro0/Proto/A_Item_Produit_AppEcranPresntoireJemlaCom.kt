@@ -7,6 +7,7 @@ import Application2.App.View.Pro0.Proto.Components.SubColorCard_WithButton_app2
 import Application2.App.View.Pro0.Proto.ViewS.Compact_Header_AppEcranPresntoireJemlaCom
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -25,6 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
+private const val DBG_TAG_ITEM  = "TargetedM3_Affichage"
+private const val DBG_M3_KEY    = "-OWDMIC_UdVXmSNw-Dz0"
+private const val DBG_M3_PARENT = "-OV3rmZ-9sy3P5rnINL3"
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Item_Produit_AppEcranPresntoireJemlaCom(
@@ -42,10 +47,30 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
         )
     }
 
+    // ── DEBUG: log targeted M3 render state after expandState is ready ─────────
+    if (relative_M1produit.keyID == DBG_M3_PARENT) {
+        val targeted = relativeList_M3ColorsProduit.find { it.keyID == DBG_M3_KEY }
+        Log.d(DBG_TAG_ITEM, "[Item render] productKeyID=${relative_M1produit.keyID}" +
+                " | isExpanded=${expandState.isExpanded}" +
+                " | bigPresenterIndex=${expandState.bigPresenterIndex}" +
+                " | cardElevation=${expandState.cardElevation}" +
+                " | targetedM3 present=${targeted != null}" +
+                " | targetedM3 img=${targeted?.nomImageFichieSansEtansion}" +
+                " | bigPresenterCouleur keyID=${expandState.bigPresenterCouleur?.keyID}")
+    }
+
     LaunchedEffect(focusedValuesGetter_app2.active_Central_Values.expanded_M3CouleurProduitInfos) {
         expandState.syncFromFocusedValues(
             focusedValuesGetter_app2.active_Central_Values.expanded_M3CouleurProduitInfos
         )
+        // ── DEBUG: log sync of targeted M3 expansion ──────────────────────────
+        if (relative_M1produit.keyID == DBG_M3_PARENT) {
+            val focusedM3 = focusedValuesGetter_app2.active_Central_Values.expanded_M3CouleurProduitInfos
+            Log.d(DBG_TAG_ITEM, "[Item syncFromFocused] productKeyID=${relative_M1produit.keyID}" +
+                    " | focusedM3 keyID=${focusedM3?.keyID}" +
+                    " | isTargeted=${focusedM3?.keyID == DBG_M3_KEY}" +
+                    " | isExpanded after sync=${expandState.isExpanded}")
+        }
     }
 
     Column(

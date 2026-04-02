@@ -22,8 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,15 +62,7 @@ fun A_LoadingApp4_Init_Screen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .semantics(mergeDescendants = true) {
-                    set(value = uiState.activeCompt, key = SemanticsPropertyKey("activeCompt"))
-                    set(
-                        value = uiState.lightDataBasesResult,
-                        key = SemanticsPropertyKey("lightDataBasesResult")
-                    )
-                    set(value = uiState.seedResult, key = SemanticsPropertyKey("seedResult"))
-                },
+                .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -95,7 +85,6 @@ fun A_LoadingApp4_Init_Screen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-
                 LinearProgressIndicator(
                     progress = { uiState.progress },
                     modifier = Modifier

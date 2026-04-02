@@ -1,8 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model
 
 data class FilterState_Facad_Boutique_FragId5(
-    val produit_a_Une_Couleur_Ac_Image: WhatDo = WhatDo.N_Affiche_Que_Lui ,
-    val hide_non_couleurAuDepot: Boolean = false,
+    val produit_a_Une_Couleur_Ac_Image: WhatDo = WhatDo.N_Affiche_Que_Lui,
+    val hide_non_couleurAuDepot: Boolean = true,
+
+    val prioritiseProduitsEnVente: Boolean = false,
 
     val affiche_dialog_editeur: Boolean = false,
 
@@ -18,15 +20,12 @@ data class FilterState_Facad_Boutique_FragId5(
 
     val hideHeldPrioriteDemandAuGrossist: Boolean = false,
     val hideNonHeldPrioriteDemandAuGrossist: Boolean = false,
-    val prioritiseProduitsEnVente: Boolean = false,
     val searchText: String = "",
     val sortOrderFacadeBoutique: SortOrder_Facade_Boutique = SortOrder_Facade_Boutique.CATEGORY_GROUPED,
     val enableCategoryGrouping: Boolean = true,
     val prixAchatTimeFilterDays: String = "",
     val enablePrixAchatTimeFilter: Boolean = false,
-
-
-    ) {
+) {
     enum class WhatDo {
         /** Only show products that have at least one color with an image */
         N_Affiche_Que_Lui,

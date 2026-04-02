@@ -1,16 +1,13 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List
 
-import EntreApps.Shared.Models.Client_Speciale
 import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.CategoryStickyHeader
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Delete_Ref_Active_Keys_M03Couleurs_Button
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Reset_its_pour_affiche_au_presenter
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Updated_list_m3couleurs_Affichable_Au_Presenters
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.Item_Produit_FragID5
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Z.Components.Modules.HandlePresenterClientScroll
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Z.Components.Modules.HandlePresenterScrollBroadcast
@@ -62,7 +59,7 @@ fun Etager_LazyColumn_App0(
     modifier: Modifier = Modifier.Companion,
     cataloguesWithCategoriesAndProducts: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     viewModelHeadViewModel: HeadViewModel,
-    
+
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     repositorysMainGetter: RepositorysMainGetter,
@@ -273,8 +270,41 @@ fun Etager_LazyColumn_App0(
                                 it.copy(
                                     its_pour_affiche_au_presenter =
                                         if (it.count_Don_Depot > 0 || (it.its_in_echantiallants == true)) true else null,
-                                    parentProduit_Classement = parentProduit_Classement[it.parentBProduitInfosKeyID]
+                                    parentProduit_Classement = parentProduit_Classement[it.parentBProduitInfosKeyID]   //<--
                                 )
+                            }
+                            .also { updatedList ->
+                                // ── DEBUG: why is the targeted M3 not at classement 0? ──────────────
+                                // parentProduit_Classement sorts echatillants products first (bucket 0)
+                                // then all others (bucket 1), preserving relative order within each bucket.
+                                // A product floats to classement ~0 only when ANY of its sibling colors
+                                // has its_in_echantiallants == true.
+                                val targeted = updatedList.find { it.keyID == "-OWDMIC_UdVXmSNw-Dz0" }
+                                if (targeted != null) {
+                                    val siblingColors = updatedList.filter {
+                                        it.parentBProduitInfosKeyID == "-OV3rmZ-9sy3P5rnINL3"
+                                    }
+                                    val siblingHasEchatillants = siblingColors.any { it.its_in_echantiallants == true }
+                                    val reason = when {
+                                        siblingHasEchatillants ->
+                                            "✅ a sibling has its_in_echantiallants=true → product is in bucket-0, classement should be low"
+                                        targeted.its_in_echantiallants == true ->
+                                            "✅ this color itself has its_in_echantiallants=true → bucket-0"
+                                        else ->
+                                            "⚠️ NO sibling (nor self) has its_in_echantiallants=true → product stays in bucket-1 → classement=${targeted.parentProduit_Classement}"
+                                    }
+                                    Log.d(
+                                        "TargetedM3_Classement",
+                                        "[Targeted M3] keyID=...${"-OWDMIC_UdVXmSNw-Dz0".takeLast(6)}" +
+                                                " | parentProduit_Classement=${targeted.parentProduit_Classement}" +
+                                                " | its_in_echantiallants=${targeted.its_in_echantiallants}" +
+                                                " | count_Don_Depot=${targeted.count_Don_Depot}" +
+                                                " | its_pour_affiche_au_presenter=${targeted.its_pour_affiche_au_presenter}" +
+                                                " | siblingColors=${siblingColors.size}" +
+                                                " | siblingHasEchatillants=$siblingHasEchatillants" +
+                                                " | → $reason"
+                                    )
+                                }
                             }
 
 
@@ -289,34 +319,11 @@ fun Etager_LazyColumn_App0(
                         onDismissDropdown = { showUploadDropdown = false }
                     )
 
-                    fun get_keys(): Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values> =
-                        allColors
-                            .filter { it.keyID.isNotBlank() }
-                            .associate { couleur ->
-                                val produitClassement =
-                                    parentProduit_Classement[couleur.parentBProduitInfosKeyID] ?: 0
+                    Reset_its_pour_affiche_au_presenter(
+                        allColors = repo3CouleurProduit_datasValue(),
+                        onDismissDropdown = { showUploadDropdown = false }
+                    )
 
-                                couleur.keyID to Ref_list_Filtred_Keys_M3Couleur_Main_Values(
-                                    nom = couleur.nomCouleurStrSiSonImageDispo,
-                                    classment = produitClassement,
-                                    activated = true,
-                                    parentProduitKeyID = couleur.parentBProduitInfosKeyID,
-                                    parentProduitDebugName = couleur.parentId1ProduitInfosDebugName,
-                                    parentProduitClassement = produitClassement,
-                                    its_couleur_du_Jomla_ECHATILLANTS_Client =
-                                        if (couleur.keyID in jomlaEchatillantsCouleurKeyIDs)
-                                            Client_Speciale.Jomla_ECHATILLANTS_Client
-                                        else
-                                            null,
-                                )
-                            }
-                    Upload_Filtered_Au_Ref_Active_Keys_M03Couleurs_Button(
-                        keys = get_keys(),
-                        onDismissDropdown = { showUploadDropdown = false }
-                    )
-                    Delete_Ref_Active_Keys_M03Couleurs_Button(
-                        onDismissDropdown = { showUploadDropdown = false }
-                    )
                 }
             }
         }
@@ -364,7 +371,7 @@ fun Etager_LazyColumn_App0(
                             isWifiClientConnected_1 = isWifiClientConnected_1,
                             product = product,
                             colors = colors,
-                            
+
                             onCategoryClick = {
                                 Log.d(
                                     "CategoryDialog_FragID4",
@@ -408,7 +415,7 @@ fun LazyStigerList_Produits_FragID4(
     product: M01Produit,
     colors: List<M3CouleurProduitInfos>,
     focusedValuesGetter: FocusedValuesGetter = koinInject(),
-    
+
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false,
     isWifiClientConnected_1: Boolean
@@ -446,7 +453,7 @@ fun LazyStigerList_Produits_FragID4(
     ) {
         Item_Produit_FragID5(
             relative_M1produit = product,
-            
+
             onCategoryClick = onCategoryClick,
             modifier = modifier
         )
