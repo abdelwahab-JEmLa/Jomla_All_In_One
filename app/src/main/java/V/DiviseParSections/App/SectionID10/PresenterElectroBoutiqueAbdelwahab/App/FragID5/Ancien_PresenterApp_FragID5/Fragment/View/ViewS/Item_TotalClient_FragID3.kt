@@ -17,12 +17,15 @@ fun Item_TotalClient_FragID3(
     isExpanded: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val totalClient = clientPrixVentUnite * nombreUniteInt
+
+    // N'affiche rien si le total est 0 (prix non défini ou 0 unités)
+    if (totalClient == 0.0) return
+
     val labelTextSize = if (isExpanded) 10.sp else 7.sp
     val valueTextSize = if (isExpanded) 12.sp else 9.sp
-    val iconSize     = if (isExpanded) 14.dp else 10.dp
-    val itemPadding  = if (isExpanded) 4.dp  else 2.dp
-
-    val totalClient = clientPrixVentUnite * nombreUniteInt
+    val iconSize      = if (isExpanded) 14.dp else 10.dp
+    val itemPadding   = if (isExpanded) 4.dp  else 2.dp
 
     InfoCard(
         icon = {
@@ -33,11 +36,11 @@ fun Item_TotalClient_FragID3(
                 modifier = Modifier.size(iconSize)
             )
         },
-        value        = "%.2f".format(totalClient),
-        label        = "Tot.Cli",
+        value         = "%.2f".format(totalClient),
+        label         = "Tot.Cli",
         labelTextSize = labelTextSize,
         valueTextSize = valueTextSize,
-        itemPadding  = itemPadding,
-        modifier     = modifier
+        itemPadding   = itemPadding,
+        modifier      = modifier
     )
 }

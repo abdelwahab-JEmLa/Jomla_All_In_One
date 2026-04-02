@@ -2,10 +2,10 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import EntreApps.Shared.Models.M01Produit
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -31,7 +31,6 @@ fun Compact_Header_FragID3(
     isExpanded: Boolean,
     shouldShowButtons: Boolean = true,
     onUpdateTariff: () -> Unit,
-    onUpdateClientPrixVentUnite: () -> Unit = {},
     onUpdateProduit: (M01Produit) -> Unit = {},
     currentApp_Est_Admin: Boolean,
     onDelete: (M01Produit) -> Unit
@@ -98,6 +97,7 @@ fun Compact_Header_FragID3(
                 }
             }
 
+            // ── Bouton suppression (hauteur indépendante des info-cards) ──
             if (shouldShowButtons && currentApp_Est_Admin) {
                 DeleteProductHeader(
                     productName = relative_M1produit.nom,
@@ -105,6 +105,9 @@ fun Compact_Header_FragID3(
                 )
             }
 
+            // ── Barre d'info-cards (droit → gauche, hauteur uniforme) ───
+            // Row scrollable + Arrangement.End : les items collent à droite
+            // même quand ils ne remplissent pas toute la largeur.
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -156,7 +159,9 @@ fun Compact_Header_FragID3(
                 Item_PrixUnitaireClient_FragID3(
                     clientPrixVentUnite = relative_M1produit.clientPrixVentUnite,
                     isExpanded = isExpanded,
-                    onUpdate = onUpdateClientPrixVentUnite
+                    onUpdate = { new ->
+                        onUpdateProduit(relative_M1produit.copy(clientPrixVentUnite = new))
+                    }
                 )
             }
         }
