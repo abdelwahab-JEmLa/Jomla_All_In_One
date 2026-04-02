@@ -24,7 +24,8 @@ import kotlinx.coroutines.tasks.await
 class A_LoadingViewModel(
     private val appDatabase: AppDatabase,
     private val appContext: Context,
-) : ViewModel() {
+) : ViewModel() {     //<--
+//TODO(1): enleve le drop box ini syc 
 
     data class LoadingUiState(
         val initDone: Boolean = false,

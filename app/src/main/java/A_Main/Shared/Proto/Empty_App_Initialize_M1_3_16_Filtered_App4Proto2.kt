@@ -11,15 +11,12 @@ import android.util.Log
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
+ const val DBG_TAG              = "TargetedM3_Seed"
+ const val DBG_M3_KEY           = "-OatXXVji-6A_OPcfUQa"
+ const val DBG_PROD_KEY    = "-OatXXVji-6A_OPcfUQb"
 
 object Empty_App_Initialize_M1_3_16_Filtered_App4Proto2 {
 
-    // ── Targeted-M3 debug constants ────────────────────────────────────────────
-    private const val DBG_TAG              = "TargetedM3_Seed"
-    private const val DBG_M3_KEY           = "-OWDMIC_UdVXmSNw-Dz0"
-    private const val DBG_M3_PARENT_KEY    = "-OV3rmZ-9sy3P5rnINL3"
-
-    // ── Shared types (used by AllRefs object too) ──────────────────────────────
     enum class Repo { M1Produit, M16CategorieProduit, M3CouleurProduitInfos }
 
     data class SeedResult(
@@ -30,8 +27,8 @@ object Empty_App_Initialize_M1_3_16_Filtered_App4Proto2 {
 
     // ── Centralized filter predicates ──────────────────────────────────────────
     object ColorFilters {
-        fun isVisible(color: M3CouleurProduitInfos)        = color.its_pour_affiche_au_presenter == true
-        fun isNotEchantillon(color: M3CouleurProduitInfos) = color.its_in_echantiallants != true
+        fun isVisible(color: M3CouleurProduitInfos) = color.its_pour_affiche_au_presenter
+        fun isNotEchantillon(color: M3CouleurProduitInfos) = !color.its_in_echantiallants
     }
 
     fun isInternetAvailable(context: Context): Boolean = try {
@@ -114,7 +111,7 @@ object Empty_App_Initialize_M1_3_16_Filtered_App4Proto2 {
             }
 
             // ── DEBUG: targeted M3 parent product after seedProducts ───────────
-            val targetedProduct = products.find { it.keyID == DBG_M3_PARENT_KEY }
+            val targetedProduct = products.find { it.keyID == DBG_PROD_KEY }
             val targetedColor   = colors.find   { it.keyID == DBG_M3_KEY }
             Log.d(DBG_TAG, "[seedProducts] targeted product present=${targetedProduct != null}" +
                     " | productKeyID=${targetedProduct?.keyID}" +
@@ -140,7 +137,7 @@ object Empty_App_Initialize_M1_3_16_Filtered_App4Proto2 {
 
         // ── DEBUG: final SeedResult summary ───────────────────────────────────
         val finalTargetedColor   = colors.find   { it.keyID == DBG_M3_KEY }
-        val finalTargetedProduct = products.find { it.keyID == DBG_M3_PARENT_KEY }
+        val finalTargetedProduct = products.find { it.keyID == DBG_PROD_KEY }
         Log.d(DBG_TAG, "[SeedResult] targetedM3 in final colors=${finalTargetedColor != null}" +
                 " | targetedProduct in final products=${finalTargetedProduct != null}" +
                 " | colors=${colors.size} | products=${products.size} | categories=${categories.size}")

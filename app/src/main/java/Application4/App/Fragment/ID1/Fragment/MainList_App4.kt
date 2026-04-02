@@ -1,5 +1,7 @@
 package Application4.App.Fragment.ID1.Fragment
 
+import A_Main.Shared.Proto.DBG_M3_KEY
+import A_Main.Shared.Proto.DBG_PROD_KEY
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
@@ -70,10 +72,24 @@ fun Etager_LazyColumn(
             val allProducts = activeDatas.list_M1Produit ?: emptyList()
             val isEchatillantsMode = activeDatas.isEchatillantsMode
             val echaKeys = allColours
-                .filter { it.its_in_echantiallants == true }
+                .filter { it.its_in_echantiallants }
                 .map { it.keyID }
                 .toSet()
             val productByKey = allProducts.associateBy { it.keyID }
+
+            // ── DEBUG: targeted M3 trace ───────────────────────────────────────
+            val targetedColor = allColours.find { it.keyID == DBG_M3_KEY }
+            android.util.Log.d("TargetedM3_Lazy",
+                "[displayList] allColours=${allColours.size}" +
+                        " | targetedM3 in allColours=${targetedColor != null}" +
+                        " | visible=${targetedColor?.its_pour_affiche_au_presenter}" +
+                        " | isEcha=${targetedColor?.its_in_echantiallants}" +
+                        " | parent=${targetedColor?.parentBProduitInfosKeyID}" +
+                        " | parentProduct=${productByKey[DBG_PROD_KEY]?.nom}" +
+                        " | echaMode=$isEchatillantsMode" +
+                        " | isInEchaKeys=${DBG_M3_KEY in echaKeys}"
+            )
+            // ──────────────────────────────────────────────────────────────────
 
             allColours
                 .groupBy { it.parentBProduitInfosKeyID }
@@ -86,6 +102,19 @@ fun Etager_LazyColumn(
                         colors.filter { it.keyID in echaKeys }
                     else
                         colors.filter { it.keyID !in echaKeys }
+
+                    // ── DEBUG: trace pourquoi le targeted passe ou non ─────────
+                    if (product.keyID == DBG_PROD_KEY) {
+                        android.util.Log.d("TargetedM3_Lazy",
+                            "[groupBy] targetedProduct found" +
+                                    " | colorsInGroup=${colors.size}" +
+                                    " | filteredColors=${filtered.size}" +
+                                    " | targetedM3InGroup=${colors.any { it.keyID == DBG_M3_KEY }}" +
+                                    " | targetedM3InFiltered=${filtered.any { it.keyID == DBG_M3_KEY }}"
+                        )
+                    }
+                    // ──────────────────────────────────────────────────────────
+
                     if (filtered.isEmpty()) null else product to filtered
                 }
         }
@@ -116,20 +145,6 @@ fun Etager_LazyColumn(
 
     val expanded_M1Produit = wifiState.expanded_M1Produit
 
-    // FIX TODO(1): Two-phase scroll so the expanded item always lands at the TOP of the
-    // viewport, not at the bottom.
-    //
-    // Root cause: when the item span changes SingleLane → FullLine the staggered-grid
-    // triggers a layout reflow.  If we call animateScrollToItem() before that reflow
-    // completes, the grid scrolls to the OLD (pre-expansion) position, which often
-    // leaves the item clipped at the bottom.
-    //
-    // Solution:
-    //   Phase 1 – scrollToItem() (instant, no animation) immediately.  This ensures the
-    //             item enters the layout engine's visible area so Compose can measure its
-    //             new FullLine height.
-    //   Phase 2 – wait 300 ms (one or two frame-batches is enough for the reflow to
-    //             settle), then animateScrollToItem() to land cleanly at offset = 0.
     LaunchedEffect(expanded_M1Produit) {
         expanded_M1Produit ?: return@LaunchedEffect
         if (!isHostPhone) return@LaunchedEffect

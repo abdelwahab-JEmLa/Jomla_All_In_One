@@ -30,8 +30,8 @@ fun Button_StockOptions_ResetEchantillons(
         modifier = Modifier.fillMaxWidth(),
         onClick = {
             val allColorsReset = repositorysMainGetter.repo03CouleurProduitInfos.datasValue
-                .filter { it.its_in_echantiallants != null }
-                .map { it.copy(its_in_echantiallants = null) }
+                .filter { true }
+                .map { it.copy(its_in_echantiallants = false) }
             viewModel.fireBase_batch_set_list_M3CouleurProduitInfos(allColorsReset)
             Toast.makeText(
                 context,

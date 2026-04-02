@@ -269,7 +269,7 @@ fun Etager_LazyColumn_App0(
                             .map {
                                 it.copy(
                                     its_pour_affiche_au_presenter =
-                                        if (it.count_Don_Depot > 0 || (it.its_in_echantiallants == true)) true else null,
+                                        it.count_Don_Depot > 0 || it.its_in_echantiallants,
                                     parentProduit_Classement = parentProduit_Classement[it.parentBProduitInfosKeyID]   //<--
                                 )
                             }
@@ -284,11 +284,11 @@ fun Etager_LazyColumn_App0(
                                     val siblingColors = updatedList.filter {
                                         it.parentBProduitInfosKeyID == "-OV3rmZ-9sy3P5rnINL3"
                                     }
-                                    val siblingHasEchatillants = siblingColors.any { it.its_in_echantiallants == true }
+                                    val siblingHasEchatillants = siblingColors.any { it.its_in_echantiallants }
                                     val reason = when {
                                         siblingHasEchatillants ->
                                             "✅ a sibling has its_in_echantiallants=true → product is in bucket-0, classement should be low"
-                                        targeted.its_in_echantiallants == true ->
+                                        targeted.its_in_echantiallants ->
                                             "✅ this color itself has its_in_echantiallants=true → bucket-0"
                                         else ->
                                             "⚠️ NO sibling (nor self) has its_in_echantiallants=true → product stays in bucket-1 → classement=${targeted.parentProduit_Classement}"
@@ -312,7 +312,7 @@ fun Etager_LazyColumn_App0(
                         updated_list_m3couleurs_Affichable_Au_Presenters = get_Updated_list_m3couleurs_Affichable_Au_Presenters(),
                         updated_list_m3couleurs_Affichable_Au_Presenters_filtred = get_Updated_list_m3couleurs_Affichable_Au_Presenters()
                             .filter {
-                                it.its_pour_affiche_au_presenter == true
+                                it.its_pour_affiche_au_presenter
                             }.map {
                                 it.parentId1ProduitInfosDebugName to it
                             },

@@ -44,6 +44,8 @@ class RepositorysMainSetter_NewProtoPatterns(
             if (datas.isNotEmpty()) {
                 datas.forEach { appDatabase.dao_M03CouleurProduitInfos().update(it) }
                 val updates: Map<String, Any> = datas.associate { it.keyID to it.toFirebaseMap() }
+                // updateChildren().await() suspends until Firebase confirms the write.
+                // onSuccess() is then dispatched on Main so callers can safely update UI state.
                 M3CouleurProduitInfos.ref.updateChildren(updates).await()
             }
             withContext(Dispatchers.Main) { onSuccess() }

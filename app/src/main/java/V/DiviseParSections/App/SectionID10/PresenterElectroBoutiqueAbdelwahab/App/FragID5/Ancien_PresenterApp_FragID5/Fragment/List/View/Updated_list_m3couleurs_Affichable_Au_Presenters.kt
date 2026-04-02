@@ -19,13 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
@@ -36,8 +33,6 @@ fun Updated_list_m3couleurs_Affichable_Au_Presenters(
     updated_list_m3couleurs_Affichable_Au_Presenters: List<M3CouleurProduitInfos>,
     updated_list_m3couleurs_Affichable_Au_Presenters_filtred: List<Pair<String, M3CouleurProduitInfos>>,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     var isUploading by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
 
@@ -81,22 +76,24 @@ fun Updated_list_m3couleurs_Affichable_Au_Presenters(
             },
             confirmButton = {
                 TextButton(
-                    modifier = Modifier.semantics(mergeDescendants = true) {
-                    },
+                    modifier = Modifier.semantics(mergeDescendants = true) {},
                     onClick = {
                         showConfirmDialog = false
-                        coroutineScope.launch(Dispatchers.IO) {
-                            isUploading = true
-                            RepositorysMainSetter_NewProtoPatterns(
-                                appDatabase = appDatabase,
-                                context = context
-                            ).update_List_M3CouleurProduitInfos_BathFireBase(
-                                updated_list_m3couleurs_Affichable_Au_Presenters
-                            )
-
-                            isUploading = false
-                            onDismissDropdown()
-                        }
+                        // isUploading is set here on the Main thread (onClick runs on Main).
+                        // It will be cleared inside onSuccess, which the repository also
+                        // dispatches on Main — after Firebase.updateChildren().await() completes.
+                        isUploading = true
+                        RepositorysMainSetter_NewProtoPatterns(
+                            appDatabase = appDatabase,
+                            context = context
+                        ).update_List_M3CouleurProduitInfos_BathFireBase(
+                            datas = updated_list_m3couleurs_Affichable_Au_Presenters,
+                            onSuccess = {
+                                // Runs on Dispatchers.Main after Firebase write is confirmed.
+                                isUploading = false
+                                onDismissDropdown()
+                            }
+                        )
                     }
                 ) { Text("Envoyer", color = MaterialTheme.colorScheme.error) }
             },
@@ -116,8 +113,6 @@ fun Reset_its_pour_affiche_au_presenter(
     context: Context = koinInject(),
     appDatabase: AppDatabase = koinInject(),
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     var isResetting by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
 
@@ -164,16 +159,22 @@ fun Reset_its_pour_affiche_au_presenter(
                     modifier = Modifier.semantics(mergeDescendants = true) {},
                     onClick = {
                         showConfirmDialog = false
-                        coroutineScope.launch(Dispatchers.IO) {
-                            isResetting = true
-                            val resetColors = allColors.map { it.copy(its_pour_affiche_au_presenter = null) }
-                            RepositorysMainSetter_NewProtoPatterns(
-                                appDatabase = appDatabase,
-                                context = context
-                            ).update_List_M3CouleurProduitInfos_BathFireBase(resetColors)
-                            isResetting = false
-                            onDismissDropdown()
-                        }
+                        // isResetting is set here on the Main thread (onClick runs on Main).
+                        // It will be cleared inside onSuccess, which the repository also
+                        // dispatches on Main — after Firebase.updateChildren().await() completes.
+                        isResetting = true
+                        val resetColors = allColors.map { it.copy(its_pour_affiche_au_presenter = false) }
+                        RepositorysMainSetter_NewProtoPatterns(
+                            appDatabase = appDatabase,
+                            context = context
+                        ).update_List_M3CouleurProduitInfos_BathFireBase(
+                            datas = resetColors,
+                            onSuccess = {
+                                // Runs on Dispatchers.Main after Firebase write is confirmed.
+                                isResetting = false
+                                onDismissDropdown()
+                            }
+                        )
                     }
                 ) { Text("Réinitialiser", color = MaterialTheme.colorScheme.error) }
             },

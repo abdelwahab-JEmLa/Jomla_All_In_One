@@ -59,13 +59,6 @@ fun Big_Principale_FragID3(
         label = "mainImageHeight"
     )
 
-    /*
-    val imageHeight by animateDpAsState(
-        targetValue = if (isThisProductExpanded) IMAGE_HEIGHT_EXPANDED else IMAGE_HEIGHT_NORMAL,
-        animationSpec = tween(durationMillis = 300),
-        label = "mainImageHeight"
-    )
-     */
 
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,

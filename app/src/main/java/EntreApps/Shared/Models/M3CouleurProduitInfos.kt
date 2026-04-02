@@ -29,8 +29,8 @@ M3CouleurProduitInfos(
     val nomCouleurStrSiSonImageDispo: String = "",
 
     //-------------------------------Filters---------------------------------------------------------------------------------------------------------------------------------
-    var its_pour_affiche_au_presenter: Boolean? = null,
-    var its_in_echantiallants: Boolean? = null,
+    var its_pour_affiche_au_presenter: Boolean = false,
+    var its_in_echantiallants: Boolean = false,
 
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
     var parentProduit_Classement: Int? = null,
