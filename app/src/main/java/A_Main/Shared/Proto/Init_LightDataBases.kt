@@ -1,10 +1,11 @@
-package Application4.App.A.Start.Init.Proto
+package A_Main.Shared.Proto
 
 import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Models.M8BonVent
+import android.util.Log
 import kotlinx.coroutines.tasks.await
 
 object Init_LightDataBases {
@@ -63,7 +64,7 @@ object Init_LightDataBases {
             .filter { it.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID }
             .map { it.keyID }
             .toSet()
-        android.util.Log.d(
+        Log.d(
             "Init_LightDataBases",
             "Echatillants bons (${echatillantsM8Keys.size}): $echatillantsM8Keys"
         )
@@ -80,7 +81,7 @@ object Init_LightDataBases {
 
         // Log all M10 ops that belong to the Echatillants client's bons
         val echatillantsM10 = m10List.filter { it.parent_M8BonVent_KeyId in echatillantsM8Keys }
-        android.util.Log.d(
+        Log.d(
             "Init_LightDataBases",
             "Echatillants M10 ops (${echatillantsM10.size}): " +
                     echatillantsM10.joinToString { "bon=${it.parent_M8BonVent_KeyId} prod=${it.parent_M1Produit_KeyId}" }

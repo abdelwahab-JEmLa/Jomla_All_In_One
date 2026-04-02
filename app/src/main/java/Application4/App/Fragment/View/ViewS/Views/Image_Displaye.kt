@@ -23,9 +23,6 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import java.io.File
-        //<--
-        //TODO(1):   //<--
-        ////TODO(1): fait que si its mode echang et its ecpanded produit de affiche ces couleur masx 
 enum class pourcentage {
     max_possible,
     standart,
@@ -46,12 +43,15 @@ fun Image_Displaye(
     val wifiState by viewModel.wifiState.collectAsState()
     val centralValues = wifiState
 
-    val effectiveQuality: pourcentage = if (viewModel.active_Datas.isEchatillantsMode) {
-        val isExpandedProduct =
-            centralValues.expanded_M1Produit?.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
-        if (isExpandedProduct) pourcentage.max_possible else pourcentage.min_possible
-    } else {
-        image_pourcetage_qualite
+    val isExpandedProduct =
+        centralValues.expanded_M1Produit?.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
+    val isAnyExpanded = centralValues.expanded_M1Produit != null
+
+    val effectiveQuality: pourcentage = when {
+        isExpandedProduct -> pourcentage.max_possible
+        isAnyExpanded     -> pourcentage.min_possible
+        else              -> if (viewModel.active_Datas.isEchatillantsMode) pourcentage.min_possible
+        else image_pourcetage_qualite
     }
 
     val imageFile = remember(

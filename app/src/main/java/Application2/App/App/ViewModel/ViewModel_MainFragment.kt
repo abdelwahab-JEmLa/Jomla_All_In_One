@@ -8,8 +8,8 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
 import android.content.Context
@@ -41,7 +41,6 @@ class ViewModel_MainFragment(
     private val appDatabase: AppDatabase,
     private val repositorysMainGetter_app2: RepositorysMainGetter_app2,
 ) : ViewModel() {
-
     private val dao_M1Produit = appDatabase.dao_M1Produit()
     private val dao_16CategorieProduit = appDatabase.dao_16CategorieProduit()
     private val dao_M3CouleurProduitInfos = appDatabase.dao_M03CouleurProduitInfos()
@@ -59,8 +58,8 @@ class ViewModel_MainFragment(
     val wifi = WifiTransferDatas_App2(
         context = context,
         coroutineScope = viewModelScope,
-        list_M1Produit = emptyList(),       // ← mis à jour dans le collect ci-dessous
-        list_M3CouleurProduit = emptyList(), // ← mis à jour dans le collect ci-dessous
+        list_M1Produit = emptyList(),
+        list_M3CouleurProduit = emptyList(),
         onGetActiveCentralValues = ::getActiveCentralValues,
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
     )
@@ -78,13 +77,14 @@ class ViewModel_MainFragment(
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
         wifi.sendOrderToClientDisplayer(orderName, data)
 
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats, data: Any? = null) = wifi.sendOrderToClientDisplayerT(order, data)
+    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats, data: Any? = null) =
+        wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
         // Track how many of the 3 sources have emitted at least once, to drive progress (0f → 1f).
-        val productsReady   = MutableStateFlow(false)
+        val productsReady = MutableStateFlow(false)
         val categoriesReady = MutableStateFlow(false)
-        val colorsReady     = MutableStateFlow(false)
+        val colorsReady = MutableStateFlow(false)
 
         // Update progress whenever the ready-flags change.
         viewModelScope.launch(Dispatchers.IO) {
@@ -101,9 +101,9 @@ class ViewModel_MainFragment(
                 dao_16CategorieProduit.getAllFlow(),
                 dao_M3CouleurProduitInfos.getAllFlow()
             ) { products, categories, colors ->
-                productsReady.value   = true
+                productsReady.value = true
                 categoriesReady.value = true
-                colorsReady.value     = true
+                colorsReady.value = true
                 Triple(products, categories, colors)
             }.collect { (products, categories, colors) ->
                 _uiState.update {

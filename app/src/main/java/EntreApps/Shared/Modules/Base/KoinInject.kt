@@ -1,11 +1,7 @@
 package EntreApps.Shared.Modules.Base
 
-import Application4.App.A.Start.Init.Proto.A_LoadingViewModel
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
-import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appDatabase = module {

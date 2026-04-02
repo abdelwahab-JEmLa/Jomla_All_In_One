@@ -1,13 +1,12 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFormatterUtils
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFormatterUtils
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
@@ -33,18 +32,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
-fun Display_Tariff(
+fun Display_Tariff_ModeWorckChezGro(
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
     relative_produit: M01Produit,
     allNonTrouve: Boolean,
@@ -53,12 +49,8 @@ fun Display_Tariff(
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
-    val getterFocusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-    val focusedValuesSetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
     val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
-    val coroutineScope = rememberCoroutineScope()
 
-    // Animation pour le clignotement gris/rouge
     val infiniteTransition = rememberInfiniteTransition(label = "blinkAnimation")
     val blinkColor by infiniteTransition.animateColor(
         initialValue = Color.Gray,
@@ -71,11 +63,10 @@ fun Display_Tariff(
     )
 
     val totalQuantity by derivedStateOf {
-        getterFocusedVarsHandlerFacade
+        focusedValuesGetter
             .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-            .filter { ventOperation ->
-                ventOperation.parent_M1Produit_KeyId == relative_produit.keyID
-            }.sumOf { it.quantity }
+            .filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
+            .sumOf { it.quantity }
     }
 
     Row(
@@ -87,17 +78,7 @@ fun Display_Tariff(
             colors = CardDefaults.cardColors(
                 containerColor = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                 else MaterialTheme.colorScheme.primary
-            ),
-            modifier = Modifier
-                .getSemanticsTag(
-                    nomVal = "dialogChoisireQuantityM1ProduitInfosDebugName",
-                    data = focusedValuesGetter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
-                )
-                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
-                    1,
-                    "dialogChoisireQuantityM1ProduitInfosKeyID",
-                    focusedValuesGetter.currentActive_M9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID
-                )
+            )
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -130,32 +111,22 @@ fun Display_Tariff(
         val datasValue = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
 
         val find_Tariff_Prix_Detaille = datasValue
-            .filter { tariff ->
-                tariff.typeChoisi == TypeChoisi.Prix_Detaille &&
-                        tariff.parent_M1Produit_KeyId == relative_produit.keyID
-            }
+            .filter { it.typeChoisi == TypeChoisi.Prix_Detaille && it.parent_M1Produit_KeyId == relative_produit.keyID }
             .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
-        // Get the tariff from the vent operation
         val parentM13TarificationKeyID = relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
         val relative_Tariff = datasValue.find { it.keyID == parentM13TarificationKeyID }
 
-        // Determine the correct tariff to display based on mode
         val displayTariff: M13TarificationInfos
         val effectiveAllNonTrouve: Boolean
 
         if (currentApp_ItsWorkChezGrossisst) {
-            // GROSSIST MODE: Must use any grossist tariff (Gros, SuperGros, or Tariff_ItsWorkInGrossist_Achat)
-            // First, check if the tariff from vent operation is a grossist type
             val ventTariffIfGrossist = if (
                 relative_Tariff?.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros ||
                 relative_Tariff?.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_Gro ||
                 relative_Tariff?.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_Achat
-            ) {
-                relative_Tariff
-            } else null
+            ) relative_Tariff else null
 
-            // If vent doesn't have a grossist tariff, find the latest grossist tariff for this product
             val grossistTariff = ventTariffIfGrossist ?: datasValue
                 .filter { tariff ->
                     (tariff.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros ||
@@ -166,93 +137,62 @@ fun Display_Tariff(
                 .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
 
             if (grossistTariff != null) {
-                // Found a valid grossist tariff
                 displayTariff = grossistTariff
-                // Clignote si pas trouvé OU si le prix est 0.0
                 effectiveAllNonTrouve = allNonTrouve || (grossistTariff.prixCurrency == 0.0)
             } else {
-                // No grossist tariff exists - create fallback and mark as non-trouvé
                 displayTariff = M13TarificationInfos(
                     typeChoisi = TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
                     prixCurrency = relative_produit.prixAchat,
                     parent_M1Produit_KeyId = relative_produit.keyID,
                     parent_M1Produit_DebugInfos = relative_produit.nom
                 )
-                effectiveAllNonTrouve = true // Mark as not found
+                effectiveAllNonTrouve = true
             }
         } else {
-            // RETAIL MODE: Use the tariff from vent operation or fallback
             if (relative_Tariff != null) {
-                // Valid tariff exists from vent operation
                 displayTariff = relative_Tariff
-                // Clignote si pas trouvé OU si le prix est 0.0
                 effectiveAllNonTrouve = allNonTrouve || (relative_Tariff.prixCurrency == 0.0)
             } else {
-                // No tariff in vent - try to find Prix_Detaille
                 displayTariff = find_Tariff_Prix_Detaille ?: M13TarificationInfos(
                     typeChoisi = TypeChoisi.Prix_Detaille,
                     prixCurrency = relative_produit.prixAchat,
                     parent_M1Produit_KeyId = relative_produit.keyID,
                     parent_M1Produit_DebugInfos = relative_produit.nom
                 )
-                // Clignote si pas trouvé OU si le prix est 0.0
                 effectiveAllNonTrouve = allNonTrouve || (find_Tariff_Prix_Detaille == null) || (displayTariff.prixCurrency == 0.0)
             }
         }
 
+        // Click is intentionally disabled when effectiveAllNonTrouve=true:
+        // no valid tariff exists to save, so there is nothing meaningful to commit.
         Card(
-            modifier = Modifier
-                .semantics(mergeDescendants = true) {
-                    val datasValuefilter = datasValue.filter { it.parent_M1Produit_KeyId == relative_produit.keyID }
-                    set(value = datasValue, key = SemanticsPropertyKey("datasValue"))
-                }
-                .semantics(mergeDescendants = true) {
-                    set(value = find_Tariff_Prix_Detaille, key = SemanticsPropertyKey("findTariff"))
-                }
-                .semantics(mergeDescendants = true) {
-                    set(value = relative_List_M10OperationVentCouleur, key = SemanticsPropertyKey("relative_List_M10OperationVentCouleur"))
-                }
-                .clickable(enabled = !effectiveAllNonTrouve) {
-                    val get = focusedVarsHandlerFacade.focusedValuesGetter
-
-                    aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                        m13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
-                        m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
-                        aCentralFacade = aCentralFacade
-                    )
-
-                    focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
-                        relative_produit
-                    )
-                },
+            modifier = Modifier.clickable(enabled = !effectiveAllNonTrouve) {
+                val get = focusedVarsHandlerFacade.focusedValuesGetter
+                aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                    m13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
+                    m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
+                    aCentralFacade = aCentralFacade
+                )
+                focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+                    relative_produit
+                )
+            },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
                 containerColor = if (effectiveAllNonTrouve) blinkColor
                 else displayTariff.typeChoisi.couleur
             )
         ) {
-            Column(
-                modifier = Modifier.semantics(mergeDescendants = true) {
-                    set(value = displayTariff, key = SemanticsPropertyKey("relative_Tariff"))
-                }
-            ) {
+            Column {
                 Row(
-                    modifier = Modifier
-                        .semantics(mergeDescendants = true) {
-                            set(value = displayTariff, key = SemanticsPropertyKey("relative_Tariff"))
-                        }
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     val tariffType = displayTariff.typeChoisi
                     val nom = tariffType.nomArabe.take(2)
                     val tariffIcon = tariffType.iconVector ?: Icons.Default.History
-                    val textColor = if (effectiveAllNonTrouve) {
-                        Color.White // Texte blanc quand clignotement actif
-                    } else {
-                        tariffType.couleur_Text
-                    }
+                    val textColor = if (effectiveAllNonTrouve) Color.White else tariffType.couleur_Text
 
                     Text(
                         text = "$nom - ${displayTariff.prixCurrency}",
@@ -260,7 +200,6 @@ fun Display_Tariff(
                         fontWeight = FontWeight.Medium,
                         color = textColor
                     )
-
                     Icon(
                         imageVector = tariffIcon,
                         contentDescription = tariffType.nomArabe,

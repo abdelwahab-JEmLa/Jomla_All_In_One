@@ -14,13 +14,8 @@ import com.dropbox.core.oauth.DbxCredential
 import com.dropbox.core.v2.DbxClientV2
 import com.dropbox.core.v2.files.FileMetadata
 import com.example.clientjetpack.BuildConfig
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.Source
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -101,7 +96,8 @@ class Initializer_Funcs_app2(
         if (items.isNotEmpty()) dao_16CategorieProduit.insertAll(items)
     }
 
-    private suspend fun seedColors(isOnline: Boolean) {
+    private suspend fun seedColors(isOnline: Boolean) {       //<--
+    //TODO(1): 
         // Always work from the filtered list — seed it if Room is empty, otherwise read it back
         val filteredColors: List<M3CouleurProduitInfos> = if (dao_M03CouleurProduitInfos.getAll().isEmpty()) {
             val allowedKeys: Set<String> = M3CouleurProduitInfos.ref_listKeys_M3CouleurProduitInfos

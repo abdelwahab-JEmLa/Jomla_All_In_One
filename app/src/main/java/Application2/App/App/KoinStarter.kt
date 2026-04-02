@@ -8,8 +8,7 @@ import org.koin.dsl.module
 val centralDataBasesModule_app2 = module {
     single {
         RepositorysMainGetter_app2(
-            context = androidContext(),
-            get(),
+
         )
     }
 }

@@ -2,7 +2,7 @@ package com.example.clientjetpack
 
 import Application2.App.App.appModule_App2_ac_app1
 import Application2.App.MainScreen.MainScreen_Jemla_Com_PresentoirApp
-import Application4.App.A.Start.Init.Proto.A_LoadingApp4_Init_Screen
+import A_Main.Shared.Proto.A_LoadingApp4_Init_Screen
 import Application4.App.Screen.MainScreen_NewProtoPattern
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps

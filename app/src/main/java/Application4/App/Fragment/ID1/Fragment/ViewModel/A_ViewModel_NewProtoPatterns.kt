@@ -28,16 +28,14 @@ class A_ViewModel_NewProtoPatterns(
     private val context: Context,
     val appDatabase: AppDatabase,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
-    val repositorysMainSetter_NewProtoPatterns: RepositorysMainSetter_NewProtoPatterns = RepositorysMainSetter_NewProtoPatterns(
-        appDatabase = appDatabase,
-        context = context
-    ),
 ) : ViewModel() {
     val active_Datas = ActiveDatasFragNewProto()
     private val updater = Setter_ViewModel_NewProtoPatterns(this)
 
     val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
+
+    val repositorysMainSetter_NewProtoPatterns by lazy { RepositorysMainSetter_NewProtoPatterns(appDatabase, context) }
 
     val wifi = WifiTransferDatas_NewProto(
         context = context,

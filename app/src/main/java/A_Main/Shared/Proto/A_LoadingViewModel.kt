@@ -1,4 +1,4 @@
-package Application4.App.A.Start.Init.Proto
+package A_Main.Shared.Proto
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.AppType
@@ -25,7 +25,10 @@ import kotlinx.coroutines.tasks.await
 class A_LoadingViewModel(
     private val appDatabase: AppDatabase,
     private val appContext: Context,
-) : ViewModel() {
+) : ViewModel() {      //<--
+//TODO(1): fait que si l app est presenter de    //<--
+////TODO(1): ajout un filter de ne pas seed les couleurs ou ler parent == its echant  produits ou leur it echant ignor les //<--
+//TODO(1): fait aussi de ne pas gete les light datas et les categories si app est presenter cree log pk quand c app est presenter les datas ne se gete pas si empty
     data class LoadingUiState(
         val initDone: Boolean = false,
         val progress: Float = 0f,

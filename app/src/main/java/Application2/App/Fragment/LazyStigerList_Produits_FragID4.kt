@@ -91,15 +91,6 @@ fun Etager_LazyColumn_App2(
         }
     }
 
-    // HOST → broadcasts scroll position to the connected client
-    HandlePresenterScrollBroadcast_app2(
-        isHostPhone = isHostPhone,
-        isConnected = isConnected,
-        gridState = gridState,
-        viewModel = viewModel,
-    )
-
-    // CLIENT → receives scroll position from host and applies it
     HandlePresenterClientScroll_app2(
         isHostPhone = isHostPhone,
         scrollPosition = currentScrollPosition,

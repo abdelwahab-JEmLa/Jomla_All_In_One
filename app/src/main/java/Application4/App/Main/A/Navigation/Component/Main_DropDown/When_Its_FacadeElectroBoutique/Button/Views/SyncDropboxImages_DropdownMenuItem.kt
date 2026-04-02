@@ -2,7 +2,6 @@ package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_Faca
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -122,7 +121,7 @@ private suspend fun syncMissingDropboxImages(
         }
 
         val dropboxPath  = meta.pathLower ?: run { onProgress((i + 1).toFloat() / total); return@forEachIndexed }
-        val dropboxModMs = meta.serverModified?.time ?: 0L
+        val dropboxModMs = meta.serverModified.time ?: 0L
         val localFile    = File(localBase, "${couleur.nomImageFichieSansEtansion}.${couleur.extensionDisponible}")
 
         if (!localFile.exists() || dropboxModMs > localFile.lastModified()) {

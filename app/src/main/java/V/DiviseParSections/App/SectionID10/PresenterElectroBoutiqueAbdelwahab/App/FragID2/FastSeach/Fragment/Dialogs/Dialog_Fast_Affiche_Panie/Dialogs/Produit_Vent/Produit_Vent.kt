@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent
 
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.Couleur_Image.ImageDisplayerGlide_FragFastVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.z.Com.ElevatedCardHeader
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -269,14 +269,25 @@ fun Produit_Vent(
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                     }
+                    val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 
-                    Display_Tariff(
-                        relative_List_M10OperationVentCouleur = ventList,
-                        relative_produit = nonNullProduit,
-                        allNonTrouve = allNonTrouve,
-                        aCentralFacade = aCentralFacade
-                    )
+                    val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
+                    if (currentApp_ItsWorkChezGrossisst) {
+                        Display_Tariff_ModeWorckChezGro(
+                            relative_List_M10OperationVentCouleur = ventList,
+                            relative_produit = nonNullProduit,
+                            allNonTrouve = allNonTrouve,
+                            aCentralFacade = aCentralFacade
+                        )
+                    }  else  {
+                        Display_Tariff_NonGrossistContext(
+                            relative_List_M10OperationVentCouleur = ventList,
+                            relative_produit = nonNullProduit,
+                            allNonTrouve = allNonTrouve,
+                            aCentralFacade = aCentralFacade
+                        )
+                    }
                     if (uniqueComments.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Column(

@@ -51,7 +51,8 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {
+) {        //<--
+//TODO(1): regle le solle auto quand un item expand por le metre le premie ele afficahable ne marche pas comme il fat il mette l item au base c pas affiche
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val activeDatas = viewModel.active_Datas
@@ -114,16 +115,19 @@ fun Etager_LazyColumn(
             .toMap()
     }
 
-    LaunchedEffect(expanded_M3CouleurProduitInfos) {
-        expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
+    val expanded_M1Produit = wifiState.expanded_M1Produit
+
+    LaunchedEffect(expanded_M1Produit) {
+        expanded_M1Produit ?: return@LaunchedEffect
         if (!isHostPhone) return@LaunchedEffect
-        val targetKeyID = expanded_M3CouleurProduitInfos.parentBProduitInfosKeyID
+        val targetKeyID = expanded_M1Produit.keyID
         if (targetKeyID.isBlank()) return@LaunchedEffect
         val foundIndex = displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
         if (foundIndex >= 0) {
-            delay(400)
+            // Wait for the span change (SingleLane → FullLine) to be laid out before scrolling
+            delay(500)
             coroutineScope.launch {
-                gridState.animateScrollToItem((foundIndex - 1).coerceAtLeast(0))
+                gridState.animateScrollToItem(foundIndex, scrollOffset = 0)
             }
         }
     }
