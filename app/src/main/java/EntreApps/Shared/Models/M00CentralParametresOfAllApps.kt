@@ -8,7 +8,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 
-enum class Compts(val keyId: String){
+enum class Compts(val keyId: String) {
     AbdelwahabTravailleChezGros_KeyId("-OV9dYujH9cA3yEx8AY2"),
     Telephone_de_presentation("-OTmoNn0cljrRuhVR2sp"),
 }
@@ -33,11 +33,12 @@ data class M00CentralParametresOfAllApps(
     val jamale_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s6",
     val walid_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s7",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
-    val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",           //<--
+    val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
+    //<--
     //TODO(1): ajout affiche tekhereg et prix achat et nitaire et prix vent u
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
 //────────────────────────────au_Lence_Set_Compt_Ac_KeyId──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    val au_Lence_Set_Compt_Ac_KeyId: String = Compts.Telephone_de_presentation.keyId,
+    val au_Lence_Set_Compt_Ac_KeyId: String = Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
 //──────────────────────────────Dimine Rapid────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val au_Lence_Diminue_DatasFB: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
     val au_Lence_Dimininue_Datas_OperationVents: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
@@ -53,7 +54,8 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.AllInOne
         } else {
-            AppType.AllInOne     //JomLaElectroLivreurGrossist_VendeurHost
+            AppType.JomLaElectroLivreurGrossist_VendeurHost
+            //JomLaElectroLivreurGrossist_VendeurHost
         }
     },
 
@@ -72,11 +74,12 @@ data class M00CentralParametresOfAllApps(
         val centralRef = Firebase.database.getReference(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
         )
-         val central_Local_storageLink = buildString {
+        val central_Local_storageLink = buildString {
             append("/storage/emulated/0/Abdelwahab_jeMla.com")
         }
 
-         val images_central_Local_storageLink = M3CouleurProduitInfos.images_central_Local_storageLink
+        val images_central_Local_storageLink =
+            M3CouleurProduitInfos.images_central_Local_storageLink
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
@@ -132,14 +135,14 @@ enum class Utilisateur(
     val comp: String,
     val ayam_tadriss: String = "dimanch/jeudi",
     val nom_arab: String = "",
-    val num_telephone : String = "",
+    val num_telephone: String = "",
 ) {
     Admin("", "", "المسؤول"),
     Abdelwahab_Osstad(
         Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
         "dimanch/jeudi",
         "عبدالوهاب حمنيش",
-             "+213 553 88 50 37"
+        "+213 553 88 50 37"
     ),
     kissm_intikali_madrasa_Compt_Osstad(
         M00CentralParametresOfAllApps().kissm_intikali_madrasa_Compt_KeyId,
