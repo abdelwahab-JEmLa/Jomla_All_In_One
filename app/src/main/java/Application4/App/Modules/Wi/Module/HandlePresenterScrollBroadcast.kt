@@ -40,7 +40,7 @@ fun HandlePresenterScrollBroadcast(
                     lastSentPosition = position
                     onScrollHostChange(position)
                     viewModel.sendOrderToClientDisplayerT(
-                        WifiUpdateClientDisplayerStats_NewProto.ClientMainGridScrollPosition,
+                        Wifi_Messages_Types_NewProto.ClientMainGridScrollPosition,
                         position
                     )
                 }

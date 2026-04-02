@@ -3,8 +3,8 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
-import Application4.App.Modules.Wi.Module.WifiTransferDatas_NewProto
-import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
+import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M10OperationVentCouleur
@@ -37,7 +37,7 @@ class A_ViewModel_NewProtoPatterns(
 
     val repositorysMainSetter_NewProtoPatterns by lazy { RepositorysMainSetter_NewProtoPatterns(appDatabase, context) }
 
-    val wifi = WifiTransferDatas_NewProto(
+    val wifi = WifiTransferDatas_ControllerApp(
         context = context,
         coroutineScope = viewModelScope,
         list_M1Produit = emptyList(),
@@ -63,7 +63,7 @@ class A_ViewModel_NewProtoPatterns(
     fun disconnect() = wifi.disconnect()
 
     fun sendOrderToClientDisplayerT(
-        order: WifiUpdateClientDisplayerStats_NewProto,
+        order: Wifi_Messages_Types_NewProto,
         data: Any? = null
     ) =
         wifi.sendOrderToClientDisplayerT(order, data)

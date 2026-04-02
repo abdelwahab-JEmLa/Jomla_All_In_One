@@ -2,7 +2,6 @@ package Application4.App.Fragment.View.ViewS.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
-import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
@@ -85,11 +84,6 @@ fun Image_Displaye(
                         centralValues.expanded_M1Produit?.keyID == parentProduct?.keyID
                     val isSameColor =
                         centralValues.expanded_M3CouleurProduitInfos?.keyID == relative_M3CouleurProduitInfos.keyID
-
-                    viewModel.sendOrderToClientDisplayerT(
-                        WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
-                        relative_M3CouleurProduitInfos.keyID
-                    )
 
                     if (isSameProductExpanded && isSameColor) {
                         viewModel.updateExpandedProduitEtCouleur(null, null)

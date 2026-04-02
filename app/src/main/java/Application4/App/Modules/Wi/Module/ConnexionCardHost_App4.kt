@@ -93,7 +93,7 @@ fun ConnexionCardHost_App4(
                             onClick = {
                                 if (messageText.isNotEmpty()) {
                                     vm.sendOrderToClientDisplayerT(
-                                        WifiUpdateClientDisplayerStats_NewProto.SearchWindowsDisplaye,
+                                        Wifi_Messages_Types_NewProto.SearchWindowsDisplaye,
                                         messageText
                                     )
                                     messageText = ""

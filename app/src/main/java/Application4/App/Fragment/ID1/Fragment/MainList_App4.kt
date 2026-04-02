@@ -51,8 +51,7 @@ fun Etager_LazyColumn(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {        //<--
-//TODO(1): regle le solle auto quand un item expand por le metre le premie ele afficahable ne marche pas comme il fat il mette l item au base c pas affiche
+) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val activeDatas = viewModel.active_Datas
@@ -117,18 +116,36 @@ fun Etager_LazyColumn(
 
     val expanded_M1Produit = wifiState.expanded_M1Produit
 
+    // FIX TODO(1): Two-phase scroll so the expanded item always lands at the TOP of the
+    // viewport, not at the bottom.
+    //
+    // Root cause: when the item span changes SingleLane → FullLine the staggered-grid
+    // triggers a layout reflow.  If we call animateScrollToItem() before that reflow
+    // completes, the grid scrolls to the OLD (pre-expansion) position, which often
+    // leaves the item clipped at the bottom.
+    //
+    // Solution:
+    //   Phase 1 – scrollToItem() (instant, no animation) immediately.  This ensures the
+    //             item enters the layout engine's visible area so Compose can measure its
+    //             new FullLine height.
+    //   Phase 2 – wait 300 ms (one or two frame-batches is enough for the reflow to
+    //             settle), then animateScrollToItem() to land cleanly at offset = 0.
     LaunchedEffect(expanded_M1Produit) {
         expanded_M1Produit ?: return@LaunchedEffect
         if (!isHostPhone) return@LaunchedEffect
         val targetKeyID = expanded_M1Produit.keyID
         if (targetKeyID.isBlank()) return@LaunchedEffect
+
         val foundIndex = displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
-        if (foundIndex >= 0) {
-            // Wait for the span change (SingleLane → FullLine) to be laid out before scrolling
-            delay(500)
-            coroutineScope.launch {
-                gridState.animateScrollToItem(foundIndex, scrollOffset = 0)
-            }
+        if (foundIndex < 0) return@LaunchedEffect
+
+        // Phase 1: snap item into the layout viewport immediately
+        coroutineScope.launch { gridState.scrollToItem(foundIndex) }
+
+        // Phase 2: give the FullLine reflow time to complete, then animate to top
+        delay(300)
+        coroutineScope.launch {
+            gridState.animateScrollToItem(foundIndex, scrollOffset = 0)
         }
     }
 

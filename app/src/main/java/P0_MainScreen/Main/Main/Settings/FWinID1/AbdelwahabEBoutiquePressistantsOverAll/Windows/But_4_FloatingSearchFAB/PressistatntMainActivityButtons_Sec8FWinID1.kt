@@ -1,6 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB
 
-import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M13TarificationInfos
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
@@ -290,7 +290,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 appComptComposeRepositoryProtoJuin17.upsert(updatedAppCompt)
 
                 viewModelHeadViewModel.sendOrderToClientDisplayer(
-                    WifiUpdateClientDisplayerStats_NewProto.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
+                    Wifi_Messages_Types_NewProto.FilterProduitsParCatalogueBsonID_ET_Autres_Types.prefix,
                     catalogueId
                 )
             }

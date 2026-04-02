@@ -27,7 +27,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun Etager_LazyColumn_App2(
+fun LazyVerticalStaggeredGrid_App2(
     modifier: Modifier = Modifier,
     productWithColors: List<Pair<M01Produit, List<M3CouleurProduitInfos>>>,
     viewModel: ViewModel_MainFragment
@@ -47,18 +47,23 @@ fun Etager_LazyColumn_App2(
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
     val expanded_M1Produit = wifiState.expanded_M1Produit
 
-    LaunchedEffect(expanded_M3CouleurProduitInfos) {
-        expanded_M3CouleurProduitInfos ?: return@LaunchedEffect
-        if (!isHostPhone) return@LaunchedEffect
-        val targetProductKeyID = expanded_M3CouleurProduitInfos.parentBProduitInfosKeyID
-        if (targetProductKeyID.isBlank()) return@LaunchedEffect
+    LaunchedEffect(expanded_M1Produit) {
+        expanded_M1Produit ?: return@LaunchedEffect
+        val targetKeyID = expanded_M1Produit.keyID
+        if (targetKeyID.isBlank()) return@LaunchedEffect
 
         val foundIndex = productWithColors.indexOfFirst { (product, _) ->
-            product.keyID == targetProductKeyID
+            product.keyID == targetKeyID
         }
-        if (foundIndex >= 0) {
-            delay(100)
-            coroutineScope.launch { gridState.animateScrollToItem(foundIndex) }
+        if (foundIndex < 0) return@LaunchedEffect
+
+        // Phase 1: snap item into the layout viewport immediately
+        coroutineScope.launch { gridState.scrollToItem(foundIndex) }
+
+        // Phase 2: give the FullLine reflow time to complete, then animate to top
+        delay(300)
+        coroutineScope.launch {
+            gridState.animateScrollToItem(foundIndex, scrollOffset = 0)
         }
     }
 
