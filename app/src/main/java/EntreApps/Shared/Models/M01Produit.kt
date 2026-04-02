@@ -69,6 +69,8 @@ data class M01Produit(
 
     var afficheUniteAuPrint: Boolean = false,
 
+    var monPrixVentUniter: Double = 0.0,
+
 
     //image
     var actualiseSonImage: Int = 0,
@@ -124,7 +126,6 @@ data class M01Produit(
     var benficeTotaleEntreMoiEtClien: Double = 0.0,
     var benificeTotaleEn2: Double = 0.0,
     var monPrixAchatUniter: Double = 0.0,
-    var monPrixVentUniter: Double = 0.0,
     var articleHaveUniteImages: Boolean = false,
     var itsNewArrivale: Boolean = false,
     var imageDimention: String = "",

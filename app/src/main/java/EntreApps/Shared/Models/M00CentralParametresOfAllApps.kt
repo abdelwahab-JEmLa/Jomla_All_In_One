@@ -34,6 +34,7 @@ data class M00CentralParametresOfAllApps(
     val walid_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s7",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
+
     //<--
     //TODO(1): ajout affiche tekhereg et prix achat et nitaire et prix vent u
     //     
@@ -41,9 +42,10 @@ data class M00CentralParametresOfAllApps(
     // <--
     //TODO(1): fait que le pris editer jaun s affiche toujou 
     //faitque les prix soit a droit a gauch
+
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
 //────────────────────────────au_Lence_Set_Compt_Ac_KeyId──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    val au_Lence_Set_Compt_Ac_KeyId: String = Compts.Telephone_de_presentation.keyId,
+    val au_Lence_Set_Compt_Ac_KeyId: String = Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
     //  Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
 //──────────────────────────────Dimine Rapid────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val au_Lence_Diminue_DatasFB: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!
@@ -60,7 +62,7 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.AllInOne
         } else {
-            AppType.JomLaElectroLivreurGrossist_PresenterScreen
+            AppType.AllInOne
             //JomLaElectroLivreurGrossist_VendeurHost
         }
     },
