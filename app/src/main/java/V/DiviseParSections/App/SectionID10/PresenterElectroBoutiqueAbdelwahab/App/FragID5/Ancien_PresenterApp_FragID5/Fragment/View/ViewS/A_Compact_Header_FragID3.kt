@@ -1,11 +1,12 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS
 
 import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M13TarificationInfos
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -33,12 +34,26 @@ fun Compact_Header_FragID3(
     onUpdateTariff: () -> Unit,
     onUpdateProduit: (M01Produit) -> Unit = {},
     currentApp_Est_Admin: Boolean,
+    list_tariffs: List<M13TarificationInfos>,
     onDelete: (M01Produit) -> Unit
 ) {
-    val nameTextSize   = if (isExpanded) 14.sp else 10.sp
+    val nameTextSize = if (isExpanded) 14.sp else 10.sp
     val arabicTextSize = if (isExpanded) 12.sp else 9.sp
-    val cardPadding    = if (isExpanded) 6.dp  else 3.dp
-    val itemPadding    = if (isExpanded) 4.dp  else 2.dp
+    val cardPadding = if (isExpanded) 6.dp else 3.dp
+    val itemPadding = if (isExpanded) 4.dp else 2.dp
+
+    // ── Résolution des tariffs ────────────────────────────────────────────────
+    // Dernier prix achat (Tariff_Achat_Depuit_Grossisst) — le plus récent par timestamp
+    val dernierPrixAchat: Double = list_tariffs
+        .filter { it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst }
+        .maxByOrNull { it.creationTimestamps }
+        ?.prixCurrency ?: 0.0
+
+    // Dernier prix détail (Prix_Detaille) — sert au B.Client et au B.Abd
+    val dernierPrixDetaille: Double = list_tariffs
+        .filter { it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille }
+        .maxByOrNull { it.creationTimestamps }
+        ?.prixCurrency ?: 0.0
 
     Card(
         modifier = modifier
@@ -65,7 +80,7 @@ fun Compact_Header_FragID3(
                 .padding(cardPadding),
             verticalArrangement = Arrangement.spacedBy(itemPadding)
         ) {
-            // ── Nom + nom arabe ──────────────────────────────────────────
+            // ── Nom + nom arabe ──────────────────────────────────────────────
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -97,7 +112,7 @@ fun Compact_Header_FragID3(
                 }
             }
 
-            // ── Bouton suppression (hauteur indépendante des info-cards) ──
+            // ── Bouton suppression (hauteur indépendante des info-cards) ─────
             if (shouldShowButtons && currentApp_Est_Admin) {
                 DeleteProductHeader(
                     productName = relative_M1produit.nom,
@@ -105,15 +120,14 @@ fun Compact_Header_FragID3(
                 )
             }
 
-            // ── Barre d'info-cards (droit → gauche, hauteur uniforme) ───
-            // Row scrollable + Arrangement.End : les items collent à droite
-            // même quand ils ne remplissent pas toute la largeur.
+            // ── Rangée d'info-cards ──────────────────────────────────────────
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(itemPadding, Alignment.End)
             ) {
+                // Carton
                 if (relative_M1produit.quantite_Boit_Par_Carton > 1 || currentApp_Est_Admin) {
                     Item_Carton_FragID3(
                         quantite_Boit_Par_Carton = relative_M1produit.quantite_Boit_Par_Carton,
@@ -125,6 +139,7 @@ fun Compact_Header_FragID3(
                     )
                 }
 
+                // Unité
                 if (relative_M1produit.nombreUniteInt > 1 || currentApp_Est_Admin) {
                     Item_Unite_FragID3(
                         nombreUniteInt = relative_M1produit.nombreUniteInt,
@@ -136,6 +151,7 @@ fun Compact_Header_FragID3(
                     )
                 }
 
+                // Tarif (bouton sync — admin seulement)
                 if (shouldShowButtons && currentApp_Est_Admin) {
                     Item_Tarif_FragID3(
                         isExpanded = isExpanded,
@@ -143,19 +159,13 @@ fun Compact_Header_FragID3(
                     )
                 }
 
-                Item_BeneficeClient_FragID3(
-                    clientPrixVentUnite = relative_M1produit.clientPrixVentUnite,
-                    nombreUniteInt = relative_M1produit.nombreUniteInt,
-                    prixVent = relative_M1produit.prixVent,
-                    isExpanded = isExpanded
-                )
-
                 Item_TotalClient_FragID3(
                     clientPrixVentUnite = relative_M1produit.clientPrixVentUnite,
                     nombreUniteInt = relative_M1produit.nombreUniteInt,
                     isExpanded = isExpanded
                 )
 
+                // Prix unitaire client (éditable)
                 Item_PrixUnitaireClient_FragID3(
                     clientPrixVentUnite = relative_M1produit.clientPrixVentUnite,
                     isExpanded = isExpanded,

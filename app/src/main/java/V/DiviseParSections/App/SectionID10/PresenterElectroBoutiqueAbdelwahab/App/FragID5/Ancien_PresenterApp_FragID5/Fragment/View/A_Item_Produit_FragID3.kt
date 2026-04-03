@@ -401,6 +401,7 @@ fun Item_Produit_FragID5(
                             new
                         )
                     },
+                    list_tariffs = repositorysMainGetter.repo13TarificationInfos.datasValue,
                     currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
                 ) { relative_M1produit ->
                     repositorysMainGetter.repoM1Produit.deleteData(

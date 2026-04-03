@@ -1,5 +1,8 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter
 
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixAchatHandler
@@ -10,9 +13,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -176,7 +176,6 @@ fun MainList(
         standardTariffs,
     ) {
         val allTariffs = clientDefiniTariffs + standardTariffs
-
         allTariffs
             .groupBy { it.typeChoisi }
             .toSortedMap(compareBy { it.ordinal })

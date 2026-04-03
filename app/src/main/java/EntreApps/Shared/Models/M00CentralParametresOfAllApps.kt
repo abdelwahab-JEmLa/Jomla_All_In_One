@@ -34,9 +34,12 @@ data class M00CentralParametresOfAllApps(
     val walid_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s7",
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
+    //<--
+    //TODO(1): fait que le ben et relative affiche tariff
 
     //<--
-    //TODO(1): ajout affiche tekhereg et prix achat et nitaire et prix vent u
+    //TODO(1): ajout affiche tekhereg et prix achat et nitaire et prix vent u   //<--
+    //TODO(1): f
     //     
     //fait qe ca soit un resusable header on lazyy row 
     // <--

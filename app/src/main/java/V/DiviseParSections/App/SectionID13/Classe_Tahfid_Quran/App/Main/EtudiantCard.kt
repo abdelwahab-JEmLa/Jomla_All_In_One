@@ -1,16 +1,21 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
 
+import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.EtudiantDetailsDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.A_Takiyim.TakiyimSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.MoulahadaSouloukSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.SouraSelectionDialog
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.processTakiyimEvaluation
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.ParentCommunicationCardData_2
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.convertPdfPagesToJpgs
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.shareImageToWhatsAppBusiness
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.generatePdfDocument
 import android.text.format.DateUtils.isToday
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -31,11 +36,13 @@ import androidx.compose.material.icons.filled.EventSeat
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -48,12 +55,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 @Composable
@@ -65,32 +77,101 @@ fun EtudiantCard(
     modifier: Modifier = Modifier
 ) {
     val etudiantId = etudiant.keyID
+    val context    = LocalContext.current
+    val scope      = rememberCoroutineScope()
 
-    var showDetailsDialog by remember(etudiantId) { mutableStateOf(false) }
-    var showSouraDialog by remember(etudiantId) { mutableStateOf(false) }
-    var showMokarrareDialog by remember(etudiantId) { mutableStateOf(false) }
-    var showTakiyimDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showDetailsDialog              by remember(etudiantId) { mutableStateOf(false) }
+    var showSouraDialog                by remember(etudiantId) { mutableStateOf(false) }
+    var showMokarrareDialog            by remember(etudiantId) { mutableStateOf(false) }
+    var showTakiyimDialog              by remember(etudiantId) { mutableStateOf(false) }
     var showMoulahada3alaSouloukDialog by remember(etudiantId) { mutableStateOf(false) }
-    var showIstedrakSouraDialog by remember(etudiantId) { mutableStateOf(false) }
-    var showIstedrakMokarrareDialog by remember(etudiantId) { mutableStateOf(false) }
-    var showIstedrakTakiyimDialog by remember(etudiantId) { mutableStateOf(false) }
+    var showIstedrakSouraDialog        by remember(etudiantId) { mutableStateOf(false) }
+    var showIstedrakMokarrareDialog    by remember(etudiantId) { mutableStateOf(false) }
+    var showIstedrakTakiyimDialog      by remember(etudiantId) { mutableStateOf(false) }
 
-    var isExpanded by remember(etudiantId) { mutableStateOf(false) }
+    var isExpanded              by remember(etudiantId) { mutableStateOf(false) }
     var showOussstadDropdownMenu by remember(etudiantId) { mutableStateOf(false) }
-    var selectedOusstad by remember(etudiantId) { mutableStateOf<Ousstad_Tahfid?>(null) }
+    var selectedOusstad         by remember(etudiantId) { mutableStateOf<Ousstad_Tahfid?>(null) }
+
+    // Tracks whether the WhatsApp share for this card is in progress
+    var isSharing by remember(etudiantId) { mutableStateOf(false) }
 
     val wasUpdatedToday = isToday(etudiant.dernierTimeTampsSynchronisationAvecFireBase)
-
-    val observations = remember(repo20Observation.datasValue) { repo20Observation.datasValue }
-    val absenceCount = remember(etudiant, observations) {
+    val observations    = remember(repo20Observation.datasValue) { repo20Observation.datasValue }
+    val absenceCount    = remember(etudiant, observations) {
         etudiant.calculateUnjustifiedAbsences(observations)
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // WhatsApp share action — generates a single-page PDF for this student,
+    // converts it to a JPG, then sends it to the parent's WhatsApp Business.
+    // ─────────────────────────────────────────────────────────────────────────
+    fun shareCardOnWhatsApp() {
+        val phone = etudiant.num_telephone_parent.trim()
+        if (phone.isBlank()) {
+            Toast.makeText(context, "⚠️ لا يوجد رقم هاتف مسجل للولي", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        isSharing = true
+        scope.launch {
+            try {
+                // Build the same data structure used by the bulk PDF flow
+                val cardData = listOf(ParentCommunicationCardData_2.fromEtudiant(etudiant))
+
+                // Generate a temporary single-page PDF on the IO dispatcher
+                val pdfFile = withContext(Dispatchers.IO) {
+                    generatePdfDocument(context, cardData, aCentralFacade)
+                }
+
+                if (pdfFile == null || !pdfFile.exists()) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "❌ فشل إنشاء بطاقة PDF", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
+                // Render the single page to a JPEG
+                val jpgFiles = withContext(Dispatchers.IO) {
+                    convertPdfPagesToJpgs(context, pdfFile, pageCount = 1)
+                }
+                val jpgFile = jpgFiles.firstOrNull()
+
+                if (jpgFile == null || !jpgFile.exists()) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "❌ فشل تحويل البطاقة إلى صورة", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
+                // Share the image to the parent's WhatsApp Business number
+                withContext(Dispatchers.Main) {
+                    shareImageToWhatsAppBusiness(
+                        context   = context,
+                        imageFile = jpgFile,
+                        rawPhone  = phone
+                    )
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "❌ خطأ: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            } finally {
+                isSharing = false
+            }
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Card UI
+    // ─────────────────────────────────────────────────────────────────────────
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (wasUpdatedToday) Color(0xFFFFFDE7) else MaterialTheme.colorScheme.surface
+            containerColor = if (wasUpdatedToday) Color(0xFFFFFDE7)
+            else MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
@@ -99,7 +180,7 @@ fun EtudiantCard(
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Main content - clickable to show details
+            // Main content — clickable to show details
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -112,10 +193,10 @@ fun EtudiantCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.EventSeat,
+                        imageVector        = Icons.Default.EventSeat,
                         contentDescription = "Chaise",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(28.dp)
+                        tint               = MaterialTheme.colorScheme.primary,
+                        modifier           = Modifier.size(28.dp)
                     )
 
                     Box(
@@ -126,7 +207,7 @@ fun EtudiantCard(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "${etudiant.positon_don_classe}",
+                            text  = "${etudiant.positon_don_classe}",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -136,12 +217,12 @@ fun EtudiantCard(
                 Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
-                    text = etudiant.nom.ifBlank { "---" },
+                    text  = etudiant.nom.ifBlank { "---" },
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = etudiant.prenom.ifBlank { "---" },
+                    text  = etudiant.prenom.ifBlank { "---" },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -152,38 +233,39 @@ fun EtudiantCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${etudiant.age} سنة",
+                        text  = "${etudiant.age} سنة",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary
                     )
 
                     if (absenceCount > 0) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
+                            verticalAlignment   = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = "غياب: $absenceCount",
+                                text  = "غياب: $absenceCount",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.error
                             )
 
                             IconButton(
-                                onClick = {
+                                onClick  = {
                                     repo19Etudiant.upsert(
-                                        etudiant.copy(imprime_justification = !etudiant.imprime_justification)
+                                        etudiant.copy(
+                                            imprime_justification = !etudiant.imprime_justification
+                                        )
                                     )
                                 },
                                 modifier = Modifier.size(20.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Print,
+                                    imageVector        = Icons.Default.Print,
                                     contentDescription = "Imprimer justification",
-                                    tint = if (etudiant.imprime_justification) {
+                                    tint = if (etudiant.imprime_justification)
                                         MaterialTheme.colorScheme.primary
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                                    },
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -192,87 +274,105 @@ fun EtudiantCard(
                 }
             }
 
-            // Expand/Collapse button
+            // Expand / Collapse toggle
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                IconButton(
-                    onClick = { isExpanded = !isExpanded }
-                ) {
+                IconButton(onClick = { isExpanded = !isExpanded }) {
                     Icon(
-                        imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        imageVector        = if (isExpanded) Icons.Default.ExpandLess
+                        else Icons.Default.ExpandMore,
                         contentDescription = if (isExpanded) "إخفاء الخيارات" else "إظهار الخيارات",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint               = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
-
-            // Expanded options
+                 //<--
+                 //TODO(1): cree logs pk l image ne se cree pas 
+            // ── Expanded actions ─────────────────────────────────────────────
             AnimatedVisibility(
                 visible = isExpanded,
-                enter = expandVertically(),
-                exit = shrinkVertically()
+                enter   = expandVertically(),
+                exit    = shrinkVertically()
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Teacher transfer button
+                    OutlinedButton(
+                        onClick  = { if (!isSharing) shareCardOnWhatsApp() },
+                        enabled  = !isSharing,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        if (isSharing) {
+                            CircularProgressIndicator(
+                                modifier    = Modifier.size(18.dp),
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.size(8.dp))
+                            Text("جاري الإرسال…")
+                        } else {
+                            Icon(
+                                imageVector        = Icons.Default.Share,
+                                contentDescription = null,
+                                modifier           = Modifier.size(20.dp),
+                                tint               = Color(0xFF25D366)   // WhatsApp green
+                            )
+                            Spacer(modifier = Modifier.size(8.dp))
+                            Text(
+                                text  = "إرسال البطاقة واتساب بيزنس",
+                                color = Color(0xFF25D366)
+                            )
+                        }
+                    }
+
+                    // ── Teacher-transfer button ───────────────────────────────
                     Box(modifier = Modifier.fillMaxWidth()) {
                         OutlinedButton(
-                            onClick = { showOussstadDropdownMenu = true },
+                            onClick  = { showOussstadDropdownMenu = true },
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
-                                imageVector = Icons.Default.SwapHoriz,
+                                imageVector        = Icons.Default.SwapHoriz,
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp)
+                                modifier           = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.size(8.dp))
                             Text("تحويل للأستاذ")
                         }
 
                         DropdownMenu(
-                            expanded = showOussstadDropdownMenu,
-                            onDismissRequest = { showOussstadDropdownMenu = false }
+                            expanded          = showOussstadDropdownMenu,
+                            onDismissRequest  = { showOussstadDropdownMenu = false }
                         ) {
                             Ousstad_Tahfid.values().forEach { ousstad ->
                                 DropdownMenuItem(
-                                    text = { Text(ousstad.nom_arab) },
+                                    text    = { Text(ousstad.nom_arab) },
                                     onClick = {
-                                        selectedOusstad = ousstad
+                                        selectedOusstad          = ousstad
                                         showOussstadDropdownMenu = false
                                     }
                                 )
                             }
                         }
                     }
-
-                    // You can add more action buttons here
-                    // Example:
-                    // OutlinedButton(
-                    //     onClick = { /* autre action */ },
-                    //     modifier = Modifier.fillMaxWidth()
-                    // ) {
-                    //     Text("Autre action")
-                    // }
                 }
             }
         }
     }
 
-    // Teacher transfer confirmation dialog
+    // ── Teacher-transfer confirmation dialog ──────────────────────────────────
     if (selectedOusstad != null) {
         AlertDialog(
             onDismissRequest = { selectedOusstad = null },
             title = { Text("تأكيد تحويل الطالب") },
-            text = {
+            text  = {
                 Column {
                     Text("هل تريد تحويل الطالب ${etudiant.nom} ${etudiant.prenom} إلى:")
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = selectedOusstad?.nom_arab ?: "",
+                        text  = selectedOusstad?.nom_arab ?: "",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -282,73 +382,65 @@ fun EtudiantCard(
                 Button(
                     onClick = {
                         selectedOusstad?.let { newOusstad ->
-                            // Update student's parent_ousstad_key
-                            val updatedEtudiant = etudiant.copy(
-                                parent_ousstad_key = newOusstad.key
+                            repo19Etudiant.upsert(
+                                etudiant.copy(parent_ousstad_key = newOusstad.key)
                             )
-                            repo19Etudiant.upsert(updatedEtudiant)
-
-                            // Update all observations for this student
                             observations
                                 .filter { it.etudiant_keyID == etudiant.keyID }
                                 .forEach { observation ->
-                                    val updatedObservation = observation.copy(
-                                        parent_ousstad_key = newOusstad.key
+                                    repo20Observation.upsert(
+                                        observation.copy(parent_ousstad_key = newOusstad.key)
                                     )
-                                    repo20Observation.upsert(updatedObservation)
                                 }
                         }
                         selectedOusstad = null
                     }
-                ) {
-                    Text("تأكيد")
-                }
+                ) { Text("تأكيد") }
             },
             dismissButton = {
-                TextButton(onClick = { selectedOusstad = null }) {
-                    Text("إلغاء")
-                }
+                TextButton(onClick = { selectedOusstad = null }) { Text("إلغاء") }
             }
         )
     }
 
+    // ── Sub-dialogs (unchanged) ───────────────────────────────────────────────
     if (showDetailsDialog) {
         EtudiantDetailsDialog(
-            etudiant = etudiant,
-            repo19Etudiant = repo19Etudiant,
+            etudiant          = etudiant,
+            repo19Etudiant    = repo19Etudiant,
             repo20Observation = repo20Observation,
-            onDismiss = { showDetailsDialog = false },
+            onDismiss         = { showDetailsDialog = false },
             onShowSouraDialog = {
                 showDetailsDialog = false
-                showSouraDialog = true
+                showSouraDialog   = true
             },
             onShowMokarrareSouraDialog = {
-                showDetailsDialog = false
+                showDetailsDialog  = false
                 showMokarrareDialog = true
             },
             onShowMokarrareDialog = {
-                showDetailsDialog = false
+                showDetailsDialog  = false
                 showMokarrareDialog = true
             },
             onShowTakiyimDialog = {
-                showDetailsDialog = false
-                showTakiyimDialog = true
+                showDetailsDialog  = false
+                showTakiyimDialog  = true
             },
             onShowMoulahada3alaSouloukDialog = {
-                showDetailsDialog = false
+                showDetailsDialog              = false
                 showMoulahada3alaSouloukDialog = true
             },
             onShowIstedrakSouraDialog = {
-                showDetailsDialog = false
-                showIstedrakSouraDialog = true
+                showDetailsDialog        = false
+                showIstedrakSouraDialog  = true
             },
             onShowIstedrakMokarrareDialog = {
-                showDetailsDialog = false
+                showDetailsDialog           = false
                 showIstedrakMokarrareDialog = true
             },
             onShowIstedrakTakiyimDialog = {
-                showDetailsDialog = false
-                showIstedrakTakiyimDialog = true
+                showDetailsDialog          = false
+                showIstedrakTakiyimDialog  = true
             }
         )
     }
@@ -356,20 +448,17 @@ fun EtudiantCard(
     if (showSouraDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.dernier_Soura_Wassale_Laha,
-            onDismiss = {
-                showSouraDialog = false
-                showDetailsDialog = true
-            },
-            onSelect = { selectedSoura ->
+            onDismiss    = { showSouraDialog = false; showDetailsDialog = true },
+            onSelect     = { selectedSoura ->
                 repo19Etudiant.upsert(
                     etudiant.copy(
-                        mokarrare_hifde = etudiant.dernier_Soura_Wassale_Laha,
-                        mokarrare_hifde_sater = etudiant.dernier_Soura_sater,
+                        mokarrare_hifde            = etudiant.dernier_Soura_Wassale_Laha,
+                        mokarrare_hifde_sater      = etudiant.dernier_Soura_sater,
                         dernier_Soura_Wassale_Laha = selectedSoura,
-                        dernier_Soura_sater = 1
+                        dernier_Soura_sater        = 1
                     )
                 )
-                showSouraDialog = false
+                showSouraDialog   = false
                 showDetailsDialog = true
             }
         )
@@ -378,19 +467,13 @@ fun EtudiantCard(
     if (showMokarrareDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.mokarrare_hifde,
-            onDismiss = {
-                showMokarrareDialog = false
-                showDetailsDialog = true
-            },
-            onSelect = { selectedSoura ->
+            onDismiss    = { showMokarrareDialog = false; showDetailsDialog = true },
+            onSelect     = { selectedSoura ->
                 repo19Etudiant.upsert(
-                    etudiant.copy(
-                        mokarrare_hifde = selectedSoura,
-                        mokarrare_hifde_sater = 1
-                    )
+                    etudiant.copy(mokarrare_hifde = selectedSoura, mokarrare_hifde_sater = 1)
                 )
                 showMokarrareDialog = false
-                showDetailsDialog = true
+                showDetailsDialog   = true
             }
         )
     }
@@ -398,17 +481,14 @@ fun EtudiantCard(
     if (showTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = etudiant.dernier_takyim_dabte,
-            etudiantKeyID = etudiant.keyID,
-            onDismiss = {
-                showTakiyimDialog = false
-                showDetailsDialog = true
-            },
-            onSelect = { selectedTakiyim, selectedMoulahadat ->
+            etudiantKeyID  = etudiant.keyID,
+            onDismiss      = { showTakiyimDialog = false; showDetailsDialog = true },
+            onSelect       = { selectedTakiyim, selectedMoulahadat ->
                 val updatedEtudiant = processTakiyimEvaluation(
-                    etudiant = etudiant,
-                    selectedTakiyim = selectedTakiyim,
+                    etudiant           = etudiant,
+                    selectedTakiyim    = selectedTakiyim,
                     selectedMoulahadat = selectedMoulahadat,
-                    aCentralFacade = aCentralFacade
+                    aCentralFacade     = aCentralFacade
                 )
                 repo19Etudiant.upsert(updatedEtudiant)
                 showTakiyimDialog = false
@@ -420,14 +500,11 @@ fun EtudiantCard(
     if (showMoulahada3alaSouloukDialog) {
         MoulahadaSouloukSelectionDialog(
             currentMoulahada = etudiant.moulahada_3ala_soulouk,
-            onDismiss = {
-                showMoulahada3alaSouloukDialog = false
-                showDetailsDialog = true
-            },
-            onSelect = { selectedMoulahada ->
+            onDismiss        = { showMoulahada3alaSouloukDialog = false; showDetailsDialog = true },
+            onSelect         = { selectedMoulahada ->
                 repo19Etudiant.upsert(etudiant.copy(moulahada_3ala_soulouk = selectedMoulahada))
                 showMoulahada3alaSouloukDialog = false
-                showDetailsDialog = true
+                showDetailsDialog              = true
             }
         )
     }
@@ -435,16 +512,13 @@ fun EtudiantCard(
     if (showIstedrakSouraDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.istedrak_kadim_Akher_Soura_Wassale_Laha,
-            onDismiss = {
-                showIstedrakSouraDialog = false
-                showDetailsDialog = true
-            },
-            onSelect = { selectedSoura ->
+            onDismiss    = { showIstedrakSouraDialog = false; showDetailsDialog = true },
+            onSelect     = { selectedSoura ->
                 repo19Etudiant.upsert(
                     etudiant.copy(istedrak_kadim_Akher_Soura_Wassale_Laha = selectedSoura)
                 )
                 showIstedrakSouraDialog = false
-                showDetailsDialog = true
+                showDetailsDialog       = true
             }
         )
     }
@@ -452,16 +526,13 @@ fun EtudiantCard(
     if (showIstedrakMokarrareDialog) {
         SouraSelectionDialog(
             currentSoura = etudiant.istedrak_kadim_Moukarare,
-            onDismiss = {
-                showIstedrakMokarrareDialog = false
-                showDetailsDialog = true
-            },
-            onSelect = { selectedSoura ->
+            onDismiss    = { showIstedrakMokarrareDialog = false; showDetailsDialog = true },
+            onSelect     = { selectedSoura ->
                 repo19Etudiant.upsert(
                     etudiant.copy(istedrak_kadim_Moukarare = selectedSoura)
                 )
                 showIstedrakMokarrareDialog = false
-                showDetailsDialog = true
+                showDetailsDialog           = true
             }
         )
     }
@@ -469,17 +540,14 @@ fun EtudiantCard(
     if (showIstedrakTakiyimDialog) {
         TakiyimSelectionDialog(
             currentTakiyim = etudiant.istedrak_kadim_Takyim_hali,
-            etudiantKeyID = null,
-            onDismiss = {
-                showIstedrakTakiyimDialog = false
-                showDetailsDialog = true
-            },
-            onSelect = { selectedTakiyim, _ ->
+            etudiantKeyID  = null,
+            onDismiss      = { showIstedrakTakiyimDialog = false; showDetailsDialog = true },
+            onSelect       = { selectedTakiyim, _ ->
                 repo19Etudiant.upsert(
                     etudiant.copy(istedrak_kadim_Takyim_hali = selectedTakiyim)
                 )
                 showIstedrakTakiyimDialog = false
-                showDetailsDialog = true
+                showDetailsDialog         = true
             }
         )
     }

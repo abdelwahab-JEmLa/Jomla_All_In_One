@@ -4,8 +4,10 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.ParentCommunicationCardData_2
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.generatePdfDocument
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.PdfSaverUtility_Tahfid
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.convertPdfPagesToJpgs
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.shareImageToWhatsAppBusiness
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.generatePdfDocument
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -31,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
@@ -67,7 +70,7 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
         isLoading = true
         scope.launch {
             try {
-                // Step 1: Fetch and sort all students
+                // ── Step 1: Fetch and sort all students ──────────────────────────────
                 val allEtudiants = repo19Etudiant.datasValue.sortedWith(
                     compareBy<M19Etudiant> { it.positon_don_classe }
                         .thenBy { it.creationTimestamps }
@@ -92,24 +95,26 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
                     return@launch
                 }
 
-                // Step 3: Structure the data for all targeted students
+                // ── Step 2: Structure card data ───────────────────────────────────────
                 val cardsData = targetedEtudiants.map { etudiant ->
                     ParentCommunicationCardData_2.fromEtudiant(etudiant)
                 }
 
-                // Step 4: Generate PDF document with structured data (one page per student)
+                // ── Step 3: Generate the multi-page PDF ──────────────────────────────
                 val pdfFile = withContext(Dispatchers.IO) {
-                    generatePdfDocument(context, cardsData,aCentralFacade)
+                    generatePdfDocument(context, cardsData, aCentralFacade)
                 }
 
-                // Step 5: Save the file to appropriate location
+                // ── Step 4: Persist a copy to Downloads ──────────────────────────────
                 val saveResult = withContext(Dispatchers.IO) {
                     if (pdfFile != null && pdfFile.exists()) {
-                        val fileName = "بطاقة_التواصل_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.pdf"
+                        val fileName = "بطاقة_التواصل_${
+                            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                        }.pdf"
                         PdfSaverUtility_Tahfid.savePdf(
-                            context = context,
+                            context   = context,
                             sourceFile = pdfFile,
-                            fileName = fileName,
+                            fileName  = fileName,
                             subFolder = "Tahfide_Quran"
                         )
                     } else {
@@ -117,20 +122,79 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
                     }
                 }
 
-                // Step 6: Handle result and open document
+                // ── Step 5: Open the PDF for the teacher to review ───────────────────
                 withContext(Dispatchers.Main) {
                     saveResult.fold(
                         onSuccess = { savedPath ->
-                            if (pdfFile != null) {
-                                openPdfWithViewer(context, pdfFile)
-                            }
-                            Toast.makeText(context, "✅ تم إنشاء وحفظ ${targetedEtudiants.size} بطاقة: $savedPath", Toast.LENGTH_LONG).show()
+                            if (pdfFile != null) openPdfWithViewer(context, pdfFile)
+                            Toast.makeText(
+                                context,
+                                "✅ تم إنشاء وحفظ ${targetedEtudiants.size} بطاقة: $savedPath",
+                                Toast.LENGTH_LONG
+                            ).show()
                         },
                         onFailure = { error ->
-                            Toast.makeText(context, "❌ خطأ في الحفظ: ${error.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                "❌ خطأ في الحفظ: ${error.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     )
                 }
+
+                // ── Step 6: Convert each PDF page to a JPG ───────────────────────────
+                // One page = one student card; we render at 2× for a crisp image.
+                if (pdfFile == null || !pdfFile.exists()) return@launch
+
+                val jpgFiles = withContext(Dispatchers.IO) {
+                    convertPdfPagesToJpgs(
+                        context   = context,
+                        pdfFile   = pdfFile,
+                        pageCount = targetedEtudiants.size
+                    )
+                }
+
+                // ── Step 7: Share each JPG to the parent's WhatsApp Business ─────────
+                // We stagger the intents by 800 ms so WhatsApp has time to open each
+                // conversation before the next intent arrives.
+                val studentsWithPhone = targetedEtudiants.zip(jpgFiles)
+                    .filter { (student, jpg) ->
+                        student.num_telephone_parent.isNotBlank() && jpg != null
+                    }
+
+                if (studentsWithPhone.isEmpty()) {
+                    Log.w("ParentCommPdf", "⚠️ No students with a phone number — WhatsApp sharing skipped.")
+                    return@launch
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "📲 جاري إرسال ${studentsWithPhone.size} بطاقة عبر واتساب بيزنس…",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                studentsWithPhone.forEachIndexed { index, (student, jpgFile) ->
+                    withContext(Dispatchers.Main) {
+                        shareImageToWhatsAppBusiness(
+                            context   = context,
+                            imageFile = jpgFile!!,       // null-filtered above
+                            rawPhone  = student.num_telephone_parent
+                        )
+                        Log.d(
+                            "ParentCommPdf",
+                            "📲 [${index + 1}/${studentsWithPhone.size}] " +
+                            "${student.nom} ${student.prenom} → ${student.num_telephone_parent}"
+                        )
+                    }
+                    // Give WhatsApp time between intents (skip delay after the last one)
+                    if (index < studentsWithPhone.lastIndex) {
+                        delay(800L)
+                    }
+                }
+
             } catch (e: Exception) {
                 Log.e("ParentCommPdf", "❌ خطأ: ${e.message}", e)
                 withContext(Dispatchers.Main) {
@@ -157,36 +221,30 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
             leadingIcon = {
                 if (isLoading) {
                     CircularProgressIndicator(
-                        modifier = Modifier.padding(4.dp),
+                        modifier    = Modifier.padding(4.dp),
                         strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.primary
+                        color       = MaterialTheme.colorScheme.primary
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Default.PictureAsPdf,
+                        imageVector     = Icons.Default.PictureAsPdf,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
+                        tint            = MaterialTheme.colorScheme.error
                     )
                 }
             },
             text = {
                 Text(
-                    text = if (isLoading) {
-                        "جاري الإنشاء..."
-                    } else if (todayStudentsCount > 0) {
-                        "$nomFun ($todayStudentsCount)"
-                    } else {
-                        nomFun
+                    text = when {
+                        isLoading             -> "جاري الإنشاء والإرسال…"
+                        todayStudentsCount > 0 -> "$nomFun ($todayStudentsCount)"
+                        else                  -> nomFun
                     },
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },
-            onClick = {
-                if (!isLoading) {
-                    createAndOpenPdfDocument()
-                }
-            },
-            enabled = !isLoading
+            onClick  = { if (!isLoading) createAndOpenPdfDocument() },
+            enabled  = !isLoading
         )
     }
 }
