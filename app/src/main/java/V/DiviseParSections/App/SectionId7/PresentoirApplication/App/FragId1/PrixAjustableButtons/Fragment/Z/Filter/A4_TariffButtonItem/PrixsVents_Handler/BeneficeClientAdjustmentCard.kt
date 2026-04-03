@@ -35,36 +35,36 @@ fun BeneficeClientAdjustmentCard(
     relative_Tariff: M13TarificationInfos,
     onPriceChange: (Double, Boolean) -> Unit
 ) {
-    val prixBase     = relative_Produit.prixVent          // référence = prix vente de base
-    val prixVente    = relative_Tariff.prixCurrency
-    val nombreUnite  = relative_Produit.nombreUniteInt
+    val prixBase = relative_Produit.prixVent          // référence = prix vente de base
+    val prixVente = relative_Tariff.prixCurrency
+    val nombreUnite = relative_Produit.nombreUniteInt
 
-    val beneficeClient          = prixVente - prixBase
-    val beneficeClientUnitaire  = if (nombreUnite > 0) beneficeClient / nombreUnite else 0.0
+    val beneficeClient = prixVente - prixBase
+    val beneficeClientUnitaire = if (nombreUnite > 0) beneficeClient / nombreUnite else 0.0
 
     var isEditingTotal by remember { mutableStateOf(false) }
-    var totalText      by remember { mutableStateOf("") }
-    var isEditingUnit  by remember { mutableStateOf(false) }
-    var unitText       by remember { mutableStateOf("") }
+    var totalText by remember { mutableStateOf("") }
+    var isEditingUnit by remember { mutableStateOf(false) }
+    var unitText by remember { mutableStateOf("") }
 
     val totalFocusRequester = remember { FocusRequester() }
-    val unitFocusRequester  = remember { FocusRequester() }
+    val unitFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(isEditingTotal) { if (isEditingTotal) totalFocusRequester.requestFocus() }
-    LaunchedEffect(isEditingUnit)  { if (isEditingUnit)  unitFocusRequester.requestFocus()  }
+    LaunchedEffect(isEditingUnit) { if (isEditingUnit) unitFocusRequester.requestFocus() }
 
     val benefitStep = when {
-        beneficeClient < 10.0    -> 1.0
-        beneficeClient < 50.0    -> 5.0
-        beneficeClient < 200.0   -> 10.0
-        beneficeClient < 1200.0  -> 25.0
-        else                     -> 50.0
+        beneficeClient < 10.0 -> 1.0
+        beneficeClient < 50.0 -> 5.0
+        beneficeClient < 200.0 -> 10.0
+        beneficeClient < 1200.0 -> 25.0
+        else -> 50.0
     }
     val unitStep = when {
-        beneficeClientUnitaire < 1.0  -> 0.5
+        beneficeClientUnitaire < 1.0 -> 0.5
         beneficeClientUnitaire < 10.0 -> 1.0
         beneficeClientUnitaire < 50.0 -> 2.0
-        else                          -> 5.0
+        else -> 5.0
     }
 
     fun shouldCreateNew(): Boolean {
@@ -81,7 +81,7 @@ fun BeneficeClientAdjustmentCard(
     }
 
     val colorTotal = Color(0xFF1976D2)          // bleu = client
-    val colorUnit  = colorTotal.copy(alpha = 0.5f)
+    val colorUnit = colorTotal.copy(alpha = 0.5f)
 
     ElevatedCard {
         Column(modifier = Modifier.padding(2.dp)) {
@@ -99,7 +99,7 @@ fun BeneficeClientAdjustmentCard(
                         label = { Text("%.0f".format(beneficeClient), fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
-                            imeAction    = ImeAction.Done
+                            imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             totalText.toDoubleOrNull()
@@ -136,7 +136,7 @@ fun BeneficeClientAdjustmentCard(
                         label = { Text("%.2f".format(beneficeClientUnitaire), fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
-                            imeAction    = ImeAction.Done
+                            imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             unitText.toDoubleOrNull()
