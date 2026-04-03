@@ -42,8 +42,10 @@ fun MainList(
     clientDefiniTariffs: List<M13TarificationInfos>,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null,
-    itsLancedDepuitComposeParent: ItsLancedDepuit?
-) {
+    itsLancedDepuitComposeParent: ItsLancedDepuit?,
+    prixachatDepuitPrixSuppergroEtPresentationservice: M13TarificationInfos?,
+
+    ) {
     val relative_M2Client =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
     val currentM9AppCompt =
@@ -205,12 +207,14 @@ fun MainList(
                     val relative_Tariff = relativeList_Tariff.maxByOrNull { it.creationTimestamps }
 
                     if (relative_Tariff != null) {
+
                         PrixAchatHandler(
                             relative_Produit = relative_M1Produit,
                             relative_Tariff = relative_Tariff,
+                            allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                             showLabels = showLabels,
-                            nombreUnite = relative_M1Produit.nombreUniteInt,
-                            allTariffsGroupedAndSorted = allTariffsGroupedAndSorted
+                            nombreUnite = relative_M1Produit.nombreUniteInt
+                            , prixAchat_depuit_Prix_SupperGro_Et_PresentationService = prixachatDepuitPrixSuppergroEtPresentationservice
                         )
                     }
                 }
@@ -223,6 +227,7 @@ fun MainList(
 
                     if (relative_Tariff != null) {
                         PrixsVents_Handler(
+                            prixachatDepuitPrixSuppergroEtPresentationservice=prixachatDepuitPrixSuppergroEtPresentationservice,
                             currentApp_ItsNotWorkChezGrossisst_And_NotAdmin = currentApp_ItsNotWorkChezGrossisst_And_NotAdmin,
                             allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
                             relative_Produit = relative_M1Produit,

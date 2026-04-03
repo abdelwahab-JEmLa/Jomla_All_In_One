@@ -45,14 +45,11 @@ fun PrixVentAdjustmentButtons(
     relative_Tariff: M13TarificationInfos,
     onPriceChange: (Double, Boolean) -> Unit,
     currentApp_ItsNotWorkChezGrossisst_And_NotAdmin: Boolean,
-    aCentralFacade: ACentralFacade = koinInject()
+    aCentralFacade: ACentralFacade = koinInject(),
+    prixachatDepuitPrixSuppergroEtPresentationservice: M13TarificationInfos?
 ) {
     val context = LocalContext.current
-    val prixAchatTariff =
-        allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
-            ?.maxByOrNull { it.creationTimestamps }
 
-    val prixAchat = prixAchatTariff?.prixCurrency ?: relative_Produit.prixAchat
     val prixVente = relative_Tariff.prixCurrency
     val nombreUnite = relative_Produit.nombreUniteInt
 

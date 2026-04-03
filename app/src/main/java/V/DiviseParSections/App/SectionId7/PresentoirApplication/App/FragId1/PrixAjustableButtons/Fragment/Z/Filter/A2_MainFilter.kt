@@ -62,7 +62,13 @@ fun MainFilter(
     val currentApp_ItsWorkChezGrossisst =
         focusedValuesGetter.currentApp_ItsWorkChezGrossisst &&
                 uiState.activeFragment_Its_not_FragmentProduitFastSearchDialog
-
+    val prixachatDepuitPrixSuppergroEtPresentationservice =
+        aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+            .filter { tariff ->
+                tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                        tariff.parent_M1Produit_KeyId == relative_M1Produit.keyID
+            }
+            .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
     Column(modifier = modifier
         .semantics(mergeDescendants = true) {
             set(
@@ -87,6 +93,7 @@ fun MainFilter(
 
             false ->
                 MainList(
+                    prixachatDepuitPrixSuppergroEtPresentationservice=prixachatDepuitPrixSuppergroEtPresentationservice,
                     itsLancedDepuitComposeParent = lancedDepuitAffiche,
                     viewModel = viewModel,
                     relative_M1Produit = relative_M1Produit,

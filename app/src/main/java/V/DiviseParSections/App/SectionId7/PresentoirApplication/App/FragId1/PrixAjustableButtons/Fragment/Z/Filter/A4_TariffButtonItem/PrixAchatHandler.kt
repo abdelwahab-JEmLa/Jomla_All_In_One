@@ -54,21 +54,15 @@ fun PrixAchatHandler(
     relative_Tariff: M13TarificationInfos,
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
 
+    aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 
     showLabels: Boolean,
     nombreUnite: Int = 1,
-    aCentralFacade: ACentralFacade = koinInject(),
     list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
-) {
-    val prixAchat_depuit_Prix_SupperGro_Et_PresentationService = list_M13TarificationInfos
-        .filter {
-            it.parent_M1Produit_KeyId == relative_Produit.keyID &&
-                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
-        }
-        .maxByOrNull { it.creationTimestamps }?.prixCurrency
-        ?: 0.0
+    prixAchat_depuit_Prix_SupperGro_Et_PresentationService: M13TarificationInfos?,
+    ) {
 
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
@@ -316,7 +310,7 @@ fun PrixAchatHandler(
 
                         Column {
                             Text(
-                                "${prixAchat_depuit_Prix_SupperGro_Et_PresentationService}$pls",
+                                "${prixAchat_depuit_Prix_SupperGro_Et_PresentationService?.prixCurrency}",
                                 modifier = Modifier
                                     .background(couleurButton)
                                     .padding(4.dp),
