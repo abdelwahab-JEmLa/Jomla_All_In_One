@@ -33,13 +33,13 @@ import androidx.compose.ui.unit.sp
 fun BeneficeClientAdjustmentCard(
     relative_Produit: M01Produit,
     relative_Tariff: M13TarificationInfos,
-    onPriceChange: (Double, Boolean) -> Unit
+    onPriceChange_To_Change_Tariff_Prix: (Double, Boolean) -> Unit
 ) {
-    val prixBase = relative_Produit.prixVent          // référence = prix vente de base
     val prixVente = relative_Tariff.prixCurrency
     val nombreUnite = relative_Produit.nombreUniteInt
+    val tekherej = nombreUnite * relative_Produit.clientPrixVentUnite
 
-    val beneficeClient = prixVente - prixBase
+    val beneficeClient =tekherej - prixVente
     val beneficeClientUnitaire = if (nombreUnite > 0) beneficeClient / nombreUnite else 0.0
 
     var isEditingTotal by remember { mutableStateOf(false) }
@@ -53,31 +53,18 @@ fun BeneficeClientAdjustmentCard(
     LaunchedEffect(isEditingTotal) { if (isEditingTotal) totalFocusRequester.requestFocus() }
     LaunchedEffect(isEditingUnit) { if (isEditingUnit) unitFocusRequester.requestFocus() }
 
-    val benefitStep = when {
-        beneficeClient < 10.0 -> 1.0
-        beneficeClient < 50.0 -> 5.0
-        beneficeClient < 200.0 -> 10.0
-        beneficeClient < 1200.0 -> 25.0
-        else -> 50.0
-    }
-    val unitStep = when {
-        beneficeClientUnitaire < 1.0 -> 0.5
-        beneficeClientUnitaire < 10.0 -> 1.0
-        beneficeClientUnitaire < 50.0 -> 2.0
-        else -> 5.0
-    }
 
     fun shouldCreateNew(): Boolean {
         val diff = (System.currentTimeMillis() - relative_Tariff.creationTimestamps) / 1000
         return diff > 20
     }
 
-    fun applyTotalBenefit(newBenefit: Double) {
-        onPriceChange(prixBase + newBenefit, shouldCreateNew())
+    fun applyTotalBenefit(newBenefit_Client: Double) {
+        onPriceChange_To_Change_Tariff_Prix(tekherej - newBenefit_Client, shouldCreateNew())
     }
 
-    fun applyUnitBenefit(newUnit: Double) {
-        onPriceChange(prixBase + newUnit * nombreUnite, shouldCreateNew())
+    fun applyUnitBenefit(newBenefit_Client_Uniter: Double) {
+        onPriceChange_To_Change_Tariff_Prix((tekherej / nombreUnite) + (newBenefit_Client_Uniter * nombreUnite), shouldCreateNew())
     }
 
     val colorTotal = Color(0xFF1976D2)          // bleu = client

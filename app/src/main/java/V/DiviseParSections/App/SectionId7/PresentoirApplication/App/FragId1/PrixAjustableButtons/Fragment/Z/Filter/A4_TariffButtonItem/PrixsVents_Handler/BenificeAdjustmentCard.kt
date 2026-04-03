@@ -42,18 +42,13 @@ fun BenificeAdjustmentButtons(
     aCentralFacade: ACentralFacade = koinInject(),
     list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
 ) {
-    val prixAchatTariff =
-        allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
-            ?.maxByOrNull { it.creationTimestamps }
-
-    val prixAchat = list_M13TarificationInfos
+    val prixAchat = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
         .filter {
             it.parent_M1Produit_KeyId == relative_Produit.keyID &&
                     it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
         }
         .maxByOrNull { it.creationTimestamps }?.prixCurrency
-        ?: prixAchatTariff?.prixCurrency
-        ?: relative_Produit.prixAchat
+        ?: 0.0
     val prixVente = relative_Tariff.prixCurrency
     val benefice = prixVente - prixAchat
     val nombreUnite = relative_Produit.nombreUniteInt

@@ -163,7 +163,7 @@ fun PrixsVents_Handler(
                                 BeneficeClientAdjustmentCard(
                                     relative_Produit = relative_Produit,
                                     relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
-                                    onPriceChange = { newPrice, shouldCreateNew ->
+                                    onPriceChange_To_Change_Tariff_Prix = { newPrice, shouldCreateNew ->
                                         handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
                                     }
                                 )

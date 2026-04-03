@@ -48,7 +48,6 @@ fun PrixVentAdjustmentButtons(
     aCentralFacade: ACentralFacade = koinInject()
 ) {
     val context = LocalContext.current
-
     val prixAchatTariff =
         allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
             ?.maxByOrNull { it.creationTimestamps }

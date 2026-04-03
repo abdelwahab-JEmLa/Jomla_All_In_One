@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem
 
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M13TarificationInfos
 import Z_CodePartageEntreApps.Modules.DatesHandler.Companion.getTimeDifferenceInArabicWithMintes
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -54,13 +54,22 @@ fun PrixAchatHandler(
     relative_Tariff: M13TarificationInfos,
     allTariffsGroupedAndSorted: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
 
-    aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 
     showLabels: Boolean,
     nombreUnite: Int = 1,
+    aCentralFacade: ACentralFacade = koinInject(),
+    list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
 ) {
+    val prixAchat_depuit_Prix_SupperGro_Et_PresentationService = list_M13TarificationInfos
+        .filter {
+            it.parent_M1Produit_KeyId == relative_Produit.keyID &&
+                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
+        }
+        .maxByOrNull { it.creationTimestamps }?.prixCurrency
+        ?: 0.0
+
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin
 
@@ -287,8 +296,6 @@ fun PrixAchatHandler(
                     if (currentApp_Est_Admin) {
                         IconButton(
                             onClick = {
-                                val newPrice = (relative_Produit.prixAchat - decrease_Value).coerceAtLeast(0.0)
-                                handel_Add_Diminue_Prix(newPrice)
                             },
                             modifier = Modifier.size(16.dp)
                         ) {
@@ -302,17 +309,14 @@ fun PrixAchatHandler(
 
                     ElevatedCard(
                         onClick = {
-                            if (currentApp_Est_Admin) {
-                                val newPrice = relative_Produit.prixAchat + decrease_Value
-                                handel_Add_Diminue_Prix(newPrice)
-                            }
+
                         }
                     ) {
                         val pls = if (currentApp_Est_Admin) " +" else ""
 
                         Column {
                             Text(
-                                "${relative_Produit.prixAchat}$pls",
+                                "${prixAchat_depuit_Prix_SupperGro_Et_PresentationService}$pls",
                                 modifier = Modifier
                                     .background(couleurButton)
                                     .padding(4.dp),
