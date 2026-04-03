@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ElevatedCard
@@ -25,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -37,12 +35,12 @@ fun BeneficeClientAdjustmentCard(
     relative_Tariff: M13TarificationInfos,
     onPriceChange: (Double, Boolean) -> Unit
 ) {
-    val prixBase    = relative_Produit.prixVent
-    val prixVente   = relative_Tariff.prixCurrency
-    val nombreUnite = relative_Produit.nombreUniteInt
+    val prixBase     = relative_Produit.prixVent          // référence = prix vente de base
+    val prixVente    = relative_Tariff.prixCurrency
+    val nombreUnite  = relative_Produit.nombreUniteInt
 
-    val beneficeClient         = prixVente - prixBase
-    val beneficeClientUnitaire = if (nombreUnite > 0) beneficeClient / nombreUnite else 0.0
+    val beneficeClient          = prixVente - prixBase
+    val beneficeClientUnitaire  = if (nombreUnite > 0) beneficeClient / nombreUnite else 0.0
 
     var isEditingTotal by remember { mutableStateOf(false) }
     var totalText      by remember { mutableStateOf("") }
@@ -54,6 +52,20 @@ fun BeneficeClientAdjustmentCard(
 
     LaunchedEffect(isEditingTotal) { if (isEditingTotal) totalFocusRequester.requestFocus() }
     LaunchedEffect(isEditingUnit)  { if (isEditingUnit)  unitFocusRequester.requestFocus()  }
+
+    val benefitStep = when {
+        beneficeClient < 10.0    -> 1.0
+        beneficeClient < 50.0    -> 5.0
+        beneficeClient < 200.0   -> 10.0
+        beneficeClient < 1200.0  -> 25.0
+        else                     -> 50.0
+    }
+    val unitStep = when {
+        beneficeClientUnitaire < 1.0  -> 0.5
+        beneficeClientUnitaire < 10.0 -> 1.0
+        beneficeClientUnitaire < 50.0 -> 2.0
+        else                          -> 5.0
+    }
 
     fun shouldCreateNew(): Boolean {
         val diff = (System.currentTimeMillis() - relative_Tariff.creationTimestamps) / 1000
@@ -68,37 +80,26 @@ fun BeneficeClientAdjustmentCard(
         onPriceChange(prixBase + newUnit * nombreUnite, shouldCreateNew())
     }
 
-    val colorTotal = Color(0xFF1976D2)
+    val colorTotal = Color(0xFF1976D2)          // bleu = client
     val colorUnit  = colorTotal.copy(alpha = 0.5f)
 
-    ElevatedCard(modifier = Modifier.wrapContentWidth()) {
-        Column(
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    ElevatedCard {
+        Column(modifier = Modifier.padding(2.dp)) {
 
-            // ── Header ──────────────────────────────────────────────────────
-            Text(
-                text = "Bén. client",
-                fontSize = 7.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorTotal,
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-
-            // ── Bénéfice total client ────────────────────────────────────────
+            // ── Bénéfice total ──────────────────────────────────────────────
             Row(verticalAlignment = Alignment.CenterVertically) {
+
                 if (isEditingTotal) {
                     OutlinedTextField(
                         value = totalText,
                         onValueChange = { totalText = it },
                         modifier = Modifier
-                            .width(70.dp)
+                            .width(80.dp)
                             .focusRequester(totalFocusRequester),
                         label = { Text("%.0f".format(beneficeClient), fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
-                            imeAction = ImeAction.Done
+                            imeAction    = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             totalText.toDoubleOrNull()
@@ -113,27 +114,29 @@ fun BeneficeClientAdjustmentCard(
                         text = "%.0f".format(beneficeClient),
                         modifier = Modifier
                             .background(colorTotal)
-                            .padding(horizontal = 6.dp, vertical = 4.dp)
+                            .padding(4.dp)
                             .clickable { isEditingTotal = true; totalText = "" },
                         color = Color.White,
                         fontSize = 10.sp
                     )
                 }
+
+
             }
 
-            // ── Bénéfice unitaire client ────────────────────────────────────
+            // ── Bénéfice unitaire ───────────────────────────────────────────
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (isEditingUnit) {
                     OutlinedTextField(
                         value = unitText,
                         onValueChange = { unitText = it },
                         modifier = Modifier
-                            .width(60.dp)
+                            .width(70.dp)
                             .focusRequester(unitFocusRequester),
                         label = { Text("%.2f".format(beneficeClientUnitaire), fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
-                            imeAction = ImeAction.Done
+                            imeAction    = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             unitText.toDoubleOrNull()

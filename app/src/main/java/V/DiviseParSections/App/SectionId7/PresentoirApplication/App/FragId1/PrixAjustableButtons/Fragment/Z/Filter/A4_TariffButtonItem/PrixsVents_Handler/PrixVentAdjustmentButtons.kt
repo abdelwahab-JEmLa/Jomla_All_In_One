@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -54,177 +53,236 @@ fun PrixVentAdjustmentButtons(
         allTariffsGroupedAndSorted[M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst]
             ?.maxByOrNull { it.creationTimestamps }
 
-    val prixAchat   = prixAchatTariff?.prixCurrency ?: relative_Produit.prixAchat
-    val prixVente   = relative_Tariff.prixCurrency
+    val prixAchat = prixAchatTariff?.prixCurrency ?: relative_Produit.prixAchat
+    val prixVente = relative_Tariff.prixCurrency
     val nombreUnite = relative_Produit.nombreUniteInt
 
+    // Calculate unit selling price
     val prixVenteUnitaire = if (nombreUnite > 0) prixVente / nombreUnite else 0.0
 
-    var isEditingUnitPrice  by remember { mutableStateOf(false) }
-    var unitPriceText       by remember { mutableStateOf("") }
+    var isEditingUnitPrice by remember { mutableStateOf(false) }
+    var unitPriceText by remember { mutableStateOf("") }
     var isEditingTotalPrice by remember { mutableStateOf(false) }
-    var totalPriceText      by remember { mutableStateOf("") }
-    val focusRequester           = remember { FocusRequester() }
+    var totalPriceText by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
     val totalPriceFocusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(isEditingUnitPrice)  { if (isEditingUnitPrice)  focusRequester.requestFocus() }
-    LaunchedEffect(isEditingTotalPrice) { if (isEditingTotalPrice) totalPriceFocusRequester.requestFocus() }
+    LaunchedEffect(isEditingUnitPrice) {
+        if (isEditingUnitPrice) {
+            focusRequester.requestFocus()
+        }
+    }
 
-    val tariffColor     = relative_Tariff.typeChoisi.couleur
+    LaunchedEffect(isEditingTotalPrice) {
+        if (isEditingTotalPrice) {
+            totalPriceFocusRequester.requestFocus()
+        }
+    }
+
+    val totalPriceAdjustmentValue = when {
+        prixVente < 10.0 -> 1.0
+        prixVente < 50.0 -> 5.0
+        prixVente < 1000.0 -> 10.0
+        prixVente < 2000.0 -> 25.0
+        else -> 50.0
+    }
+
+    val unitPriceAdjustmentValue = when {
+        prixVenteUnitaire < 1.0 -> 0.1
+        prixVenteUnitaire < 5.0 -> 0.5
+        prixVenteUnitaire < 20.0 -> 1.0
+        prixVenteUnitaire < 50.0 -> 2.0
+        else -> 5.0
+    }
+
+    // Get tariff colors from the TypeChoisi enum
+    val tariffColor = relative_Tariff.typeChoisi.couleur
     val tariffTextColor = relative_Tariff.typeChoisi.couleur_Text
 
-    fun shouldCreateNewTariff() = true
+    fun shouldCreateNewTariff(): Boolean {
+        val currentTime = System.currentTimeMillis()
+        val tariffCreationTime = relative_Tariff.creationTimestamps
+        val timeDifferenceSeconds = (currentTime - tariffCreationTime) / 1000
+        return true
+    }
 
     fun updateTotalPriceImmediately(newTotalPrice: Double) {
-        onPriceChange(newTotalPrice, shouldCreateNewTariff())
+        val shouldCreateNew = shouldCreateNewTariff()
+        onPriceChange(newTotalPrice, shouldCreateNew)
     }
 
     fun updateUnitPriceImmediately(newUnitPrice: Double) {
-        onPriceChange(newUnitPrice * nombreUnite, shouldCreateNewTariff())
+        val totalPrice = newUnitPrice * nombreUnite
+        val shouldCreateNew = shouldCreateNewTariff()
+        onPriceChange(totalPrice, shouldCreateNew)
     }
 
     fun handleUnitPriceEditDone() {
-        unitPriceText.toDoubleOrNull()?.takeIf { it >= 0 }?.let { updateUnitPriceImmediately(it) }
+        val newUnitPrice = unitPriceText.toDoubleOrNull()
+        if (newUnitPrice != null && newUnitPrice >= 0) {
+            updateUnitPriceImmediately(newUnitPrice)
+        }
         isEditingUnitPrice = false
     }
 
     fun handleTotalPriceEditDone() {
-        totalPriceText.toDoubleOrNull()?.takeIf { it >= 0 }?.let { updateTotalPriceImmediately(it) }
+        val newTotalPrice = totalPriceText.toDoubleOrNull()
+        if (newTotalPrice != null && newTotalPrice >= 0) {
+            updateTotalPriceImmediately(newTotalPrice)
+        }
         isEditingTotalPrice = false
     }
 
+    // Card with both selling prices in column
     val its_Pour_Abdelwahab = (!currentApp_ItsNotWorkChezGrossisst_And_NotAdmin
             || relative_Tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client)
-
+    val width =if (isEditingTotalPrice)100.dp else 60.dp
     ElevatedCard(
         modifier = Modifier
-            .width(90.dp)
+            .width(width)
             .padding(4.dp)
+            .background(tariffColor)
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(4.dp)
+
         ) {
-
-            // ── Header ──────────────────────────────────────────────────────
-            Text(
-                text = "Prix vente",
-                fontSize = 7.sp,
-                fontWeight = FontWeight.Bold,
-                color = tariffColor,
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-
-            // ── Prix total ───────────────────────────────────────────────────
+            // Total selling price section at top
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(tariffColor)
             ) {
+
+
+                // Total price display/edit
                 if (isEditingTotalPrice) {
                     OutlinedTextField(
                         value = totalPriceText,
                         onValueChange = { totalPriceText = it },
                         modifier = Modifier
-                            .width(75.dp)
+                            .width(width)
                             .focusRequester(totalPriceFocusRequester),
-                        label = { Text(String.format("%.0f", prixVente), fontSize = 8.sp) },
+                        label = { Text("${String.format("%.0f", prixVente)}", fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
                             imeAction = ImeAction.Done
                         ),
-                        keyboardActions = KeyboardActions(onDone = {
-                            if (relative_Tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
-                                val tariff_Prix_SupperGro =
-                                    aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
-                                        .sortedByDescending { it.creationTimestamps }
-                                        .findLast {
-                                            it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
-                                                    && it.parent_M1Produit_KeyId == relative_Produit.keyID
-                                        }
-                                val newPrice = totalPriceText.toDoubleOrNull() ?: prixVente
-                                val toastMsg: String
-                                if (tariff_Prix_SupperGro != null) {
-                                    aCentralFacade.repositorysMainSetter.update_M13TarificationInfos(
-                                        tariff_Prix_SupperGro.copy(
-                                            prixCurrency = newPrice,
-                                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (relative_Tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
+                                    val tariff_Prix_SupperGro_Et_PresentationService =
+                                        aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+                                            .sortedByDescending {
+                                                it.creationTimestamps
+                                            }
+                                            .findLast {
+                                                it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
+                                                        && it.parent_M1Produit_KeyId == relative_Produit.keyID
+                                            }
+                                    val newPrice = totalPriceText.toDoubleOrNull() ?: prixVente
+
+                                    val toastMsg: String
+                                    if (tariff_Prix_SupperGro_Et_PresentationService != null) {
+                                        aCentralFacade.repositorysMainSetter.update_M13TarificationInfos(
+                                            tariff_Prix_SupperGro_Et_PresentationService.copy(
+                                                prixCurrency = newPrice,
+                                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                            )
                                         )
-                                    )
-                                    toastMsg = "تم تحديث سعر السوبر جملة"
+                                        toastMsg = "تم تحديث سعر السوبر جملة"
+                                    } else {
+                                        aCentralFacade.repositorysMainSetter.add_M13TarificationInfos(
+                                            M13TarificationInfos(
+                                                parent_M1Produit_KeyId = relative_Produit.keyID,
+                                                parent_M1Produit_DebugInfos = relative_Produit.getDebugInfos(),
+                                                typeChoisi = M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
+                                                prixCurrency = newPrice,
+                                                creationTimestamps = System.currentTimeMillis(),
+                                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                            )
+                                        )
+                                        toastMsg = "تم إضافة سعر السوبر جملة جديد"
+                                    }
+                                    Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show()
+                                    isEditingTotalPrice = false
                                 } else {
-                                    aCentralFacade.repositorysMainSetter.add_M13TarificationInfos(
-                                        M13TarificationInfos(
-                                            parent_M1Produit_KeyId = relative_Produit.keyID,
-                                            parent_M1Produit_DebugInfos = relative_Produit.getDebugInfos(),
-                                            typeChoisi = M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService,
-                                            prixCurrency = newPrice,
-                                            creationTimestamps = System.currentTimeMillis(),
-                                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                        )
-                                    )
-                                    toastMsg = "تم إضافة سعر السوبر جملة جديد"
+                                    handleTotalPriceEditDone()
+
                                 }
-                                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show()
-                                isEditingTotalPrice = false
-                            } else {
-                                handleTotalPriceEditDone()
+
                             }
-                        }),
+                        ),
                         singleLine = true
                     )
                 } else {
                     Text(
-                        text = String.format("%.0f", prixVente),
+                        String.format("%.0f", prixVente),
                         modifier = Modifier
-                            .background(tariffColor)
-                            .padding(horizontal = 6.dp, vertical = 4.dp)
+                            .padding(4.dp)
                             .clickable {
                                 its_Pour_Abdelwahab.ifTrue {
                                     isEditingTotalPrice = true
                                     totalPriceText = ""
                                 }
-                            },
-                        color = tariffTextColor,
-                        fontSize = 10.sp
+                            }
+                            .background(tariffColor)
+                        ,
+                        color = tariffTextColor
                     )
                 }
             }
 
-            // ── Prix unitaire ────────────────────────────────────────────────
+
+            // Unit price section - centered
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+
+
+                    // Unit price display/edit
                     if (isEditingUnitPrice) {
                         OutlinedTextField(
                             value = unitPriceText,
                             onValueChange = { unitPriceText = it },
                             modifier = Modifier
-                                .width(65.dp)
+                                .width(width)
                                 .focusRequester(focusRequester),
-                            label = { Text(String.format("%.2f", prixVenteUnitaire), fontSize = 8.sp) },
+                            label = {
+                                Text(
+                                    "${String.format("%.2f", prixVenteUnitaire)}",
+                                    fontSize = 8.sp
+                                )
+                            },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Decimal,
                                 imeAction = ImeAction.Done
                             ),
-                            keyboardActions = KeyboardActions(onDone = { handleUnitPriceEditDone() }),
+                            keyboardActions = KeyboardActions(
+                                onDone = { handleUnitPriceEditDone() }
+                            ),
                             singleLine = true
                         )
                     } else {
                         Text(
-                            text = String.format("%.2f", prixVenteUnitaire),
+                            "${String.format("%.2f", prixVenteUnitaire)}",
                             modifier = Modifier
-                                .background(tariffColor.copy(alpha = 0.3f))
                                 .padding(2.dp)
                                 .clickable {
                                     its_Pour_Abdelwahab.ifTrue {
                                         isEditingUnitPrice = true
                                         unitPriceText = ""
                                     }
-                                },
+                                }
+                                .background(tariffColor)
+                            ,
                             color = tariffTextColor,
-                            fontSize = 9.sp
+                            fontSize = 10.sp
                         )
                     }
                 }

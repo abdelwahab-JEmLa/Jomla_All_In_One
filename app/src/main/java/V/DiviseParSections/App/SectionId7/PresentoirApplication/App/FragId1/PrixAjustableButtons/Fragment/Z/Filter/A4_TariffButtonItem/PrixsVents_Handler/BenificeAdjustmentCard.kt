@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ElevatedCard
@@ -27,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -56,121 +54,167 @@ fun BenificeAdjustmentButtons(
         .maxByOrNull { it.creationTimestamps }?.prixCurrency
         ?: prixAchatTariff?.prixCurrency
         ?: relative_Produit.prixAchat
+    val prixVente = relative_Tariff.prixCurrency
+    val benefice = prixVente - prixAchat
+    val nombreUnite = relative_Produit.nombreUniteInt
 
-    val prixVente    = relative_Tariff.prixCurrency
-    val benefice     = prixVente - prixAchat
-    val nombreUnite  = relative_Produit.nombreUniteInt
     val beneficeUnitaire = if (nombreUnite > 0) benefice / nombreUnite else 0.0
 
-    var isEditingUnitBenefit  by remember { mutableStateOf(false) }
-    var unitBenefitText       by remember { mutableStateOf("") }
+    var isEditingUnitBenefit by remember { mutableStateOf(false) }
+    var unitBenefitText by remember { mutableStateOf("") }
     var isEditingTotalBenefit by remember { mutableStateOf(false) }
-    var totalBenefitText      by remember { mutableStateOf("") }
-    val focusRequester             = remember { FocusRequester() }
+    var totalBenefitText by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
     val totalBenefitFocusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(isEditingUnitBenefit)  { if (isEditingUnitBenefit)  focusRequester.requestFocus() }
-    LaunchedEffect(isEditingTotalBenefit) { if (isEditingTotalBenefit) totalBenefitFocusRequester.requestFocus() }
+    LaunchedEffect(isEditingUnitBenefit) {
+        if (isEditingUnitBenefit) {
+            focusRequester.requestFocus()
+        }
+    }
+
+    LaunchedEffect(isEditingTotalBenefit) {
+        if (isEditingTotalBenefit) {
+            totalBenefitFocusRequester.requestFocus()
+        }
+    }
+
+    val benefitAdjustmentValue = when {
+        benefice < 10.0 -> 1.0
+        benefice < 50.0 -> 5.0
+        benefice < 200.0 -> 5.0
+        benefice < 1200.0 -> 25.0
+        else -> 50.0
+    }
+
+    val unitBenefitAdjustmentValue = when {
+        beneficeUnitaire < 1.0 -> 1.0
+        beneficeUnitaire < 10.0 -> 2.0
+        beneficeUnitaire < 50.0 -> 1.0
+        else -> 5.0
+    }
 
     fun shouldCreateNewTariff(): Boolean {
-        val diff = (System.currentTimeMillis() - relative_Tariff.creationTimestamps) / 1000
-        return diff > 20
+        val currentTime = System.currentTimeMillis()
+        val tariffCreationTime = relative_Tariff.creationTimestamps
+        val timeDifferenceSeconds = (currentTime - tariffCreationTime) / 1000
+        return timeDifferenceSeconds > 20
     }
 
     fun updateBenefitImmediately(newBenefit: Double) {
-        onPriceChange(prixAchat + newBenefit, shouldCreateNewTariff())
+        val newSellingPrice = prixAchat + newBenefit
+        val shouldCreateNew = shouldCreateNewTariff()
+        onPriceChange(newSellingPrice, shouldCreateNew)
     }
 
     fun updateUnitBenefitImmediately(newUnitBenefit: Double) {
-        onPriceChange(prixAchat + newUnitBenefit * nombreUnite, shouldCreateNewTariff())
+        val totalBenefit = newUnitBenefit * nombreUnite
+        val newSellingPrice = prixAchat + totalBenefit
+        val shouldCreateNew = shouldCreateNewTariff()
+        onPriceChange(newSellingPrice, shouldCreateNew)
     }
 
     fun handleUnitBenefitEditDone() {
-        unitBenefitText.toDoubleOrNull()?.takeIf { it >= 0 }?.let { updateUnitBenefitImmediately(it) }
+        val newUnitBenefit = unitBenefitText.toDoubleOrNull()
+        if (newUnitBenefit != null && newUnitBenefit >= 0) {
+            updateUnitBenefitImmediately(newUnitBenefit)
+        }
         isEditingUnitBenefit = false
     }
 
     fun handleTotalBenefitEditDone() {
-        totalBenefitText.toDoubleOrNull()?.takeIf { it >= 0 }?.let { updateBenefitImmediately(it) }
+        val newTotalBenefit = totalBenefitText.toDoubleOrNull()
+        if (newTotalBenefit != null && newTotalBenefit >= 0) {
+            updateBenefitImmediately(newTotalBenefit)
+        }
         isEditingTotalBenefit = false
     }
 
+    // Card with both benefits in column
     val colorUnite = Color(0xD8D9C3DC)
+    ElevatedCard {
+        Column {
+            // Total benefit section at top
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-    ElevatedCard(modifier = Modifier.wrapContentWidth()) {
-        Column(
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            // ── Header ──────────────────────────────────────────────────────
-            Text(
-                text = "Bénéfice",
-                fontSize = 7.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF9C27B0),
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-
-            // ── Bénéfice total ──────────────────────────────────────────────
-            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Total benefit display/edit
                 if (isEditingTotalBenefit) {
                     OutlinedTextField(
                         value = totalBenefitText,
                         onValueChange = { totalBenefitText = it },
                         modifier = Modifier
-                            .width(70.dp)
+                            .width(80.dp)
                             .focusRequester(totalBenefitFocusRequester),
-                        label = { Text(String.format("%.0f", benefice), fontSize = 8.sp) },
+                        label = { Text("${String.format("%.0f", benefice)}", fontSize = 8.sp) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal,
                             imeAction = ImeAction.Done
                         ),
-                        keyboardActions = KeyboardActions(onDone = { handleTotalBenefitEditDone() }),
+                        keyboardActions = KeyboardActions(
+                            onDone = { handleTotalBenefitEditDone() }
+                        ),
                         singleLine = true
                     )
                 } else {
                     Text(
-                        text = String.format("%.0f", benefice),
+                        String.format("%.0f", benefice),
                         modifier = Modifier
                             .background(Color(0xFF9C27B0))
-                            .padding(horizontal = 6.dp, vertical = 4.dp)
-                            .clickable { isEditingTotalBenefit = true },
-                        color = Color.White,
-                        fontSize = 10.sp
+                            .padding(4.dp)
+                            .clickable {
+                                isEditingTotalBenefit = true
+                            },
+                        color = Color.White
                     )
                 }
             }
 
-            // ── Bénéfice unitaire ───────────────────────────────────────────
-            Box(contentAlignment = Alignment.Center) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            // Unit benefit section - centered in Box
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Unit benefit display/edit
                     if (isEditingUnitBenefit) {
                         OutlinedTextField(
                             value = unitBenefitText,
                             onValueChange = { unitBenefitText = it },
                             modifier = Modifier
-                                .width(60.dp)
+                                .width(70.dp)
                                 .focusRequester(focusRequester),
-                            label = { Text(String.format("%.2f", beneficeUnitaire), fontSize = 8.sp) },
+                            label = {
+                                Text(
+                                    "${String.format("%.2f", beneficeUnitaire)}",
+                                    fontSize = 8.sp
+                                )
+                            },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Decimal,
                                 imeAction = ImeAction.Done
                             ),
-                            keyboardActions = KeyboardActions(onDone = { handleUnitBenefitEditDone() }),
+                            keyboardActions = KeyboardActions(
+                                onDone = { handleUnitBenefitEditDone() }
+                            ),
                             singleLine = true
                         )
                     } else {
                         Text(
-                            text = String.format("%.2f", beneficeUnitaire),
+                            "${String.format("%.2f", beneficeUnitaire)}",
                             modifier = Modifier
                                 .background(colorUnite)
                                 .padding(2.dp)
-                                .clickable { isEditingUnitBenefit = true },
+                                .clickable {
+                                    isEditingUnitBenefit = true
+                                },
                             color = Color.White,
-                            fontSize = 9.sp
+                            fontSize = 10.sp
                         )
                     }
+
                 }
             }
         }
