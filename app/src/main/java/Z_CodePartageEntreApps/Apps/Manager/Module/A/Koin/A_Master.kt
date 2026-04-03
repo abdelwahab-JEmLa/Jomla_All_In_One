@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Base.classes_NewProtoPatterns
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
@@ -170,6 +171,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
 }
 
 val classesHandlersModule = module {
+    single { FragmentNavigationHandler_NewProto() }
 
     single { FragmentNavigationHandler() }
 

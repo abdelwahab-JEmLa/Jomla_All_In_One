@@ -6,7 +6,6 @@ import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos.Companion.rootFolder_DropBox
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_1
 import androidx.compose.foundation.background
@@ -133,7 +132,6 @@ object DropBox_Init_2 {
 @Composable
 fun FabDropdownMenu_BaseDonneEdite(
     aCentralFacade: ACentralFacade = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     onDismissDropdown: () -> Unit,
     modifier: Modifier = Modifier

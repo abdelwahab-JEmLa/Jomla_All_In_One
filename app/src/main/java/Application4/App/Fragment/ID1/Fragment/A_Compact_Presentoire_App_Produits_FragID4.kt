@@ -1,10 +1,14 @@
 package Application4.App.Fragment.ID1.Fragment
 
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Floating_Separated_Button
 import Application4.App.Fragment.ID1.Fragment.Dialogs.PressistatntMainActivityButtons_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Modules.Base.AppDatabase
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -21,16 +25,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.delay
+import org.koin.compose.koinInject
 
 @Composable
 fun A_Compact_Presentoire_App_Produits_App4(
     modifier: Modifier = Modifier,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns ,
-    onClickImageToShowControles: () -> Unit = {},
+    context : Context = LocalContext.current,
+    appDatabase: AppDatabase =koinInject (),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                A_ViewModel_NewProtoPatterns(
+                    context = context.applicationContext,
+                    appDatabase  = appDatabase,
+                    fragmentNavigationHandler  = fragmentNavigationHandler,
+                )
+            }
+        }
+    ),
+    onClickImageToShowControles: () -> Unit = {}
 ) {
-    val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
+   val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
     val active_Datas = viewModelNewProtoPatterns.active_Datas
@@ -122,4 +144,10 @@ fun A_Compact_Presentoire_App_Produits_App4(
             }
         )
     }
+
+    Floating_Separated_Button(
+        list_m16 =active_Datas.list_M16CategorieProduit,
+        list_m1 = active_Datas.list_M1Produit,
+        list_m3 = active_Datas.list_M03CouleurProduitInfos,
+    )
 }
