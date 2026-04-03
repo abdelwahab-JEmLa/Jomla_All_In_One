@@ -1,13 +1,26 @@
 package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog
 
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserParCatalogue
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_SyncDepuisImages2
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private enum class PendingAction { DropBox, Local }
+private enum class PendingAction { DropBox, Local, SyncFromImages2 }
 
 @Composable
 fun FragMap_DropdownMenu(
@@ -36,9 +49,22 @@ fun FragMap_DropdownMenu(
 
     var organizeDropBoxProgress by remember { mutableStateOf<Float?>(null) }
     var organizeLocalProgress   by remember { mutableStateOf<Float?>(null) }
+    var syncImages2Progress     by remember { mutableStateOf<Float?>(null) }
 
     // Which action is waiting for the user's confirmation (null = no dialog open)
     var pendingAction by remember { mutableStateOf<PendingAction?>(null) }
+
+    // Result of the last syncFromImages2 run — shown in a summary dialog
+    var syncReport by remember { mutableStateOf<SyncReport?>(null) }
+
+    // ── Sync result summary dialog ────────────────────────────────────────────
+
+    syncReport?.let { report ->
+        SyncReportDialog(
+            report    = report,
+            onDismiss = { syncReport = null }
+        )
+    }
 
     // ── Confirmation dialogs ──────────────────────────────────────────────────
 
@@ -87,10 +113,30 @@ fun FragMap_DropdownMenu(
                 },
                 onDismiss = { pendingAction = null }
             )
+
+            PendingAction.SyncFromImages2 -> AvertissementDialog(
+                title   = "Sync local ← DropBox Images_2",
+                message = "Pour chaque couleur, si l'image sur DropBox Images_2 est plus " +
+                          "récente que le fichier local, le fichier local sera écrasé. Continuer ?",
+                confirmLabel = "Synchroniser",
+                onConfirm = {
+                    pendingAction = null
+                    coroutineScope.launch {
+                        syncImages2Progress = 0f
+                        val report = DropBox_Init_3.syncFromImages2(
+                            list_m3    = list_m3,
+                            onProgress = { p -> syncImages2Progress = p }
+                        )
+                        syncImages2Progress = null
+                        onDismiss()
+                        // Show the summary dialog (even if nothing changed)
+                        syncReport = report
+                    }
+                },
+                onDismiss = { pendingAction = null }
+            )
         }
     }
-
-    // ── Dropdown items ────────────────────────────────────────────────────────
 
     DropdownMenu(
         expanded         = expanded,
@@ -108,7 +154,98 @@ fun FragMap_DropdownMenu(
             enabled  = organizeLocalProgress == null && pendingAction == null,
             onClick  = { pendingAction = PendingAction.Local }
         )
+
+        DropDownItemWBaseDonne_SyncDepuisImages2(
+            progress = syncImages2Progress,
+            enabled  = syncImages2Progress == null && pendingAction == null,
+            onClick  = { pendingAction = PendingAction.SyncFromImages2 }
+        )
     }
+}
+
+// ─── Sync report dialog ───────────────────────────────────────────────────────
+
+/**
+ * Displays a summary of what [DropBox_Init_3.syncFromImages2] did:
+ * - how many files were newly added
+ * - how many files were overwritten
+ * with the individual file names listed under each heading.
+ */
+@Composable
+private fun SyncReportDialog(
+    report:    SyncReport,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector        = Icons.Default.CheckCircle,
+                contentDescription = null,
+                tint               = Color(0xFF4CAF50)   // green
+            )
+        },
+        title = {
+            Text(
+                text  = "Synchronisation terminée",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        text = {
+            Column {
+                if (report.isEmpty) {
+                    Text(
+                        text  = "Aucun fichier modifié — tout est déjà à jour.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    if (report.added.isNotEmpty()) {
+                        Text(
+                            text  = "✅ Ajoutés (${report.added.size})",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        report.added.forEach { name ->
+                            Text(
+                                text  = "  • $name",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+
+                    if (report.added.isNotEmpty() && report.overwritten.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    if (report.overwritten.isNotEmpty()) {
+                        Text(
+                            text  = "🔄 Écrasés (${report.overwritten.size})",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                        report.overwritten.forEach { name ->
+                            Text(
+                                text  = "  • $name",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text  = "OK",
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+    )
 }
 
 // ─── Shared helper ────────────────────────────────────────────────────────────

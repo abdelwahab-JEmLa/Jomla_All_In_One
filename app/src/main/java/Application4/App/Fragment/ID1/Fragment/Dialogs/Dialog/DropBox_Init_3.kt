@@ -15,6 +15,19 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
+/**
+ * Result of a [DropBox_Init_3.syncFromImages2] operation.
+ *
+ * @param added       File names that did not exist locally and were downloaded.
+ * @param overwritten File names that already existed locally and were replaced by a newer DropBox version.
+ */
+data class SyncReport(
+    val added: List<String>,
+    val overwritten: List<String>,
+) {
+    val isEmpty: Boolean get() = added.isEmpty() && overwritten.isEmpty()
+}
+
 object DropBox_Init_3 {
     val rootFolder: String = M3CouleurProduitInfos.Companion.rootFolder_DropBox
 
@@ -92,6 +105,89 @@ object DropBox_Init_3 {
         }
         onProgress(1f)
     }
+
+    /**
+     * For each colour in [list_m3] that has a valid image name, compares the DropBox
+     * [M3CouleurProduitInfos.Companion.rootFolder_Images_2_DropBox] server-modified timestamp against the local file's
+     * last-modified timestamp.  If DropBox is newer, downloads and overwrites the local file.
+     *
+     * @return [SyncReport] listing which files were newly added and which were overwritten,
+     *         so the caller can present a summary dialog to the user.
+     */
+    suspend fun syncFromImages2(
+        list_m3: List<M3CouleurProduitInfos>?,
+        onProgress: (Float) -> Unit = {},
+    ): SyncReport = withContext(Dispatchers.IO) {
+        onProgress(0f)
+        val validColors = list_m3?.filter { it.hasValidImage() }
+        if (validColors.isNullOrEmpty()) {
+            onProgress(1f)
+            return@withContext SyncReport(emptyList(), emptyList())
+        }
+
+        val index = buildImages2Index()
+        val total = validColors.size.toFloat()
+        var done = 0
+
+        val addedFiles       = mutableListOf<String>()
+        val overwrittenFiles = mutableListOf<String>()
+
+        validColors.forEach { color ->
+            val fullName  = "${color.nomImageFichieSansEtansion}.${color.extensionDisponible}"
+            val localFile = File(
+                M00CentralParametresOfAllApps.Companion.images_central_Local_storageLink,
+                fullName
+            )
+            val meta = index[color.nomImageFichieSansEtansion]
+
+            if (meta != null) {
+                val dropBoxModMs = meta.serverModified?.time ?: 0L
+                val localModMs   = if (localFile.exists()) localFile.lastModified() else 0L
+
+                if (dropBoxModMs > localModMs) {
+                    val wasNew = !localFile.exists()
+                    try {
+                        localFile.parentFile?.mkdirs()
+                        FileOutputStream(localFile).use { out ->
+                            client.files().download(meta.pathLower).download(out)
+                        }
+                        if (dropBoxModMs > 0L) localFile.setLastModified(dropBoxModMs)
+
+                        // Record the outcome for the summary dialog
+                        if (wasNew) addedFiles.add(fullName)
+                        else        overwrittenFiles.add(fullName)
+
+                    } catch (_: Exception) {
+                        localFile.delete()
+                    }
+                }
+            }
+
+            done++
+            onProgress(done / total)
+        }
+
+        onProgress(1f)
+        SyncReport(added = addedFiles, overwritten = overwrittenFiles)
+    }
+
+    private suspend fun buildImages2Index(): Map<String, FileMetadata> =
+        withContext(Dispatchers.IO) {
+            val index = mutableMapOf<String, FileMetadata>()
+            try {
+                var result = client.files()
+                    .listFolderBuilder(M3CouleurProduitInfos.Companion.rootFolder_Images_2_DropBox)
+                    .withRecursive(true).start()
+                while (true) {
+                    result.entries.filterIsInstance<FileMetadata>()
+                        .forEach { index[it.name.substringBeforeLast(".")] = it }
+                    if (!result.hasMore) break
+                    result = client.files().listFolderContinue(result.cursor)
+                }
+            } catch (_: Exception) {
+            }
+            index
+        }
 
     private suspend fun buildIndex(): MutableMap<String, FileMetadata> =
         withContext(Dispatchers.IO) {
