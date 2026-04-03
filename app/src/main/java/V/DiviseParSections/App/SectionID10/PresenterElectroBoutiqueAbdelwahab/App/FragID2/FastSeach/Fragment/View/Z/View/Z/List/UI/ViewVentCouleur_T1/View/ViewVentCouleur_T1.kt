@@ -1,5 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View
 
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.Z.Components.ColorImageDisplayer
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.Z.Components.PickQantity.Dialog.Dialog_Choisire_Quantity_Carton
@@ -10,12 +15,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
-import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraXDialog
 import android.annotation.SuppressLint
 import android.net.Uri
@@ -226,6 +226,8 @@ fun ViewVentCouleur_T1(
                     ).show()
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 }
+                //<--
+                //TODO(1): fatiqe qe qand tout termine de lence au dropp box rootFolder_Images_2_DropBox add ou replace image par l image caprured au dossie rootFolder_Images_2_DropBox  
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {

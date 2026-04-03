@@ -101,10 +101,18 @@ M3CouleurProduitInfos(
             append("/IMGs/BaseDonne")
         }
 
+        val backup_Images_storageLink = buildString {
+            append(central_Local_storageLink)
+            append("/Backup_Images")
+        }
+
         val baseDir = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
 
         val rootFolder_DropBox = buildString {
             append("/images")
+        }
+        val rootFolder_Images_2_DropBox = buildString {
+            append("/Images_2")
         }
 
         fun compareEntre(

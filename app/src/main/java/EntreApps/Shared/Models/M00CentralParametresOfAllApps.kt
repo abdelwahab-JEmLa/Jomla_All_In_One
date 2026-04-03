@@ -35,15 +35,15 @@ data class M00CentralParametresOfAllApps(
     val abdelmomen_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s4",
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
     //<--
-    //TODO(1): fait que le ben et relative affiche tariff
+    //(1): fait que le ben et relative affiche tariff
 
     //<--
-    //TODO(1): ajout affiche tekhereg et prix achat et nitaire et prix vent u   //<--
-    //TODO(1): f
+    //1): ajout affiche tekhereg et prix achat et nitaire et prix vent u   //<--
+    //(1): f
     //     
     //fait qe ca soit un resusable header on lazyy row 
     // <--
-    //TODO(1): fait que le pris editer jaun s affiche toujou 
+    //(1): fait que le pris editer jaun s affiche toujou
     //faitque les prix soit a droit a gauch
 
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
@@ -85,9 +85,11 @@ data class M00CentralParametresOfAllApps(
         val centralRef = Firebase.database.getReference(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
         )
+
         val central_Local_storageLink = buildString {
             append("/storage/emulated/0/Abdelwahab_jeMla.com")
         }
+
 
         val images_central_Local_storageLink =
             M3CouleurProduitInfos.images_central_Local_storageLink

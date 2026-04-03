@@ -6,38 +6,27 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos.Companion.rootFolder_DropBox
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.SyncProgressIndicator
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ViewList
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,7 +43,6 @@ import com.dropbox.core.v2.files.FileMetadata
 import com.dropbox.core.v2.files.RelocationErrorException
 import com.example.clientjetpack.BuildConfig
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
@@ -69,35 +57,30 @@ data class Button_State(
     val description_Functionement: String = "",
 ) {
     companion object {
-        fun get_Default(): Button_State {
-            return Button_State()
-        }
+        fun get_Default(): Button_State = Button_State()
     }
 }
 
 @Composable
 fun Floating_Separated_Button(
-    list_m16 : List<M16CategorieProduit> ?=emptyList(),
-    list_m1 : List<M01Produit>? =emptyList(),
-    list_m3: List<M3CouleurProduitInfos>? =emptyList(),
-    buttonState: Button_State = Button_State.Companion.get_Default().copy(
+    list_m16:    List<M16CategorieProduit>? = emptyList(),
+    list_m1:     List<M01Produit>?          = emptyList(),
+    list_m3:     List<M3CouleurProduitInfos>? = emptyList(),
+    buttonState: Button_State = Button_State.get_Default().copy(
         text_Label = "",
-        icons = Pair(Icons.Default.FilterList, Icons.Default.ViewList),
+        icons  = Pair(Icons.Default.FilterList, Icons.Default.ViewList),
         colors = Pair(Color.Red, Color.Green)
     )
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    var organizeProgress by remember { mutableStateOf<Float?>(null) }
-
-    val isShowingAll =  true
+    val isShowingAll     = true
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
 
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
+    val configuration  = LocalConfiguration.current
+    val screenWidth    = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
 
-    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 200f)) }
-    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 300f) }
+    var offsetX      by remember { mutableFloatStateOf(screenWidth.value - 200f) }
+    var offsetY      by remember { mutableFloatStateOf(screenHeightDp.value - 300f) }
     var showDropdown by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -107,78 +90,48 @@ fun Floating_Separated_Button(
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
-                        offsetX = offsetX.coerceIn(0f, screenWidth.value - 100f)
-                        offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 100f)
+                        offsetX = (offsetX + dragAmount.x).coerceIn(0f, screenWidth.value - 100f)
+                        offsetY = (offsetY + dragAmount.y).coerceIn(0f, screenHeightDp.value - 100f)
                     }
                 }
                 .padding(16.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment   = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 FloatingActionButton(
-                    modifier = Modifier
-                        .size(48.dp),
-                    onClick = { showDropdown = true },
+                    modifier       = Modifier.size(48.dp),
+                    onClick        = { showDropdown = true },
                     containerColor = if (updatedButtonState.its_Active)
                         updatedButtonState.colors.second
                     else
                         updatedButtonState.colors.first
                 ) {
                     Icon(
-                        imageVector = if (updatedButtonState.its_Active)
+                        imageVector      = if (updatedButtonState.its_Active)
                             updatedButtonState.icons.second
                         else
                             updatedButtonState.icons.first,
                         contentDescription = if (isShowingAll) "Switch to Targeted View" else "Switch to Show All",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
+                        tint             = Color.White,
+                        modifier         = Modifier.size(24.dp)
                     )
                 }
 
-                DropdownMenu(
-                    expanded = showDropdown,
-                    onDismissRequest = { showDropdown = false },
-                    modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp))
-                ) {
-                    DropDownItemWBaseDonne_OrganiserParCatalogue(
-                        progress = organizeProgress,
-                        enabled  = organizeProgress == null,
-                        onClick  = {
-                            coroutineScope.launch {
-                                organizeProgress = 0f
-
-                                val catalogueGroups = withContext(Dispatchers.Default) {
-                                    val catalogues      = get_ListM21CataloguesCategorie()
-                                    val categories      = list_m16
-                                    val produits        = list_m1
-                                    val couleurs        = list_m3
-                                    val sansCatalogue   = catalogues.find { it.nom == "Sans Catalogue" }
-                                        ?: M21CataloguesCategorie(keyID = "t4", id = 4, nom = "Sans Catalogue")
-                                    val catalogueById           = catalogues.associateBy { it.id }
-                                    val catalogueByCategorieId  = categories?.associate { cat -> cat.id to (catalogueById[cat.catalogueParentId] ?: sansCatalogue) }
-                                    val catalogueByProduitKey   = produits?.associate { p -> p.keyID to (catalogueByCategorieId?.get(p.idParentCategorie)
-                                        ?: sansCatalogue) }
-                                    couleurs
-                                        ?.filter { it.nomImageFichieSansEtansion.isNotBlank() && it.nomImageFichieSansEtansion != "Non Dispo" }
-                                        ?.groupBy { catalogueByProduitKey?.get(it.parentBProduitInfosKeyID)
-                                            ?: sansCatalogue }
-                                }
-
-                                DropBox_Init_3.organizeByCategories(catalogueGroups = catalogueGroups, onProgress = { p -> organizeProgress = p })
-                                organizeProgress = null
-                                showDropdown = false
-                            }
-                        }
-                    )
-                }
+                FragMap_DropdownMenu(
+                    expanded  = showDropdown,
+                    onDismiss = { showDropdown = false },
+                    list_m16  = list_m16,
+                    list_m1   = list_m1,
+                    list_m3   = list_m3,
+                )
             }
         }
     }
 }
+
+// ─── DropBox client & organizer ───────────────────────────────────────────────
 
 object DropBox_Init_3 {
     val rootFolder: String = rootFolder_DropBox
@@ -186,7 +139,12 @@ object DropBox_Init_3 {
     private val client: DbxClientV2 by lazy {
         DbxClientV2(
             DbxRequestConfig.newBuilder("jeMla-app/1.0").build(),
-            DbxCredential("", -1L, BuildConfig.DROPBOX_REFRESH_TOKEN, BuildConfig.DROPBOX_APP_KEY, BuildConfig.DROPBOX_APP_SECRET)
+            DbxCredential(
+                "", -1L,
+                BuildConfig.DROPBOX_REFRESH_TOKEN,
+                BuildConfig.DROPBOX_APP_KEY,
+                BuildConfig.DROPBOX_APP_SECRET
+            )
         )
     }
 
@@ -196,47 +154,45 @@ object DropBox_Init_3 {
     ) = withContext(Dispatchers.IO) {
         onProgress(0f)
         val allColors = catalogueGroups?.values?.flatten()?.filter { it.hasValidImage() }
-        if (allColors?.isEmpty() ?: false) { onProgress(1f); return@withContext }
+        if (allColors.isNullOrEmpty()) { onProgress(1f); return@withContext }
 
         val index = buildIndex()
         if (index.isEmpty()) { onProgress(1f); return@withContext }
 
-        val total = allColors?.size?.toFloat()
+        val total = allColors.size.toFloat()
         var done  = 0
 
-        if (catalogueGroups != null) {
-            for ((catalogue, colors) in catalogueGroups) {
-                val folderPath = catalogue.drp_image_folder_catalogue_path
-                ensureDropboxFolder(folderPath)
+        catalogueGroups?.forEach { (catalogue, colors) ->
+            val folderPath = catalogue.drp_image_folder_catalogue_path
+            ensureDropboxFolder(folderPath)
 
-                for (color in colors) {
-                    if (!color.hasValidImage()) { done++; total?.let { onProgress(done / it) }; continue }
+            colors.forEach { color ->
+                if (!color.hasValidImage()) { done++; onProgress(done / total); return@forEach }
 
-                    val filename  = color.nomImageFichieSansEtansion
-                    val fullName  = "$filename.${color.extensionDisponible}"
-                    val meta      = index[filename]
-                    val localFile = File(M00CentralParametresOfAllApps.images_central_Local_storageLink, fullName)
+                val filename  = color.nomImageFichieSansEtansion
+                val fullName  = "$filename.${color.extensionDisponible}"
+                val meta      = index[filename]
+                val localFile = File(M00CentralParametresOfAllApps.images_central_Local_storageLink, fullName)
 
-                    if (meta != null) {
-                        val dropboxPath  = meta.pathLower
-                        val dropboxModMs = meta.serverModified?.time ?: 0L
+                if (meta != null) {
+                    val dropboxPath  = meta.pathLower
+                    val dropboxModMs = meta.serverModified?.time ?: 0L
 
-                        if (dropboxPath != null && (!localFile.exists() || dropboxModMs > localFile.lastModified())) {
-                            try {
-                                localFile.parentFile?.mkdirs()
-                                FileOutputStream(localFile).use { client.files().download(dropboxPath).download(it) }
-                                if (dropboxModMs > 0L) localFile.setLastModified(dropboxModMs)
-                            } catch (_: Exception) { localFile.delete() }
-                        }
-
-                        val targetPath = "$folderPath/$fullName"
-                        if (dropboxPath != null && !dropboxPath.equals(targetPath, ignoreCase = true))
-                            moveDropboxFile(fromPath = dropboxPath, toPath = targetPath)
+                    if (dropboxPath != null && (!localFile.exists() || dropboxModMs > localFile.lastModified())) {
+                        try {
+                            localFile.parentFile?.mkdirs()
+                            FileOutputStream(localFile).use { client.files().download(dropboxPath).download(it) }
+                            if (dropboxModMs > 0L) localFile.setLastModified(dropboxModMs)
+                        } catch (_: Exception) { localFile.delete() }
                     }
 
-                    done++
-                    total?.let { onProgress(done / it) }
+                    val targetPath = "$folderPath/$fullName"
+                    if (dropboxPath != null && !dropboxPath.equals(targetPath, ignoreCase = true))
+                        moveDropboxFile(fromPath = dropboxPath, toPath = targetPath)
                 }
+
+                done++
+                onProgress(done / total)
             }
         }
         onProgress(1f)
@@ -247,7 +203,8 @@ object DropBox_Init_3 {
         try {
             var result = client.files().listFolderBuilder(rootFolder).withRecursive(true).start()
             while (true) {
-                result.entries.filterIsInstance<FileMetadata>().forEach { index[it.name.substringBeforeLast(".")] = it }
+                result.entries.filterIsInstance<FileMetadata>()
+                    .forEach { index[it.name.substringBeforeLast(".")] = it }
                 if (!result.hasMore) break
                 result = client.files().listFolderContinue(result.cursor)
             }
@@ -268,33 +225,3 @@ object DropBox_Init_3 {
     private fun M3CouleurProduitInfos.hasValidImage() =
         nomImageFichieSansEtansion.isNotBlank() && nomImageFichieSansEtansion != "Non Dispo"
 }
-
-@Composable
-private fun DropDownItemWBaseDonne_OrganiserParCatalogue(
-    progress: Float?,
-    enabled:  Boolean,
-    onClick:  () -> Unit,
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        DropdownMenuItem(
-            text = {
-                Text(
-                    text = when {
-                        progress == null -> "Organiser images par Catalogue"
-                        progress < 1f    -> "Déplacement… ${(progress * 100).toInt()} %"
-                        else             -> "Terminé ✓"
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (enabled) MaterialTheme.colorScheme.onSurface
-                    else        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                )
-            },
-            enabled = enabled,
-            onClick = onClick
-        )
-        if (progress != null) SyncProgressIndicator(progress = progress, modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp))
-    }
-}
-
