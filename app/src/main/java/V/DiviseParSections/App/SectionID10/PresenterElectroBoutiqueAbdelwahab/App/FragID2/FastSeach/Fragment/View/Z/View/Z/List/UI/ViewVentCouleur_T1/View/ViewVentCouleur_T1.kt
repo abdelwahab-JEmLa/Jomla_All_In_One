@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View
 
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.DropBox_Init_3
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -226,8 +227,15 @@ fun ViewVentCouleur_T1(
                     ).show()
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 }
-                //<--
-                //TODO(1): fatiqe qe qand tout termine de lence au dropp box rootFolder_Images_2_DropBox add ou replace image par l image caprured au dossie rootFolder_Images_2_DropBox  
+                // Upload captured image to DropBox Images_2 folder, then persist the path in dropBox_key
+                CoroutineScope(Dispatchers.IO).launch {
+                    val dropBoxPath = DropBox_Init_3.uploadToImages2(fileName, imageBytes)
+                    if (dropBoxPath != null) {
+                        val withDropBoxKey = updatedCouleur.copy(dropBox_key = dropBoxPath)
+                        viewModel.aCentralFacade.repositorysMainGetter
+                            .repo03CouleurProduitInfos.addOrUpdateData(withDropBoxKey)
+                    }
+                }
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
