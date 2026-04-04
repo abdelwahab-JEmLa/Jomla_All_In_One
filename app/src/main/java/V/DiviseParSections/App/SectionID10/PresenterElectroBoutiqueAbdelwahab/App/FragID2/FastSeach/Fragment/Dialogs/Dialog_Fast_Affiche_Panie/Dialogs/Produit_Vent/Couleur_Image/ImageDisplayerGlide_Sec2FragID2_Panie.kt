@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Produit_Vent.Couleur_Image
 
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
@@ -62,7 +62,7 @@ fun ColorNameDisplayer_FragFastVent(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(Color.LightGray) ,
+            .background(Color.LightGray),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -96,7 +96,6 @@ fun ImageDisplayerGlide_FragFastVent(
         label = "blur"
     )
 
-    // Use the decrementing function to find an existing image filename
     val actualImageFileName = M3CouleurProduitInfos.decrementing_file_name_si_non_trouve(
         relative_M3CouleurProduit.nomImageFichieSansEtansion,
         relative_M3CouleurProduit.extensionDisponible
@@ -117,10 +116,7 @@ fun ImageDisplayerGlide_FragFastVent(
         tonalElevation = 2.dp,
         shadowElevation = 4.dp
     ) {
-        Box(
-            modifier = Modifier
-                .size(imageSize.width, imageSize.height)
-        ) {
+        Box(modifier = Modifier.size(imageSize.width, imageSize.height)) {
             if (imageExists && actualImageFile != null) {
                 GlideImage(
                     model = actualImageFile,
@@ -128,16 +124,12 @@ fun ImageDisplayerGlide_FragFastVent(
                     contentScale = contentScale,
                     colorFilter = colorFilter,
                     modifier = Modifier
-                        .clickable {
-                            // Click action removed
-                        }
+                        .clickable { }
                         .fillMaxSize()
                         .clip(RoundedCornerShape(4.dp))
                         .graphicsLayer {
-                            if (blurRadius > 0f) {
-                                renderEffect =
-                                    BlurEffect(blurRadius, blurRadius, TileMode.Decal)
-                            }
+                            if (blurRadius > 0f)
+                                renderEffect = BlurEffect(blurRadius, blurRadius, TileMode.Decal)
                         }
                 ) { request ->
                     request.apply {
@@ -145,20 +137,18 @@ fun ImageDisplayerGlide_FragFastVent(
                         transition(DrawableTransitionOptions.withCrossFade())
                         diskCacheStrategy(DiskCacheStrategy.ALL)
                         priority(Priority.HIGH)
-                        signature(ObjectKey(actualImageFile.absolutePath))
+                        // lastModified() changes automatically when syncFromImages2 calls
+                        // file.setLastModified(dropBoxModMs) → Glide reloads the new file
+                        signature(ObjectKey(actualImageFile.lastModified()))
                         listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>,
-                                isFirstResource: Boolean
+                                e: GlideException?, model: Any?,
+                                target: Target<Drawable>, isFirstResource: Boolean
                             ) = false
 
                             override fun onResourceReady(
-                                resource: Drawable,
-                                model: Any,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource,
+                                resource: Drawable, model: Any,
+                                target: Target<Drawable>?, dataSource: DataSource,
                                 isFirstResource: Boolean
                             ): Boolean {
                                 if (isFirstResource) isLoading = false
@@ -174,8 +164,7 @@ fun ImageDisplayerGlide_FragFastVent(
                 )
             }
 
-            val activeCentralValues = focusedValuesGetter
-                .active_Central_Values
+            val activeCentralValues = focusedValuesGetter.active_Central_Values
             val afficheur_Panier_Pour_Link_M10OperationVentCouleur =
                 activeCentralValues.handled_M10OperationVent_Pour_Link
 
@@ -184,30 +173,20 @@ fun ImageDisplayerGlide_FragFastVent(
                     onClick = {
                         if (relative_M10OperationVentCouleur != null) {
                             val m1Produit = repositorysMainGetter.find_M1Produit_ByKeyID(
-                                relative_M10OperationVentCouleur
-                                    .parent_M1Produit_KeyId
+                                relative_M10OperationVentCouleur.parent_M1Produit_KeyId
                             )
-
                             afficheur_Panier_Pour_Link_M10OperationVentCouleur.copy(
                                 its_Linked_To_Autre_Vent_Si_NonDispo = true,
-                                linked_To_M10OperationVent_KeyID = relative_M10OperationVentCouleur
-                                    .keyID,
-                                linked_To_M10OperationVent_DebugInfos = relative_M10OperationVentCouleur
-                                    .getDebugInfos(),
-                                siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId = relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID
-                                    ?: "",
+                                linked_To_M10OperationVent_KeyID = relative_M10OperationVentCouleur.keyID,
+                                linked_To_M10OperationVent_DebugInfos = relative_M10OperationVentCouleur.getDebugInfos(),
+                                siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId = relative_M10OperationVentCouleur.parent_M3CouleurProduit_KeyID ?: "",
                                 siNonDispoParentM10Vent_it_parent_M1Produit_Nom = m1Produit?.nom ?: ""
                             ).let {
-                                aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(
-                                    it
-                                )
+                                aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(it)
                             }
                         }
-
                         focusedValuesGetter.update_activeCentralValues(
-                            activeCentralValues.copy(
-                                handled_M10OperationVent_Pour_Link = null
-                            )
+                            activeCentralValues.copy(handled_M10OperationVent_Pour_Link = null)
                         )
                     },
                     modifier = Modifier

@@ -10,7 +10,10 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import com.bumptech.glide.Glide
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -48,6 +51,7 @@ fun FragMap_DropdownMenu(
     modifier:  Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     var organizeDropBoxProgress    by remember { mutableStateOf<Float?>(null) }
     var organizeLocalProgress      by remember { mutableStateOf<Float?>(null) }
@@ -72,8 +76,8 @@ fun FragMap_DropdownMenu(
             PendingAction.DropBox -> AvertissementDialog(
                 title        = "Organiser sur DropBox",
                 message      = "Cette action va déplacer toutes les images vers leurs dossiers " +
-                               "catalogues sur DropBox. Les fichiers seront déplacés de façon " +
-                               "permanente. Continuer ?",
+                        "catalogues sur DropBox. Les fichiers seront déplacés de façon " +
+                        "permanente. Continuer ?",
                 confirmLabel = "Déplacer",
                 onConfirm = {
                     pendingAction = null
@@ -94,8 +98,8 @@ fun FragMap_DropdownMenu(
             PendingAction.Local -> AvertissementDialog(
                 title        = "Organiser en local",
                 message      = "Cette action va déplacer toutes les images depuis le dossier " +
-                               "central local vers leurs dossiers catalogues dans le dossier " +
-                               "de sauvegarde. Les fichiers sources seront supprimés. Continuer ?",
+                        "central local vers leurs dossiers catalogues dans le dossier " +
+                        "de sauvegarde. Les fichiers sources seront supprimés. Continuer ?",
                 confirmLabel = "Déplacer",
                 onConfirm = {
                     pendingAction = null
@@ -116,8 +120,8 @@ fun FragMap_DropdownMenu(
             PendingAction.SyncFromImages2 -> AvertissementDialog(
                 title        = "Sync local ← DropBox Images_2",
                 message      = "Seules les images des catalogues t1 et t4 modifiées sur DropBox " +
-                               "dans les 20 derniers jours seront téléchargées. " +
-                               "Les fichiers locaux plus anciens seront écrasés. Continuer ?",
+                        "dans les 20 derniers jours seront téléchargées. " +
+                        "Les fichiers locaux plus anciens seront écrasés. Continuer ?",
                 confirmLabel = "Synchroniser",
                 onConfirm = {
                     pendingAction = null
@@ -133,6 +137,15 @@ fun FragMap_DropdownMenu(
                             list_m1       = list_m1,
                             list_m3       = list_m3,
                         )
+
+                        val TAG = "DropBox_Sync"
+                        Log.d(TAG, "=== SYNC DÉMARRÉ ===")
+                        Log.d(TAG, "cutoffMs = $cutoffMs " +
+                                "(${java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date(cutoffMs))})")
+                        Log.d(TAG, "list_m3 total=${list_m3?.size} | après filtre catalogue(t1,t4)=${filteredM3?.size}")
+                        if (filteredM3.isNullOrEmpty()) {
+                            Log.w(TAG, "⚠️ filteredM3 VIDE — l'image cherchée n'est peut-être pas dans catalogue t1 ou t4")
+                        }
                         val produitKeyToName = list_m1
                             ?.associate { it.keyID to it.nom }
                             ?: emptyMap()
@@ -149,6 +162,12 @@ fun FragMap_DropdownMenu(
                         )
                         syncImages2Progress = null
                         syncImages2Label    = ""
+
+                        // Invalidate Glide cache so every displayer in the app
+                        // picks up the newly downloaded files immediately.
+                        withContext(Dispatchers.Main) { Glide.get(context).clearMemory() }
+                        launch(Dispatchers.IO)        { Glide.get(context).clearDiskCache() }
+
                         onDismiss()
                         syncReport = report
                     }
@@ -159,8 +178,8 @@ fun FragMap_DropdownMenu(
             PendingAction.UpdateLocalTimestamps -> AvertissementDialog(
                 title        = "Mettre à jour dates locales",
                 message      = "La date de modification de chaque fichier image local sera " +
-                               "remplacée par l'heure actuelle. Cela forcera un re-téléchargement " +
-                               "lors de la prochaine synchronisation. Continuer ?",
+                        "remplacée par l'heure actuelle. Cela forcera un re-téléchargement " +
+                        "lors de la prochaine synchronisation. Continuer ?",
                 confirmLabel = "Mettre à jour",
                 onConfirm = {
                     pendingAction = null
@@ -182,9 +201,9 @@ fun FragMap_DropdownMenu(
     // ── Dropdown menu ─────────────────────────────────────────────────────────
 
     val anyRunning = organizeDropBoxProgress  != null
-                  || organizeLocalProgress    != null
-                  || syncImages2Progress      != null
-                  || updateTimestampsProgress != null
+            || organizeLocalProgress    != null
+            || syncImages2Progress      != null
+            || updateTimestampsProgress != null
 
     DropdownMenu(
         expanded         = expanded,

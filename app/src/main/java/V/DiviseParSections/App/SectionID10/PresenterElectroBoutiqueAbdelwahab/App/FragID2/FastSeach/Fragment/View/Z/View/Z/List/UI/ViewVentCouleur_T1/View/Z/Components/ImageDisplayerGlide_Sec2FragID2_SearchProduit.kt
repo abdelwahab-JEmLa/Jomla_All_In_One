@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.Z.Components
 
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
@@ -65,7 +65,6 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
     onClickToOpenWindow: () -> Unit = {},
     hideImage: Boolean = false
 ) {
-    // Track which products have been displayed to detect duplicates
     val displayTracker = remember { mutableMapOf<String, Int>() }
 
     var isLoading by remember { mutableStateOf(true) }
@@ -77,7 +76,6 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
 
     val imageExists = imageFile?.exists() == true
 
-    // Log image display for the same product
     LaunchedEffect(relative_M3CouleurInfos, imageFile) {
         relative_M3CouleurInfos?.let { couleurInfo ->
             val productKey = "${couleurInfo.parentBProduitOldID}_${couleurInfo.indexCouleurDansAncienProto}"
@@ -85,34 +83,28 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
             displayTracker[productKey] = displayCount
 
             Log.d(TAG, buildString {
-                append("=".repeat(60))
-                append("\n")
+                append("=".repeat(60)).append("\n")
                 append("Image Display Event #$displayCount\n")
-                append("-".repeat(60))
-                append("\n")
+                append("-".repeat(60)).append("\n")
                 append("Product Info:\n")
                 append("  - Product ID: ${couleurInfo.parentBProduitOldID}\n")
                 append("  - Product Name: ${couleurInfo.parentId1ProduitInfosDebugName}\n")
                 append("  - Color Index: ${couleurInfo.indexCouleurDansAncienProto}\n")
                 append("  - Color Name: ${couleurInfo.nomCouleurStrSiSonImageDispo}\n")
-                append("  - Key ID: ${couleurInfo.keyID.takeLast(8)}\n")
-                append("\n")
+                append("  - Key ID: ${couleurInfo.keyID.takeLast(8)}\n\n")
                 append("Image Details:\n")
                 append("  - File Name: ${imageFile?.name ?: "N/A"}\n")
                 append("  - File Exists: $imageExists\n")
+                append("  - lastModified: ${imageFile?.lastModified() ?: 0L}\n")
                 append("  - Hide Image: $hideImage\n")
-                append("  - Display Type: ${couleurInfo.aAffiche}\n")
-                append("\n")
-                if (displayCount > 1) {
-                    append("⚠️  WARNING: This product has been displayed $displayCount times!\n")
-                }
+                append("  - Display Type: ${couleurInfo.aAffiche}\n\n")
+                if (displayCount > 1) append("⚠️  WARNING: displayed $displayCount times!\n")
                 append("=".repeat(60))
             })
 
-            // Additional warning log for duplicate displays
             if (displayCount > 1) {
-                Log.w(TAG, "Duplicate display detected for product ${couleurInfo.parentBProduitOldID} " +
-                        "(${couleurInfo.parentId1ProduitInfosDebugName}) - Display count: $displayCount")
+                Log.w(TAG, "Duplicate display: ${couleurInfo.parentBProduitOldID} " +
+                        "(${couleurInfo.parentId1ProduitInfosDebugName}) x$displayCount")
             }
         }
     }
@@ -123,11 +115,7 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
         tonalElevation = 2.dp,
         shadowElevation = 4.dp
     ) {
-        Box(
-            modifier = Modifier
-                .size(imageSize.width, imageSize.height)
-        ) {
-            // If hideImage is true, always show ColorNameDisplayer regardless of image existence
+        Box(modifier = Modifier.size(imageSize.width, imageSize.height)) {
             if (hideImage) {
                 ColorNameDisplayer(
                     modifier = Modifier.fillMaxSize(),
@@ -141,16 +129,12 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
                             set(value = imageFile.name, key = SemanticsPropertyKey("imageFile"))
                         }
                         .getSemanticsTag(relative_M3CouleurInfos, "")
-                        .clickable {
-                            onClickToOpenWindow()
-                        }
+                        .clickable { onClickToOpenWindow() }
                         .fillMaxSize()
                         .clip(RoundedCornerShape(4.dp))
                         .graphicsLayer {
-                            if (blurRadius > 0f) {
-                                renderEffect =
-                                    BlurEffect(blurRadius, blurRadius, TileMode.Decal)
-                            }
+                            if (blurRadius > 0f)
+                                renderEffect = BlurEffect(blurRadius, blurRadius, TileMode.Decal)
                         },
                     model = imageFile,
                     contentDescription = "Color image for $colorName",
@@ -162,33 +146,28 @@ fun ImageDisplayerGlide_Sec2FragID2_SearchProduit(
                         transition(DrawableTransitionOptions.withCrossFade())
                         diskCacheStrategy(DiskCacheStrategy.ALL)
                         priority(Priority.HIGH)
-                        signature(ObjectKey(imageFile.absolutePath))
+                        // lastModified() changes automatically when syncFromImages2 calls
+                        // file.setLastModified(dropBoxModMs) → Glide reloads the new file
+                        signature(ObjectKey(imageFile.lastModified()))
                         listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>,
-                                isFirstResource: Boolean
+                                e: GlideException?, model: Any?,
+                                target: Target<Drawable>, isFirstResource: Boolean
                             ): Boolean {
-                                Log.e(TAG, "Image load failed for: ${imageFile.name}", e)
-                                relative_M3CouleurInfos?.let { info ->
-                                    Log.e(TAG, "Failed product: ${info.parentId1ProduitInfosDebugName} " +
-                                            "(ID: ${info.parentBProduitOldID})")
+                                Log.e(TAG, "Load failed: ${imageFile.name}", e)
+                                relative_M3CouleurInfos?.let {
+                                    Log.e(TAG, "Failed product: ${it.parentId1ProduitInfosDebugName}")
                                 }
                                 return false
                             }
-
                             override fun onResourceReady(
-                                resource: Drawable,
-                                model: Any,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource,
+                                resource: Drawable, model: Any,
+                                target: Target<Drawable>?, dataSource: DataSource,
                                 isFirstResource: Boolean
                             ): Boolean {
                                 if (isFirstResource) {
                                     isLoading = false
-                                    Log.d(TAG, "Image loaded successfully: ${imageFile.name} " +
-                                            "(Source: ${dataSource.name})")
+                                    Log.d(TAG, "Loaded: ${imageFile.name} (${dataSource.name})")
                                 }
                                 return false
                             }

@@ -1,8 +1,10 @@
 package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog
 
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.DropBox_Init_3.buildImages2Index
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import android.util.Log
 import com.dropbox.core.DbxRequestConfig
 import com.dropbox.core.oauth.DbxCredential
 import com.dropbox.core.v2.DbxClientV2
@@ -130,19 +132,33 @@ object DropBox_Init_3 {
         onProgress:       (fraction: Float, label: String) -> Unit = { _, _ -> },
     ): SyncReport = withContext(Dispatchers.IO) {
 
+        val TAG = "DropBox_Sync"
         onProgress(0f, "")
 
         // ── 1. Build a small DropBox index filtered by date ───────────────────
         val index = buildImages2Index(sinceMs)
+        Log.d(TAG, "Index DropBox: ${index.size} fichiers (sinceMs=$sinceMs)")
 
         // ── 2. Intersect: only colours that have a recent file on DropBox ─────
-        val toSync = list_m3
-            ?.filter { it.hasValidImage() && index.containsKey(it.nomImageFichieSansEtansion) }
+        val validM3 = list_m3?.filter { it.hasValidImage() }
+        Log.d(TAG, "list_m3 total=${list_m3?.size}, valides=${validM3?.size}")
+
+        validM3?.forEach { color ->
+            val inIndex = index.containsKey(color.nomImageFichieSansEtansion)
+            if (!inIndex) {
+                Log.d(TAG, "EXCLU de l'index DropBox: '${color.nomImageFichieSansEtansion}' " +
+                        "(absent ou trop ancien par rapport à sinceMs)")
+            }
+        }
+
+        val toSync = validM3?.filter { index.containsKey(it.nomImageFichieSansEtansion) }
 
         if (toSync.isNullOrEmpty()) {
+            Log.d(TAG, "toSync vide → rien à faire")
             onProgress(1f, "")
             return@withContext SyncReport(emptyList(), emptyList())
         }
+        Log.d(TAG, "toSync: ${toSync.size} couleurs à traiter")
 
         val total            = toSync.size.toFloat()
         var done             = 0
@@ -156,7 +172,7 @@ object DropBox_Init_3 {
                 M00CentralParametresOfAllApps.Companion.images_central_Local_storageLink,
                 fullName
             )
-            val meta         = index[color.nomImageFichieSansEtansion]!!   // safe: intersected above
+            val meta         = index[color.nomImageFichieSansEtansion]!!
             val dropBoxModMs = meta.serverModified?.time ?: 0L
             val localModMs   = if (localFile.exists()) localFile.lastModified() else 0L
 
@@ -164,22 +180,34 @@ object DropBox_Init_3 {
                 ?: color.nomImageFichieSansEtansion
             val label        = "$productName  (${idx + 1} / ${toSync.size})"
 
+            Log.d(TAG, "[$fullName] " +
+                    "localExists=${localFile.exists()} | " +
+                    "localMod=${java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date(localModMs))} | " +
+                    "dropBoxMod=${java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date(dropBoxModMs))} | " +
+                    "dropBox>local=${dropBoxModMs > localModMs}"
+            )
+
             onProgress(done / total, label)
 
             if (dropBoxModMs > localModMs) {
                 val wasNew = !localFile.exists()
+                Log.d(TAG, "[$fullName] → TÉLÉCHARGEMENT (wasNew=$wasNew)")
                 try {
                     localFile.parentFile?.mkdirs()
                     FileOutputStream(localFile).use { out ->
                         client.files().download(meta.pathLower).download(out)
                     }
                     if (dropBoxModMs > 0L) localFile.setLastModified(dropBoxModMs)
+                    Log.d(TAG, "[$fullName] ✅ téléchargé, lastModified mis à $dropBoxModMs")
 
                     if (wasNew) addedFiles.add(fullName) else overwrittenFiles.add(fullName)
 
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    Log.e(TAG, "[$fullName] ❌ ERREUR téléchargement: ${e.message}", e)
                     localFile.delete()
                 }
+            } else {
+                Log.d(TAG, "[$fullName] → IGNORÉ (local déjà à jour ou plus récent)")
             }
 
             done++
