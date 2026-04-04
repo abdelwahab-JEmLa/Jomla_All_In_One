@@ -84,7 +84,8 @@ fun Big_Principale_FragID3(
                 .padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
+        ) {               //<--
+        //TODO(1): fait que start tariff c Prix_SupperGro_Et_PresentationService acun n ai selectione 
             Lenceur_Vent_Handler_App4(
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,

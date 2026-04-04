@@ -10,7 +10,7 @@ object NavigationItems {
      */
     fun getItems(isAdmin: Boolean = true): List<Screen> {
         val baseItems = listOf(
-            ScreensApp2.A_ClientsLocationGps,
+            Screen.A_Clients_LocationGps,
             Screen.Fragment_Compact_Presentoir_Echantilliants,
             Screen.Compact_Presentoire_App_Produits_FragID5,
             Screen.TravailleTempRecorder,

@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.Class
 import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.MapsHomeWork
-import androidx.compose.material.icons.filled.NewLabel
 import androidx.compose.material.icons.filled.Preview
 import androidx.compose.material.icons.filled.ProductionQuantityLimits
 import androidx.compose.material.icons.filled.Receipt
@@ -43,9 +42,9 @@ sealed class Screen(
         )
 
     data object Compact_Presentoire_App_Produits_FragID5: Screen(
-        route = "Compact_Presentoire_App_Produits_FragID4",
+        route = "Compact_Presentoire_App_Produits_FragID5",
         icon = Icons.Default.Preview,
-        title = "Compact_Presentoire_App_Produits_FragID4",
+        title = "Compact_Presentoire_App_Produits_FragID5",
         color = Color(0xFFF44336),
     )
 

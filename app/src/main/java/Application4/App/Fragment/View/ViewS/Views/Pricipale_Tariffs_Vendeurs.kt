@@ -45,6 +45,8 @@ private object TariffTextSizes {
     val UNSELECTED_BORDER_WIDTH = 0.dp
 }
 
+//<--
+//TODO(1): fait que start tariff c Prix_SupperGro_Et_PresentationService acun n ai selectione
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Pricipale_Tariffs_Vendeurs_FragID3(
@@ -194,7 +196,17 @@ private fun formatPriceWithDecimals(price: Double): String {
 @Composable
 private fun EditableProgressiveTariffItem(
     tariff: M13TarificationInfos,
-    prix: Double,
+    prix: Double,                //<--
+    //TODO(1): fait que le valer start c
+    //si    M13TarificationInfos.TypeChoisi.Prix_Detaille -> 0
+    //            M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
+    //            M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable -> 1
+    //            M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> 2
+    //<--
+    //TODO(1): Prix_SupperGro_Et_PresentationService et Edited_Pour_Client exist le prix du prog == sum des 2 /2 
+    //when
+    // les 2 non dispo || 0.0 -> 0.0 
+    //ne des 2 dispo -> it prix 
     nombreUnite: Int,
     isSelected: Boolean,
     compactMode: Boolean = false,

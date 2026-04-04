@@ -7,7 +7,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID3.Compact_Presentoir_Echantilliants.App.Compact_Presentoir_Echantilliants_FragID3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Ancien_PresenterApp_FragID5
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.EducationFragment
@@ -76,10 +75,11 @@ fun AppNavHost(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
-    
+
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
     isWifiClientConnected_1: Boolean,
 ) {
+    // Initialize UI state and navigation
     val uiState by viewModel.uiState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -90,6 +90,8 @@ fun AppNavHost(
 
     val isAdmin = focusedValuesGetter.currentActive_M9AppCompt?.its_Admin ?: true
 
+    // Define the startup screen - this is the initial screen shown when the app launches
+    // Set to Fragment_Compact_Presentoir_Echantilliants (Product Showcase Fragment)
     val startUpScreen = Screen.Fragment_Compact_Presentoir_Echantilliants
 
     LaunchedEffect(currentRoute) {
@@ -184,8 +186,8 @@ fun AppNavHost(
                                 targetCategoryId = targetCategoryId,
                                 lockHost = lockHost,
                                 onClickImageToShowControles = onClickImageToShowControles,
-                                
-                            )
+
+                                )
                         }
 
                         if (uiState.isLoading) {
@@ -201,7 +203,7 @@ fun AppNavHost(
                     route = Screen.Compact_Presentoire_App_Produits_FragID5.route,
                 ) {
                     Ancien_PresenterApp_FragID5(
-                        
+
                         onClickImageToShowControles = onClickImageToShowControles,
                     )
                 }
@@ -387,7 +389,7 @@ fun NavGraphBuilder.app2(
         key(screenKey.value) {
             A_MapClients_A2FragID_1(
                 onUpdateLongAppSetting = {
-                   // navigateToMainScreen(navController, fragmentNavigationHandler)
+                    // navigateToMainScreen(navController, fragmentNavigationHandler)
                 },
                 onClear = onClear
             )
