@@ -290,6 +290,7 @@ fun PrixAchatHandler(
                     if (currentApp_Est_Admin) {
                         IconButton(
                             onClick = {
+                                handel_Add_Diminue_Prix(relative_Produit.prixAchat - decrease_Value)
                             },
                             modifier = Modifier.size(16.dp)
                         ) {
@@ -305,14 +306,16 @@ fun PrixAchatHandler(
 
                     ElevatedCard(
                         onClick = {
-
+                            if (currentApp_Est_Admin) {
+                                handel_Add_Diminue_Prix(relative_Produit.prixAchat + decrease_Value)
+                            }
                         }
                     ) {
                         val pls = if (currentApp_Est_Admin) " +" else ""
 
                         Column {
                             Text(
-                                "${prixAchat_depuit_Prix_SupperGro_Et_PresentationService?.prixCurrency}",
+                                "${prixAchat_depuit_Prix_SupperGro_Et_PresentationService?.prixCurrency}$pls",
                                 modifier = Modifier
                                     .background(couleurButton)
                                     .padding(4.dp),

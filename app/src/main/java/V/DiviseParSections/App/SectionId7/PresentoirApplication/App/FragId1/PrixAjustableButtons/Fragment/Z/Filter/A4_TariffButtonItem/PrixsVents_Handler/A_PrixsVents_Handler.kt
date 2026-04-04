@@ -85,24 +85,23 @@ fun PrixsVents_Handler(
 
     fun handel_Add_Diminue_Prix(newPrix: Double, shouldCreateNew: Boolean) {
         val currentTime = System.currentTimeMillis()
-
         if (shouldCreateNew) {
-            val newTariff = relative_Tariff.copy(
-                prixCurrency = newPrix,
-                creationTimestamps = currentTime,
-                dernierTimeTampsSynchronisationAvecFireBase = currentTime
+            aCentralFacade.repositorysMainSetter.add_M13TarificationInfos(
+                relative_Tariff.copy(
+                    prixCurrency = newPrix,
+                    creationTimestamps = currentTime,
+                    dernierTimeTampsSynchronisationAvecFireBase = currentTime
+                )
             )
-            repositorysMainSetter.upsert_M13TarificationInfos(newTariff)
-            currentTariffPrice = newPrix
         } else {
-            currentTariffPrice = newPrix
-            repositorysMainSetter.upsert_M13TarificationInfos(
+            aCentralFacade.repositorysMainSetter.update_M13TarificationInfos(
                 relative_Tariff.copy(
                     prixCurrency = newPrix,
                     dernierTimeTampsSynchronisationAvecFireBase = currentTime
                 )
             )
         }
+        currentTariffPrice = newPrix
     }
 
     Column {

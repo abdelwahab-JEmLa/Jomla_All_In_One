@@ -29,9 +29,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// FIX TODO(1): This composable is always unconditionally rendered — callers must NOT wrap it in
-// any condition (currentApp_Est_Admin, typeTarification check, etc.) that would suppress it.
-// The card itself has no internal guard; visibility is entirely the caller's responsibility.
 @Composable
 fun BeneficeClientAdjustmentCard(
     relative_Produit: M01Produit,
@@ -66,9 +63,6 @@ fun BeneficeClientAdjustmentCard(
         onPriceChange_To_Change_Tariff_Prix(tekherej - newBenefit_Client, shouldCreateNew())
     }
 
-    // FIX TODO(1): formula was wrong — was `(tekherej/nombreUnite) + (newUnit * nombreUnite)`.
-    // Correct: new selling price = tekherej − (newUnitBenefit × nombreUnite),
-    // mirroring applyTotalBenefit but starting from a per-unit amount.
     fun applyUnitBenefit(newBenefit_Client_Uniter: Double) {
         val newTotalBenefit = newBenefit_Client_Uniter * nombreUnite
         onPriceChange_To_Change_Tariff_Prix(tekherej - newTotalBenefit, shouldCreateNew())

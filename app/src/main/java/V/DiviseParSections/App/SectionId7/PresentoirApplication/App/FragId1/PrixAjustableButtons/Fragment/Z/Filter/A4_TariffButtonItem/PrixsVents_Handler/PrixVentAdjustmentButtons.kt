@@ -166,7 +166,6 @@ fun PrixVentAdjustmentButtons(
                                                 it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
                                                         && it.parent_M1Produit_KeyId == relative_Produit.keyID
                                             }
-
                                     val toastMsg: String
                                     if (existing != null) {
                                         aCentralFacade.repositorysMainSetter.update_M13TarificationInfos(
