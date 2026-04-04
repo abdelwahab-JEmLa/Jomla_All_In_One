@@ -1,11 +1,8 @@
 package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import com.dropbox.core.DbxRequestConfig
 import com.dropbox.core.oauth.DbxCredential
 import com.dropbox.core.v2.DbxClientV2
@@ -82,7 +79,7 @@ object DropBox_Init_3 {
                 )
 
                 if (meta != null) {
-                    val dropboxPath = meta.pathLower
+                    val dropboxPath  = meta.pathLower
                     val dropboxModMs = meta.serverModified?.time ?: 0L
 
                     if (dropboxPath != null && (!localFile.exists() || dropboxModMs > localFile.lastModified())) {
@@ -110,81 +107,95 @@ object DropBox_Init_3 {
     }
 
     /**
-     * For each colour in [list_m3] that has a valid image name, compares the DropBox
-     * [M3CouleurProduitInfos.Companion.rootFolder_Images_2_DropBox] server-modified timestamp against the local file's
-     * last-modified timestamp.  If DropBox is newer, downloads and overwrites the local file.
+     * Syncs local images from DropBox Images_2, applying two optimisations before any download:
      *
-     * @param sinceMs Only consider DropBox files whose [FileMetadata.serverModified] is ≥ this
-     *                epoch-millisecond value.  Pass `0L` (default) to skip the date filter.
-     * @return [SyncReport] listing which files were newly added and which were overwritten,
-     *         so the caller can present a summary dialog to the user.
+     * 1. **Date filter in DropBox listing**: [buildImages2Index] only keeps entries whose
+     *    `serverModified ≥ sinceMs`, so the index is small from the start — no full-folder scan
+     *    followed by per-item date checks.
+     *
+     * 2. **Intersection**: only colours whose image name appears in that small index are processed.
+     *    Colours not on DropBox or already up-to-date are never iterated.
+     *
+     * @param list_m3          Colours to consider (already filtered by catalogue before calling).
+     * @param sinceMs          Epoch-ms cutoff; only DropBox files modified on or after this date
+     *                         enter the index.  Pass `0L` to disable the date filter.
+     * @param produitKeyToName Map `M01Produit.keyID → produit.nom` used to label progress updates.
+     * @param onProgress       `(fraction 0..1, label)` called before and after each download.
+     * @return [SyncReport] listing added / overwritten file names.
      */
     suspend fun syncFromImages2(
-        list_m3:    List<M3CouleurProduitInfos>?,
-        sinceMs:    Long = 0L,
-        onProgress: (Float) -> Unit = {},
+        list_m3:          List<M3CouleurProduitInfos>?,
+        sinceMs:          Long = 0L,
+        produitKeyToName: Map<String, String> = emptyMap(),
+        onProgress:       (fraction: Float, label: String) -> Unit = { _, _ -> },
     ): SyncReport = withContext(Dispatchers.IO) {
-        onProgress(0f)
-        val validColors = list_m3?.filter { it.hasValidImage() }
-        if (validColors.isNullOrEmpty()) {
-            onProgress(1f)
+
+        onProgress(0f, "")
+
+        // ── 1. Build a small DropBox index filtered by date ───────────────────
+        val index = buildImages2Index(sinceMs)
+
+        // ── 2. Intersect: only colours that have a recent file on DropBox ─────
+        val toSync = list_m3
+            ?.filter { it.hasValidImage() && index.containsKey(it.nomImageFichieSansEtansion) }
+
+        if (toSync.isNullOrEmpty()) {
+            onProgress(1f, "")
             return@withContext SyncReport(emptyList(), emptyList())
         }
 
-        val index = buildImages2Index()
-        val total = validColors.size.toFloat()
-        var done = 0
-
+        val total            = toSync.size.toFloat()
+        var done             = 0
         val addedFiles       = mutableListOf<String>()
         val overwrittenFiles = mutableListOf<String>()
 
-        validColors.forEach { color ->
+        // ── 3. Download when DropBox is newer ─────────────────────────────────
+        toSync.forEachIndexed { idx, color ->
             val fullName  = "${color.nomImageFichieSansEtansion}.${color.extensionDisponible}"
             val localFile = File(
                 M00CentralParametresOfAllApps.Companion.images_central_Local_storageLink,
                 fullName
             )
-            val meta = index[color.nomImageFichieSansEtansion]
+            val meta         = index[color.nomImageFichieSansEtansion]!!   // safe: intersected above
+            val dropBoxModMs = meta.serverModified?.time ?: 0L
+            val localModMs   = if (localFile.exists()) localFile.lastModified() else 0L
 
-            if (meta != null) {
-                val dropBoxModMs = meta.serverModified?.time ?: 0L
-                val localModMs   = if (localFile.exists()) localFile.lastModified() else 0L
+            val productName  = produitKeyToName[color.parentBProduitInfosKeyID]
+                ?: color.nomImageFichieSansEtansion
+            val label        = "$productName  (${idx + 1} / ${toSync.size})"
 
-                // Skip files older than the requested date cutoff
-                if (sinceMs > 0L && dropBoxModMs < sinceMs) {
-                    done++
-                    onProgress(done / total)
-                    return@forEach
-                }
+            onProgress(done / total, label)
 
-                if (dropBoxModMs > localModMs) {
-                    val wasNew = !localFile.exists()
-                    try {
-                        localFile.parentFile?.mkdirs()
-                        FileOutputStream(localFile).use { out ->
-                            client.files().download(meta.pathLower).download(out)
-                        }
-                        if (dropBoxModMs > 0L) localFile.setLastModified(dropBoxModMs)
-
-                        // Record the outcome for the summary dialog
-                        if (wasNew) addedFiles.add(fullName)
-                        else        overwrittenFiles.add(fullName)
-
-                    } catch (_: Exception) {
-                        localFile.delete()
+            if (dropBoxModMs > localModMs) {
+                val wasNew = !localFile.exists()
+                try {
+                    localFile.parentFile?.mkdirs()
+                    FileOutputStream(localFile).use { out ->
+                        client.files().download(meta.pathLower).download(out)
                     }
+                    if (dropBoxModMs > 0L) localFile.setLastModified(dropBoxModMs)
+
+                    if (wasNew) addedFiles.add(fullName) else overwrittenFiles.add(fullName)
+
+                } catch (_: Exception) {
+                    localFile.delete()
                 }
             }
 
             done++
-            onProgress(done / total)
+            onProgress(done / total, label)
         }
 
-        onProgress(1f)
+        onProgress(1f, "")
         SyncReport(added = addedFiles, overwritten = overwrittenFiles)
     }
 
-    private suspend fun buildImages2Index(): Map<String, FileMetadata> =
+    /**
+     * Lists Images_2 on DropBox (recursive) and returns a filename-stem → metadata map.
+     * When [sinceMs] > 0, entries with `serverModified < sinceMs` are discarded during the
+     * listing itself, so the resulting map is small before it ever reaches the caller.
+     */
+    private suspend fun buildImages2Index(sinceMs: Long = 0L): Map<String, FileMetadata> =
         withContext(Dispatchers.IO) {
             val index = mutableMapOf<String, FileMetadata>()
             try {
@@ -192,7 +203,9 @@ object DropBox_Init_3 {
                     .listFolderBuilder(M3CouleurProduitInfos.Companion.rootFolder_Images_2_DropBox)
                     .withRecursive(true).start()
                 while (true) {
-                    result.entries.filterIsInstance<FileMetadata>()
+                    result.entries
+                        .filterIsInstance<FileMetadata>()
+                        .filter { sinceMs == 0L || (it.serverModified?.time ?: 0L) >= sinceMs }
                         .forEach { index[it.name.substringBeforeLast(".")] = it }
                     if (!result.hasMore) break
                     result = client.files().listFolderContinue(result.cursor)
@@ -220,10 +233,7 @@ object DropBox_Init_3 {
         }
 
     private suspend fun ensureDropboxFolder(path: String) = withContext(Dispatchers.IO) {
-        try {
-            client.files().createFolderV2(path)
-        } catch (_: Exception) {
-        }
+        try { client.files().createFolderV2(path) } catch (_: Exception) { }
     }
 
     private suspend fun moveDropboxFile(fromPath: String, toPath: String) =
@@ -236,8 +246,8 @@ object DropBox_Init_3 {
         }
 
     /**
-     * Uploads [imageBytes] to [M3CouleurProduitInfos.Companion.rootFolder_Images_2_DropBox]/[fileName], overwriting any
-     * existing file with the same name.  Called after a successful camera capture.
+     * Uploads [imageBytes] to [M3CouleurProduitInfos.Companion.rootFolder_Images_2_DropBox]/[fileName],
+     * overwriting any existing file with the same name.  Called after a successful camera capture.
      * Returns the DropBox path on success, or null if the upload failed.
      */
     suspend fun uploadToImages2(
@@ -259,55 +269,3 @@ object DropBox_Init_3 {
     private fun M3CouleurProduitInfos.hasValidImage() =
         nomImageFichieSansEtansion.isNotBlank() && nomImageFichieSansEtansion != "Non Dispo"
 }
-
-/**
- * Returns only the [M3CouleurProduitInfos] entries whose parent catalogue
- * has a [M21CataloguesCategorie.keyID] in [catalogueKeys].
- *
- * The lookup chain is: colour → produit → catégorie → catalogue.
- */
- suspend fun filterM3ByCatalogueKeys(
-    catalogueKeys: Set<String>,
-    list_m16:      List<M16CategorieProduit>?,
-    list_m1:       List<M01Produit>?,
-    list_m3:       List<M3CouleurProduitInfos>?,
-): List<M3CouleurProduitInfos>? = withContext(Dispatchers.Default) {
-    if (list_m3.isNullOrEmpty()) return@withContext list_m3
-
-    val catalogues = get_ListM21CataloguesCategorie()
-    val catalogueById = catalogues.associateBy { it.id }
-    val catalogueByCategorieId = list_m16?.associate { cat ->
-        cat.id to (catalogueById[cat.catalogueParentId])
-    }
-    val catalogueByProduitKey = list_m1?.associate { p ->
-        p.keyID to catalogueByCategorieId?.get(p.idParentCategorie)
-    }
-
-    list_m3.filter { color ->
-        val catalogue = catalogueByProduitKey?.get(color.parentBProduitInfosKeyID)
-        catalogue?.keyID in catalogueKeys
-    }
-}
-
-suspend fun buildCatalogueGroups(
-    list_m16: List<M16CategorieProduit>?,
-    list_m1:  List<M01Produit>?,
-    list_m3:  List<M3CouleurProduitInfos>?,
-): Map<M21CataloguesCategorie, List<M3CouleurProduitInfos>>? =
-    withContext(Dispatchers.Default) {
-        val catalogues = get_ListM21CataloguesCategorie()
-        val sansCatalogue = catalogues.find { it.nom == "Sans Catalogue" }
-            ?: M21CataloguesCategorie(keyID = "t4", id = 4, nom = "Sans Catalogue")
-
-        val catalogueById = catalogues.associateBy { it.id }
-        val catalogueByCategorieId = list_m16?.associate { cat ->
-            cat.id to (catalogueById[cat.catalogueParentId] ?: sansCatalogue)
-        }
-        val catalogueByProduitKey = list_m1?.associate { p ->
-            p.keyID to (catalogueByCategorieId?.get(p.idParentCategorie) ?: sansCatalogue)
-        }
-
-        list_m3
-            ?.filter { it.nomImageFichieSansEtansion.isNotBlank() && it.nomImageFichieSansEtansion != "Non Dispo" }
-            ?.groupBy { catalogueByProduitKey?.get(it.parentBProduitInfosKeyID) ?: sansCatalogue }
-    }

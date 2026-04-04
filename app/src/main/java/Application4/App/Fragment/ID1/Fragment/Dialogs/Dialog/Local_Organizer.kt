@@ -11,9 +11,9 @@ object Local_Organizer {
 
     /**
      * Mirrors the DropBox organizer but works entirely on-device:
-     * - Target root : [EntreApps.Shared.Models.M3CouleurProduitInfos.Companion.backup_Images_storageLink]
+     * - Target root : [M3CouleurProduitInfos.Companion.backup_Images_storageLink]
      * - Per-catalogue sub-folder : catalogue.drp_image_folder_catalogue_path
-     * - Source images : [EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.images_central_Local_storageLink]
+     * - Source images : [M00CentralParametresOfAllApps.Companion.images_central_Local_storageLink]
      *
      * Each image is *moved* (copy + delete) from the central folder into its
      * catalogue sub-folder inside the backup root.
@@ -37,7 +37,6 @@ object Local_Organizer {
 
         catalogueGroups?.forEach { (catalogue, colors) ->
 
-            // backup_Images_storageLink / drp_image_folder_catalogue_path
             val targetDir = File(
                 M3CouleurProduitInfos.Companion.backup_Images_storageLink,
                 catalogue.drp_image_folder_catalogue_path
@@ -51,7 +50,7 @@ object Local_Organizer {
                     return@forEach
                 }
 
-                val fullName = "${color.nomImageFichieSansEtansion}.${color.extensionDisponible}"
+                val fullName   = "${color.nomImageFichieSansEtansion}.${color.extensionDisponible}"
                 val sourceFile = File(
                     M00CentralParametresOfAllApps.Companion.images_central_Local_storageLink,
                     fullName
@@ -61,15 +60,56 @@ object Local_Organizer {
                 if (sourceFile.exists()) {
                     try {
                         sourceFile.copyTo(targetFile, overwrite = true)
-                        sourceFile.delete()           // move = copy + delete
+                        sourceFile.delete()
                     } catch (_: Exception) {
-                        targetFile.delete()           // roll back partial copy on failure
+                        targetFile.delete()
                     }
                 }
 
                 done++
                 onProgress(done / total)
             }
+        }
+
+        onProgress(1f)
+    }
+
+    /**
+     * Sets the `lastModified` timestamp of every local image file referenced by [list_m3]
+     * to the current time ([System.currentTimeMillis]).
+     *
+     * Use this to "reset" the local modification dates so that a subsequent
+     * [DropBox_Init_3.syncFromImages2] with a [sinceMs] cutoff treats all local files as older
+     * than any incoming DropBox version, forcing a full re-download on the next sync.
+     *
+     * @param list_m3    Colours whose local image files should be touched.
+     * @param onProgress `fraction 0..1` called after each file.
+     */
+    suspend fun updateLocalTimestampsToNow(
+        list_m3:    List<M3CouleurProduitInfos>?,
+        onProgress: (Float) -> Unit = {},
+    ) = withContext(Dispatchers.IO) {
+        onProgress(0f)
+
+        val validColors = list_m3?.filter { it.hasValidImage() }
+        if (validColors.isNullOrEmpty()) {
+            onProgress(1f); return@withContext
+        }
+
+        val nowMs = System.currentTimeMillis()
+        val total = validColors.size.toFloat()
+        var done  = 0
+
+        validColors.forEach { color ->
+            val fullName = "${color.nomImageFichieSansEtansion}.${color.extensionDisponible}"
+            val file     = File(
+                M00CentralParametresOfAllApps.Companion.images_central_Local_storageLink,
+                fullName
+            )
+            if (file.exists()) file.setLastModified(nowMs)
+
+            done++
+            onProgress(done / total)
         }
 
         onProgress(1f)

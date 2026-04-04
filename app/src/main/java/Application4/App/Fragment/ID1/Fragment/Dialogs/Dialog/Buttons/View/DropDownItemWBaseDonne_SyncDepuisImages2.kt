@@ -13,18 +13,19 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DropDownItemWBaseDonne_SyncDepuisImages2(
-    progress: Float?,
-    enabled:  Boolean,
-    onClick:  () -> Unit,
+    progress:     Float?,
+    enabled:      Boolean,
+    onClick:      () -> Unit,
+    currentLabel: String = "",
 ) {
-    Column(modifier = Modifier.Companion.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth()) {
         DropdownMenuItem(
             text = {
                 Text(
                     text = when {
                         progress == null -> "Sync local ← DropBox Images_2"
-                        progress < 1f -> "Téléchargement… ${(progress * 100).toInt()} %"
-                        else -> "Terminé ✓"
+                        progress < 1f    -> "Téléchargement… ${(progress * 100).toInt()} %"
+                        else             -> "Terminé ✓"
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (enabled) MaterialTheme.colorScheme.onSurface
@@ -34,11 +35,26 @@ fun DropDownItemWBaseDonne_SyncDepuisImages2(
             enabled = enabled,
             onClick = onClick
         )
-        if (progress != null) SyncProgressIndicator(
-            progress = progress,
-            modifier = Modifier.Companion
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-        )
+
+        if (progress != null) {
+            // Current file label (product name + index)
+            if (currentLabel.isNotBlank()) {
+                Text(
+                    text     = currentLabel,
+                    style    = MaterialTheme.typography.labelSmall,
+                    color    = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            }
+            SyncProgressIndicator(
+                progress = progress,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+        }
     }
 }
