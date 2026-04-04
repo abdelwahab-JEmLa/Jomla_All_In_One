@@ -1,4 +1,4 @@
-package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog
+package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.Ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning

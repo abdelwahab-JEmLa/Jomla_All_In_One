@@ -1,8 +1,11 @@
-package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog
+package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.Ui
 
 import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
 import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserParCatalogue
 import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_SyncDepuisImages2
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.DropBox_Init_3
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Local_Organizer
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.SyncReport
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -71,10 +74,10 @@ fun FragMap_DropdownMenu(
     pendingAction?.let { action ->
         when (action) {
             PendingAction.DropBox -> AvertissementDialog(
-                title   = "Organiser sur DropBox",
+                title = "Organiser sur DropBox",
                 message = "Cette action va déplacer toutes les images vers leurs dossiers " +
-                          "catalogues sur DropBox. Les fichiers seront déplacés de façon " +
-                          "permanente. Continuer ?",
+                        "catalogues sur DropBox. Les fichiers seront déplacés de façon " +
+                        "permanente. Continuer ?",
                 confirmLabel = "Déplacer",
                 onConfirm = {
                     pendingAction = null
@@ -83,7 +86,7 @@ fun FragMap_DropdownMenu(
                         val groups = buildCatalogueGroups(list_m16, list_m1, list_m3)
                         DropBox_Init_3.organizeByCategories(
                             catalogueGroups = groups,
-                            onProgress      = { p -> organizeDropBoxProgress = p }
+                            onProgress = { p -> organizeDropBoxProgress = p }
                         )
                         organizeDropBoxProgress = null
                         onDismiss()
@@ -93,10 +96,10 @@ fun FragMap_DropdownMenu(
             )
 
             PendingAction.Local -> AvertissementDialog(
-                title   = "Organiser en local",
+                title = "Organiser en local",
                 message = "Cette action va déplacer toutes les images depuis le dossier " +
-                          "central local vers leurs dossiers catalogues dans le dossier " +
-                          "de sauvegarde. Les fichiers sources seront supprimés. Continuer ?",
+                        "central local vers leurs dossiers catalogues dans le dossier " +
+                        "de sauvegarde. Les fichiers sources seront supprimés. Continuer ?",
                 confirmLabel = "Déplacer",
                 onConfirm = {
                     pendingAction = null
@@ -105,7 +108,7 @@ fun FragMap_DropdownMenu(
                         val groups = buildCatalogueGroups(list_m16, list_m1, list_m3)
                         Local_Organizer.organizeByCategories(
                             catalogueGroups = groups,
-                            onProgress      = { p -> organizeLocalProgress = p }
+                            onProgress = { p -> organizeLocalProgress = p }
                         )
                         organizeLocalProgress = null
                         onDismiss()
@@ -115,10 +118,10 @@ fun FragMap_DropdownMenu(
             )
 
             PendingAction.SyncFromImages2 -> AvertissementDialog(
-                title   = "Sync local ← DropBox Images_2",
+                title = "Sync local ← DropBox Images_2",
                 message = "Seules les images des catalogues t1/t2 modifiées sur DropBox " +
-                          "dans les 20 derniers jours seront téléchargées. " +
-                          "Les fichiers locaux plus anciens seront écrasés. Continuer ?",
+                        "dans les 20 derniers jours seront téléchargées. " +
+                        "Les fichiers locaux plus anciens seront écrasés. Continuer ?",
                 confirmLabel = "Synchroniser",
                 onConfirm = {
                     pendingAction = null
@@ -126,18 +129,18 @@ fun FragMap_DropdownMenu(
                         syncImages2Progress = 0f
 
                         // ── Filters ──────────────────────────────────────────
-                        val cutoffMs   = System.currentTimeMillis() - 20L * 24 * 3600 * 1000
+                        val cutoffMs = System.currentTimeMillis() - 20L * 24 * 3600 * 1000
                         val filteredM3 = filterM3ByCatalogueKeys(
                             catalogueKeys = setOf("t1", "t2"),
-                            list_m16      = list_m16,
-                            list_m1       = list_m1,
-                            list_m3       = list_m3,
+                            list_m16 = list_m16,
+                            list_m1 = list_m1,
+                            list_m3 = list_m3,
                         )
                         // ─────────────────────────────────────────────────────
 
                         val report = DropBox_Init_3.syncFromImages2(
-                            list_m3    = filteredM3,
-                            sinceMs    = cutoffMs,
+                            list_m3 = filteredM3,
+                            sinceMs = cutoffMs,
                             onProgress = { p -> syncImages2Progress = p }
                         )
                         syncImages2Progress = null
@@ -185,7 +188,7 @@ fun FragMap_DropdownMenu(
  */
 @Composable
 private fun SyncReportDialog(
-    report:    SyncReport,
+    report: SyncReport,
     onDismiss: () -> Unit,
 ) {
     AlertDialog(
