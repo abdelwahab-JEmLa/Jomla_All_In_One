@@ -20,6 +20,7 @@ fun cleanupInvalidOperations(repo10OperationVentCouleur: Repo10OperationVentCoul
 
                 // Keep special clients, delete all others
                 !isSpecialClient
+
             }
 
             operationsToDelete.forEach { operation ->
