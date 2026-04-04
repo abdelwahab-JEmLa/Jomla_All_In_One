@@ -277,7 +277,7 @@ class RepositorysMainGetter(
                     M11AchatOperation.remove_ref()
                 }
 
-                M00CentralParametresOfAllApps().au_Lence_Dimininue_Datas_OperationVents.ifTrue {
+                M00CentralParametresOfAllApps().au_Lence_remove_Datas_OperationVents.ifTrue {
                     M10OperationVentCouleur.remove_ref()
                 }
 

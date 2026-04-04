@@ -172,9 +172,20 @@ data class M2Client(
 }
 
 object Jomla_Clients {
-    const val ECHATILLANTS_KEY_ID = "-Oh4W0-igT_bXGOo-LC_"
+    val ECHATILLANTS_KEY_ID = Client_Speciale.AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a.keyID
     const val Au_Command_KEY_ID = ""
 }
-enum class Client_Speciale(keyID: String ="") {
-    Jomla_ECHATILLANTS_Client(Jomla_Clients.ECHATILLANTS_KEY_ID)
+
+enum class Client_Speciale(
+    val keyID: String = "",
+    val autre_nom: String = "",
+    val moulahada: String = "",
+) {
+    AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a(
+        "-Oh4W0-igT_bXGOo-LC_",
+        autre_nom = "AbdelwahabJomla Marke Wach Dina Échantillon"
+    ),
+    AbdelwahabJomla_Marque_Sel3a_Au_Depot("-OoK4WklxDWe_o19oc2F"),
+    Jomla_Marque_Sel3a_Ditha_Pour_Vendre("", moulahada = "non supprime l ami jamel"),
+    AbdelwahabJomla_Promo_Sel3a(""),
 }

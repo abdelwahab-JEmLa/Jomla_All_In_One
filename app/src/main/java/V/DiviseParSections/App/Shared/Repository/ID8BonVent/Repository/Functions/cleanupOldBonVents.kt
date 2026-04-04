@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
+import EntreApps.Shared.Models.Client_Speciale
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
-import EntreApps.Shared.Models.Jomla_Clients
 import kotlinx.coroutines.launch
 
 fun cleanupOldBonVents(repo8BonVent: Repo8BonVent, bonVents: List<M8BonVent>) {
@@ -13,18 +13,20 @@ fun cleanupOldBonVents(repo8BonVent: Repo8BonVent, bonVents: List<M8BonVent>) {
         M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     )
 
+    val specialClientKeyIDs = Client_Speciale.entries
+        .map { it.keyID }
+        .filter { it.isNotEmpty() }
+        .toSet()
+
     val bonVentsToRemove = bonVents.filter { bonVent ->
         if (bonVent.etateActuellementEst in typesToKeep) {
             return@filter false
         }
 
-        val parentNameContainsAbdelwahab = bonVent.parent_M2Client_DebugInfos
-            .contains("abdelwahab", ignoreCase = true)
+        val isSpecialClient = bonVent.parent_M2Client_KeyID in specialClientKeyIDs ||
+                bonVent.parent_M2Client_DebugInfos.contains("abdelwahab", ignoreCase = true)
 
-        val isJomlaClient = bonVent.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID ||
-                bonVent.parent_M2Client_KeyID == Jomla_Clients.Au_Command_KEY_ID
-
-        !parentNameContainsAbdelwahab && !isJomlaClient
+        !isSpecialClient
     }
 
     if (bonVentsToRemove.isNotEmpty()) {
