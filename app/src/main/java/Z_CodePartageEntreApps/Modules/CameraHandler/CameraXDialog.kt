@@ -10,6 +10,8 @@ import android.graphics.YuvImage
 import android.net.Uri
 import android.os.Build
 import android.view.Surface
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -35,6 +37,7 @@ import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.FlipCameraAndroid
+import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -145,7 +148,7 @@ fun Bitmap.scale(newWidth: Int, newHeight: Int): Bitmap {
     return Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
 }
 
-// Updated CameraXDialog with flash toggle functionality
+// Updated CameraXDialog with flash toggle and gallery picker functionality
 @Composable
 fun CameraXDialog(
     onImageCaptured: (Uri) -> Unit,
@@ -228,6 +231,62 @@ fun CameraXDialog(
             }
         } catch (e: Exception) {
             null
+        }
+    }
+
+    // Converts a gallery URI to a WebP-encoded cache file URI, applying orientation
+    // correction and downscaling — mirrors the camera capture processing pipeline.
+    suspend fun processGalleryUriToWebP(sourceUri: Uri): Uri? {
+        return try {
+            withContext(Dispatchers.IO) {
+                val inputStream = context.contentResolver.openInputStream(sourceUri)
+                    ?: return@withContext null
+                val originalBitmap = BitmapFactory.decodeStream(inputStream).also {
+                    inputStream.close()
+                } ?: return@withContext null
+
+                // Correct EXIF orientation
+                val rotationDegrees = getOrientationFromUri(context, sourceUri)
+                val correctedBitmap = if (rotationDegrees != 0) {
+                    rotateBitmap(originalBitmap, rotationDegrees.toFloat()).also {
+                        if (it !== originalBitmap) originalBitmap.recycle()
+                    }
+                } else originalBitmap
+
+                // Scale if needed
+                val maxSize = 2048
+                val scaledBitmap = if (correctedBitmap.width > maxSize || correctedBitmap.height > maxSize) {
+                    val scale = minOf(
+                        maxSize.toFloat() / correctedBitmap.width,
+                        maxSize.toFloat() / correctedBitmap.height
+                    )
+                    correctedBitmap.scale(
+                        (correctedBitmap.width * scale).toInt(),
+                        (correctedBitmap.height * scale).toInt()
+                    ).also { if (it !== correctedBitmap) correctedBitmap.recycle() }
+                } else correctedBitmap
+
+                val outputFile = File(context.cacheDir, "webp_gallery_${System.currentTimeMillis()}.webp")
+                FileOutputStream(outputFile).use { it.write(bitmapToWebPBytes(scaledBitmap, webPQuality)) }
+                scaledBitmap.recycle()
+
+                if (outputFile.exists() && outputFile.length() > 0) Uri.fromFile(outputFile)
+                else { outputFile.delete(); null }
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    // Gallery launcher: pick any image, convert to WebP, then forward to onImageCaptured
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            CoroutineScope(Dispatchers.Main).launch {
+                val webpUri = processGalleryUriToWebP(uri)
+                webpUri?.let { onImageCaptured(it) }
+            }
         }
     }
 
@@ -362,12 +421,25 @@ fun CameraXDialog(
                                     },
                                     tint = when (flashMode) {
                                         ImageCapture.FLASH_MODE_OFF -> Color.White.copy(alpha = 0.6f)
-                                        ImageCapture.FLASH_MODE_ON -> Color.Yellow // Mode torch
-                                        ImageCapture.FLASH_MODE_AUTO -> Color.Cyan // Mode auto
+                                        ImageCapture.FLASH_MODE_ON -> Color.Yellow
+                                        ImageCapture.FLASH_MODE_AUTO -> Color.Cyan
                                         else -> Color.White
                                     }
                                 )
                             }
+                        }
+
+                        // Gallery picker button — opens the system image picker as an
+                        // alternative to capturing a new photo
+                        IconButton(
+                            onClick = { galleryLauncher.launch("image/*") },
+                            modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Photo,
+                                contentDescription = "Choisir depuis la galerie",
+                                tint = Color.White
+                            )
                         }
 
                         // Camera flip button

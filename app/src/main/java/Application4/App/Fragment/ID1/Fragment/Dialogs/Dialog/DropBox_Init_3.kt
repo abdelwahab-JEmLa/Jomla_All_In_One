@@ -173,7 +173,7 @@ object DropBox_Init_3 {
                 fullName
             )
             val meta         = index[color.nomImageFichieSansEtansion]!!
-            val dropBoxModMs = meta.serverModified?.time ?: 0L
+            val dropBoxModMs = meta.clientModified?.time ?: meta.serverModified?.time ?: 0L
             val localModMs   = if (localFile.exists()) localFile.lastModified() else 0L
 
             val productName  = produitKeyToName[color.parentBProduitInfosKeyID]
@@ -278,15 +278,25 @@ object DropBox_Init_3 {
      * overwriting any existing file with the same name.  Called after a successful camera capture.
      * Returns the DropBox path on success, or null if the upload failed.
      */
+    /**
+     * Uploads [imageBytes] to DropBox Images_2/[fileName], overwriting any existing file.
+     *
+     * [clientModifiedMs] is stamped on the DropBox entry as `clientModified`.
+     * It defaults to **now − 40 seconds** so that the local file's `lastModified` (≈ now)
+     * is always newer than the DropBox `clientModified`; syncFromImages2 therefore
+     * treats the local copy as up-to-date and skips re-downloading it.
+     */
     suspend fun uploadToImages2(
         fileName: String,
         imageBytes: ByteArray,
+        clientModifiedMs: Long = System.currentTimeMillis() - 40L * 1_000,
     ): String? = withContext(Dispatchers.IO) {
         val targetPath = "${M3CouleurProduitInfos.Companion.rootFolder_Images_2_DropBox}/$fileName"
         return@withContext try {
             client.files()
                 .uploadBuilder(targetPath)
                 .withMode(WriteMode.OVERWRITE)
+                .withClientModified(java.util.Date(clientModifiedMs))
                 .uploadAndFinish(imageBytes.inputStream())
             targetPath
         } catch (_: Exception) {

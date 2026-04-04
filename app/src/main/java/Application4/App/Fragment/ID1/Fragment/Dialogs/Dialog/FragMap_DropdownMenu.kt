@@ -10,10 +10,8 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
-import com.bumptech.glide.Glide
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -34,7 +32,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -117,13 +117,15 @@ fun FragMap_DropdownMenu(
                 onDismiss = { pendingAction = null }
             )
 
-            PendingAction.SyncFromImages2 -> AvertissementDialog(
+            PendingAction.SyncFromImages2 -> AvertissementDialog(      //<--
+            //TODO(1): ajot des de colors au burrons et icons animable pour distencte les clicks on utili lottif . 
                 title        = "Sync local ← DropBox Images_2",
                 message      = "Seules les images des catalogues t1 et t4 modifiées sur DropBox " +
                         "dans les 20 derniers jours seront téléchargées. " +
                         "Les fichiers locaux plus anciens seront écrasés. Continuer ?",
                 confirmLabel = "Synchroniser",
-                onConfirm = {
+                onConfirm = {      //<--
+                    //TODO(1): exctract pour l utilise au init vec le progress edites
                     pendingAction = null
                     coroutineScope.launch {
                         syncImages2Progress = 0f

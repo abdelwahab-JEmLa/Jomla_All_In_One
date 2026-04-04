@@ -25,7 +25,7 @@ class A_LoadingViewModel(
     private val appDatabase: AppDatabase,
     private val appContext: Context,
 ) : ViewModel() {     //<--
-//TODO(1): enleve le drop box ini syc 
+//TODO(1): fait que ca lence de utilisela fun du SyncFromImages2 enleve to l atre drp init c avec init 3
 
     data class LoadingUiState(
         val initDone: Boolean = false,

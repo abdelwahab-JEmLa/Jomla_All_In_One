@@ -228,7 +228,8 @@ fun ViewVentCouleur_T1(
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 }
                 // Upload captured image to DropBox Images_2 folder, then persist the path in dropBox_key
-                CoroutineScope(Dispatchers.IO).launch {
+                CoroutineScope(Dispatchers.IO).launch {            //<--
+                //TODO(1): fait que le temp du creatio et modfication  image et -mn de current temp
                     val dropBoxPath = DropBox_Init_3.uploadToImages2(fileName, imageBytes)
                     if (dropBoxPath != null) {
                         val withDropBoxKey = updatedCouleur.copy(dropBox_key = dropBoxPath)

@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -19,12 +20,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -36,7 +40,8 @@ import androidx.compose.ui.unit.dp
 /**
  * Mirrors [EditableInfoCard] but for [Double] values.
  * In display mode → tappable InfoCard.
- * In edit mode    → inline BasicTextField + confirm button (same layout as other items).
+ * In edit mode    → inline BasicTextField (empty start, last value as placeholder,
+ *                   keyboard auto-focused) + confirm button.
  */
 @Composable
 fun EditableDoubleInfoCard(
@@ -51,7 +56,15 @@ fun EditableDoubleInfoCard(
     modifier: Modifier = Modifier
 ) {
     var isEditing by remember { mutableStateOf(false) }
-    var textValue by remember(startValue) { mutableStateOf("%.2f".format(startValue)) }
+    // FIX TODO(1): start empty so the user types a fresh value
+    var textValue by remember(isEditing) { mutableStateOf("") }
+
+    val focusRequester = remember { FocusRequester() }
+
+    // FIX TODO(1): request focus (= open keyboard) as soon as edit mode appears
+    LaunchedEffect(isEditing) {
+        if (isEditing) focusRequester.requestFocus()
+    }
 
     fun confirm() {
         val parsed = textValue.replace(",", ".").toDoubleOrNull()
@@ -73,6 +86,8 @@ fun EditableDoubleInfoCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 icon()
+
+                // FIX TODO(1): decorationBox shows last value as placeholder when empty
                 BasicTextField(
                     value = textValue,
                     onValueChange = { textValue = it },
@@ -87,8 +102,26 @@ fun EditableDoubleInfoCard(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
-                    modifier = Modifier.width(56.dp)
+                    modifier = Modifier
+                        .width(56.dp)
+                        .focusRequester(focusRequester),
+                    decorationBox = { innerTextField ->
+                        Box(contentAlignment = Alignment.CenterStart) {
+                            if (textValue.isEmpty()) {
+                                Text(
+                                    text = "%.2f".format(startValue),
+                                    style = TextStyle(
+                                        fontSize = valueTextSize,
+                                        fontWeight = FontWeight.Normal,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.4f)
+                                    )
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
                 )
+
                 IconButton(
                     onClick = { confirm() },
                     modifier = Modifier.size(itemPadding + 20.dp)

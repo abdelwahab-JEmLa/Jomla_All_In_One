@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -52,7 +52,8 @@ fun ProductImageCaptureButton(
     val scope = rememberCoroutineScope()
     var showCameraDialog by remember { mutableStateOf(false) }
     var isProcessing by remember { mutableStateOf(false) }
-    // Store the created couleur keyID to use later
+    // Stores the keyID of the M3CouleurProduitInfos created before the camera opens,
+    // so it can be linked back to the product once the image is confirmed.
     var createdCouleurKeyID by remember { mutableStateOf<String?>(null) }
 
     fun getNextColorIndex(): Int {
@@ -180,7 +181,9 @@ fun ProductImageCaptureButton(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            handleAddNewM3Couleur()
+            // Fix: store the returned keyID so handleImageCapture can link the
+            // captured image to the correct M3CouleurProduitInfos record.
+            createdCouleurKeyID = handleAddNewM3Couleur()
             showCameraDialog = true
         } else {
             Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()

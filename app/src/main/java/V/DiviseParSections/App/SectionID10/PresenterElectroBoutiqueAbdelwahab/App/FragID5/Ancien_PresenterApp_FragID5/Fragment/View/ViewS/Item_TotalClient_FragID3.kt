@@ -37,7 +37,7 @@ fun Item_TotalClient_FragID3(
             )
         },
         value         = "%.2f".format(totalClient),
-        label         = "Tot.Cli",
+        label         = "تخرج",
         labelTextSize = labelTextSize,
         valueTextSize = valueTextSize,
         itemPadding   = itemPadding,
