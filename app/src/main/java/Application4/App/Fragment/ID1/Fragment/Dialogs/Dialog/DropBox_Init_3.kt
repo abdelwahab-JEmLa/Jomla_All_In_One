@@ -111,11 +111,14 @@ object DropBox_Init_3 {
      * [M3CouleurProduitInfos.Companion.rootFolder_Images_2_DropBox] server-modified timestamp against the local file's
      * last-modified timestamp.  If DropBox is newer, downloads and overwrites the local file.
      *
+     * @param sinceMs Only consider DropBox files whose [FileMetadata.serverModified] is ≥ this
+     *                epoch-millisecond value.  Pass `0L` (default) to skip the date filter.
      * @return [SyncReport] listing which files were newly added and which were overwritten,
      *         so the caller can present a summary dialog to the user.
      */
     suspend fun syncFromImages2(
-        list_m3: List<M3CouleurProduitInfos>?,
+        list_m3:    List<M3CouleurProduitInfos>?,
+        sinceMs:    Long = 0L,
         onProgress: (Float) -> Unit = {},
     ): SyncReport = withContext(Dispatchers.IO) {
         onProgress(0f)
@@ -143,6 +146,13 @@ object DropBox_Init_3 {
             if (meta != null) {
                 val dropBoxModMs = meta.serverModified?.time ?: 0L
                 val localModMs   = if (localFile.exists()) localFile.lastModified() else 0L
+
+                // Skip files older than the requested date cutoff
+                if (sinceMs > 0L && dropBoxModMs < sinceMs) {
+                    done++
+                    onProgress(done / total)
+                    return@forEach
+                }
 
                 if (dropBoxModMs > localModMs) {
                     val wasNew = !localFile.exists()

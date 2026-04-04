@@ -195,7 +195,6 @@ fun PrixsVents_Handler(
                 )
             }
 
-            // TODO(1) résolu : width passé de 80.dp à 20.dp
             FloatingActionButton(
                 modifier = Modifier.width(20.dp),
                 onClick = ::handelClick,

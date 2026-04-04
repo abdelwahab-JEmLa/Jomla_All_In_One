@@ -116,20 +116,32 @@ fun FragMap_DropdownMenu(
 
             PendingAction.SyncFromImages2 -> AvertissementDialog(
                 title   = "Sync local ← DropBox Images_2",
-                message = "Pour chaque couleur, si l'image sur DropBox Images_2 est plus " +
-                          "récente que le fichier local, le fichier local sera écrasé. Continuer ?",
+                message = "Seules les images des catalogues t1/t2 modifiées sur DropBox " +
+                          "dans les 20 derniers jours seront téléchargées. " +
+                          "Les fichiers locaux plus anciens seront écrasés. Continuer ?",
                 confirmLabel = "Synchroniser",
                 onConfirm = {
                     pendingAction = null
                     coroutineScope.launch {
                         syncImages2Progress = 0f
+
+                        // ── Filters ──────────────────────────────────────────
+                        val cutoffMs   = System.currentTimeMillis() - 20L * 24 * 3600 * 1000
+                        val filteredM3 = filterM3ByCatalogueKeys(
+                            catalogueKeys = setOf("t1", "t2"),
+                            list_m16      = list_m16,
+                            list_m1       = list_m1,
+                            list_m3       = list_m3,
+                        )
+                        // ─────────────────────────────────────────────────────
+
                         val report = DropBox_Init_3.syncFromImages2(
-                            list_m3    = list_m3,
+                            list_m3    = filteredM3,
+                            sinceMs    = cutoffMs,
                             onProgress = { p -> syncImages2Progress = p }
                         )
                         syncImages2Progress = null
                         onDismiss()
-                        // Show the summary dialog (even if nothing changed)
                         syncReport = report
                     }
                 },
@@ -248,7 +260,36 @@ private fun SyncReportDialog(
     )
 }
 
-// ─── Shared helper ────────────────────────────────────────────────────────────
+// ─── Shared helpers ───────────────────────────────────────────────────────────
+
+/**
+ * Returns only the [M3CouleurProduitInfos] entries whose parent catalogue
+ * has a [M21CataloguesCategorie.keyID] in [catalogueKeys].
+ *
+ * The lookup chain is: colour → produit → catégorie → catalogue.
+ */
+private suspend fun filterM3ByCatalogueKeys(
+    catalogueKeys: Set<String>,
+    list_m16:      List<M16CategorieProduit>?,
+    list_m1:       List<M01Produit>?,
+    list_m3:       List<M3CouleurProduitInfos>?,
+): List<M3CouleurProduitInfos>? = withContext(Dispatchers.Default) {
+    if (list_m3.isNullOrEmpty()) return@withContext list_m3
+
+    val catalogues             = get_ListM21CataloguesCategorie()
+    val catalogueById          = catalogues.associateBy { it.id }
+    val catalogueByCategorieId = list_m16?.associate { cat ->
+        cat.id to (catalogueById[cat.catalogueParentId])
+    }
+    val catalogueByProduitKey  = list_m1?.associate { p ->
+        p.keyID to catalogueByCategorieId?.get(p.idParentCategorie)
+    }
+
+    list_m3.filter { color ->
+        val catalogue = catalogueByProduitKey?.get(color.parentBProduitInfosKeyID)
+        catalogue?.keyID in catalogueKeys
+    }
+}
 
 private suspend fun buildCatalogueGroups(
     list_m16: List<M16CategorieProduit>?,

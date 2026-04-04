@@ -49,8 +49,6 @@ fun Display_Tariff_NonGrossistContext(
 ) {
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
-    // TODO(1) FIXED: always false — this composable is for the non-grossist "Mode Tournet" context
-    // currentApp_ItsWorkChezGrossisst removed; grossist branch eliminated entirely
 
     val infiniteTransition = rememberInfiniteTransition(label = "blinkAnimation")
     val blinkColor by infiniteTransition.animateColor(

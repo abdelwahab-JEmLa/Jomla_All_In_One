@@ -36,23 +36,23 @@ import org.koin.compose.koinInject
 @Composable
 fun A_Compact_Presentoire_App_Produits_App4(
     modifier: Modifier = Modifier,
-    context : Context = LocalContext.current,
-    appDatabase: AppDatabase =koinInject (),
+    context: Context = LocalContext.current,
+    appDatabase: AppDatabase = koinInject(),
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = viewModel(
         factory = viewModelFactory {
             initializer {
                 A_ViewModel_NewProtoPatterns(
                     context = context.applicationContext,
-                    appDatabase  = appDatabase,
-                    fragmentNavigationHandler  = fragmentNavigationHandler,
+                    appDatabase = appDatabase,
+                    fragmentNavigationHandler = fragmentNavigationHandler,
                 )
             }
         }
     ),
     onClickImageToShowControles: () -> Unit = {}
 ) {
-   val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
+    val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
     val active_Datas = viewModelNewProtoPatterns.active_Datas
@@ -91,7 +91,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
         Box() {
             Etager_LazyColumn(
                 modifier = modifier,
-                
+
                 onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
                 justMovedProductKeyID = justMovedProductKeyID,
                 uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),
@@ -144,10 +144,11 @@ fun A_Compact_Presentoire_App_Produits_App4(
             }
         )
     }
-
-    Floating_Separated_Button(
-        list_m16 =active_Datas.list_M16CategorieProduit,
-        list_m1 = active_Datas.list_M1Produit,
-        list_m3 = active_Datas.list_M03CouleurProduitInfos,
-    )
+    if (viewModelNewProtoPatterns.active_Datas.active_M9Compt?.its_Admin ?: false) {
+        Floating_Separated_Button(
+            list_m16 = active_Datas.list_M16CategorieProduit,
+            list_m1 = active_Datas.list_M1Produit,
+            list_m3 = active_Datas.list_M03CouleurProduitInfos,
+        )
+    }
 }
