@@ -1,6 +1,6 @@
-package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog
+package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.Ui
 
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.Ui.FragMap_DropdownMenu
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.FragMap_DropdownMenu
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M3CouleurProduitInfos

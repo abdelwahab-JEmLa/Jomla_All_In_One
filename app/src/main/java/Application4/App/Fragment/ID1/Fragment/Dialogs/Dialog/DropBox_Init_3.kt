@@ -1,8 +1,11 @@
 package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import com.dropbox.core.DbxRequestConfig
 import com.dropbox.core.oauth.DbxCredential
 import com.dropbox.core.v2.DbxClientV2
@@ -256,3 +259,55 @@ object DropBox_Init_3 {
     private fun M3CouleurProduitInfos.hasValidImage() =
         nomImageFichieSansEtansion.isNotBlank() && nomImageFichieSansEtansion != "Non Dispo"
 }
+
+/**
+ * Returns only the [M3CouleurProduitInfos] entries whose parent catalogue
+ * has a [M21CataloguesCategorie.keyID] in [catalogueKeys].
+ *
+ * The lookup chain is: colour → produit → catégorie → catalogue.
+ */
+ suspend fun filterM3ByCatalogueKeys(
+    catalogueKeys: Set<String>,
+    list_m16:      List<M16CategorieProduit>?,
+    list_m1:       List<M01Produit>?,
+    list_m3:       List<M3CouleurProduitInfos>?,
+): List<M3CouleurProduitInfos>? = withContext(Dispatchers.Default) {
+    if (list_m3.isNullOrEmpty()) return@withContext list_m3
+
+    val catalogues = get_ListM21CataloguesCategorie()
+    val catalogueById = catalogues.associateBy { it.id }
+    val catalogueByCategorieId = list_m16?.associate { cat ->
+        cat.id to (catalogueById[cat.catalogueParentId])
+    }
+    val catalogueByProduitKey = list_m1?.associate { p ->
+        p.keyID to catalogueByCategorieId?.get(p.idParentCategorie)
+    }
+
+    list_m3.filter { color ->
+        val catalogue = catalogueByProduitKey?.get(color.parentBProduitInfosKeyID)
+        catalogue?.keyID in catalogueKeys
+    }
+}
+
+suspend fun buildCatalogueGroups(
+    list_m16: List<M16CategorieProduit>?,
+    list_m1:  List<M01Produit>?,
+    list_m3:  List<M3CouleurProduitInfos>?,
+): Map<M21CataloguesCategorie, List<M3CouleurProduitInfos>>? =
+    withContext(Dispatchers.Default) {
+        val catalogues = get_ListM21CataloguesCategorie()
+        val sansCatalogue = catalogues.find { it.nom == "Sans Catalogue" }
+            ?: M21CataloguesCategorie(keyID = "t4", id = 4, nom = "Sans Catalogue")
+
+        val catalogueById = catalogues.associateBy { it.id }
+        val catalogueByCategorieId = list_m16?.associate { cat ->
+            cat.id to (catalogueById[cat.catalogueParentId] ?: sansCatalogue)
+        }
+        val catalogueByProduitKey = list_m1?.associate { p ->
+            p.keyID to (catalogueByCategorieId?.get(p.idParentCategorie) ?: sansCatalogue)
+        }
+
+        list_m3
+            ?.filter { it.nomImageFichieSansEtansion.isNotBlank() && it.nomImageFichieSansEtansion != "Non Dispo" }
+            ?.groupBy { catalogueByProduitKey?.get(it.parentBProduitInfosKeyID) ?: sansCatalogue }
+    }

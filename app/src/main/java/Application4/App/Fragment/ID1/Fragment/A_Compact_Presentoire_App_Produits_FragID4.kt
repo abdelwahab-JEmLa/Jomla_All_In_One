@@ -1,6 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment
 
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Floating_Separated_Button
+import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.Ui.Floating_Separated_Button
 import Application4.App.Fragment.ID1.Fragment.Dialogs.PressistatntMainActivityButtons_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
