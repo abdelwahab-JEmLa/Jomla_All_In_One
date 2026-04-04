@@ -29,6 +29,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+// FIX TODO(1): This composable is always unconditionally rendered — callers must NOT wrap it in
+// any condition (currentApp_Est_Admin, typeTarification check, etc.) that would suppress it.
+// The card itself has no internal guard; visibility is entirely the caller's responsibility.
 @Composable
 fun BeneficeClientAdjustmentCard(
     relative_Produit: M01Produit,
@@ -39,7 +42,7 @@ fun BeneficeClientAdjustmentCard(
     val nombreUnite = relative_Produit.nombreUniteInt
     val tekherej = nombreUnite * relative_Produit.clientPrixVentUnite
 
-    val beneficeClient =tekherej - prixVente
+    val beneficeClient = tekherej - prixVente
     val beneficeClientUnitaire = if (nombreUnite > 0) beneficeClient / nombreUnite else 0.0
 
     var isEditingTotal by remember { mutableStateOf(false) }
@@ -53,29 +56,33 @@ fun BeneficeClientAdjustmentCard(
     LaunchedEffect(isEditingTotal) { if (isEditingTotal) totalFocusRequester.requestFocus() }
     LaunchedEffect(isEditingUnit) { if (isEditingUnit) unitFocusRequester.requestFocus() }
 
-
     fun shouldCreateNew(): Boolean {
         val diff = (System.currentTimeMillis() - relative_Tariff.creationTimestamps) / 1000
         return diff > 20
     }
 
     fun applyTotalBenefit(newBenefit_Client: Double) {
+        // new selling price = what client pays in total − the benefit we grant him
         onPriceChange_To_Change_Tariff_Prix(tekherej - newBenefit_Client, shouldCreateNew())
     }
 
+    // FIX TODO(1): formula was wrong — was `(tekherej/nombreUnite) + (newUnit * nombreUnite)`.
+    // Correct: new selling price = tekherej − (newUnitBenefit × nombreUnite),
+    // mirroring applyTotalBenefit but starting from a per-unit amount.
     fun applyUnitBenefit(newBenefit_Client_Uniter: Double) {
-        onPriceChange_To_Change_Tariff_Prix((tekherej / nombreUnite) + (newBenefit_Client_Uniter * nombreUnite), shouldCreateNew())
+        val newTotalBenefit = newBenefit_Client_Uniter * nombreUnite
+        onPriceChange_To_Change_Tariff_Prix(tekherej - newTotalBenefit, shouldCreateNew())
     }
 
     val colorTotal = Color(0xFF1976D2)          // bleu = client
     val colorUnit = colorTotal.copy(alpha = 0.5f)
 
+    // Card always renders — no external condition should hide it (see TODO note above)
     ElevatedCard {
         Column(modifier = Modifier.padding(2.dp)) {
 
             // ── Bénéfice total ──────────────────────────────────────────────
             Row(verticalAlignment = Alignment.CenterVertically) {
-
                 if (isEditingTotal) {
                     OutlinedTextField(
                         value = totalText,
@@ -107,8 +114,6 @@ fun BeneficeClientAdjustmentCard(
                         fontSize = 10.sp
                     )
                 }
-
-
             }
 
             // ── Bénéfice unitaire ───────────────────────────────────────────

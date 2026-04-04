@@ -37,12 +37,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
-/**
- * Mirrors [EditableInfoCard] but for [Double] values.
- * In display mode → tappable InfoCard.
- * In edit mode    → inline BasicTextField (empty start, last value as placeholder,
- *                   keyboard auto-focused) + confirm button.
- */
 @Composable
 fun EditableDoubleInfoCard(
     icon: @Composable () -> Unit,
@@ -56,12 +50,10 @@ fun EditableDoubleInfoCard(
     modifier: Modifier = Modifier
 ) {
     var isEditing by remember { mutableStateOf(false) }
-    // FIX TODO(1): start empty so the user types a fresh value
     var textValue by remember(isEditing) { mutableStateOf("") }
 
     val focusRequester = remember { FocusRequester() }
 
-    // FIX TODO(1): request focus (= open keyboard) as soon as edit mode appears
     LaunchedEffect(isEditing) {
         if (isEditing) focusRequester.requestFocus()
     }
@@ -87,7 +79,6 @@ fun EditableDoubleInfoCard(
             ) {
                 icon()
 
-                // FIX TODO(1): decorationBox shows last value as placeholder when empty
                 BasicTextField(
                     value = textValue,
                     onValueChange = { textValue = it },

@@ -53,7 +53,6 @@ fun PrixVentAdjustmentButtons(
     val prixVente = relative_Tariff.prixCurrency
     val nombreUnite = relative_Produit.nombreUniteInt
 
-    // Calculate unit selling price
     val prixVenteUnitaire = if (nombreUnite > 0) prixVente / nombreUnite else 0.0
 
     var isEditingUnitPrice by remember { mutableStateOf(false) }
@@ -64,15 +63,11 @@ fun PrixVentAdjustmentButtons(
     val totalPriceFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(isEditingUnitPrice) {
-        if (isEditingUnitPrice) {
-            focusRequester.requestFocus()
-        }
+        if (isEditingUnitPrice) focusRequester.requestFocus()
     }
 
     LaunchedEffect(isEditingTotalPrice) {
-        if (isEditingTotalPrice) {
-            totalPriceFocusRequester.requestFocus()
-        }
+        if (isEditingTotalPrice) totalPriceFocusRequester.requestFocus()
     }
 
     val totalPriceAdjustmentValue = when {
@@ -91,26 +86,23 @@ fun PrixVentAdjustmentButtons(
         else -> 5.0
     }
 
-    // Get tariff colors from the TypeChoisi enum
     val tariffColor = relative_Tariff.typeChoisi.couleur
     val tariffTextColor = relative_Tariff.typeChoisi.couleur_Text
 
+    // FIX TODO(1): was always returning `true`, now correctly uses the 20-second threshold
+    // so that rapid edits update the same tariff instead of endlessly creating new ones.
     fun shouldCreateNewTariff(): Boolean {
-        val currentTime = System.currentTimeMillis()
-        val tariffCreationTime = relative_Tariff.creationTimestamps
-        val timeDifferenceSeconds = (currentTime - tariffCreationTime) / 1000
-        return true
+        val timeDifferenceSeconds =
+            (System.currentTimeMillis() - relative_Tariff.creationTimestamps) / 1000
+        return timeDifferenceSeconds > 20
     }
 
     fun updateTotalPriceImmediately(newTotalPrice: Double) {
-        val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(newTotalPrice, shouldCreateNew)
+        onPriceChange(newTotalPrice, shouldCreateNewTariff())
     }
 
     fun updateUnitPriceImmediately(newUnitPrice: Double) {
-        val totalPrice = newUnitPrice * nombreUnite
-        val shouldCreateNew = shouldCreateNewTariff()
-        onPriceChange(totalPrice, shouldCreateNew)
+        onPriceChange(newUnitPrice * nombreUnite, shouldCreateNewTariff())
     }
 
     fun handleUnitPriceEditDone() {
@@ -129,30 +121,25 @@ fun PrixVentAdjustmentButtons(
         isEditingTotalPrice = false
     }
 
-    // Card with both selling prices in column
     val its_Pour_Abdelwahab = (!currentApp_ItsNotWorkChezGrossisst_And_NotAdmin
             || relative_Tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client)
-    val width =if (isEditingTotalPrice)100.dp else 60.dp
+    val width = if (isEditingTotalPrice) 100.dp else 60.dp
+
     ElevatedCard(
         modifier = Modifier
             .width(width)
             .padding(4.dp)
             .background(tariffColor)
     ) {
-        Column(
-            modifier = Modifier.padding(4.dp)
+        Column(modifier = Modifier.padding(4.dp)) {
 
-        ) {
-            // Total selling price section at top
+            // ── Total selling price ─────────────────────────────────────────
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(tariffColor)
             ) {
-
-
-                // Total price display/edit
                 if (isEditingTotalPrice) {
                     OutlinedTextField(
                         value = totalPriceText,
@@ -168,21 +155,22 @@ fun PrixVentAdjustmentButtons(
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 if (relative_Tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
-                                    val tariff_Prix_SupperGro_Et_PresentationService =
+                                    // FIX TODO(1): newPrice is now correctly applied to the repo
+                                    // (both update and create paths are handled below)
+                                    val newPrice = totalPriceText.toDoubleOrNull() ?: prixVente
+
+                                    val existing =
                                         aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
-                                            .sortedByDescending {
-                                                it.creationTimestamps
-                                            }
+                                            .sortedByDescending { it.creationTimestamps }
                                             .findLast {
                                                 it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
                                                         && it.parent_M1Produit_KeyId == relative_Produit.keyID
                                             }
-                                    val newPrice = totalPriceText.toDoubleOrNull() ?: prixVente
 
                                     val toastMsg: String
-                                    if (tariff_Prix_SupperGro_Et_PresentationService != null) {
+                                    if (existing != null) {
                                         aCentralFacade.repositorysMainSetter.update_M13TarificationInfos(
-                                            tariff_Prix_SupperGro_Et_PresentationService.copy(
+                                            existing.copy(
                                                 prixCurrency = newPrice,
                                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                             )
@@ -201,13 +189,13 @@ fun PrixVentAdjustmentButtons(
                                         )
                                         toastMsg = "تم إضافة سعر السوبر جملة جديد"
                                     }
+                                    // Also propagate through the callback so UI state stays in sync
+                                    onPriceChange(newPrice, existing == null)
                                     Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show()
                                     isEditingTotalPrice = false
                                 } else {
                                     handleTotalPriceEditDone()
-
                                 }
-
                             }
                         ),
                         singleLine = true
@@ -223,25 +211,18 @@ fun PrixVentAdjustmentButtons(
                                     totalPriceText = ""
                                 }
                             }
-                            .background(tariffColor)
-                        ,
+                            .background(tariffColor),
                         color = tariffTextColor
                     )
                 }
             }
 
-
-            // Unit price section - centered
+            // ── Unit price ──────────────────────────────────────────────────
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-
-
-                    // Unit price display/edit
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     if (isEditingUnitPrice) {
                         OutlinedTextField(
                             value = unitPriceText,
@@ -275,8 +256,7 @@ fun PrixVentAdjustmentButtons(
                                         unitPriceText = ""
                                     }
                                 }
-                                .background(tariffColor)
-                            ,
+                                .background(tariffColor),
                             color = tariffTextColor,
                             fontSize = 10.sp
                         )

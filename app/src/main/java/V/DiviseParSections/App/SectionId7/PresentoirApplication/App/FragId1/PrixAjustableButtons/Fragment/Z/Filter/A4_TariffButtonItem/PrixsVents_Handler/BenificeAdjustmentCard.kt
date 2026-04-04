@@ -43,8 +43,7 @@ fun BenificeAdjustmentButtons(
     list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
     prixachatDepuitPrixSuppergroEtPresentationservice: M13TarificationInfos?,
 ) {
-    val prixAchat = prixachatDepuitPrixSuppergroEtPresentationservice?.prixCurrency
-        ?: 0.0
+    val prixAchat = prixachatDepuitPrixSuppergroEtPresentationservice?.prixCurrency ?: 0.0
     val prixVente = relative_Tariff.prixCurrency
     val benefice = prixVente - prixAchat
     val nombreUnite = relative_Produit.nombreUniteInt
@@ -70,21 +69,6 @@ fun BenificeAdjustmentButtons(
         }
     }
 
-    val benefitAdjustmentValue = when {
-        benefice < 10.0 -> 1.0
-        benefice < 50.0 -> 5.0
-        benefice < 200.0 -> 5.0
-        benefice < 1200.0 -> 25.0
-        else -> 50.0
-    }
-
-    val unitBenefitAdjustmentValue = when {
-        beneficeUnitaire < 1.0 -> 1.0
-        beneficeUnitaire < 10.0 -> 2.0
-        beneficeUnitaire < 50.0 -> 1.0
-        else -> 5.0
-    }
-
     fun shouldCreateNewTariff(): Boolean {
         val currentTime = System.currentTimeMillis()
         val tariffCreationTime = relative_Tariff.creationTimestamps
@@ -92,9 +76,31 @@ fun BenificeAdjustmentButtons(
         return timeDifferenceSeconds > 20
     }
 
+    // FIX TODO(1a): update tariff price directly in the repo, not just through UI callback
+    fun persistPriceToRepo(newSellingPrice: Double, shouldCreateNew: Boolean) {
+        val now = System.currentTimeMillis()
+        if (shouldCreateNew) {
+            aCentralFacade.repositorysMainSetter.add_M13TarificationInfos(
+                relative_Tariff.copy(
+                    prixCurrency = newSellingPrice,
+                    creationTimestamps = now,
+                    dernierTimeTampsSynchronisationAvecFireBase = now
+                )
+            )
+        } else {
+            aCentralFacade.repositorysMainSetter.upsert_M13TarificationInfos(
+                relative_Tariff.copy(
+                    prixCurrency = newSellingPrice,
+                    dernierTimeTampsSynchronisationAvecFireBase = now
+                )
+            )
+        }
+    }
+
     fun updateBenefitImmediately(newBenefit: Double) {
         val newSellingPrice = prixAchat + newBenefit
         val shouldCreateNew = shouldCreateNewTariff()
+        persistPriceToRepo(newSellingPrice, shouldCreateNew)   // FIX: repo update
         onPriceChange(newSellingPrice, shouldCreateNew)
     }
 
@@ -102,6 +108,7 @@ fun BenificeAdjustmentButtons(
         val totalBenefit = newUnitBenefit * nombreUnite
         val newSellingPrice = prixAchat + totalBenefit
         val shouldCreateNew = shouldCreateNewTariff()
+        persistPriceToRepo(newSellingPrice, shouldCreateNew)   // FIX: repo update
         onPriceChange(newSellingPrice, shouldCreateNew)
     }
 
@@ -121,7 +128,6 @@ fun BenificeAdjustmentButtons(
         isEditingTotalBenefit = false
     }
 
-    // Card with both benefits in column
     val colorUnite = Color(0xD8D9C3DC)
     ElevatedCard {
         Column {
@@ -129,8 +135,7 @@ fun BenificeAdjustmentButtons(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-                // Total benefit display/edit
+                // FIX TODO(1b): init value to "" so that label shows old value and auto-focus works
                 if (isEditingTotalBenefit) {
                     OutlinedTextField(
                         value = totalBenefitText,
@@ -155,6 +160,7 @@ fun BenificeAdjustmentButtons(
                             .background(Color(0xFF9C27B0))
                             .padding(4.dp)
                             .clickable {
+                                totalBenefitText = ""   // FIX: reset so label (placeholder) is visible
                                 isEditingTotalBenefit = true
                             },
                         color = Color.White
@@ -169,7 +175,7 @@ fun BenificeAdjustmentButtons(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Unit benefit display/edit
+                    // FIX TODO(1b): init value to "" on click so label shows old value
                     if (isEditingUnitBenefit) {
                         OutlinedTextField(
                             value = unitBenefitText,
@@ -199,13 +205,13 @@ fun BenificeAdjustmentButtons(
                                 .background(colorUnite)
                                 .padding(2.dp)
                                 .clickable {
+                                    unitBenefitText = ""   // FIX: reset so label (placeholder) is visible
                                     isEditingUnitBenefit = true
                                 },
                             color = Color.White,
                             fontSize = 10.sp
                         )
                     }
-
                 }
             }
         }

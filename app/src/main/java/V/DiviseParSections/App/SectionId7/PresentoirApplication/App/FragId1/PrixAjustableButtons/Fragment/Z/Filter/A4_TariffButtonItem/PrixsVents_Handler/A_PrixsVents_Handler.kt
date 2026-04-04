@@ -160,7 +160,6 @@ fun PrixsVents_Handler(
                             val prixVentUnitaire =
                                 if (nombreUnite > 0) currentTariffPrice / nombreUnite else 0.0
 
-                            if (prixVentUnitaire != 0.0) {
                                 BeneficeClientAdjustmentCard(
                                     relative_Produit = relative_Produit,
                                     relative_Tariff = relative_Tariff.copy(prixCurrency = currentTariffPrice),
@@ -168,7 +167,6 @@ fun PrixsVents_Handler(
                                         handel_Add_Diminue_Prix(newPrice, shouldCreateNew)
                                     }
                                 )
-                            }
 
                             BenificeAdjustmentButtons(
                                 prixachatDepuitPrixSuppergroEtPresentationservice=prixachatDepuitPrixSuppergroEtPresentationservice,

@@ -80,6 +80,10 @@ class A_ViewModel_NewProtoPatterns(
         Initializer_ViewModel(this@A_ViewModel_NewProtoPatterns).run()
     }
 
+    fun retryLoadingData() {
+        Initializer_ViewModel(this@A_ViewModel_NewProtoPatterns).run()
+    }
+
     fun maybeCreateEditedPourClientTariff(
         produit: M01Produit,
         synthetic: M13TarificationInfos?,

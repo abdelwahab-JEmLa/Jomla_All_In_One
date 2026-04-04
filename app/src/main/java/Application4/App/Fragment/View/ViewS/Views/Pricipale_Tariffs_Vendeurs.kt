@@ -62,7 +62,24 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                 && !tariff.typeChoisi.ignore_affiche
     }
 
-    val sortedTariffs = filteredTariffs.sortedBy { tariff ->
+    // FIXED TODO(1): Ensure editable progressive tariff always exists in the list
+    val tariffsWithEditableProgressive = if (filteredTariffs.none {
+            it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
+                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client
+        }) {
+        // Create a default editable progressive tariff if none exists
+        val defaultEditableTariff = M13TarificationInfos(
+            prixCurrency = 0.0,
+            parent_M1Produit_KeyId = relative_M1produit.keyID,
+            typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
+            creationTimestamps = System.currentTimeMillis()
+        )
+        filteredTariffs + defaultEditableTariff
+    } else {
+        filteredTariffs
+    }
+
+    val sortedTariffs = tariffsWithEditableProgressive.sortedBy { tariff ->
         when (tariff.typeChoisi) {
             M13TarificationInfos.TypeChoisi.Prix_Detaille -> 0
             M13TarificationInfos.TypeChoisi.Edited_Pour_Client,

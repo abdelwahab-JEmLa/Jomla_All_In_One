@@ -178,21 +178,15 @@ fun ProgressivePercentageAdjustmentCard(
                     )
                 }
             }
-            // Added benefit row for Edited_Pour_Client tariff type
-            if (currentApp_Est_Admin && typeTarification == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
-                if (allTariffsGroupedAndSorted != null) {
-                    if (relative_Produit != null) {
-                        BenefitDisplayRow(
-                            allTariffsGroupedAndSorted = allTariffsGroupedAndSorted,
-                            relative_Produit = relative_Produit,
-                            currentTariffPrice = currentTariffPrice,
-                            onPriceChange = { newPrice, shouldCreateNew ->
-                                onPriceChange(newPrice, shouldCreateNew)
-                            }
-                        )
-                    }
+            // BenefitDisplayRow always rendered — no conditions
+            BenefitDisplayRow(
+                allTariffsGroupedAndSorted = allTariffsGroupedAndSorted ?: sortedMapOf(),
+                relative_Produit = relative_Produit ?: produit,
+                currentTariffPrice = currentTariffPrice,
+                onPriceChange = { newPrice, shouldCreateNew ->
+                    onPriceChange(newPrice, shouldCreateNew)
                 }
-            }
+            )
         }
     }
 }

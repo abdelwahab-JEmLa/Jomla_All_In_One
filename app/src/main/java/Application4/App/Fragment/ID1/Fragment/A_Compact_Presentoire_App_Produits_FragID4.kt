@@ -70,6 +70,18 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
     var selectedProductForCategoryChange by remember { mutableStateOf<M01Produit?>(null) }
     var justMovedProductKeyID by remember { mutableStateOf<String?>(null) }
+    var hasRetriedLoading by remember { mutableStateOf(false) }
+
+    // Retry loading data if initialization is done but no items are displayed
+    LaunchedEffect(isInitDone, allProducts) {
+        if (isInitDone && !hasRetriedLoading && allProducts.isNullOrEmpty()) {
+            delay(6000) // Wait 6 seconds
+            if (allProducts.isNullOrEmpty()) {
+                hasRetriedLoading = true
+                viewModelNewProtoPatterns.retryLoadingData()
+            }
+        }
+    }
 
     LaunchedEffect(justMovedProductKeyID) {
         justMovedProductKeyID?.let {
