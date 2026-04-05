@@ -1,15 +1,14 @@
-package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
+package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.But.View
 
 import EntreApps.Shared.Models.Client_Speciale
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import kotlinx.coroutines.launch
 
-//<--
-//TODO(1): fait ignore o leur parent on vent est on vent bon vent
-fun cleanupOldBonVents(
+fun cleanupOldBonVents_Np(
     repo8BonVent: Repo8BonVent,
-    bonVents: List<M8BonVent>
+    bonVents: List<M8BonVent>,
+    on_vent_key: String
 ) {
     val typesToKeep = setOf(
         M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit,
@@ -23,10 +22,13 @@ fun cleanupOldBonVents(
         .toSet()
 
     val bonVentsToRemove = bonVents.filter { bonVent ->
-        if (bonVent.etateActuellementEst in typesToKeep) {
-            return@filter false
-        }
+        // Keep: type is protected
+        if (bonVent.etateActuellementEst in typesToKeep) return@filter false
 
+        // Keep: this IS the currently active on_vent BonVent
+        if (bonVent.keyID == on_vent_key) return@filter false
+
+        // Keep: special client
         val isSpecialClient = bonVent.parent_M2Client_KeyID in specialClientKeyIDs ||
                 bonVent.parent_M2Client_DebugInfos.contains("abdelwahab", ignoreCase = true)
 

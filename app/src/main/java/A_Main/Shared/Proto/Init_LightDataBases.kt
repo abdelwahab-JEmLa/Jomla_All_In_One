@@ -1,6 +1,5 @@
 package A_Main.Shared.Proto
 
-import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
@@ -38,8 +37,7 @@ object Init_LightDataBases {
                 .children.mapNotNull { it.getValue(M8BonVent::class.java) }
             m8List = if (applyFilters) {
                 raw.filter { bon ->
-                    bon.parent_M14VentPeriod_KeyId in m14Keys ||
-                            bon.parent_M2Client_KeyID == Jomla_Clients.ECHATILLANTS_KEY_ID
+                    bon.parent_M14VentPeriod_KeyId in m14Keys
                 }
             } else raw
         } catch (_: Exception) {}
@@ -65,10 +63,6 @@ object Init_LightDataBases {
             } else raw
         } catch (_: Exception) {}
 
-        // ── TODO(1) fixed: seed clients from Firebase ──────────────────────────
-        // When filters are active we only pull the clients actually referenced by
-        // the fetched BonVent records so we keep the "light" promise of this DB.
-        val referencedClientKeys = m8List.map { it.parent_M2Client_KeyID }.toSet()
         var m2ClientList = emptyList<M2Client>()
         try {
             val raw = M2Client.ref.get().await()
@@ -81,7 +75,7 @@ object Init_LightDataBases {
                         client
                 }
             m2ClientList = if (applyFilters)
-                raw.filter { it.keyID in referencedClientKeys }
+                raw
             else
                 raw
         } catch (_: Exception) {}

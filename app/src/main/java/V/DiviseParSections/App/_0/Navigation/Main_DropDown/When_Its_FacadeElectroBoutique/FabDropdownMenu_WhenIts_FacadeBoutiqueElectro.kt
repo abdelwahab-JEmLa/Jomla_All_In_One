@@ -1,8 +1,8 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model.FilterState_Facad_Boutique_FragId5
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.FilterTunnel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.GroupTunnel
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model.FilterState_Facad_Boutique_FragId5
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
-
+        //<--
+        //TODO(1): ajout secutrite click le button change t sure apre ca lenc eau 2 eme click 
 @Composable
 fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
     onDismissDropdown: () -> Unit,
@@ -29,7 +30,8 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
     onClickImageToShowControles: () -> Unit,
 ) {
     val activeCentralValues = focusedValuesGetter.active_Central_Values
-    val filterState_Facad_Boutique_FragId5 = activeCentralValues.filterState_Facad_Boutique_FragId5 ?: FilterState_Facad_Boutique_FragId5()
+    val filterState_Facad_Boutique_FragId5 = activeCentralValues.filterState_Facad_Boutique_FragId5
+        ?: FilterState_Facad_Boutique_FragId5()
 
     val allCategories = repositorysMainGetter.repoM16CategorieProduit.datasValue
     val allProducts = repositorysMainGetter.repoM1Produit.datasValue
@@ -82,6 +84,14 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                     onDismissDropdown()
                 }
             )
+
+            // Button: show M8 / M10 data sizes and trigger cleanup on click
+            Fab_CleanupM8AndM10(
+                repositorysMainGetter = repositorysMainGetter,
+                onDismissDropdown = onDismissDropdown,
+                on_vent_key = focusedValuesGetter.currentActive_M9AppCompt?.onVentM8BonVentKey ?: ""
+            )
+
             Fab_Stigns(onClickImageToShowControles, onDismissDropdown)
         }
     }

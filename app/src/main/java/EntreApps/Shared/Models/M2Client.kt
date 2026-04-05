@@ -186,6 +186,13 @@ enum class Client_Speciale(
         autre_nom = "AbdelwahabJomla Marke Wach Dina Échantillon"
     ),
     AbdelwahabJomla_Marque_Sel3a_Au_Depot("-OoK4WklxDWe_o19oc2F"),
-    Jomla_Marque_Sel3a_Ditha_Pour_Vendre("", moulahada = "non supprime l ami jamel"),
-    AbdelwahabJomla_Promo_Sel3a(""),
+    Jomla_Marque_Sel3a_Ditha_Pour_Vendre(
+        "-OfYtzn5JtD6Ne7gCOLu",
+        autre_nom = " Abdelwahab mark sel3a ta3 Commande ",
+        moulahada = "non supprime l ami jamel"
+    ),
+    AbdelwahabJomla_Promo_Sel3a(
+        "-Op4u9T7KSOL5x5PSYa0",
+        autre_nom = "Abdelwahab Jomla Promo Sel3a "
+    ),
 }

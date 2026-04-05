@@ -112,7 +112,6 @@ fun A_Item_Produit_App4(
             .values
             .filterNotNull()
     }
-
     val supperGro = datasValue_distinct_type.find {
         it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
                 it.prixCurrency != 0.0
@@ -180,22 +179,38 @@ fun A_Item_Produit_App4(
         )
     }
 
-    val finale_Tariff = remember(datasValue_with_synthetic, fallbackTariff) {
-        datasValue_with_synthetic
-            .find {
-                it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
-                        && it.prixCurrency != 0.0
-            }
-            ?: datasValue_with_synthetic
-                .filter { it.prixCurrency != 0.0 }
-                .maxByOrNull { it.typeChoisi.profitabilityScore }
-            ?: fallbackTariff
+    // TODO(1) FIXED: starter tariff defaults to Prix_Detaille for retail users,
+    // and Prix_SupperGro for grossist users, when no tariff is actively selected.
+    val finale_Tariff = remember(datasValue_with_synthetic, fallbackTariff, isGrossist) {
+        if (isGrossist) {
+            datasValue_with_synthetic
+                .find {
+                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
+                            && it.prixCurrency != 0.0
+                }
+                ?: datasValue_with_synthetic
+                    .filter { it.prixCurrency != 0.0 }
+                    .maxByOrNull { it.typeChoisi.profitabilityScore }
+                ?: fallbackTariff
+        } else {
+            datasValue_with_synthetic
+                .find {
+                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
+                            && it.prixCurrency != 0.0
+                }
+                ?: datasValue_with_synthetic
+                    .filter { it.prixCurrency != 0.0 }
+                    .maxByOrNull { it.typeChoisi.profitabilityScore }
+                ?: fallbackTariff
+        }
     }
 
+    // Reset to finale_Tariff (Prix_Detaille for retail) on every bon de vent change
     var selectedTariff by remember(
         relative_M1produit.keyID,
         finale_Tariff.keyID,
-        datasValue_with_synthetic.size
+        datasValue_with_synthetic.size,
+        centralValues.activeOnVent_M8BonVent?.keyID
     ) {
         mutableStateOf(finale_Tariff)
     }

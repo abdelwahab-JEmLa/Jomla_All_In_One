@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.ViewModule
@@ -168,6 +169,43 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                         itemPadding = itemPadding
                     )
                 }
+
+                // Client unit price card - always shown
+                InfoCard(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.AttachMoney,
+                            contentDescription = "Prix client unité",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(iconSize)
+                        )
+                    },
+                    value = "%.2f".format(relative_M1produit.clientPrixVentUnite),
+                    label = "ب.حبة",
+                    labelTextSize = labelTextSize,
+                    valueTextSize = valueTextSize,
+                    itemPadding = itemPadding
+                )
+
+                // Total client price card - only shown if total > 0
+                val totalClient = relative_M1produit.clientPrixVentUnite * relative_M1produit.nombreUniteInt
+                if (totalClient > 0.0) {
+                    InfoCard(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.AttachMoney,
+                                contentDescription = "Total client",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(iconSize)
+                            )
+                        },
+                        value = "%.2f".format(totalClient),
+                        label = "تخرج",
+                        labelTextSize = labelTextSize,
+                        valueTextSize = valueTextSize,
+                        itemPadding = itemPadding
+                    )
+                }
             }
         }
     }
@@ -230,7 +268,7 @@ private fun ClickableInfoCard(
 ) {
     Card(
         modifier = modifier
-            ,
+        ,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
         ),
