@@ -242,11 +242,11 @@ private fun generateWhatsAppCollectPdf(
             if (resId != 0) BitmapFactory.decodeResource(context.resources, resId) else null
         }.getOrNull()
 
-        val qrSize = 80f
         if (qrBitmap != null) {
-            val qrLeft = marginLeft + (contentWidth - qrSize) / 2f
-            canvas.drawBitmap(qrBitmap, null, RectF(qrLeft, y, qrLeft + qrSize, y + qrSize), null)
-            y += qrSize + 4f
+            val qrW = contentWidth.toFloat()
+            val qrH = qrW * qrBitmap.height / qrBitmap.width
+            canvas.drawBitmap(qrBitmap, null, RectF(marginLeft, y, marginLeft + qrW, y + qrH), null)
+            y += qrH + 4f
         }
 
         drawRTL(
