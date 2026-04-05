@@ -236,7 +236,19 @@ private fun generateWhatsAppCollectPdf(
         canvas.drawLine(marginLeft, y, pageWidth - marginRight, y, paintBorder)
         y += 8f
 
-        // ── Request text ──────────────────────────────────────────────────────
+        // ── QR code + request text ────────────────────────────────────────────
+        val qrBitmap: Bitmap? = runCatching {
+            val resId = context.resources.getIdentifier("qr_whatsapp", "drawable", context.packageName)
+            if (resId != 0) BitmapFactory.decodeResource(context.resources, resId) else null
+        }.getOrNull()
+
+        val qrSize = 80f
+        if (qrBitmap != null) {
+            val qrLeft = marginLeft + (contentWidth - qrSize) / 2f
+            canvas.drawBitmap(qrBitmap, null, RectF(qrLeft, y, qrLeft + qrSize, y + qrSize), null)
+            y += qrSize + 4f
+        }
+
         drawRTL(
             canvas,
             "يرجى كتابة رقم الهاتف الذي يحتوي على حساب واتساب\nلنطلعكم على كل ما يعين تحفيظ ابنكم",
@@ -290,7 +302,7 @@ private fun generateWhatsAppCollectPdf(
         // ── Footer note ───────────────────────────────────────────────────────
         drawRTL(
             canvas,
-            "جزاكم الله خيراً ",
+            "جزاكم الله خيراً على تعاونكم",
             marginLeft, y, contentWidth, paintVerySmall, Layout.Alignment.ALIGN_CENTER
         )
 
