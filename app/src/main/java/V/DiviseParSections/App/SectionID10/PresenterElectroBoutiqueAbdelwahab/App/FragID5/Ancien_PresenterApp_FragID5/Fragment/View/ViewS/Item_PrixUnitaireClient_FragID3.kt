@@ -16,8 +16,7 @@ fun Item_PrixUnitaireClient_FragID3(
     isExpanded: Boolean,
     onUpdate: (Double) -> Unit,
     modifier: Modifier = Modifier
-) {          //<--
-//TODO(1): fait que le ooutlined ce lence par valiue "" le lable qui a la dernienr valeur avec foucse clavie au start 
+) {
     val labelTextSize = if (isExpanded) 10.sp else 7.sp
     val valueTextSize = if (isExpanded) 12.sp else 9.sp
     val iconSize      = if (isExpanded) 14.dp else 10.dp

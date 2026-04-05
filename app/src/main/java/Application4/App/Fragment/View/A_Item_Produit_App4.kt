@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun A_Item_Produit_App4(
     relative_M1produit: M01Produit,
-    
+
     modifier: Modifier = Modifier,
     onCategoryClick: (() -> Unit)? = null,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
@@ -182,8 +182,13 @@ fun A_Item_Produit_App4(
 
     val finale_Tariff = remember(datasValue_with_synthetic, fallbackTariff) {
         datasValue_with_synthetic
-            .filter { it.prixCurrency != 0.0 }
-            .maxByOrNull { it.typeChoisi.profitabilityScore }
+            .find {
+                it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
+                        && it.prixCurrency != 0.0
+            }
+            ?: datasValue_with_synthetic
+                .filter { it.prixCurrency != 0.0 }
+                .maxByOrNull { it.typeChoisi.profitabilityScore }
             ?: fallbackTariff
     }
 
@@ -254,7 +259,7 @@ fun A_Item_Produit_App4(
             isThisProductExpanded = isThisProductExpanded,
             shouldShowButtons = shouldShowButtons,
 
-        )
+            )
 
         if (relative_ListM3Couleurs.size > 1) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -273,7 +278,7 @@ fun A_Item_Produit_App4(
                                 couleur = couleur,
                                 relative_M1produit = relative_M1produit,
                                 selectedTariff = selectedTariff,
-                                
+
                                 isExpanded = true,
                                 modifier = Modifier.weight(1f, fill = false),
                                 shouldShowButtons = shouldShowButtons,
@@ -293,7 +298,7 @@ fun A_Item_Produit_App4(
                                 couleur = couleur,
                                 relative_M1produit = relative_M1produit,
                                 selectedTariff = selectedTariff,
-                                
+
                                 shouldShowButtons = shouldShowButtons,
                                 isExpanded = false,
                                 modifier = Modifier.fillMaxWidth()

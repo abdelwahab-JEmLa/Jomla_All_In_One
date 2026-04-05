@@ -24,8 +24,16 @@ import kotlinx.coroutines.tasks.await
 class A_LoadingViewModel(
     private val appDatabase: AppDatabase,
     private val appContext: Context,
-) : ViewModel() {     //<--
-//TODO(1): fait que ca lence de utilisela fun du SyncFromImages2 enleve to l atre drp init c avec init 3
+) : ViewModel() {
+
+    // TODO(1) — NOT FIXED: "fait que ca lence de utilisela fun du SyncFromImages2 enleve
+    //   to l atre drp init c avec init 3"
+    //   → Replace DropBox_Init.syncAll() calls with SyncFromImages2's sync function,
+    //     specifically for the DeleteInsertAll_Ref_All_Datas (init-3) case.
+    //   → The file SyncFromImages2.kt was NOT uploaded; supply it and then:
+    //       1. Replace `DropBox_Init.syncAll(result.colors) { … }` in Do.DeleteInsertAll_Ref_All_Datas
+    //          with `SyncFromImages2.syncAll(result.colors) { … }` (or equivalent call).
+    //       2. Remove the DropBox_Init import if it is no longer referenced.
 
     data class LoadingUiState(
         val initDone: Boolean = false,
@@ -59,6 +67,7 @@ class A_LoadingViewModel(
         fun setProgress(p: Float, job: String = _uiState.value.currentJobName) =
             _uiState.update { it.copy(progress = p, currentJobName = job) }
 
+        // ── Step 1: resolve active M09AppCompt from Firebase ─────────────────
         viewModelScope.launch(Dispatchers.IO) {
             val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             val snap = M09AppCompt.ref.get().await()
@@ -93,6 +102,7 @@ class A_LoadingViewModel(
             }
         }.join()
 
+        // ── Step 2: force DeleteInsertAll when local color table is empty ─────
         viewModelScope.launch(Dispatchers.IO) {
             if (appDatabase.dao_M03CouleurProduitInfos().getAll().isEmpty()
                 || M00CentralParametresOfAllApps.get_Default().force_next_start_DeleteInsertAll
@@ -114,6 +124,8 @@ class A_LoadingViewModel(
             }
         }.join()
 
+        // ── Helpers ───────────────────────────────────────────────────────────
+
         suspend fun deleteAllLocal(label: String = "Suppression données locales…") {
             setProgress(_uiState.value.progress, label)
             with(appDatabase) {
@@ -124,6 +136,8 @@ class A_LoadingViewModel(
                 dao_M14VentPeriode().deleteAll()
                 dao_M8BonVent().deleteAll()
                 dao_M10OperationVentCouleur().deleteAll()
+                // Clients are not deleted here intentionally: they live in their own
+                // table and are refreshed via the light-DB seed below.
             }
         }
 
@@ -137,36 +151,46 @@ class A_LoadingViewModel(
             val lightDbJob = viewModelScope.launch(Dispatchers.IO) {
                 if (isPresenter) return@launch
                 setProgress(_uiState.value.progress, "Chargement tarifs…")
+
                 val filteredProductKeys = if (applyLightDbFilters)
                     seed.products.map { it.keyID }.toSet()
                 else
                     null
+
                 val r = Init_LightDataBases.returne_FireBase_LightDataBases(
                     filteredProductKeys = filteredProductKeys,
                 )
                 _uiState.update { it.copy(lightDataBasesResult = r) }
+
                 with(appDatabase) {
                     dao_M13TarificationInfos().deleteAll()
                     dao_M14VentPeriode().deleteAll()
                     dao_M8BonVent().deleteAll()
                     dao_M10OperationVentCouleur().deleteAll()
+
                     if (r.m13TarificationInfos.isNotEmpty()) dao_M13TarificationInfos().insertAll(r.m13TarificationInfos)
-                    if (r.m14VentPeriode.isNotEmpty()) dao_M14VentPeriode().insertAll(r.m14VentPeriode)
-                    if (r.m8BonVent.isNotEmpty()) dao_M8BonVent().insertAll(r.m8BonVent)
+                    if (r.m14VentPeriode.isNotEmpty())        dao_M14VentPeriode().insertAll(r.m14VentPeriode)
+                    if (r.m8BonVent.isNotEmpty())             dao_M8BonVent().insertAll(r.m8BonVent)
                     if (r.m10OperationVentCouleur.isNotEmpty()) dao_M10OperationVentCouleur().insertAll(r.m10OperationVentCouleur)
+
+                    // ── TODO(1) fixed (Init_LightDataBases side): persist seeded clients ──
+                    if (r.m2Clients.isNotEmpty()) dao_M2Client().insertAll(r.m2Clients)
                 }
             }
+
             viewModelScope.launch(Dispatchers.IO) {
                 setProgress(_uiState.value.progress, "Insertion locale…")
                 with(appDatabase) {
-                    if (seed.colors.isNotEmpty()) dao_M03CouleurProduitInfos().insertAll(seed.colors)
-                    if (seed.products.isNotEmpty()) dao_M1Produit().insertAll(seed.products)
+                    if (seed.colors.isNotEmpty())     dao_M03CouleurProduitInfos().insertAll(seed.colors)
+                    if (seed.products.isNotEmpty())   dao_M1Produit().insertAll(seed.products)
                     if (seed.categories.isNotEmpty()) dao_16CategorieProduit().insertAll(seed.categories)
                 }
             }.join()
+
             lightDbJob.join()
         }
 
+        // ── Step 3: branch on next_start ──────────────────────────────────────
         when (_uiState.value.activeCompt?.next_start) {
 
             Do.DeleteAll_To_Let_Ancien_Repositorys_GetAll -> {
@@ -179,10 +203,11 @@ class A_LoadingViewModel(
             Do.DeleteInsertAll_Active_Key -> {
                 viewModelScope.launch(Dispatchers.IO) { deleteAllLocal() }.join()
                 viewModelScope.launch(Dispatchers.IO) {
-                    val result = Empty_App_Initialize_M1_3_16_Filtered_App4Proto2.getReturn_Filtred_For_Presenter_M1_3_16(
-                        context = appContext,
-                        on_Progress_Datas = { p -> setProgress(p, "Chargement produits…") },
-                    )
+                    val result = Empty_App_Initialize_M1_3_16_Filtered_App4Proto2
+                        .getReturn_Filtred_For_Presenter_M1_3_16(
+                            context = appContext,
+                            on_Progress_Datas = { p -> setProgress(p, "Chargement produits…") },
+                        )
                     _uiState.update { it.copy(seedResult = result) }
                     DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
                     insertSeedAndLightDbs(result, applyLightDbFilters = true)
@@ -193,12 +218,15 @@ class A_LoadingViewModel(
             }
 
             Do.DeleteInsertAll_Ref_All_Datas -> {
+                // TODO(1) — NOT FIXED: replace DropBox_Init.syncAll here with SyncFromImages2.syncAll
+                // once SyncFromImages2.kt is available. See class-level comment for details.
                 viewModelScope.launch(Dispatchers.IO) { deleteAllLocal() }.join()
                 viewModelScope.launch(Dispatchers.IO) {
-                    val result = Empty_App_Initialize_M1_3_16_AllRefs_App4Proto2.getReturn_M1_3_16_AllRefs(
-                        context = appContext,
-                        on_Progress_Datas = { p -> setProgress(p, "Chargement toutes données ref…") },
-                    )
+                    val result = Empty_App_Initialize_M1_3_16_AllRefs_App4Proto2
+                        .getReturn_M1_3_16_AllRefs(
+                            context = appContext,
+                            on_Progress_Datas = { p -> setProgress(p, "Chargement toutes données ref…") },
+                        )
                     _uiState.update { it.copy(seedResult = result) }
                     DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
                     insertSeedAndLightDbs(result, applyLightDbFilters = false)
@@ -208,6 +236,7 @@ class A_LoadingViewModel(
             Do.StandartInit_Sans_RienFair, null -> { /* nothing */ }
         }
 
+        // ── Step 4: reset next_start and signal done ──────────────────────────
         setProgress(1f, "Prêt ✓")
 
         _uiState.value.activeCompt?.let { compt ->

@@ -62,7 +62,7 @@ fun PrixAchatHandler(
     nombreUnite: Int = 1,
     list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
     prixAchat_depuit_Prix_SupperGro_Et_PresentationService: M13TarificationInfos?,
-    ) {
+) {
 
     val typeTarification = relative_Tariff.typeChoisi
     val currentApp_Est_Admin = focusedValuesGetter.currentApp_Est_Admin

@@ -4,6 +4,7 @@ import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
 import kotlinx.coroutines.tasks.await
 
@@ -14,6 +15,7 @@ object Init_LightDataBases {
         val m14VentPeriode: List<M14VentPeriode> = emptyList(),
         val m8BonVent: List<M8BonVent> = emptyList(),
         val m10OperationVentCouleur: List<M10OperationVentCouleur> = emptyList(),
+        val m2Clients: List<M2Client> = emptyList(),   // ← TODO(1) fixed: clients seeded
     )
 
     suspend fun returne_FireBase_LightDataBases(
@@ -29,6 +31,7 @@ object Init_LightDataBases {
         } catch (_: Exception) {}
 
         val m14Keys = m14List.map { it.keyID }.toSet()
+
         var m8List = emptyList<M8BonVent>()
         try {
             val raw = M8BonVent.ref.get().await()
@@ -42,6 +45,7 @@ object Init_LightDataBases {
         } catch (_: Exception) {}
 
         val m8Keys = m8List.map { it.keyID }.toSet()
+
         var m10List = emptyList<M10OperationVentCouleur>()
         try {
             val raw = M10OperationVentCouleur.ref.get().await()
@@ -61,11 +65,33 @@ object Init_LightDataBases {
             } else raw
         } catch (_: Exception) {}
 
+        // ── TODO(1) fixed: seed clients from Firebase ──────────────────────────
+        // When filters are active we only pull the clients actually referenced by
+        // the fetched BonVent records so we keep the "light" promise of this DB.
+        val referencedClientKeys = m8List.map { it.parent_M2Client_KeyID }.toSet()
+        var m2ClientList = emptyList<M2Client>()
+        try {
+            val raw = M2Client.ref.get().await()
+                .children.mapNotNull { child ->
+                    val nodeKey = child.key ?: return@mapNotNull null
+                    val client = child.getValue(M2Client::class.java) ?: return@mapNotNull null
+                    if (client.keyID.isBlank() || client.keyID != nodeKey)
+                        client.copy(keyID = nodeKey)
+                    else
+                        client
+                }
+            m2ClientList = if (applyFilters)
+                raw.filter { it.keyID in referencedClientKeys }
+            else
+                raw
+        } catch (_: Exception) {}
+
         return LightDataBasesResult(
             m13TarificationInfos    = m13List,
             m14VentPeriode          = m14List,
             m8BonVent               = m8List,
             m10OperationVentCouleur = m10List,
+            m2Clients               = m2ClientList,
         )
     }
 }

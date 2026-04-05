@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.ViewModule
@@ -260,6 +261,50 @@ fun A_Compact_Header_App4(
                             itemPadding = itemPadding
                         )
                     }
+                }
+
+                // FIXED TODO(1): Client unit price card - editable for everyone
+                EditableDoubleInfoCard(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.AttachMoney,
+                            contentDescription = "Prix client unité",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(iconSize)
+                        )
+                    },
+                    value = "%.2f".format(relative_M1produit.clientPrixVentUnite),
+                    label = "ب.حبة",
+                    labelTextSize = labelTextSize,
+                    valueTextSize = valueTextSize,
+                    itemPadding = itemPadding,
+                    startValue = relative_M1produit.clientPrixVentUnite,
+                    isExpanded = isExpanded,
+                    onUpdate = { new ->
+                        onUpdateProduit(
+                            relative_M1produit.copy(clientPrixVentUnite = new)
+                        )
+                    }
+                )
+
+                // FIXED TODO(1): Total client price card - only shown if total > 0
+                val totalClient = relative_M1produit.clientPrixVentUnite * relative_M1produit.nombreUniteInt
+                if (totalClient > 0.0) {
+                    InfoCard(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.AttachMoney,
+                                contentDescription = "Total client",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(iconSize)
+                            )
+                        },
+                        value = "%.2f".format(totalClient),
+                        label = "تخرج",
+                        labelTextSize = labelTextSize,
+                        valueTextSize = valueTextSize,
+                        itemPadding = itemPadding
+                    )
                 }
             }
         }

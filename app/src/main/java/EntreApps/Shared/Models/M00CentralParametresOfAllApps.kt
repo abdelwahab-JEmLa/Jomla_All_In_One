@@ -36,7 +36,30 @@ data class M00CentralParametresOfAllApps(
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
 
     //faitque les prix soit a droit a gauch
-
+              //<--
+              //TODO(1): rebase test
+              //<--
+              //TODO(1): assune command  demend avant enlve
+    //<--
+    //TODO(1): benifice sure le prix 
+    
+    //<--
+    //TODO(1):     //<--
+    //    //TODO(1): fait que le valer start c
+    //    //si    M13TarificationInfos.TypeChoisi.Prix_Detaille -> 0
+    //    //            M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
+    //    //            M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable -> 1
+    //    //            M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> 2
+    //    //<--
+    //    //TODO(1): Prix_SupperGro_Et_PresentationService et Edited_Pour_Client exist le prix du prog == sum des 2 /2 
+    //    //when
+    //    // les 2 non dispo || 0.0 -> 0.0 
+    //    //ne des 2 dispo -> it prix 
+    
+    //<--
+    //TODO(1): 
+//<--
+//TODO(1): fait que start tariff c Prix_SupperGro_Et_PresentationService acun n ai selectione
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
 //────────────────────────────au_Lence_Set_Compt_Ac_KeyId──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val au_Lence_Set_Compt_Ac_KeyId: String = Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
@@ -56,7 +79,7 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.AllInOne
         } else {
-            AppType.AllInOne
+            AppType.JomLaElectroLivreurGrossist_VendeurHost
             //JomLaElectroLivreurGrossist_VendeurHost
         }
     },

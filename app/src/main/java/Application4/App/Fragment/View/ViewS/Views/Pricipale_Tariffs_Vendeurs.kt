@@ -10,8 +10,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,9 +43,6 @@ private object TariffTextSizes {
     val UNSELECTED_BORDER_WIDTH = 0.dp
 }
 
-//<--
-//TODO(1): fait que start tariff c Prix_SupperGro_Et_PresentationService acun n ai selectione
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Pricipale_Tariffs_Vendeurs_FragID3(
     relative_M1produit: M01Produit,
@@ -64,12 +59,10 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                 && !tariff.typeChoisi.ignore_affiche
     }
 
-    // FIXED TODO(1): Ensure editable progressive tariff always exists in the list
     val tariffsWithEditableProgressive = if (filteredTariffs.none {
             it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
                     it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client
         }) {
-        // Create a default editable progressive tariff if none exists
         val defaultEditableTariff = M13TarificationInfos(
             prixCurrency = 0.0,
             parent_M1Produit_KeyId = relative_M1produit.keyID,
@@ -132,6 +125,8 @@ private fun TariffItemSelector(
                 tariff = tariff,
                 prix = prix,
                 nombreUnite = nombreUnite,
+                // FIX TODO(1)b: pass produit so we can compute bénéfice client
+                relative_M1produit = relative_M1produit,
                 isSelected = isSelected,
                 compactMode = compactMode,
                 onClick = onClick,
@@ -168,94 +163,67 @@ private fun handleProgressivePriceUpdate(
     if (tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable &&
         tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive &&
         tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Edited_Pour_Client
-    ) {
-        return
-    }
+    ) return
 
-    if (newPrice <= 0) {
-        return
-    }
+    if (newPrice <= 0) return
 
     val updatedTariff = tariff.copy(
         prixCurrency = newPrice,
         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
     )
-
     uiState_NewProtoPatterns_viewModel.second.update_M13TarificationInfos(updatedTariff)
 }
 
-private fun formatPrice(price: Double): String {
-    return String.format(Locale.getDefault(), "%.0f", price)
-}
+private fun formatPrice(price: Double): String =
+    String.format(Locale.getDefault(), "%.0f", price)
 
-private fun formatPriceWithDecimals(price: Double): String {
-    return String.format(Locale.getDefault(), "%.1f", price)
-}
+private fun formatPriceWithDecimals(price: Double): String =
+    String.format(Locale.getDefault(), "%.1f", price)
 
-@OptIn(ExperimentalLayoutApi::class)
+// ─────────────────────────────────────────────────────────────────────────────
+// EditableProgressiveTariffItem
+// FIX TODO(1)a : FlowRow → Column so every value stacks below the previous one
+// FIX TODO(1)b : added relative_M1produit param + bénéfice-client row
+// ─────────────────────────────────────────────────────────────────────────────
 @Composable
 private fun EditableProgressiveTariffItem(
     tariff: M13TarificationInfos,
-    prix: Double,                //<--
-    //TODO(1): fait que le valer start c
-    //si    M13TarificationInfos.TypeChoisi.Prix_Detaille -> 0
-    //            M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
-    //            M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable -> 1
-    //            M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> 2
-    //<--
-    //TODO(1): Prix_SupperGro_Et_PresentationService et Edited_Pour_Client exist le prix du prog == sum des 2 /2 
-    //when
-    // les 2 non dispo || 0.0 -> 0.0 
-    //ne des 2 dispo -> it prix 
+    prix: Double,
     nombreUnite: Int,
+    relative_M1produit: M01Produit,           // FIX TODO(1)b
     isSelected: Boolean,
     compactMode: Boolean = false,
     onClick: () -> Unit,
     onPriceUpdated: (Double) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val horizontalPadding = if (compactMode) {
-        TariffTextSizes.COMPACT_HORIZONTAL_PADDING
-    } else {
-        TariffTextSizes.NORMAL_HORIZONTAL_PADDING
-    }
-    val verticalPadding = if (compactMode) {
-        TariffTextSizes.COMPACT_VERTICAL_PADDING
-    } else {
-        TariffTextSizes.NORMAL_VERTICAL_PADDING
-    }
-    val fontSize = if (compactMode) {
-        TariffTextSizes.COMPACT_MAIN_TEXT
-    } else {
-        TariffTextSizes.NORMAL_MAIN_TEXT
-    }
+    val horizontalPadding = if (compactMode) TariffTextSizes.COMPACT_HORIZONTAL_PADDING
+    else TariffTextSizes.NORMAL_HORIZONTAL_PADDING
+    val verticalPadding = if (compactMode) TariffTextSizes.COMPACT_VERTICAL_PADDING
+    else TariffTextSizes.NORMAL_VERTICAL_PADDING
+    val fontSize = if (compactMode) TariffTextSizes.COMPACT_MAIN_TEXT
+    else TariffTextSizes.NORMAL_MAIN_TEXT
 
-    val borderWidth = if (isSelected) {
-        TariffTextSizes.SELECTED_BORDER_WIDTH
-    } else {
-        TariffTextSizes.UNSELECTED_BORDER_WIDTH
-    }
+    val borderWidth = if (isSelected) TariffTextSizes.SELECTED_BORDER_WIDTH
+    else TariffTextSizes.UNSELECTED_BORDER_WIDTH
     val borderColor = if (isSelected) Color.Red else Color.Transparent
 
     val backgroundColor = tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
 
-    FlowRow(
+    // FIX TODO(1)b: bénéfice client = clientPrixVentUnite * nombreUnite - prix achat/tariff
+    val clientPrixVentUnite = relative_M1produit.clientPrixVentUnite
+    val beneficeClient = clientPrixVentUnite * nombreUnite - prix
+
+    // FIX TODO(1)a: was FlowRow — now Column so items stack vertically
+    Column(
         modifier = modifier
-            .border(
-                width = borderWidth,
-                color = borderColor,
-                shape = CircleShape
-            )
-            .background(
-                color = backgroundColor,
-                shape = CircleShape
-            )
+            .border(width = borderWidth, color = borderColor, shape = CircleShape)
+            .background(color = backgroundColor, shape = CircleShape)
             .clickable(onClick = onClick)
             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalArrangement = Arrangement.Center,
-        maxItemsInEachRow = Int.MAX_VALUE
+        verticalArrangement = Arrangement.spacedBy(0.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
             value = prix,
@@ -269,20 +237,40 @@ private fun EditableProgressiveTariffItem(
             textSize = fontSize,
             containerColor = backgroundColor,
             textColor = tariff.typeChoisi.couleur_Text,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
+        // prix par unité
         if (nombreUnite > 1) {
             Text(
                 text = "(${formatPriceWithDecimals(prixUnitaire)}/u)",
                 color = tariff.typeChoisi.couleur_Text.copy(alpha = 0.8f),
-                fontSize = fontSize,
-                modifier = Modifier.align(Alignment.CenterVertically)
+                fontSize = TariffTextSizes.COMPACT_SECONDARY_TEXT,
+                lineHeight = TariffTextSizes.COMPACT_SECONDARY_TEXT,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
+
+        // FIX TODO(1)b: bénéfice client
+        if (clientPrixVentUnite > 0) {
+            Text(
+                text = "bén: ${formatPrice(beneficeClient)} DA",
+                color = if (beneficeClient >= 0)
+                    tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f)
+                else
+                    Color.Red.copy(alpha = 0.85f),
+                fontSize = TariffTextSizes.COMPACT_SECONDARY_TEXT,
+                lineHeight = TariffTextSizes.COMPACT_SECONDARY_TEXT,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// TariffItem
+// FIX TODO(1)b: added bénéfice-client row inside the compact Column branch
+// ─────────────────────────────────────────────────────────────────────────────
 @Composable
 private fun TariffItem(
     tariff: M13TarificationInfos,
@@ -307,7 +295,6 @@ private fun TariffItem(
                         it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
                         it.prixCurrency != 0.0
             }
-
             val recalculated =
                 M13TarificationInfos.remembered_calculated_progressive_changement_tariff(
                     relative_Prix_Detaille = detailleTariff?.prixCurrency,
@@ -321,37 +308,17 @@ private fun TariffItem(
 
     if (effectivePrix == 0.0) return
 
-    val horizontalPadding = if (compactMode) {
-        TariffTextSizes.COMPACT_HORIZONTAL_PADDING
-    } else {
-        TariffTextSizes.NORMAL_HORIZONTAL_PADDING
-    }
-    val verticalPadding = if (compactMode) {
-        TariffTextSizes.COMPACT_VERTICAL_PADDING
-    } else {
-        TariffTextSizes.NORMAL_VERTICAL_PADDING
-    }
-    val iconSize = if (compactMode) {
-        TariffTextSizes.COMPACT_ICON_SIZE_TARIFF_ITEM
-    } else {
-        TariffTextSizes.NORMAL_ICON_SIZE
-    }
-    val fontSize = if (compactMode) {
-        TariffTextSizes.COMPACT_MAIN_TEXT
-    } else {
-        TariffTextSizes.NORMAL_MAIN_TEXT
-    }
-    val secondaryFontSize = if (compactMode) {
-        TariffTextSizes.COMPACT_SECONDARY_TEXT
-    } else {
-        TariffTextSizes.NORMAL_SECONDARY_TEXT
-    }
+    val horizontalPadding = if (compactMode) TariffTextSizes.COMPACT_HORIZONTAL_PADDING
+    else TariffTextSizes.NORMAL_HORIZONTAL_PADDING
+    val verticalPadding = if (compactMode) TariffTextSizes.COMPACT_VERTICAL_PADDING
+    else TariffTextSizes.NORMAL_VERTICAL_PADDING
+    val fontSize = if (compactMode) TariffTextSizes.COMPACT_MAIN_TEXT
+    else TariffTextSizes.NORMAL_MAIN_TEXT
+    val secondaryFontSize = if (compactMode) TariffTextSizes.COMPACT_SECONDARY_TEXT
+    else TariffTextSizes.NORMAL_SECONDARY_TEXT
 
-    val borderWidth = if (isSelected) {
-        TariffTextSizes.SELECTED_BORDER_WIDTH
-    } else {
-        TariffTextSizes.UNSELECTED_BORDER_WIDTH
-    }
+    val borderWidth = if (isSelected) TariffTextSizes.SELECTED_BORDER_WIDTH
+    else TariffTextSizes.UNSELECTED_BORDER_WIDTH
     val borderColor = if (isSelected) Color.Red else Color.Transparent
 
     val backgroundColor =
@@ -363,18 +330,15 @@ private fun TariffItem(
 
     val prixUnitaire = if (nombreUnite > 1) effectivePrix / nombreUnite else effectivePrix
 
+    // FIX TODO(1)b
+    val clientPrixVentUnite = relative_M1produit.clientPrixVentUnite
+    val beneficeClient = clientPrixVentUnite * nombreUnite - effectivePrix
+
     if (compactMode) {
         Column(
             modifier = modifier
-                .border(
-                    width = borderWidth,
-                    color = borderColor,
-                    shape = CircleShape
-                )
-                .background(
-                    color = backgroundColor,
-                    shape = CircleShape
-                )
+                .border(width = borderWidth, color = borderColor, shape = CircleShape)
+                .background(color = backgroundColor, shape = CircleShape)
                 .clickable(onClick = onClick)
                 .padding(horizontal = horizontalPadding, vertical = verticalPadding),
             verticalArrangement = Arrangement.spacedBy(0.dp)
@@ -394,19 +358,25 @@ private fun TariffItem(
                     lineHeight = secondaryFontSize
                 )
             }
+
+            // FIX TODO(1)b: bénéfice client
+            if (clientPrixVentUnite > 0) {
+                Text(
+                    text = "bén: ${formatPrice(beneficeClient)} DA",
+                    color = if (beneficeClient >= 0)
+                        tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f)
+                    else
+                        Color.Red.copy(alpha = 0.85f),
+                    fontSize = secondaryFontSize,
+                    lineHeight = secondaryFontSize
+                )
+            }
         }
     } else {
         Row(
             modifier = modifier
-                .border(
-                    width = borderWidth,
-                    color = borderColor,
-                    shape = CircleShape
-                )
-                .background(
-                    color = backgroundColor,
-                    shape = CircleShape
-                )
+                .border(width = borderWidth, color = borderColor, shape = CircleShape)
+                .background(color = backgroundColor, shape = CircleShape)
                 .clickable(onClick = onClick)
                 .padding(horizontal = horizontalPadding, vertical = verticalPadding),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -420,11 +390,7 @@ private fun TariffItem(
 
             if (nombreUnite > 1) {
                 Text(
-                    text = "${formatPrice(effectivePrix)} DA/p.u (${
-                        formatPriceWithDecimals(
-                            prixUnitaire
-                        )
-                    }/u)",
+                    text = "${formatPrice(effectivePrix)} DA/p.u (${formatPriceWithDecimals(prixUnitaire)}/u)",
                     color = tariff.typeChoisi.couleur_Text,
                     fontSize = fontSize
                 )

@@ -41,8 +41,8 @@ fun Big_Principale_FragID3(
     tariffsList: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
-    
-) {
+
+    ) {
     val its_Grid4_Mode =
         uiState_NewProtoPatterns_viewModel.second.active_Datas.isEchatillantsMode
     val imageHeight by animateDpAsState(
@@ -63,7 +63,7 @@ fun Big_Principale_FragID3(
     ColorImageCard_FragID3(
         relative_M3CouleurProduitInfos = selectedCouleur,
         isSelected = true,
-        
+
         modifier = Modifier
             .fillMaxWidth()
             .height(imageHeight),
@@ -84,8 +84,7 @@ fun Big_Principale_FragID3(
                 .padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {               //<--
-        //TODO(1): fait que start tariff c Prix_SupperGro_Et_PresentationService acun n ai selectione 
+        ) {
             Lenceur_Vent_Handler_App4(
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,
