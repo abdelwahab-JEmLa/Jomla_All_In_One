@@ -39,7 +39,8 @@ fun A_Item_Produit_App4(
     onCategoryClick: (() -> Unit)? = null,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     relative_ListM3Couleurs_override: List<M3CouleurProduitInfos>? = null,
-) {
+) {         //<--
+//TODO(1):enleve les commantaire et logs et les sementics pour but de consise le max possible  tallie du code sans change le foctionemen
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
     val centralValues = viewModel.active_Datas

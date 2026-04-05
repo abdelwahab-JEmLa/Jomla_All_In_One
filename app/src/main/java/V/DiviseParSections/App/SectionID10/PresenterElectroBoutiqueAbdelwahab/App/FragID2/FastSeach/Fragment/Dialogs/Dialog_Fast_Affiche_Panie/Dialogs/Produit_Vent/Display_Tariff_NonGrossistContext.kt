@@ -112,7 +112,26 @@ fun Display_Tariff_NonGrossistContext(
         val datasValue = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
         val parentM13TarificationKeyID =
             relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
-        val relative_Tariff = datasValue.find { it.keyID == parentM13TarificationKeyID }
+
+        val relative_Tariff: M13TarificationInfos? =
+            datasValue.find { it.keyID == parentM13TarificationKeyID }
+                ?: relative_List_M10OperationVentCouleur
+                    .firstOrNull {
+                        it.parentM13TarificationKeyID == parentM13TarificationKeyID &&
+                                it.prix_de_Vent_entre_directement_NewProto > 0.0
+                    }
+                    ?.let { op ->
+                        M13TarificationInfos(
+                            keyID = op.parentM13TarificationKeyID,
+                            prixCurrency = op.prix_de_Vent_entre_directement_NewProto,
+                            parent_M1Produit_KeyId = relative_produit.keyID,
+                            typeChoisi = op.typeTarificationEnumT2
+                               ,
+                            creationTimestamps = op.creationTimestamps,
+                            dernierTimeTampsSynchronisationAvecFireBase =
+                                op.dernierTimeTampsSynchronisationAvecFireBase,
+                        )
+                    }
 
         // ── Un seul tariff par type (le plus récent) ────────────────────────
         val allTariffsForProduit = datasValue
@@ -126,24 +145,38 @@ fun Display_Tariff_NonGrossistContext(
             .values
             .filterNotNull()
 
-        // Ajoute un tariff éditable si aucun Prix_Progressive_Editable / Edited_Pour_Client n'existe
-        val tariffsWithEditable = if (allTariffsForProduit.none {
-                it.typeChoisi == TypeChoisi.Prix_Progressive_Editable ||
+        // If relative_Tariff was synthesised from op data (not yet in datasValue), ensure it
+        // appears in the list so the card renders and isSelected works correctly.
+        val allTariffsWithSynthesised =
+            if (relative_Tariff != null &&
+                allTariffsForProduit.none { it.keyID == relative_Tariff.keyID } &&
+                (
+                        relative_Tariff.typeChoisi == TypeChoisi.Edited_Pour_Client)
+            ) {
+                // Replace any placeholder Edited_Pour_Client with the real synthesised one
+                allTariffsForProduit.filter {
+                    it.typeChoisi != TypeChoisi.Edited_Pour_Client
+                } + relative_Tariff
+            } else {
+                allTariffsForProduit
+            }
+
+        // Ajoute un tariff éditable si aucun Edited_Pour_Client / Edited_Pour_Client n'existe
+        val tariffsWithEditable = if (allTariffsWithSynthesised.none {
                         it.typeChoisi == TypeChoisi.Edited_Pour_Client
             }) {
-            allTariffsForProduit + M13TarificationInfos(
+            allTariffsWithSynthesised + M13TarificationInfos(
                 prixCurrency = 0.0,
                 parent_M1Produit_KeyId = relative_produit.keyID,
-                typeChoisi = TypeChoisi.Prix_Progressive_Editable,
+                typeChoisi = TypeChoisi.Edited_Pour_Client,
                 creationTimestamps = System.currentTimeMillis()
             )
-        } else allTariffsForProduit
+        } else allTariffsWithSynthesised
 
         val sortedTariffs = tariffsWithEditable.sortedBy { tariff ->
             when (tariff.typeChoisi) {
                 TypeChoisi.Prix_Detaille -> 0
                 TypeChoisi.Edited_Pour_Client,
-                TypeChoisi.Prix_Progressive_Editable -> 1
                 TypeChoisi.Prix_SupperGro_Et_PresentationService -> 2
                 else -> tariff.typeChoisi.profitabilityScore
             }
@@ -164,7 +197,7 @@ fun Display_Tariff_NonGrossistContext(
                 val textColor = Color.White
                 val containerColor = if (effectiveAllNonTrouve) blinkColor else tariffType.couleur
 
-                val isEditable = tariffType == TypeChoisi.Prix_Progressive_Editable ||
+                val isEditable = 
                         tariffType == TypeChoisi.Edited_Pour_Client
 
                 val selectedBorderModifier = if (isSelected)

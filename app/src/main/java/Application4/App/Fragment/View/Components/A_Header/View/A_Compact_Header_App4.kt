@@ -263,7 +263,6 @@ fun A_Compact_Header_App4(
                     }
                 }
 
-                // FIXED TODO(1): Client unit price card - editable for everyone
                 EditableDoubleInfoCard(
                     icon = {
                         Icon(
@@ -287,7 +286,6 @@ fun A_Compact_Header_App4(
                     }
                 )
 
-                // FIXED TODO(1): Total client price card - only shown if total > 0
                 val totalClient = relative_M1produit.clientPrixVentUnite * relative_M1produit.nombreUniteInt
                 if (totalClient > 0.0) {
                     InfoCard(

@@ -3,7 +3,6 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,15 +23,31 @@ fun Tariffs_MainList(
     compactMode: Boolean,
     onTariffSelected: (M13TarificationInfos) -> Unit,
     tariffsList: List<M13TarificationInfos>,
-    tariff_Stocked_Au_OperationVent: M13TarificationInfos? = null,
-    relative_M10OperationVentCouleur: M10OperationVentCouleur? = null,
 ) {
+    val isEchatillantsMode = uiState_NewProtoPatterns_viewModel.second.active_Datas.isEchatillantsMode
+
+    val tariffs_SansModeEditable = sortedTariffs.filter {
+        it.typeChoisi != M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
+                it.typeChoisi != M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable &&
+                !(isEchatillantsMode && it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService)
+    }
+
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         reverseLayout = true,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        items(tariffs_SansModeEditable, key = { it.keyID }) { tariff ->
+            TariffItemSelector(
+                tariff = tariff,
+                relative_M1produit = relative_M1produit,
+                isSelected = tariff.keyID == selectedTariff_Par_AncienProto.keyID,
+                compactMode = compactMode,
+                onClick = { onTariffSelected(tariff) },
+                tariffsList = tariffsList,
+            )
+        }
         item(key = "__entre_par_ecriture__") {
             EntreParEcriture_Tariff(
                 relative_M1produit = relative_M1produit,
@@ -40,17 +55,6 @@ fun Tariffs_MainList(
                 onTariffSelected = onTariffSelected,
                 compactMode = compactMode,
                 isSelected = selectedTariff_Par_AncienProto.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
-            )
-        }
-        items(sortedTariffs, key = { it.keyID }) { tariff ->
-            TariffItemSelector(
-                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                tariff = tariff,
-                relative_M1produit = relative_M1produit,
-                isSelected = tariff.keyID == selectedTariff_Par_AncienProto.keyID,
-                compactMode = compactMode,
-                onClick = { onTariffSelected(tariff) },
-                tariffsList = tariffsList,
             )
         }
     }
