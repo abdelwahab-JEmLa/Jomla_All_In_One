@@ -13,15 +13,12 @@ import androidx.core.graphics.toColorInt
 
 /**
  * Draws the header section with school logo, introduction text and poetry.
- * TODO(1) FIXED: Draws ecole_logo1.png drawable in the header.
- *
- * The logo is placed on the trailing side (right in LTR coordinates, which is
- * the visually leading side for RTL Arabic readers) and the title is centred
- * in the remaining space.
+ * TODO(1) FIXED: ecole_logo1 is drawn full-width at the very top of the page
+ * (from marginLeft to pageWidth-marginRight). Text starts below the logo.
  */
 fun drawHeaderSection(
     canvas: Canvas,
-    context: Context,           // ← NEW: needed to load the drawable
+    context: Context,
     marginLeft: Float,
     marginTop: Float,
     pageWidth: Int,
@@ -34,8 +31,7 @@ fun drawHeaderSection(
 ): Float {
     var yPosition = marginTop
 
-    // ── Logo (ecole_logo1) ────────────────────────────────────────────────────
-    val logoSize = 40f   // square logo, in PDF points
+    // ── Logo: full content-width, aspect-ratio preserved ─────────────────────
     val logoBitmap: Bitmap? = runCatching {
         val resId = context.resources.getIdentifier(
             "ecole_logo1", "drawable", context.packageName
@@ -44,31 +40,26 @@ fun drawHeaderSection(
     }.getOrNull()
 
     if (logoBitmap != null) {
-        // Place logo at the right edge of the content area (visually first for RTL)
-        val logoLeft  = pageWidth - marginRight - logoSize
-        val logoTop   = marginTop
-        val logoRect  = RectF(logoLeft, logoTop, logoLeft + logoSize, logoTop + logoSize)
+        // Scale height proportionally so the logo fills the full content width
+        val logoWidth  = contentWidth.toFloat()
+        val logoHeight = logoWidth * logoBitmap.height / logoBitmap.width
+        val logoRect   = RectF(marginLeft, yPosition, marginLeft + logoWidth, yPosition + logoHeight)
         canvas.drawBitmap(logoBitmap, null, logoRect, null)
+        yPosition += logoHeight + 4f   // small gap between logo and first text line
     }
 
-    // Reserve space on the right so the title doesn't overlap the logo
-    val titleContentWidth = if (logoBitmap != null) (contentWidth - logoSize - 4f).toInt()
-    else contentWidth
-
-    // ── Title + optional poetry ───────────────────────────────────────────────
+    // ── Title + optional poetry (always full content width) ───────────────────
     if (compactMode) {
-        // COMPACT MODE: only the main title
         drawRTLText(
             canvas, "هذه البطاقة هي أداة تواصل",
-            marginLeft, yPosition, titleContentWidth,
+            marginLeft, yPosition, contentWidth,
             paintHeaderLarge, Layout.Alignment.ALIGN_CENTER
         )
         yPosition += 22f
     } else {
-        // ORIGINAL MODE: full header with subtitle and poetry
         drawRTLText(
             canvas, "هذه البطاقة هي أداة تواصل",
-            marginLeft, yPosition, titleContentWidth,
+            marginLeft, yPosition, contentWidth,
             paintHeaderLarge, Layout.Alignment.ALIGN_CENTER
         )
         yPosition += 18f
@@ -76,7 +67,7 @@ fun drawHeaderSection(
         drawRTLText(
             canvas,
             "لمتابعة سير حفظ ابنكم ليلبسكم الله حلة الكرامة بما أقرأتماه و صبرتما",
-            marginLeft, yPosition, titleContentWidth,
+            marginLeft, yPosition, contentWidth,
             paintSmall, Layout.Alignment.ALIGN_CENTER
         )
         yPosition += 18f
@@ -86,16 +77,10 @@ fun drawHeaderSection(
 
         drawRTLText(
             canvas, poetryText,
-            marginLeft, yPosition, titleContentWidth,
+            marginLeft, yPosition, contentWidth,
             paintVerySmall, Layout.Alignment.ALIGN_CENTER
         )
         yPosition += 22f
-    }
-
-    // Make sure we clear the logo height before the next section starts
-    if (logoBitmap != null) {
-        val logoBottom = marginTop + logoSize + 4f
-        if (yPosition < logoBottom) yPosition = logoBottom
     }
 
     return yPosition
