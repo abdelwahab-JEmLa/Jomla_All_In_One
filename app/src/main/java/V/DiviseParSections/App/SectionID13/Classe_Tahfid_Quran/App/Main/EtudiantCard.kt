@@ -170,10 +170,12 @@ fun EtudiantCard(
                         setPackage("com.whatsapp.w4b")
                         putExtra(android.content.Intent.EXTRA_STREAM, imageUri)
                         putExtra(android.content.Intent.EXTRA_TEXT,
-                            "هذه البطاقة هي أداة تواصل\n" +
+                            "السلام عليكم و رحمة الله و بركاته\n\n" +
+                                    "هذه البطاقة هي أداة تواصل\n" +
                                     "لمتابعة سير حفظ ابنكم ليلبسكم الله حلة الكرامة بما أقرأتماه و صبرتما\n\n" +
                                     "وحلتان من الفردوس قد كسيت ... لوالديه لها الأكوان لم تقم\n" +
                                     "قالا: بماذا كسيناها؟ فقيل: بما ... أقرأتما ابنكما فاشكر لذي النعم\n\n" +
+                                    "يرجى سماع عرضه ليترسخ للمرة القادمة\n" +
                                     "يرجى متابعة ووضع علامة إن أمكن، جزاكم الله خيرًا 🌿")
                         putExtra("jid", "$formattedPhone@s.whatsapp.net")
                         addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)

@@ -21,7 +21,7 @@ fun generatePdfDocument(
     context: Context,
     cardsData: List<ParentCommunicationCardData_2>,
     aCentralFacade: ACentralFacade,
-    compactHeightMode: Boolean = true  // ✅ FIXED: Default to compact mode
+    compactHeightMode: Boolean = true
 ): File? {
     return try {
         val outputDir = context.cacheDir
@@ -95,8 +95,16 @@ fun generatePdfDocument(
             }
 
             var yPosition = drawHeaderSection(
-                canvas, marginLeft, marginTop, pageWidth, marginRight, contentWidth,
-                paintHeaderLarge, paintSmall, paintVerySmall,
+                canvas = canvas,
+                context = context,              // ← NEW
+                marginLeft = marginLeft,
+                marginTop = marginTop,
+                pageWidth = pageWidth,
+                marginRight = marginRight,
+                contentWidth = contentWidth,
+                paintHeaderLarge = paintHeaderLarge,
+                paintSmall = paintSmall,
+                paintVerySmall = paintVerySmall,
                 compactMode = compactHeightMode
             )
 
