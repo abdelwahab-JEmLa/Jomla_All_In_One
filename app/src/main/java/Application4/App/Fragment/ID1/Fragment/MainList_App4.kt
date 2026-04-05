@@ -66,20 +66,34 @@ fun Etager_LazyColumn(
     val isScrollEnabled = isHostPhone || !isConnected
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
 
+    // TODO(1) FIXED: displayList now handles its_Panie_Mode —
+    // when active, only colours that own an M10 vent operation on the current bon are shown.
     val displayList by remember {
         derivedStateOf {
             val allColours = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
             val allProducts = activeDatas.list_M1Produit ?: emptyList()
             val isEchatillantsMode = activeDatas.isEchatillantsMode
+            val isPanieMode = activeDatas.its_Panie_Mode
+
             val echaKeys = allColours
                 .filter { it.its_in_echantiallants }
                 .map { it.keyID }
                 .toSet()
+
+            // Colours that have at least one active-bon-vent operation
+            val ventColourKeys: Set<String> = if (isPanieMode) {
+                activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                    ?.map { it.parent_M3CouleurProduit_KeyID }
+                    ?.toSet()
+                    ?: emptySet()
+            } else emptySet()
+
             val productByKey = allProducts.associateBy { it.keyID }
 
-            // ── DEBUG: targeted M3 trace ───────────────────────────────────────
+            // ── DEBUG: targeted M3 trace ──────────────────────────────────────
             val targetedColor = allColours.find { it.keyID == DBG_M3_KEY }
-            android.util.Log.d("TargetedM3_Lazy",
+            android.util.Log.d(
+                "TargetedM3_Lazy",
                 "[displayList] allColours=${allColours.size}" +
                         " | targetedM3 in allColours=${targetedColor != null}" +
                         " | visible=${targetedColor?.its_pour_affiche_au_presenter}" +
@@ -87,9 +101,11 @@ fun Etager_LazyColumn(
                         " | parent=${targetedColor?.parentBProduitInfosKeyID}" +
                         " | parentProduct=${productByKey[DBG_PROD_KEY]?.nom}" +
                         " | echaMode=$isEchatillantsMode" +
-                        " | isInEchaKeys=${DBG_M3_KEY in echaKeys}"
+                        " | panieMode=$isPanieMode" +
+                        " | isInEchaKeys=${DBG_M3_KEY in echaKeys}" +
+                        " | isInVentKeys=${DBG_M3_KEY in ventColourKeys}"
             )
-            // ──────────────────────────────────────────────────────────────────
+            // ─────────────────────────────────────────────────────────────────
 
             allColours
                 .groupBy { it.parentBProduitInfosKeyID }
@@ -98,14 +114,19 @@ fun Etager_LazyColumn(
                     product to colours
                 }
                 .mapNotNull { (product, colors) ->
-                    val filtered = if (isEchatillantsMode)
-                        colors.filter { it.keyID in echaKeys }
-                    else
-                        colors.filter { it.keyID !in echaKeys }
+                    val filtered = when {
+                        // Panie mode: only colours present in the active bon vent
+                        isPanieMode -> colors.filter { it.keyID in ventColourKeys }
+                        // Échantillons mode: only échantillon colours
+                        isEchatillantsMode -> colors.filter { it.keyID in echaKeys }
+                        // Normal mode: everything except échantillons
+                        else -> colors.filter { it.keyID !in echaKeys }
+                    }
 
-                    // ── DEBUG: trace pourquoi le targeted passe ou non ─────────
+                    // ── DEBUG: trace pourquoi le targeted passe ou non ────────
                     if (product.keyID == DBG_PROD_KEY) {
-                        android.util.Log.d("TargetedM3_Lazy",
+                        android.util.Log.d(
+                            "TargetedM3_Lazy",
                             "[groupBy] targetedProduct found" +
                                     " | colorsInGroup=${colors.size}" +
                                     " | filteredColors=${filtered.size}" +
@@ -113,7 +134,7 @@ fun Etager_LazyColumn(
                                     " | targetedM3InFiltered=${filtered.any { it.keyID == DBG_M3_KEY }}"
                         )
                     }
-                    // ──────────────────────────────────────────────────────────
+                    // ─────────────────────────────────────────────────────────
 
                     if (filtered.isEmpty()) null else product to filtered
                 }
@@ -125,7 +146,8 @@ fun Etager_LazyColumn(
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            val targetComptKeyId = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            val targetComptKeyId =
+                M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             activeBonVentKey = viewModel.appDatabase.dao_M9AppCompt().getAll()
                 .find { it.keyID == targetComptKeyId }?.onVentM8BonVentKey ?: ""
             lenceVentOperations = (activeDatas.list_M10OperationVentCouleur ?: emptyList())
@@ -134,7 +156,13 @@ fun Etager_LazyColumn(
     }
 
     val gridColumns by remember {
-        derivedStateOf { if (activeDatas.isEchatillantsMode) 4 else 2 }
+        derivedStateOf {
+            when {
+                activeDatas.isEchatillantsMode -> 4
+                activeDatas.its_Panie_Mode -> 2
+                else -> 2
+            }
+        }
     }
 
     LaunchedEffect(displayList) {
@@ -154,20 +182,13 @@ fun Etager_LazyColumn(
         val foundIndex = displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
         if (foundIndex < 0) return@LaunchedEffect
 
-        // Phase 1: snap item into the layout viewport immediately
         coroutineScope.launch { gridState.scrollToItem(foundIndex) }
-
-        // Phase 2: give the FullLine reflow time to complete, then animate to top
         delay(300)
-        coroutineScope.launch {
-            gridState.animateScrollToItem(foundIndex, scrollOffset = 0)
-        }
+        coroutineScope.launch { gridState.animateScrollToItem(foundIndex, scrollOffset = 0) }
     }
 
     LaunchedEffect(isHostPhone, isConnected) {
-        snapshotFlow {
-            gridState.firstVisibleItemIndex to gridState.isScrollInProgress
-        }
+        snapshotFlow { gridState.firstVisibleItemIndex to gridState.isScrollInProgress }
             .distinctUntilChanged()
             .collect { (_, _) -> }
     }
@@ -230,7 +251,10 @@ fun LazyStigerList_Produits_FragID4(
     )
     val scale by animateFloatAsState(
         targetValue = if (justMoved) 1.05f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
         label = "scaleAnimation"
     )
     Box(

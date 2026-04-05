@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui.LoadingProgressOverlay
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun A_MapClients_A2FragID_1(
     modifier: Modifier = Modifier,
+   fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto ,
+
     viewModel: MapClientsViewModel = koinViewModel(),
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
@@ -33,6 +36,8 @@ fun A_MapClients_A2FragID_1(
             LoadingProgressOverlay(progress = progress)
         } else {
             MapContent(
+                fragmentNavigationHandler=
+                    fragmentNavigationHandler_NewProto,
                 viewModel = viewModel,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClear = onClear,

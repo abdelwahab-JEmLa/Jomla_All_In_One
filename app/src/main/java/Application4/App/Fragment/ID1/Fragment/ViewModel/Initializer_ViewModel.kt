@@ -14,7 +14,8 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         collect_ListDatas()
         load_then_Collect_Active_DatasMutableStates()
     }
-
+                   //<--
+                   //TODO(1): fait qeu ce seed a init depuit its_Panie_Mode active compt si its_Panie_Mode_Au_Lence_Boutique le mode  c its paniie mode
     private fun collect_ListDatas() {
         load_then_Collect_Active_Datas()
         collectListM16()

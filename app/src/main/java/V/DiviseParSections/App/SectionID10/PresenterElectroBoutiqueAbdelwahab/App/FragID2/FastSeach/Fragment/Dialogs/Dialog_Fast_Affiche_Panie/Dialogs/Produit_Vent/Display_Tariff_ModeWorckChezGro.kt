@@ -140,13 +140,20 @@ fun Display_Tariff(
                 displayTariff = grossistTariff
                 effectiveAllNonTrouve = allNonTrouve || (grossistTariff.prixCurrency == 0.0)
             } else {
-                displayTariff = M13TarificationInfos(
-                    typeChoisi = TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
-                    prixCurrency = relative_produit.prixAchat,
-                    parent_M1Produit_KeyId = relative_produit.keyID,
-                    parent_M1Produit_DebugInfos = relative_produit.nom
-                )
-                effectiveAllNonTrouve = true
+                // FIX : fallback sur le tariff lié à l'opération, peu importe son type
+                val fallback = relative_Tariff?.takeIf { it.prixCurrency != 0.0 }
+                if (fallback != null) {
+                    displayTariff = fallback
+                    effectiveAllNonTrouve = allNonTrouve
+                } else {
+                    displayTariff = M13TarificationInfos(
+                        typeChoisi = TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                        prixCurrency = relative_produit.prixAchat,
+                        parent_M1Produit_KeyId = relative_produit.keyID,
+                        parent_M1Produit_DebugInfos = relative_produit.nom
+                    )
+                    effectiveAllNonTrouve = true
+                }
             }
         } else {
             if (relative_Tariff != null) {

@@ -16,6 +16,8 @@ data class M10OperationVentCouleur(
 
     var commetaire: String = "",
 
+    var prix_de_Vent_entre_directement_NewProto : Double = 0.0,
+
     //---------------------------------LinkedVent----------------------------------------------------------------------------------------------------------------------------------
     var its_Linked_To_Autre_Vent_Si_NonDispo: Boolean = false,
     val linked_To_M10OperationVent_KeyID: String = "",
@@ -153,6 +155,9 @@ data class M10OperationVentCouleur(
                 parent_M2Client_KeyID = onVent_M8BonVent?.parent_M2Client_KeyID ?: "null",
             )
         }
+
+        fun get_Default() = M10OperationVentCouleur()
+
 
         val ref =
             Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Datas10OperationVentCouleur")

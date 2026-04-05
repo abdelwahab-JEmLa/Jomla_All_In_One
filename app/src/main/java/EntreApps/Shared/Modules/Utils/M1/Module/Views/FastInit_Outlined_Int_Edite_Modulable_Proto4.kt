@@ -80,8 +80,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     on_admin_depot_update: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     on_Data_Update: (Int) -> Unit,
-    startCouleur: Color=         Color(0xFF3F51B5),
- ) {
+    startCouleur: Color = Color(0xFF3F51B5),
+) {
     val context = LocalContext.current
 
     var isEditMode by remember { mutableStateOf(false) }
@@ -240,6 +240,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                                         on_Data_Update(standard_count)
                                     }
                                 }
+
                                 else -> {
                                     // Covers both start_count < standard_count and start_count >= standard_count
                                     isEditMode = true
@@ -321,6 +322,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                                         on_Data_Update(standard_count)
                                     }
                                 }
+
                                 else -> {
                                     // Covers both start_count < standard_count and start_count >= standard_count
                                     isEditMode = true

@@ -37,7 +37,7 @@ private const val TAG = "CommandButton"
 @Composable
 fun CommandButton(
     aCentralFacade: ACentralFacade = koinInject(),
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto ,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     modifier: Modifier = Modifier,
     relative_M2Client: M2Client,
@@ -116,7 +116,8 @@ fun CommandButton(
                 // screen never actually changed. navigateTo() does both: it updates
                 // _currentFragment AND calls _navController?.navigate(...).
                 Log.d(TAG, "navigateTo Compact_Presentoire_App_Produits_FragID4")
-                fragmentNavigationHandler.navigateTo(
+                fragmentNavigationHandler.navigateTo(                  //<--
+                //TODO(1): pk ca ne marche pas au click pour alle au 
                     Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
                 )
             }

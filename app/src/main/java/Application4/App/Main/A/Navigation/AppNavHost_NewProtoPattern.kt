@@ -79,6 +79,7 @@ fun AppNavHost_NewProtoPattern(
                 }
 
                 A_Compact_Presentoire_App_Produits_App4(
+                    fragmentNavigationHandler=fragmentNavigationHandler,
                     viewModelNewProtoPatterns=viewModelNewProtoPatterns
                 )
             }
@@ -96,7 +97,9 @@ fun AppNavHost_NewProtoPattern(
                     }
                 }
                 if (heavyReady.value) {
-                    Screen_Panie_FragID2()
+                    Screen_Panie_FragID2(
+                        fragmentNavigationHandler=fragmentNavigationHandler,
+                        )
                 }
             }
 
@@ -120,7 +123,10 @@ fun AppNavHost_NewProtoPattern(
                             )
                         },
                         onClear = {}
-                    )
+                        ,fragmentNavigationHandler_NewProto=fragmentNavigationHandler,
+
+                        )
+
                 }
             }
         }

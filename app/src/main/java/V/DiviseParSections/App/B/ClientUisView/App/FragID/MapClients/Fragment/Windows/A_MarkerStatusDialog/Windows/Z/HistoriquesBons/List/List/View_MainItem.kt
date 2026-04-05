@@ -517,7 +517,8 @@ fun View_MainItem(
                                 fragmentNavigationHandler.navigateToCartScreen()
                             }
                         ) {
-                            Icon(
+                            Icon(           //<--
+                            //TODO(1): fait que si le app est vendeur d aller au compact au lieu panie si le mode est non deliveri
                                 imageVector = Icons.Default.ShoppingCart,
                                 contentDescription = "Select Transaction",
                                 tint = if (activeM8BonVentId == relative_M8BonVent.vid) {

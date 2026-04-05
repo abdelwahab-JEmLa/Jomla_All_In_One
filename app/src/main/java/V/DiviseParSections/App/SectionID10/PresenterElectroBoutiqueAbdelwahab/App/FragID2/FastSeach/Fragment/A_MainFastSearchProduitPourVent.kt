@@ -1,9 +1,11 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.Dialogs.Dialog_Fast_Affiche_Panie.Dialogs.Dialog_Fast_Affiche_Panie
@@ -15,7 +17,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,6 +98,7 @@ fun get_New_Datas(
 
 @Composable
 fun MainFastSearchProduitPourVent(
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto =koinInject(),
     modifier: Modifier = Modifier,
     viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment? = null,
@@ -364,6 +366,7 @@ fun MainFastSearchProduitPourVent(
 
             if (shouldShowMarkerDialog) {
                 MarkerStatusDialog(
+                    fragmentNavigationHandler=fragmentNavigationHandler,
                     relative_M2Client = markerStatusDialogActiveM2Client,
                     markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
                     on_dissmiss_dialog_avec_enleve_focuse_bon = {

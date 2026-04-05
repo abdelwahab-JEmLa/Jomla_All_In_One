@@ -1,5 +1,6 @@
 package Application4.App.Fragment.ID2.Fragment
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
@@ -44,6 +45,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun Screen_Panie_FragID2(
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto ,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject(),
     aCentralFacade: ACentralFacade = koinInject()
 ) {
@@ -55,7 +57,9 @@ fun Screen_Panie_FragID2(
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            MainFastSearchProduitPourVent_App4()
+            MainFastSearchProduitPourVent_App4(
+                fragmentNavigationHandler=fragmentNavigationHandler,
+            )
             PressistatntMainActivityButtons_Sec8FWinID1()
             isControleFabVisible.ifTrue {
                 Box(
@@ -78,6 +82,7 @@ fun MainFastSearchProduitPourVent_App4(
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment? = null,
     aCentralFacade: ACentralFacade = koinInject(),
     appDatabase: AppDatabase=koinInject(),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
@@ -253,6 +258,7 @@ fun MainFastSearchProduitPourVent_App4(
 
             if (shouldShowMarkerDialog) {
                 MarkerStatusDialog(
+                     fragmentNavigationHandler=fragmentNavigationHandler,
                     relative_M2Client = markerStatusDialogActiveM2Client,
                     markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
                     on_dissmiss_dialog_avec_enleve_focuse_bon = {

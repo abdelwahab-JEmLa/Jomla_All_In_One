@@ -20,7 +20,6 @@ fun SubColorCard_WithButton(
     couleur: M3CouleurProduitInfos,
     relative_M1produit: M01Produit,
     selectedTariff: M13TarificationInfos,
-    
     isExpanded: Boolean,
     modifier: Modifier = Modifier,
     shouldShowButtons: Boolean,

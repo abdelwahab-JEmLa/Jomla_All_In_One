@@ -67,11 +67,61 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
 
     // M10 ─────────────────────────────────────────────────────────────────
 
+    fun addNew_listM10OperationVentCouleur(
+        updatedList: List<M10OperationVentCouleur>?,
+    ) {
+        vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
+        upsert_M10OperationVentCouleur(updatedList)
+    }
+
+    /**
+     * Updates existing M10 operations in-place.
+     * Aborts if any entry in [updatedList] does not already exist in the current list —
+     * those should go through [addNew_listM10OperationVentCouleur] instead.
+     */
+    fun update_listM10OperationVentCouleur(
+        updatedList: List<M10OperationVentCouleur>?,
+    ) {
+        val currentList =
+            vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+        val existingKeys = currentList?.map { it.keyID }?.toSet() ?: emptySet()
+
+        val missingEntries = updatedList?.filter { it.keyID !in existingKeys }
+        if (!missingEntries.isNullOrEmpty()) {
+            android.util.Log.e(
+                TAG_SETTER,
+                "update_listM10OperationVentCouleur: entry not found — aborting. " +
+                        "Missing keyIDs: ${missingEntries.map { it.keyID }}"
+            )
+            return
+        }
+
+        vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
+        upsert_M10OperationVentCouleur(updatedList)
+    }
+
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(
         updatedList: List<M10OperationVentCouleur>?,
     ) {
         vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
         upsert_M10OperationVentCouleur(updatedList)
+    }
+
+    /**
+     * Inserts only genuinely new entries (by keyID) into the current list.
+     * Entries whose keyID already exists are silently skipped — use
+     * [update_listM10OperationVentCouleur] to update existing ones.
+     */
+    private fun addNew_ListM10OperationVentCouleur(datas: List<M10OperationVentCouleur>?) {
+        if (datas.isNullOrEmpty()) return
+        val currentList =
+            vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+        val existingKeys = currentList?.map { it.keyID }?.toSet() ?: emptySet()
+        val newOnly = datas.filter { it.keyID !in existingKeys }
+        if (newOnly.isEmpty()) return
+        val merged = (currentList ?: emptyList()) + newOnly
+        vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = merged
+        upsert_M10OperationVentCouleur(newOnly)
     }
 
     private fun upsert_M10OperationVentCouleur(updatedList: List<M10OperationVentCouleur>?) {
@@ -104,6 +154,24 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
             )
         }
         vm.repositorysMainSetter_NewProtoPatterns.update_M13TarificationInfos(tariff)
+
+        val currentList = vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+        val affected = currentList?.filter { it.parentM13TarificationKeyID == tariff.keyID }
+        if (!affected.isNullOrEmpty()) {
+            val updatedList = currentList.map { op ->
+                if (op.parentM13TarificationKeyID == tariff.keyID)
+                    op.copy(
+                        prix_de_Vent_entre_directement_NewProto = tariff.prixCurrency,
+                        typeTarificationEnumT2 = tariff.typeChoisi,
+                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                    )
+                else op
+            }
+            vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
+            upsert_M10OperationVentCouleur(updatedList.filter { op ->
+                affected.any { it.keyID == op.keyID }
+            })
+        }
     }
 
     // M16 ─────────────────────────────────────────────────────────────────

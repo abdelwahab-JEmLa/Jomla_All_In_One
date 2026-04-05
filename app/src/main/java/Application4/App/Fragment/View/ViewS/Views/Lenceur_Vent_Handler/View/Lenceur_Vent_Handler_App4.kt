@@ -29,6 +29,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -61,7 +63,7 @@ fun Lenceur_Vent_Handler_App4(
     }
 
     val isGrossist = viewModel.active_Datas.currentApp_ItsWorkChezGrossisst
-    val isAdmin    = viewModel.active_Datas.currentApp_Est_Admin
+    val isAdmin = viewModel.active_Datas.currentApp_Est_Admin
 
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
@@ -92,49 +94,88 @@ fun Lenceur_Vent_Handler_App4(
         derivedStateOf { au_depot > 0 || isGrossist }
     }
 
-    fun handleLenceVent(newQuantity: Int) {
-        val currentList = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-        val currentOp   = currentList?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
+    val datasValue_distinct_type = remember(uiState.list_M13TarificationInfos) {
+        uiState.list_M13TarificationInfos
+            .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
+            .groupBy { it.typeChoisi }
+            .mapValues { (_, tariffs) -> tariffs.maxByOrNull { it.creationTimestamps } }
+            .values
+            .filterNotNull()
+    }
 
-        val operationToUse = currentOp?.copy(
-            quantity = newQuantity,
-            parentM13TarificationKeyID = selectedTariff.keyID,
-            parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
-            parent_M1Produit_DebugInfos = "par.produit ${relative_M1produit.nom}",
-            parent_M8BonVent_KeyId = activeOnVent_M8BonVent?.keyID ?: "",
-            parent_M8BonVent_DebugInfos = activeOnVent_M8BonVent?.get_DebugInfos() ?: "",
-            typeTarificationEnumT2 = selectedTariff.typeChoisi,
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        ) ?: M10OperationVentCouleur.get_default_By_BonVentEtCouleur(
-            activeOnVent_M8BonVent, selectedCouleur
-        ).copy(
+    val supperGro = datasValue_distinct_type.find {
+        it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
+                it.prixCurrency != 0.0
+    }
+
+    val detaille = datasValue_distinct_type.find {
+        it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
+                it.prixCurrency != 0.0
+    }
+
+    val new_Prix_Progressive_Editable = M13TarificationInfos.get_default()
+        .copy(typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable)
+
+    val tariff_Stocked_Pour_NewOperationVent = supperGro
+        ?: detaille
+        ?: new_Prix_Progressive_Editable
+
+    fun handleLenceVent_WhenNew(
+        newQuantity: Int,
+        currentList: List<M10OperationVentCouleur>?,
+    ) {
+        val parentM13TarificationKeyID =
+            if (selectedTariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) "Prix_Progressive_Editable Non Saved"
+            else selectedTariff.keyID
+
+        val newOperation = M10OperationVentCouleur.get_Default().copy(
             creationTimestamps = System.currentTimeMillis(),
             setIN_Vent_Its_Quantity_Represent = relative_M1produit.setIN_Vent_Its_Quantity_Represent,
             quantite_Boit_Par_Carton = relative_M1produit.quantite_Boit_Par_Carton,
             quantity = newQuantity,
-            parentM13TarificationKeyID = selectedTariff.keyID,
+            prix_de_Vent_entre_directement_NewProto = selectedTariff.prixCurrency,
+            parentM13TarificationKeyID = parentM13TarificationKeyID,
             parentM13TarificationDebugInfos = selectedTariff.getDebugInfos(),
+            parent_M1Produit_KeyId = relative_M1produit.keyID,
+            parent_M1Produit_DebugInfos = "par.produit ${relative_M1produit.nom}",
+            parent_M3CouleurProduit_KeyID = selectedCouleur.keyID,
+            parent_M3CouleurProduit_DebugInfos = selectedCouleur.get_DebugsInfos(),
             parent_M8BonVent_KeyId = activeOnVent_M8BonVent?.keyID ?: "",
             parent_M8BonVent_DebugInfos = activeOnVent_M8BonVent?.get_DebugInfos() ?: "",
+            parent_M2Client_KeyID = activeOnVent_M8BonVent?.parent_M2Client_KeyID ?: "null",
             typeTarificationEnumT2 = selectedTariff.typeChoisi,
             its_created_in_working_for_wholesaler = isGrossist
         )
+        val newList = (currentList ?: emptyList()) + newOperation
+        viewModel.addNew_listM10OperationVentCouleur(newList)
+    }
 
-        val isNew = currentList?.none { it.keyID == operationToUse.keyID } != false
-        val quantityChange = if (isNew) operationToUse.quantity else operationToUse.quantity - (currentOp?.quantity ?: 0)
+    fun handleLenceVent_When_There_Is_Old(
+        newQuantity: Int,
+        currentOp: M10OperationVentCouleur,
+        currentList: List<M10OperationVentCouleur>?,
+    ) {
+        val updatedOperation = currentOp.copy(
+            quantity = newQuantity,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+        val updatedList = currentList?.map {
+            if (it.keyID == updatedOperation.keyID) updatedOperation else it
+        }
+        viewModel.update_listM10OperationVentCouleur(updatedList)
+    }
 
-        val updatedFilteredList =
-            if (isNew) (currentList ?: emptyList()) + operationToUse
-            else currentList?.map { if (it.keyID == operationToUse.keyID) operationToUse else it }
+    // ── Dispatcher: route vers add ou update selon l'existence de l'opération ──
+    fun handleLenceVent(newQuantity: Int) {
+        val currentList =
+            viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+        val currentOp =
+            viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
 
-        viewModel.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedFilteredList)
-
-        val updatedCouleur =
-            if (isGrossist || quantityChange == 0) null
-            else selectedCouleur.copy(count_Don_Depot = selectedCouleur.count_Don_Depot - quantityChange)
-
-        if (updatedCouleur != null) {
-            viewModel.update_m3couleur(updatedCouleur)
+        if (currentOp == null) {
+            handleLenceVent_WhenNew(newQuantity, currentList)
+        } else {
+            handleLenceVent_When_There_Is_Old(newQuantity, currentOp, currentList)
         }
 
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -143,7 +184,8 @@ fun Lenceur_Vent_Handler_App4(
     val horizontalPadding = if (compactMode) 4.dp else 8.dp
     val verticalPadding = if (compactMode) 2.dp else 4.dp
 
-    val shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 12.dp, bottomEnd = 12.dp)
+    val shape =
+        RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 12.dp, bottomEnd = 12.dp)
 
     val containerColor = if (!isAvailable) {
         MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
@@ -157,7 +199,14 @@ fun Lenceur_Vent_Handler_App4(
     val depotEnCartons = if (boitParCarton > 0) au_depot / boitParCarton else 0
 
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = tariff_Stocked_Pour_NewOperationVent,
+                    key = SemanticsPropertyKey("tariff_Stocked_Pour_NewOperationVent")
+                )
+            },
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         if (boitParCarton > 1 && isAdmin && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true) {
@@ -200,4 +249,3 @@ fun Lenceur_Vent_Handler_App4(
         }
     } // end Column
 }
-

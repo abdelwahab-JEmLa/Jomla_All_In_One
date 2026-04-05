@@ -143,8 +143,12 @@ class A_ViewModel_NewProtoPatterns(
         )
 
     fun update_active_Compt(compt: M09AppCompt) = updater.update_active_Compt(compt)
-    fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList: List<M10OperationVentCouleur>?) =
-        updater.update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(updatedList)
+
+    fun update_listM10OperationVentCouleur(updatedList: List<M10OperationVentCouleur>?) =
+        updater.update_listM10OperationVentCouleur(updatedList)
+
+    fun addNew_listM10OperationVentCouleur(datas: List<M10OperationVentCouleur>?) =
+        updater.addNew_listM10OperationVentCouleur(datas)
 
     fun update_m3couleur(couleur: M3CouleurProduitInfos) = updater.update_m3couleur(couleur)
     fun update_depot_count(

@@ -41,8 +41,7 @@ fun Big_Principale_FragID3(
     tariffsList: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
-
-    ) {
+) {
     val its_Grid4_Mode =
         uiState_NewProtoPatterns_viewModel.second.active_Datas.isEchatillantsMode
     val imageHeight by animateDpAsState(
@@ -94,10 +93,11 @@ fun Big_Principale_FragID3(
             )
 
             Pricipale_Tariffs_Vendeurs_FragID3(
+                une_des_selectedCouleur=selectedCouleur,
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,
                 tariffsList = tariffsList,
-                selectedTariff = selectedTariff,
+                selectedTariff_Par_AncienProto = selectedTariff,
                 onTariffSelected = onTariffSelected,
                 compactMode = !isThisProductExpanded,
             )

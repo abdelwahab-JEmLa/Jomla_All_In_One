@@ -7,7 +7,6 @@ import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -26,6 +25,7 @@ class ActiveDatasFragNewProto {
     )
 
     var isEchatillantsMode: Boolean by mutableStateOf(false)
+    var its_Panie_Mode: Boolean by mutableStateOf(false)
 
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>? by mutableStateOf(null)

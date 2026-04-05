@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_1
@@ -56,6 +57,7 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto ,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
@@ -263,6 +265,7 @@ fun MapContent(
 
         if (shouldShowMarkerDialog) {
             MarkerStatusDialog(
+                fragmentNavigationHandler=    fragmentNavigationHandler,
                 viewModel = viewModel,
                 relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
                 markerStatusDialogActiveM2Client=markerStatusDialogActiveM2Client,

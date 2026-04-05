@@ -38,7 +38,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     appDatabase: AppDatabase = koinInject(),
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto ,
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = viewModel(
         factory = viewModelFactory {
             initializer {

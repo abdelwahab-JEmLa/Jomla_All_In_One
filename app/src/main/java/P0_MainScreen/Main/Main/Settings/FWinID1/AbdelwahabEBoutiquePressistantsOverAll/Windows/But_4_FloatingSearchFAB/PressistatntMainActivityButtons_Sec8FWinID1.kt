@@ -5,9 +5,7 @@ import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M13TarificationInfos
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View.ID4ClientSearchButton
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.B1CataloguesAffiche
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.BlinkingWarningCard
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingBonVentToggleFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingImageDisplay
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingSecureClickToggleFAB
@@ -368,22 +366,22 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             showAlertDialog = true
                         }
                     } else {
-                        if (travailleChezGrossisst3Ali == false && !cLenceDepuitFragmentsSepecialicteDeVents) {
-                            Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
-                                aCentralFacade = aCentralFacade,
-                                focusedValuesGetter = focusedValuesGetter
-                            )
-                        }
+//                        if (travailleChezGrossisst3Ali == false && !cLenceDepuitFragmentsSepecialicteDeVents || false) {
+//                            Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
+//                                aCentralFacade = aCentralFacade,
+//                                focusedValuesGetter = focusedValuesGetter
+//                            )
+//                        }
                     }
 
-                    (activeDialogSearchM1Produit == false && !itsFragmentProduitFastSearchDialog).ifTrue {
-                        B1CataloguesAffiche(
-                            appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
-                            showLabels = showLabels,
-                        ) {
-                            showCatalogueDialog = true
-                        }
-                    }
+//                    (activeDialogSearchM1Produit == false && !itsFragmentProduitFastSearchDialog|| false).ifTrue {
+//                        B1CataloguesAffiche(
+//                            appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
+//                            showLabels = showLabels,
+//                        ) {
+//                            showCatalogueDialog = true
+//                        }
+//                    }
 
                     if (!itsFragmentProduitFastSearchDialog) {
                         Button_ID2_Menagerie_Telegram(
@@ -409,7 +407,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                     }
 
-                    (focusedValuesGetter.currentApp_Est_Admin).ifTrue {
                         ID4ClientSearchButton(
                             uiState = uiState,
                             hClientRepository = uiState.hClientRepository,
@@ -423,7 +420,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             },
                             viewModel = viewModel
                         )
-                    }
                 }
 
                 itsFragmentProduitFastSearchDialog.ifTrue {

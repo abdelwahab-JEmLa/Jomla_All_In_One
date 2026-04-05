@@ -4,6 +4,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatt
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,9 +18,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
@@ -46,12 +52,32 @@ object TariffTextSizes {
 fun Pricipale_Tariffs_Vendeurs_FragID3(
     relative_M1produit: M01Produit,
     tariffsList: List<M13TarificationInfos>,
-    selectedTariff: M13TarificationInfos,
+    selectedTariff_Par_AncienProto: M13TarificationInfos,
     onTariffSelected: (M13TarificationInfos) -> Unit,
     compactMode: Boolean = false,
     modifier: Modifier = Modifier,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+    une_des_selectedCouleur: M3CouleurProduitInfos,
 ) {
+    val viewModel = uiState_NewProtoPatterns_viewModel.second
+    val listM10OperationVentCouleur_FilteredBy_activeM8BonVent =
+        viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+
+    val relative_M10OperationVentCouleur by remember(
+        listM10OperationVentCouleur_FilteredBy_activeM8BonVent
+    ) {
+        derivedStateOf {
+            listM10OperationVentCouleur_FilteredBy_activeM8BonVent?.find {
+                it.parent_M3CouleurProduit_KeyID == une_des_selectedCouleur.keyID
+            }
+        }
+    }
+
+    val tariff_Stocked_Au_OperationVent =
+        tariffsList.find {
+            it.keyID == relative_M10OperationVentCouleur?.parentM13TarificationKeyID
+        }
+
     val isGrossistMode = false
     val filteredTariffs = tariffsList.filter { tariff ->
         tariff.typeChoisi.its_gro_app == isGrossistMode && !tariff.typeChoisi.ignore_affiche
@@ -76,13 +102,19 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
             M13TarificationInfos.TypeChoisi.Prix_Detaille -> 0
             M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
             M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable -> 1
+
             M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService -> 2
             else -> tariff.typeChoisi.profitabilityScore
         }
     }
 
     LazyRow(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {
+                set(value = tariff_Stocked_Au_OperationVent, key = SemanticsPropertyKey("tariff_Stocked_Au_OperationVent"))
+                set(value = relative_M10OperationVentCouleur, key = SemanticsPropertyKey("relative_M10OperationVentCouleur"))
+            },
         reverseLayout = true,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -92,7 +124,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 tariff = tariff,
                 relative_M1produit = relative_M1produit,
-                isSelected = tariff.keyID == selectedTariff.keyID,
+                isSelected = tariff.keyID == selectedTariff_Par_AncienProto.keyID,
                 compactMode = compactMode,
                 onClick = { onTariffSelected(tariff) },
                 tariffsList = tariffsList
@@ -110,7 +142,7 @@ fun TariffItemSelector(
     onClick: () -> Unit,
     tariffsList: List<M13TarificationInfos>,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {
+) {       //<--
     val prix = tariff.prixCurrency
     val nombreUnite = relative_M1produit.nombreUniteInt
 
@@ -189,10 +221,14 @@ fun EditableProgressiveTariffItem(
     onPriceUpdated: (Double) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val horizontalPadding = if (compactMode) TariffTextSizes.COMPACT_HORIZONTAL_PADDING else TariffTextSizes.NORMAL_HORIZONTAL_PADDING
-    val verticalPadding = if (compactMode) TariffTextSizes.COMPACT_VERTICAL_PADDING else TariffTextSizes.NORMAL_VERTICAL_PADDING
-    val fontSize = if (compactMode) TariffTextSizes.COMPACT_MAIN_TEXT else TariffTextSizes.NORMAL_MAIN_TEXT
-    val borderWidth = if (isSelected) TariffTextSizes.SELECTED_BORDER_WIDTH else TariffTextSizes.UNSELECTED_BORDER_WIDTH
+    val horizontalPadding =
+        if (compactMode) TariffTextSizes.COMPACT_HORIZONTAL_PADDING else TariffTextSizes.NORMAL_HORIZONTAL_PADDING
+    val verticalPadding =
+        if (compactMode) TariffTextSizes.COMPACT_VERTICAL_PADDING else TariffTextSizes.NORMAL_VERTICAL_PADDING
+    val fontSize =
+        if (compactMode) TariffTextSizes.COMPACT_MAIN_TEXT else TariffTextSizes.NORMAL_MAIN_TEXT
+    val borderWidth =
+        if (isSelected) TariffTextSizes.SELECTED_BORDER_WIDTH else TariffTextSizes.UNSELECTED_BORDER_WIDTH
     val borderColor = if (isSelected) Color.Red else Color.Transparent
     val backgroundColor = tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
     val prixUnitaire = if (nombreUnite > 1) prix / nombreUnite else prix
@@ -211,11 +247,20 @@ fun EditableProgressiveTariffItem(
         Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
             value = prix,
             onValueChanged = { newValue ->
-                if (!isSelected && tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) onClick()
+                // Select this item first whenever the user edits the price field while it
+                // is not yet selected — covers all three editable tariff variants so that
+                // typing in the field always triggers selection before the price update.
+                if (!isSelected && (
+                            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client ||
+                                    tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
+                                    tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive
+                            )
+                ) onClick()
                 onPriceUpdated(newValue)
             },
             compact_taille = compactMode,
             textSize = fontSize,
+            showDecimals = false,
             containerColor = backgroundColor,
             textColor = tariff.typeChoisi.couleur_Text,
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -234,7 +279,9 @@ fun EditableProgressiveTariffItem(
         if (clientPrixVentUnite > 0) {
             Text(
                 text = "bén: ${formatPrice(beneficeClient)} DA",
-                color = if (beneficeClient >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Red.copy(alpha = 0.85f),
+                color = if (beneficeClient >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Red.copy(
+                    alpha = 0.85f
+                ),
                 fontSize = TariffTextSizes.COMPACT_SECONDARY_TEXT,
                 lineHeight = TariffTextSizes.COMPACT_SECONDARY_TEXT,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -242,4 +289,3 @@ fun EditableProgressiveTariffItem(
         }
     }
 }
-

@@ -26,6 +26,7 @@ data class M09AppCompt(
     var its_mode_affiche_que_produits_au_depot: Boolean = true,
 
     var mode_edite_dispo: Boolean = false,
+
     var credit_fait: Double = 0.0,
 
     // Section InfosDeBase
@@ -75,6 +76,9 @@ data class M09AppCompt(
 
     var mainInitDataBaseProgressEtate: Float = 0f,
     //---------------------------------Centrale_Focuces_Values.----------------------------------------------------------------------------------------------------------------------------------
+    var its_Panie_Mode_Au_Lence_Boutique: Boolean = false,
+
+
     val filter_marqueClient_Name: String = "no Filter",
 
     val next_start: Do = Do.StandartInit_Sans_RienFair,

@@ -1,6 +1,7 @@
 package V.DiviseParSections.App._0.Navigation
 
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.M01Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
@@ -77,6 +78,7 @@ fun AppNavHost(
     onClickImageToShowControles: () -> Unit,
 
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto = koinInject(),
     isWifiClientConnected_1: Boolean,
 ) {
     // Initialize UI state and navigation
@@ -239,7 +241,9 @@ fun AppNavHost(
                 }
 
                 composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
-                    A_Compact_Presentoire_App_Produits_App4()
+                    A_Compact_Presentoire_App_Produits_App4(
+                        fragmentNavigationHandler=fragmentNavigationHandler_NewProto,
+                    )
                 }
 
                 // Add client map routes
@@ -264,7 +268,8 @@ fun AppNavHost(
                         }
                     },
                     mapReloadTrigger = mapReloadTrigger.intValue,
-                    fragmentNavigationHandler = fragmentNavigationHandler
+                    fragmentNavigationHandler  =fragmentNavigationHandler,
+                    fragmentNavigationHandler_nP = fragmentNavigationHandler_NewProto
                 )
             }
 
@@ -373,6 +378,7 @@ fun NavGraphBuilder.app2(
     navController: NavHostController,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
+    fragmentNavigationHandler_nP: FragmentNavigationHandler_NewProto ,
     fragmentNavigationHandler: FragmentNavigationHandler,
 ) {
     composable(
@@ -388,6 +394,8 @@ fun NavGraphBuilder.app2(
 
         key(screenKey.value) {
             A_MapClients_A2FragID_1(
+                fragmentNavigationHandler_NewProto
+               = fragmentNavigationHandler_nP,
                 onUpdateLongAppSetting = {
                     // navigateToMainScreen(navController, fragmentNavigationHandler)
                 },

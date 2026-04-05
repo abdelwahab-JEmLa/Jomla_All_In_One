@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +35,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun A_Item_Produit_App4(
     relative_M1produit: M01Produit,
-
     modifier: Modifier = Modifier,
     onCategoryClick: (() -> Unit)? = null,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
@@ -104,115 +104,45 @@ fun A_Item_Produit_App4(
         }
     }
 
-    val datasValue_distinct_type = remember(uiState.list_M13TarificationInfos) {
+
+    val datasValue_distinct_type =
         uiState.list_M13TarificationInfos
             .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
             .groupBy { it.typeChoisi }
             .mapValues { (_, tariffs) -> tariffs.maxByOrNull { it.creationTimestamps } }
             .values
             .filterNotNull()
-    }
+
+    val activeM9compt = centralValues.active_M9Compt
+
     val supperGro = datasValue_distinct_type.find {
         it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
                 it.prixCurrency != 0.0
     }
+
     val detaille = datasValue_distinct_type.find {
         it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
                 it.prixCurrency != 0.0
     }
 
-    val synthetic = M13TarificationInfos.remembered_calculated_progressive_changement_tariff(
-        relative_Prix_Detaille = detaille?.prixCurrency,
-        relative_Prix_SupperGro_Et_PresentationService = supperGro?.prixCurrency,
-        relative_produit = relative_M1produit
-    )
-
-    LaunchedEffect(
-        centralValues.activeOnVent_M8BonVent?.keyID,
-        centralValues.activeOnVent_M8BonVent?.creationTimestamps
-    ) {
-        viewModel.maybeCreateEditedPourClientTariff(
-            produit = relative_M1produit,
-            synthetic = synthetic,
-            datasValue_distinct_type = datasValue_distinct_type,
-        )
-    }
-
-    val activeM9compt = centralValues.active_M9Compt
-    val isGrossist = activeM9compt?.travailleChezGrossisst3Ali == true
-
-    val datasValue_with_synthetic = if (!isGrossist &&
-        datasValue_distinct_type.none { it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client } &&
-        synthetic != null
-    ) {
-        datasValue_distinct_type + synthetic
-    } else {
-        datasValue_distinct_type
-    }
-
-    val fallbackTariff = if (!isGrossist) {
-        val retailTariff = datasValue_with_synthetic.find { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
-                    tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                    tariff.prixCurrency != 0.0
-        }
-        val superGroTariff = datasValue_with_synthetic.find { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
-                    tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                    tariff.prixCurrency != 0.0
-        }
-        retailTariff ?: superGroTariff ?: M13TarificationInfos(
-            prixCurrency = relative_M1produit.prixVent,
+    val new_Prix_Progressive_Editable = remember(relative_M1produit.keyID) {
+        M13TarificationInfos.get_default().copy(
+            typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
             parent_M1Produit_KeyId = relative_M1produit.keyID,
-            typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Detaille
-        )
-    } else {
-        val superGroTariff = datasValue_with_synthetic.find { tariff ->
-            tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
-                    tariff.parent_M1Produit_KeyId == relative_M1produit.keyID &&
-                    tariff.prixCurrency != 0.0
-        }
-        superGroTariff ?: M13TarificationInfos(
-            prixCurrency = relative_M1produit.prixAchat,
-            parent_M1Produit_KeyId = relative_M1produit.keyID,
-            typeChoisi = M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
         )
     }
 
-    // TODO(1) FIXED: starter tariff defaults to Prix_Detaille for retail users,
-    // and Prix_SupperGro for grossist users, when no tariff is actively selected.
-    val finale_Tariff = remember(datasValue_with_synthetic, fallbackTariff, isGrossist) {
-        if (isGrossist) {
-            datasValue_with_synthetic
-                .find {
-                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService
-                            && it.prixCurrency != 0.0
-                }
-                ?: datasValue_with_synthetic
-                    .filter { it.prixCurrency != 0.0 }
-                    .maxByOrNull { it.typeChoisi.profitabilityScore }
-                ?: fallbackTariff
-        } else {
-            datasValue_with_synthetic
-                .find {
-                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille
-                            && it.prixCurrency != 0.0
-                }
-                ?: datasValue_with_synthetic
-                    .filter { it.prixCurrency != 0.0 }
-                    .maxByOrNull { it.typeChoisi.profitabilityScore }
-                ?: fallbackTariff
-        }
+    val tariff_algorithme_De_Start = supperGro ?: detaille
+
+    var selectedTariffKeyID by remember(tariff_algorithme_De_Start?.keyID) {
+        mutableStateOf(tariff_algorithme_De_Start?.keyID ?: new_Prix_Progressive_Editable.keyID)
     }
 
-    // Reset to finale_Tariff (Prix_Detaille for retail) on every bon de vent change
-    var selectedTariff by remember(
-        relative_M1produit.keyID,
-        finale_Tariff.keyID,
-        datasValue_with_synthetic.size,
-        centralValues.activeOnVent_M8BonVent?.keyID
-    ) {
-        mutableStateOf(finale_Tariff)
+    val selectedTariff by remember(selectedTariffKeyID, datasValue_distinct_type) {
+        derivedStateOf {
+            datasValue_distinct_type.find { it.keyID == selectedTariffKeyID }
+                ?: new_Prix_Progressive_Editable
+        }
     }
 
     if (relative_ListM3Couleurs.isEmpty()) return
@@ -220,6 +150,34 @@ fun A_Item_Produit_App4(
     val safeIndex = big_presenter_couleur_produit.coerceIn(0, relative_ListM3Couleurs.lastIndex)
     if (safeIndex != big_presenter_couleur_produit) big_presenter_couleur_produit = safeIndex
     val selectedCouleur = relative_ListM3Couleurs[safeIndex]
+
+    // Guard flag: once the user explicitly taps a tariff chip we must not let the
+    // async DB-update LaunchedEffect race back and overwrite their choice.
+    // Resets automatically whenever the product or the active colour changes.
+    var isUserManuallySelectedTariff by remember(relative_M1produit.keyID, selectedCouleur.keyID) {
+        mutableStateOf(false)
+    }
+
+    val activeM10ForSelectedCouleur by remember(
+        selectedCouleur.keyID,
+        viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+    ) {
+        derivedStateOf {
+            viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                ?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
+        }
+    }
+
+    LaunchedEffect(activeM10ForSelectedCouleur) {
+        // Skip the sync when the user has already made an explicit selection — the
+        // LaunchedEffect fires again before the M10 write has propagated back from
+        // the DB, which would otherwise flip selectedTariffKeyID back to the old value.
+        if (isUserManuallySelectedTariff) return@LaunchedEffect
+        val opTariffKeyID = activeM10ForSelectedCouleur?.parentM13TarificationKeyID ?: return@LaunchedEffect
+        if (datasValue_distinct_type.any { it.keyID == opTariffKeyID }) {
+            selectedTariffKeyID = opTariffKeyID
+        }
+    }
 
 
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
@@ -250,13 +208,6 @@ fun A_Item_Produit_App4(
             section_ToggleButton_TagPreiorities__start_Collapsed = viewModel.active_Datas.section_ToggleButton_TagPrioriter__start_Collapsed == true
         )
 
-        val filteredAndSortedTariffs = datasValue_with_synthetic
-            .filter { tariff ->
-                tariff.prixCurrency != 0.0 ||
-                        tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client ||
-                        tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable
-            }
-            .sortedByDescending { it.typeChoisi.profitabilityScore }
 
         Big_Principale_FragID3(
             uiState_NewProtoPatterns_viewModel,
@@ -264,13 +215,34 @@ fun A_Item_Produit_App4(
             selectedCouleur = selectedCouleur,
             selectedTariff = selectedTariff,
             onTariffSelected = { newTariff ->
-                selectedTariff = newTariff
-                viewModel.updateTariffForProductOperations(
-                    relative_M1produit.keyID,
-                    newTariff
-                )
+                // Mark as manual so the async LaunchedEffect does not race back and
+                // overwrite this selection before the DB write has propagated.
+                isUserManuallySelectedTariff = true
+
+                val parentM13TarificationKeyID =
+                    if (newTariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) "Prix_Progressive_Editable Non Saved"
+                    else newTariff.keyID
+
+                selectedTariffKeyID = newTariff.keyID
+                val currentList = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                val affected = currentList?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
+                if (!affected.isNullOrEmpty()) {
+                    val updatedList = currentList.map { op ->
+                        if (op.parent_M1Produit_KeyId == relative_M1produit.keyID)
+                            op.copy(
+                                parentM13TarificationKeyID = parentM13TarificationKeyID,
+                                parentM13TarificationDebugInfos = newTariff.getDebugInfos(),
+                                typeTarificationEnumT2 = newTariff.typeChoisi,
+                                prix_de_Vent_entre_directement_NewProto = newTariff.prixCurrency,
+                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                            )
+                        else op
+                    }
+
+                    viewModel.update_listM10OperationVentCouleur(updatedList)
+                }
             },
-            tariffsList = filteredAndSortedTariffs,
+            tariffsList = datasValue_distinct_type,
             isThisProductExpanded = isThisProductExpanded,
             shouldShowButtons = shouldShowButtons,
 

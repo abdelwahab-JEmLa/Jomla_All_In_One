@@ -5,6 +5,7 @@ import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFormatterUtils
+import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import android.annotation.SuppressLint
@@ -14,6 +15,7 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -68,10 +70,10 @@ fun Display_Tariff_NonGrossistContext(
             .sumOf { it.quantity }
     }
 
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        // ── Quantity badge ───────────────────────────────────────────────────
         Card(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
@@ -108,87 +110,154 @@ fun Display_Tariff_NonGrossistContext(
         }
 
         val datasValue = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
-
-        val find_Tariff_Prix_Detaille = datasValue
-            .filter { it.typeChoisi == TypeChoisi.Prix_Detaille && it.parent_M1Produit_KeyId == relative_produit.keyID }
-            .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
-
         val parentM13TarificationKeyID =
             relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
         val relative_Tariff = datasValue.find { it.keyID == parentM13TarificationKeyID }
 
-        val effectiveAllNonTrouve =
-            allNonTrouve || (relative_Tariff == null) || (relative_Tariff.prixCurrency == 0.0)
-        val displayTariff: M13TarificationInfos = relative_Tariff
-            ?: find_Tariff_Prix_Detaille
-            ?: M13TarificationInfos(
-                typeChoisi = TypeChoisi.Prix_Detaille,
-                prixCurrency = relative_produit.prixAchat,
+        // ── Un seul tariff par type (le plus récent) ────────────────────────
+        val allTariffsForProduit = datasValue
+            .filter { tariff ->
+                tariff.parent_M1Produit_KeyId == relative_produit.keyID &&
+                        !tariff.typeChoisi.its_gro_app &&
+                        !tariff.typeChoisi.ignore_affiche
+            }
+            .groupBy { it.typeChoisi }
+            .mapValues { (_, list) -> list.maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase } }
+            .values
+            .filterNotNull()
+
+        // Ajoute un tariff éditable si aucun Prix_Progressive_Editable / Edited_Pour_Client n'existe
+        val tariffsWithEditable = if (allTariffsForProduit.none {
+                it.typeChoisi == TypeChoisi.Prix_Progressive_Editable ||
+                        it.typeChoisi == TypeChoisi.Edited_Pour_Client
+            }) {
+            allTariffsForProduit + M13TarificationInfos(
+                prixCurrency = 0.0,
                 parent_M1Produit_KeyId = relative_produit.keyID,
-                parent_M1Produit_DebugInfos = relative_produit.nom
+                typeChoisi = TypeChoisi.Prix_Progressive_Editable,
+                creationTimestamps = System.currentTimeMillis()
             )
-        Card(
-            modifier = Modifier.clickable(enabled = !effectiveAllNonTrouve) {
-                val lastGroPrix = datasValue
-                    .filter {
-                        it.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_Gro &&
-                                it.parent_M1Produit_KeyId == relative_produit.keyID
-                    }
-                    .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
-                    ?.prixCurrency ?: relative_produit.prixAchat
+        } else allTariffsForProduit
 
-                val defaultPrixDetaille = M13TarificationInfos.get_default().copy(
-                    typeChoisi = TypeChoisi.Prix_Detaille,
-                    prixCurrency = lastGroPrix,
-                    parent_M1Produit_KeyId = relative_produit.keyID,
-                    parent_M1Produit_DebugInfos = relative_produit.nom,
-                )
-                aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                    m13TarificationInfos_Pour_Produit = defaultPrixDetaille,
-                    m10OperationVentCouleurs = relative_List_M10OperationVentCouleur,
-                    aCentralFacade = aCentralFacade
-                )
+        val sortedTariffs = tariffsWithEditable.sortedBy { tariff ->
+            when (tariff.typeChoisi) {
+                TypeChoisi.Prix_Detaille -> 0
+                TypeChoisi.Edited_Pour_Client,
+                TypeChoisi.Prix_Progressive_Editable -> 1
+                TypeChoisi.Prix_SupperGro_Et_PresentationService -> 2
+                else -> tariff.typeChoisi.profitabilityScore
+            }
+        }
 
-                val get = focusedVarsHandlerFacade.focusedValuesGetter
-                aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                    m13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
-                    m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
-                    aCentralFacade = aCentralFacade
-                )
-                focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
-                    relative_produit
-                )
-            },
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = if (effectiveAllNonTrouve) blinkColor
-                else displayTariff.typeChoisi.couleur
-            )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Column {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    val tariffType = displayTariff.typeChoisi
-                    val nom = tariffType.nomArabe.take(2)
-                    val tariffIcon = tariffType.iconVector ?: Icons.Default.History
-                    val textColor =
-                        if (effectiveAllNonTrouve) Color.White else tariffType.couleur_Text
+            sortedTariffs.forEach { tariff ->
+                val isSelected = tariff.keyID == relative_Tariff?.keyID
+                val isInvalid = tariff.prixCurrency == 0.0
+                val effectiveAllNonTrouve = allNonTrouve || isInvalid
 
-                    Text(
-                        text = "$nom - ${displayTariff.prixCurrency}",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = textColor
-                    )
-                    Icon(
-                        imageVector = tariffIcon,
-                        contentDescription = tariffType.nomArabe,
-                        tint = textColor,
-                        modifier = Modifier.size(16.dp)
-                    )
+                val tariffType = tariff.typeChoisi
+                val nom = tariffType.nomArabe.take(2)
+                val tariffIcon = tariffType.iconVector ?: Icons.Default.History
+                // Toujours texte blanc sur fond coloré (fix Prix_Detaille text invisible)
+                val textColor = Color.White
+                val containerColor = if (effectiveAllNonTrouve) blinkColor else tariffType.couleur
+
+                val isEditable = tariffType == TypeChoisi.Prix_Progressive_Editable ||
+                        tariffType == TypeChoisi.Edited_Pour_Client
+
+                val selectedBorderModifier = if (isSelected)
+                    Modifier.border(width = 2.dp, color = Color.Red, shape = RoundedCornerShape(20.dp))
+                else Modifier
+
+                if (isEditable) {
+                    // ── Tariff éditable : champ inline pour saisir le prix ──
+                    Card(
+                        modifier = selectedBorderModifier.clickable { /* sélection via onPriceUpdated */ },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = containerColor)
+                    ) {
+                        Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+                            Double_OutlinedText_Avec_Click_Button_Modulable_Proto0(
+                                value = tariff.prixCurrency,
+                                onValueChanged = { newPrice ->
+                                    if (newPrice <= 0) return@Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
+                                    val updatedTariff = tariff.copy(
+                                        prixCurrency = newPrice,
+                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                    )
+                                    aCentralFacade.repositorysMainSetter.update_M13TarificationInfos(updatedTariff)
+                                    // Appliquer immédiatement sur les opérations
+                                    val updatedOps = relative_List_M10OperationVentCouleur.map { op ->
+                                        op.copy(
+                                            parentM13TarificationKeyID = updatedTariff.keyID,
+                                            prix_de_Vent_entre_directement_NewProto = newPrice,
+                                            typeTarificationEnumT2 = tariffType,
+                                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                        )
+                                    }
+                                    updatedOps.forEach { op ->
+                                        aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(op)
+                                    }
+                                    focusedVarsHandlerFacade.focusedValuesSetter
+                                        .setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(relative_produit)
+                                },
+                                compact_taille = true,
+                                containerColor = containerColor,
+                                textColor = textColor,
+                            )
+                        }
+                    }
+                } else {
+                    // ── Tariff normal : Card affichage seul ─────────────────
+                    Card(
+                        modifier = selectedBorderModifier.clickable(enabled = !effectiveAllNonTrouve) {
+                            // 1. Lier le tariff à toutes les opérations du produit
+                            aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                                m13TarificationInfos_Pour_Produit = tariff,
+                                m10OperationVentCouleurs = relative_List_M10OperationVentCouleur,
+                                aCentralFacade = aCentralFacade
+                            )
+                            // 2. Mettre à jour le snapshot prix sur chaque opération
+                            val updatedOps = relative_List_M10OperationVentCouleur.map { op ->
+                                op.copy(
+                                    parentM13TarificationKeyID = tariff.keyID,
+                                    prix_de_Vent_entre_directement_NewProto = tariff.prixCurrency,
+                                    typeTarificationEnumT2 = tariff.typeChoisi,
+                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                )
+                            }
+                            updatedOps.forEach { op ->
+                                aCentralFacade.repositorysMainSetter.update_M10OperationVentCouleur(op)
+                            }
+                            focusedVarsHandlerFacade.focusedValuesSetter
+                                .setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(relative_produit)
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = containerColor)
+                    ) {
+                        Column {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = "$nom - ${tariff.prixCurrency}",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = textColor
+                                )
+                                Icon(
+                                    imageVector = tariffIcon,
+                                    contentDescription = tariffType.nomArabe,
+                                    tint = textColor,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

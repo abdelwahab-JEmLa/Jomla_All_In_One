@@ -162,7 +162,7 @@ fun Produit_Vent(
                     Card(
                         modifier = modifier
                             .fillMaxWidth()
-                            ,
+                        ,
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = innerCardColor
@@ -273,14 +273,14 @@ fun Produit_Vent(
 
                     val currentApp_ItsWorkChezGrossisst = focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
-                    if (true) {
+                    if (currentApp_ItsWorkChezGrossisst) {
                         Display_Tariff(
                             relative_List_M10OperationVentCouleur = ventList,
                             relative_produit = nonNullProduit,
                             allNonTrouve = allNonTrouve,
                             aCentralFacade = aCentralFacade
                         )
-                    }  else  {
+                    } else {
                         Display_Tariff_NonGrossistContext(
                             relative_List_M10OperationVentCouleur = ventList,
                             relative_produit = nonNullProduit,

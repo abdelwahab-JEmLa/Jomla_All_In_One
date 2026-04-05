@@ -1,11 +1,11 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.VibrationEffect
@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -315,9 +314,7 @@ fun Button_ID2_Menagerie_Telegram(
                     modifier = Modifier
                         .size(25.dp)
                         .offset(x = (-8).dp, y = (-10).dp)
-                        .scale(scale)
                         .clip(CircleShape)
-                        .background(Color.Red.copy(alpha = alpha))
                         .align(Alignment.TopStart),
                     contentAlignment = Alignment.Center
                 ) {
@@ -334,18 +331,13 @@ fun Button_ID2_Menagerie_Telegram(
             if (shouldShowImportantAlert) {
                 Box(
                     modifier = Modifier
-                        .offset(
-                            x = (20 + alertOffsetX).dp,
-                            y = (-8).dp
-                        )
-                        .scale(alertScale)
                         .align(Alignment.TopEnd),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "🖏️",
                         fontSize = 16.sp,
-                        color = Color.White.copy(alpha = alertAlpha),
+                        color = Color.White,
                         modifier = Modifier
                             .background(
                                 Color.Red.copy(alpha = 0.8f),

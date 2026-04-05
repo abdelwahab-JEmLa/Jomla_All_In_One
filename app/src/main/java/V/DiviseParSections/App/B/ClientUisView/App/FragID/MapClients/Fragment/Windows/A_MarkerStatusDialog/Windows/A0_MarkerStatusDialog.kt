@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
@@ -213,6 +214,7 @@ private fun CustomStatusDropdownMenu(
 fun MarkerStatusDialog(
     viewModel: MapClientsViewModel = koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto ,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8: M8BonVent? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -341,7 +343,8 @@ fun MarkerStatusDialog(
                                             viewModel = viewModel,
                                             relative_Etate = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             context = context,
-                                            onUpdateLongAppSetting = onUpdateLongAppSetting
+                                            onUpdateLongAppSetting = onUpdateLongAppSetting ,
+                                                    fragmentNavigationHandler=fragmentNavigationHandler,
                                         )
                                     }
 
