@@ -1,4 +1,4 @@
-package Application4.App.Fragment.View.ViewS.Views
+package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos

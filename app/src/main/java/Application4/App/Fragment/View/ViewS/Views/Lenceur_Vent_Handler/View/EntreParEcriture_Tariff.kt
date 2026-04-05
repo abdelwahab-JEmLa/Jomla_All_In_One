@@ -1,18 +1,14 @@
-package Application4.App.Fragment.View.ViewS.Views
+package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -39,70 +35,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Tariffs_MainList(
-    modifier: Modifier,
-    sortedTariffs: List<M13TarificationInfos>,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
-    relative_M1produit: M01Produit,
-    selectedTariff_Par_AncienProto: M13TarificationInfos,
-    compactMode: Boolean,
-    onTariffSelected: (M13TarificationInfos) -> Unit,
-    tariffsList: List<M13TarificationInfos>,
-    tariff_Stocked_Au_OperationVent: M13TarificationInfos? = null,
-    relative_M10OperationVentCouleur: M10OperationVentCouleur? = null,
-) {
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        reverseLayout = true,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        item(key = "__entre_par_ecriture__") {
-            EntreParEcriture_Tariff(
-                relative_M1produit = relative_M1produit,
-                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                onTariffSelected = onTariffSelected,
-                compactMode = compactMode,
-            )
-        }
-        items(sortedTariffs, key = { it.keyID }) { tariff ->
-            TariffItemSelector(
-                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                tariff = tariff,
-                relative_M1produit = relative_M1produit,
-                isSelected = tariff.keyID == selectedTariff_Par_AncienProto.keyID,
-                compactMode = compactMode,
-                onClick = { onTariffSelected(tariff) },
-                tariffsList = tariffsList,
-            )
-        }
-    }
-}
-
-@Composable
 fun EntreParEcriture_Tariff(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.Companion,
     relative_M1produit: M01Produit,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     onTariffSelected: (M13TarificationInfos) -> Unit = {},
     compactMode: Boolean = false,
-) {
+    isSelected: Boolean = false,
+) {              //<--
     val viewModel = uiState_NewProtoPatterns_viewModel.second
-    var textValue by remember { mutableStateOf("2") }
+    var textValue by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val hPad = if (compactMode) TariffTextSizes.COMPACT_HORIZONTAL_PADDING else TariffTextSizes.NORMAL_HORIZONTAL_PADDING
     val vPad = if (compactMode) TariffTextSizes.COMPACT_VERTICAL_PADDING else TariffTextSizes.NORMAL_VERTICAL_PADDING
     val fontSize = if (compactMode) TariffTextSizes.COMPACT_MAIN_TEXT else TariffTextSizes.NORMAL_MAIN_TEXT
-    val bg = Color(0xFFFFEB3B)
-    val textStyle = TextStyle(color = Color.Black, fontSize = fontSize, textAlign = TextAlign.Center)
+    val bg = Color(0xFFFFEB3B).copy(alpha = if (isSelected) 1f else 0.9f)
+    val borderWidth = if (isSelected) TariffTextSizes.SELECTED_BORDER_WIDTH else TariffTextSizes.UNSELECTED_BORDER_WIDTH
+    val borderColor = if (isSelected) Color.Red else Color.Transparent
+    val textStyle = TextStyle(
+        color = Color.Companion.Black,
+        fontSize = fontSize,
+        textAlign = TextAlign.Companion.Center
+    )
 
     // ── Tariff + ops pré-calculés ici pour être utilisés dans semantics et onDone ──
 
     val newTariff by remember {
         derivedStateOf {
             val price = textValue.toDoubleOrNull() ?: 0.0
-            if (price > 0.0) M13TarificationInfos.get_default().copy(
+            if (price > 0.0) M13TarificationInfos.Companion.get_default().copy(
                 typeChoisi = M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
                 prixCurrency = price,
                 parent_M1Produit_KeyId = relative_M1produit.keyID,
@@ -134,9 +96,10 @@ fun EntreParEcriture_Tariff(
                 set(value = newTariff, key = SemanticsPropertyKey("newTariff_EntreParEcriture"))
                 set(value = affectedOps, key = SemanticsPropertyKey("affectedOps_EntreParEcriture"))
             }
+            .border(width = borderWidth, color = borderColor, shape = CircleShape)
             .background(bg, CircleShape)
             .padding(horizontal = hPad, vertical = vPad),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.Companion.Center,
     ) {
         BasicTextField(
             value = textValue,
@@ -146,7 +109,7 @@ fun EntreParEcriture_Tariff(
                     textValue = f
                     val livePrice = f.toDoubleOrNull() ?: 0.0
                     if (livePrice > 0.0) {
-                        val liveTariff = M13TarificationInfos.get_default().copy(
+                        val liveTariff = M13TarificationInfos.Companion.get_default().copy(
                             typeChoisi = M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
                             prixCurrency = livePrice,
                             parent_M1Produit_KeyId = relative_M1produit.keyID,
@@ -156,9 +119,12 @@ fun EntreParEcriture_Tariff(
                 }
             },
             textStyle = textStyle,
-            cursorBrush = SolidColor(Color.Black),
+            cursorBrush = SolidColor(Color.Companion.Black),
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Companion.Decimal,
+                imeAction = ImeAction.Companion.Done
+            ),
             keyboardActions = KeyboardActions(onDone = {
                 val t = newTariff
                 if (t != null) {
@@ -168,8 +134,10 @@ fun EntreParEcriture_Tariff(
                         dernierTimeTampsSynchronisationAvecFireBase = now,
                     )
                     viewModel.update_M13TarificationInfos(finalTariff)
-                    val activeList = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-                    val productOps = activeList?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
+                    val activeList =
+                        viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                    val productOps =
+                        activeList?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
                     if (!productOps.isNullOrEmpty()) {
                         viewModel.update_listM10OperationVentCouleur(activeList.map { op ->
                             if (op.parent_M1Produit_KeyId == relative_M1produit.keyID)
@@ -191,11 +159,16 @@ fun EntreParEcriture_Tariff(
             }),
             decorationBox = { innerTextField ->
                 if (textValue.isEmpty()) {
-                    Text("Prix…", color = Color.Black.copy(alpha = 0.45f), fontSize = fontSize, textAlign = TextAlign.Center)
+                    Text(
+                        "Prix…",
+                        color = Color.Companion.Black.copy(alpha = 0.45f),
+                        fontSize = fontSize,
+                        textAlign = TextAlign.Companion.Center
+                    )
                 }
                 innerTextField()
             },
-            modifier = Modifier.widthIn(min = 48.dp, max = 88.dp),
+            modifier = Modifier.Companion.widthIn(min = 48.dp, max = 88.dp),
         )
     }
 }

@@ -1,4 +1,4 @@
-package Application4.App.Fragment.View.ViewS.Views
+package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
@@ -6,6 +6,7 @@ import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto.Double_OutlinedText_Avec_Click_Button_Modulable_Proto0
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -73,7 +74,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
             it.keyID == relative_M10OperationVentCouleur?.parentM13TarificationKeyID
         }
 
-    android.util.Log.d(
+    Log.d(
         "TariffDebug",
         "[Pricipale_Tariffs] produit=${relative_M1produit.keyID} " +
                 "couleur=${une_des_selectedCouleur.keyID} " +
@@ -137,7 +138,7 @@ fun TariffItemSelector(
     tariffsList: List<M13TarificationInfos>,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
 ) {       //<--
-    android.util.Log.d(
+    Log.d(
         "TariffDebug",
         "[TariffItemSelector] tariff=${tariff.keyID} type=${tariff.typeChoisi} " +
                 "prix=${tariff.prixCurrency} isSelected=$isSelected produit=${relative_M1produit.keyID}"
@@ -193,14 +194,14 @@ fun handleProgressivePriceUpdate(
     ) return
 
     if (newPrice <= 0) {
-        android.util.Log.d(
+        Log.d(
             "TariffFix",
             "[handleProgressivePriceUpdate] blocked — newPrice=$newPrice (<=0) tariff=${tariff.keyID} type=${tariff.typeChoisi}"
         )
         return
     }
 
-    android.util.Log.d(
+    Log.d(
         "TariffFix",
         "[handleProgressivePriceUpdate] updating tariff=${tariff.keyID} type=${tariff.typeChoisi} newPrice=$newPrice"
     )
@@ -266,7 +267,7 @@ fun EditableProgressiveTariffItem(
                                     tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive
                             )
                 ) {
-                    android.util.Log.d(
+                    Log.d(
                         "TariffFix",
                         "[EditableProgressiveTariffItem] auto-selecting tariff=${tariff.keyID} type=${tariff.typeChoisi} before price update"
                     )
