@@ -88,7 +88,7 @@ fun EntreParEcriture_Tariff(
     compactMode: Boolean = false,
 ) {
     val viewModel = uiState_NewProtoPatterns_viewModel.second
-    var textValue by remember { mutableStateOf("") }
+    var textValue by remember { mutableStateOf("2") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val hPad = if (compactMode) TariffTextSizes.COMPACT_HORIZONTAL_PADDING else TariffTextSizes.NORMAL_HORIZONTAL_PADDING
@@ -106,6 +106,7 @@ fun EntreParEcriture_Tariff(
                 typeChoisi = M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
                 prixCurrency = price,
                 parent_M1Produit_KeyId = relative_M1produit.keyID,
+                parent_M1Produit_DebugInfos = relative_M1produit.getDebugInfos(),
             ) else null
         }
     }
@@ -141,7 +142,18 @@ fun EntreParEcriture_Tariff(
             value = textValue,
             onValueChange = { raw ->
                 val f = raw.filter { it.isDigit() || it == '.' }
-                if (f.count { it == '.' } <= 1) textValue = f
+                if (f.count { it == '.' } <= 1) {
+                    textValue = f
+                    val livePrice = f.toDoubleOrNull() ?: 0.0
+                    if (livePrice > 0.0) {
+                        val liveTariff = M13TarificationInfos.get_default().copy(
+                            typeChoisi = M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
+                            prixCurrency = livePrice,
+                            parent_M1Produit_KeyId = relative_M1produit.keyID,
+                        )
+                        onTariffSelected(liveTariff)
+                    }
+                }
             },
             textStyle = textStyle,
             cursorBrush = SolidColor(Color.Black),
