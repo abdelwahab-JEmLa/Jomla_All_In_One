@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -94,9 +97,42 @@ fun EntreParEcriture_Tariff(
     val bg = Color(0xFFFFEB3B)
     val textStyle = TextStyle(color = Color.Black, fontSize = fontSize, textAlign = TextAlign.Center)
 
-    // Same pill wrapper as TariffItem / EditableProgressiveTariffItem
+    // ── Tariff + ops pré-calculés ici pour être utilisés dans semantics et onDone ──
+
+    val newTariff by remember {
+        derivedStateOf {
+            val price = textValue.toDoubleOrNull() ?: 0.0
+            if (price > 0.0) M13TarificationInfos.get_default().copy(
+                typeChoisi = M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
+                prixCurrency = price,
+                parent_M1Produit_KeyId = relative_M1produit.keyID,
+            ) else null
+        }
+    }
+
+    val affectedOps by remember {
+        derivedStateOf {
+            val t = newTariff ?: return@derivedStateOf null
+            viewModel.active_Datas
+                .listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                ?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
+                ?.map { op ->
+                    op.copy(
+                        parentM13TarificationKeyID = t.keyID,
+                        parentM13TarificationDebugInfos = t.getDebugInfos(),
+                        prix_de_Vent_entre_directement_NewProto = t.prixCurrency,
+                        typeTarificationEnumT2 = t.typeChoisi,
+                    )
+                }
+        }
+    }
+
     Box(
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = newTariff, key = SemanticsPropertyKey("newTariff_EntreParEcriture"))
+                set(value = affectedOps, key = SemanticsPropertyKey("affectedOps_EntreParEcriture"))
+            }
             .background(bg, CircleShape)
             .padding(horizontal = hPad, vertical = vPad),
         contentAlignment = Alignment.Center,
@@ -112,33 +148,30 @@ fun EntreParEcriture_Tariff(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
-                val price = textValue.toDoubleOrNull() ?: 0.0
-                if (price > 0.0) {
+                val t = newTariff
+                if (t != null) {
                     val now = System.currentTimeMillis()
-                    val newTariff = M13TarificationInfos.get_default().copy(
-                        typeChoisi = M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
-                        prixCurrency = price,
-                        parent_M1Produit_KeyId = relative_M1produit.keyID,
+                    val finalTariff = t.copy(
                         creationTimestamps = now,
                         dernierTimeTampsSynchronisationAvecFireBase = now,
                     )
-                    viewModel.update_M13TarificationInfos(newTariff)
+                    viewModel.update_M13TarificationInfos(finalTariff)
                     val activeList = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
                     val productOps = activeList?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
                     if (!productOps.isNullOrEmpty()) {
                         viewModel.update_listM10OperationVentCouleur(activeList.map { op ->
                             if (op.parent_M1Produit_KeyId == relative_M1produit.keyID)
                                 op.copy(
-                                    parentM13TarificationKeyID = newTariff.keyID,
-                                    parentM13TarificationDebugInfos = newTariff.getDebugInfos(),
-                                    prix_de_Vent_entre_directement_NewProto = newTariff.prixCurrency,
-                                    typeTarificationEnumT2 = newTariff.typeChoisi,
+                                    parentM13TarificationKeyID = finalTariff.keyID,
+                                    parentM13TarificationDebugInfos = finalTariff.getDebugInfos(),
+                                    prix_de_Vent_entre_directement_NewProto = finalTariff.prixCurrency,
+                                    typeTarificationEnumT2 = finalTariff.typeChoisi,
                                     dernierTimeTampsSynchronisationAvecFireBase = now,
                                 )
                             else op
                         })
                     }
-                    onTariffSelected(newTariff)
+                    onTariffSelected(finalTariff)
                     textValue = ""
                 }
                 keyboardController?.hide()
