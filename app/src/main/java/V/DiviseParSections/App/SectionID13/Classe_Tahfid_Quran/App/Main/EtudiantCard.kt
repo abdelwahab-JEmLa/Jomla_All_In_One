@@ -108,11 +108,9 @@ fun EtudiantCard(
     // converts it to a JPG, then sends it to the parent's WhatsApp Business.
     // ─────────────────────────────────────────────────────────────────────────
     fun shareCardOnWhatsApp() {
-        val phone = etudiant.num_telephone_parent.trim()
-        if (phone.isBlank()) {
-            Toast.makeText(context, "⚠️ لا يوجد رقم هاتف مسجل للولي", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val rawPhone = etudiant.num_telephone_parent.trim()
+        val phone = rawPhone.ifBlank { "0553885037" }
+
 
         isSharing = true
         scope.launch {
