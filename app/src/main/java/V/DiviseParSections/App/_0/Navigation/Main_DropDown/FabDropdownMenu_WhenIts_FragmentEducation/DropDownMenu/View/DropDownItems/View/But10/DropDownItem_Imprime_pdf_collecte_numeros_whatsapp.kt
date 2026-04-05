@@ -243,12 +243,13 @@ private fun generateWhatsAppCollectPdf(
         }.getOrNull()
 
         if (qrBitmap != null) {
-            val f = 0.55f
-            val qrW = contentWidth * f
+            val qrW = contentWidth * 0.40f
             val qrH = qrW * qrBitmap.height / qrBitmap.width
             val qrLeft = marginLeft + (contentWidth - qrW) / 2f
             canvas.drawBitmap(qrBitmap, null, RectF(qrLeft, y, qrLeft + qrW, y + qrH), null)
             y += qrH + 4f
+            drawRTL(canvas, "إن لم تستطع المسح، اكتب الرقم أدناه", marginLeft, y, contentWidth, paintVerySmall)
+            y += 14f
         }
 
         drawRTL(
