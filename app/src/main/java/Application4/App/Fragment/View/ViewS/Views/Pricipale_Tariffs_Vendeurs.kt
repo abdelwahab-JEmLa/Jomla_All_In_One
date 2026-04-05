@@ -78,6 +78,16 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
             it.keyID == relative_M10OperationVentCouleur?.parentM13TarificationKeyID
         }
 
+    android.util.Log.d(
+        "TariffDebug",
+        "[Pricipale_Tariffs] produit=${relative_M1produit.keyID} " +
+                "couleur=${une_des_selectedCouleur.keyID} " +
+                "m10Found=${relative_M10OperationVentCouleur?.keyID} " +
+                "m10TariffKey=${relative_M10OperationVentCouleur?.parentM13TarificationKeyID} " +
+                "tariff_Stocked=${tariff_Stocked_Au_OperationVent?.keyID} " +
+                "tariff_StockedType=${tariff_Stocked_Au_OperationVent?.typeChoisi}"
+    )
+
     val isGrossistMode = false
     val filteredTariffs = tariffsList.filter { tariff ->
         tariff.typeChoisi.its_gro_app == isGrossistMode && !tariff.typeChoisi.ignore_affiche
@@ -143,6 +153,11 @@ fun TariffItemSelector(
     tariffsList: List<M13TarificationInfos>,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
 ) {       //<--
+    android.util.Log.d(
+        "TariffDebug",
+        "[TariffItemSelector] tariff=${tariff.keyID} type=${tariff.typeChoisi} " +
+                "prix=${tariff.prixCurrency} isSelected=$isSelected produit=${relative_M1produit.keyID}"
+    )
     val prix = tariff.prixCurrency
     val nombreUnite = relative_M1produit.nombreUniteInt
 
@@ -193,7 +208,18 @@ fun handleProgressivePriceUpdate(
         tariff.typeChoisi != M13TarificationInfos.TypeChoisi.Edited_Pour_Client
     ) return
 
-    if (newPrice <= 0) return
+    if (newPrice <= 0) {
+        android.util.Log.d(
+            "TariffFix",
+            "[handleProgressivePriceUpdate] blocked — newPrice=$newPrice (<=0) tariff=${tariff.keyID} type=${tariff.typeChoisi}"
+        )
+        return
+    }
+
+    android.util.Log.d(
+        "TariffFix",
+        "[handleProgressivePriceUpdate] updating tariff=${tariff.keyID} type=${tariff.typeChoisi} newPrice=$newPrice"
+    )
 
     uiState_NewProtoPatterns_viewModel.second.update_M13TarificationInfos(
         tariff.copy(
@@ -255,7 +281,13 @@ fun EditableProgressiveTariffItem(
                                     tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable ||
                                     tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Progressive
                             )
-                ) onClick()
+                ) {
+                    android.util.Log.d(
+                        "TariffFix",
+                        "[EditableProgressiveTariffItem] auto-selecting tariff=${tariff.keyID} type=${tariff.typeChoisi} before price update"
+                    )
+                    onClick()
+                }
                 onPriceUpdated(newValue)
             },
             compact_taille = compactMode,
@@ -288,4 +320,4 @@ fun EditableProgressiveTariffItem(
             )
         }
     }
-}
+}             //<--

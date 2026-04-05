@@ -14,8 +14,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         collect_ListDatas()
         load_then_Collect_Active_DatasMutableStates()
     }
-                   //<--
-                   //TODO(1): fait qeu ce seed a init depuit its_Panie_Mode active compt si its_Panie_Mode_Au_Lence_Boutique le mode  c its paniie mode
     private fun collect_ListDatas() {
         load_then_Collect_Active_Datas()
         collectListM16()
@@ -106,6 +104,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         AViewModel_NewProtoPatterns.active_Datas.list_M1Produit = products
         AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = colours
         AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = allOperations
+        AViewModel_NewProtoPatterns.active_Datas.its_Panie_Mode = appCompt.its_Panie_Mode_Au_Lence_Boutique
     }
 
     private suspend fun collectActiveM9Compt() {

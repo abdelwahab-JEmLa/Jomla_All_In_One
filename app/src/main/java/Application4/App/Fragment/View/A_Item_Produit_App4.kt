@@ -125,6 +125,15 @@ fun A_Item_Produit_App4(
                 it.prixCurrency != 0.0
     }
 
+    // Prefer an Edited_Pour_Client that belongs to the current active bon-vent.
+    // This must be checked BEFORE falling back to supperGro/detaille so that a
+    // client-specific price is always pre-selected when one exists.
+    val editedPourClient = datasValue_distinct_type.find {
+        it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
+                it.parent_M8BonVent_KeyId == centralValues.activeOnVent_M8BonVent?.keyID &&
+                it.prixCurrency != 0.0
+    }
+
     val new_Prix_Progressive_Editable = remember(relative_M1produit.keyID) {
         M13TarificationInfos.get_default().copy(
             typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
@@ -132,7 +141,16 @@ fun A_Item_Produit_App4(
         )
     }
 
-    val tariff_algorithme_De_Start = supperGro ?: detaille
+    // Priority: client-specific edited price > supperGro > detaille > editable chip
+    val tariff_algorithme_De_Start = editedPourClient ?: supperGro ?: detaille
+
+    android.util.Log.d(
+        "TariffFix",
+        "[tariff_algorithme_De_Start] produit=${relative_M1produit.keyID} " +
+                "editedPourClient=${editedPourClient?.keyID} " +
+                "supperGro=${supperGro?.keyID} detaille=${detaille?.keyID} " +
+                "→ selected=${tariff_algorithme_De_Start?.keyID} type=${tariff_algorithme_De_Start?.typeChoisi}"
+    )
 
     var selectedTariffKeyID by remember(tariff_algorithme_De_Start?.keyID) {
         mutableStateOf(tariff_algorithme_De_Start?.keyID ?: new_Prix_Progressive_Editable.keyID)
@@ -169,13 +187,31 @@ fun A_Item_Produit_App4(
     }
 
     LaunchedEffect(activeM10ForSelectedCouleur) {
-        // Skip the sync when the user has already made an explicit selection — the
-        // LaunchedEffect fires again before the M10 write has propagated back from
-        // the DB, which would otherwise flip selectedTariffKeyID back to the old value.
-        if (isUserManuallySelectedTariff) return@LaunchedEffect
-        val opTariffKeyID = activeM10ForSelectedCouleur?.parentM13TarificationKeyID ?: return@LaunchedEffect
+        if (isUserManuallySelectedTariff) {
+            android.util.Log.d(
+                "TariffFix",
+                "[LaunchedEffect] SKIPPED — user already manually selected tariff=$selectedTariffKeyID  produit=${relative_M1produit.keyID}"
+            )
+            return@LaunchedEffect
+        }
+        val opTariffKeyID = activeM10ForSelectedCouleur?.parentM13TarificationKeyID ?: run {
+            android.util.Log.d(
+                "TariffFix",
+                "[LaunchedEffect] no active M10 for couleur=${selectedCouleur.keyID} — nothing to sync"
+            )
+            return@LaunchedEffect
+        }
         if (datasValue_distinct_type.any { it.keyID == opTariffKeyID }) {
+            android.util.Log.d(
+                "TariffFix",
+                "[LaunchedEffect] SYNCING selectedTariffKeyID: $selectedTariffKeyID → $opTariffKeyID  produit=${relative_M1produit.keyID}"
+            )
             selectedTariffKeyID = opTariffKeyID
+        } else {
+            android.util.Log.d(
+                "TariffFix",
+                "[LaunchedEffect] opTariffKeyID=$opTariffKeyID not found in datasValue_distinct_type — no sync"
+            )
         }
     }
 
@@ -218,15 +254,49 @@ fun A_Item_Produit_App4(
                 // Mark as manual so the async LaunchedEffect does not race back and
                 // overwrite this selection before the DB write has propagated.
                 isUserManuallySelectedTariff = true
+                android.util.Log.d(
+                    "TariffFix",
+                    "[onTariffSelected] user picked tariff=${newTariff.keyID} type=${newTariff.typeChoisi}  produit=${relative_M1produit.keyID}"
+                )
 
                 val parentM13TarificationKeyID =
                     if (newTariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) "Prix_Progressive_Editable Non Saved"
                     else newTariff.keyID
 
                 selectedTariffKeyID = newTariff.keyID
+
+                // Si c'est un Prix_Progressive_Editable, on tente de créer un Edited_Pour_Client
+                // persisté (no-op si un existe déjà pour ce bon vent + produit).
+                if (newTariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable) {
+                    val createdTariff = viewModel.maybeCreateEditedPourClientTariff(
+                        produit = relative_M1produit,
+                        synthetic = newTariff,
+                        datasValue_distinct_type = datasValue_distinct_type.toList(),
+                    )
+                    android.util.Log.d(
+                        "TariffFix",
+                        "[onTariffSelected] maybeCreate → createdTariff=${createdTariff?.keyID} " +
+                                "type=${createdTariff?.typeChoisi} prix=${createdTariff?.prixCurrency} " +
+                                "produit=${relative_M1produit.keyID} bonVent=${viewModel.active_Datas.activeOnVent_M8BonVent?.keyID}"
+                    )
+                    // BUG FIX: select the newly saved Edited_Pour_Client so the chip
+                    // highlights correctly (previously selectedTariffKeyID stayed on the
+                    // synthetic Prix_Progressive_Editable keyID which is not in the list).
+                    if (createdTariff != null) {
+                        selectedTariffKeyID = createdTariff.keyID
+                        android.util.Log.d(
+                            "TariffFix",
+                            "[onTariffSelected] selectedTariffKeyID updated → ${createdTariff.keyID} (Edited_Pour_Client)"
+                        )
+                    }
+                }
+
+                // On ne propage le tarif aux opérations existantes QUE si le prix est réel.
+                // Un prix à 0.0 (Edited_Pour_Client fraîchement créé ou pas encore renseigné)
+                // ne doit jamais écraser le prix déjà sauvegardé dans les M10.
                 val currentList = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
                 val affected = currentList?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
-                if (!affected.isNullOrEmpty()) {
+                if (!affected.isNullOrEmpty() && newTariff.prixCurrency > 0.0) {
                     val updatedList = currentList.map { op ->
                         if (op.parent_M1Produit_KeyId == relative_M1produit.keyID)
                             op.copy(
