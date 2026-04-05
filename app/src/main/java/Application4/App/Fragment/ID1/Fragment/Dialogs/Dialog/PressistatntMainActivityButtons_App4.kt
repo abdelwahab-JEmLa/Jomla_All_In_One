@@ -37,45 +37,44 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
-// ---------------------------------------------------------------------------
-// Display-mode enum — single source of truth for all three mutually-exclusive
-// filter modes exposed by PressistatntMainActivityButtons_App4.
-// ---------------------------------------------------------------------------
 enum class ProductDisplayMode {
-    AllProducts,   // normal view — hides échantillons
-    Echantillons,  // only échantillon colours
-    Panie,         // only colours that have an active-bon-vent operation
+    AllProducts,
+    Echantillons,
+    Panie,
 }
 
 @Composable
 fun PressistatntMainActivityButtons_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
-    // ── Derive current mode from the two boolean flags ──────────────────────
     val currentMode by remember {
         derivedStateOf {
             val datas = viewModelNewProtoPatterns.active_Datas
             when {
-                datas.its_Panie_Mode       -> ProductDisplayMode.Panie
-                datas.isEchatillantsMode   -> ProductDisplayMode.Echantillons
-                else                       -> ProductDisplayMode.AllProducts
+                datas.its_Panie_Mode     -> ProductDisplayMode.Panie
+                datas.isEchatillantsMode -> ProductDisplayMode.Echantillons
+                else                     -> ProductDisplayMode.AllProducts
             }
         }
     }
 
-    // Helper that applies a mode and resets the other flags
     fun applyMode(mode: ProductDisplayMode) {
-        viewModelNewProtoPatterns.active_Datas.its_Panie_Mode     = mode == ProductDisplayMode.Panie
+        val isPanie = mode == ProductDisplayMode.Panie
+        viewModelNewProtoPatterns.active_Datas.its_Panie_Mode     = isPanie
         viewModelNewProtoPatterns.active_Datas.isEchatillantsMode = mode == ProductDisplayMode.Echantillons
+        viewModelNewProtoPatterns.active_Datas.active_M9Compt?.let { compt ->
+            viewModelNewProtoPatterns.update_active_Compt(
+                compt.copy(its_Panie_Mode_Au_Lence_Boutique = isPanie)
+            )
+        }
     }
 
     var showDropdown by remember { mutableStateOf(false) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
 
-    // ── Visual properties for the active mode ───────────────────────────────
     val fabColor = when (currentMode) {
-        ProductDisplayMode.AllProducts -> MaterialTheme.colorScheme.surfaceVariant
+        ProductDisplayMode.AllProducts  -> MaterialTheme.colorScheme.surfaceVariant
         ProductDisplayMode.Echantillons -> MaterialTheme.colorScheme.primary
         ProductDisplayMode.Panie        -> MaterialTheme.colorScheme.tertiary
     }
@@ -111,23 +110,15 @@ fun PressistatntMainActivityButtons_App4(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // ── FAB — tap opens the dropdown ─────────────────────────────────
             Box {
                 FloatingActionButton(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .size(56.dp),
+                    modifier = Modifier.padding(16.dp).size(56.dp),
                     onClick = { showDropdown = true },
                     containerColor = fabColor,
                 ) {
-                    Icon(
-                        imageVector = fabIcon,
-                        contentDescription = "Sélectionner le mode d'affichage",
-                        tint = fabTint
-                    )
+                    Icon(imageVector = fabIcon, contentDescription = null, tint = fabTint)
                 }
 
-                // ── Dropdown menu ────────────────────────────────────────────
                 DropdownMenu(
                     expanded = showDropdown,
                     onDismissRequest = { showDropdown = false }
@@ -136,33 +127,23 @@ fun PressistatntMainActivityButtons_App4(
                         label = "Tous les produits",
                         icon = Icons.Default.FilterList,
                         isSelected = currentMode == ProductDisplayMode.AllProducts,
-                        onClick = {
-                            applyMode(ProductDisplayMode.AllProducts)
-                            showDropdown = false
-                        }
+                        onClick = { applyMode(ProductDisplayMode.AllProducts); showDropdown = false }
                     )
                     ModeMenuItem(
                         label = "Échantillons",
                         icon = Icons.Default.Check,
                         isSelected = currentMode == ProductDisplayMode.Echantillons,
-                        onClick = {
-                            applyMode(ProductDisplayMode.Echantillons)
-                            showDropdown = false
-                        }
+                        onClick = { applyMode(ProductDisplayMode.Echantillons); showDropdown = false }
                     )
                     ModeMenuItem(
                         label = "Panier",
                         icon = Icons.Default.ShoppingCart,
                         isSelected = currentMode == ProductDisplayMode.Panie,
-                        onClick = {
-                            applyMode(ProductDisplayMode.Panie)
-                            showDropdown = false
-                        }
+                        onClick = { applyMode(ProductDisplayMode.Panie); showDropdown = false }
                     )
                 }
             }
 
-            // ── Active-mode label ────────────────────────────────────────────
             Text(
                 text = labelText,
                 modifier = Modifier
@@ -175,9 +156,6 @@ fun PressistatntMainActivityButtons_App4(
     }
 }
 
-// ---------------------------------------------------------------------------
-// Reusable menu item with a leading icon and a checkmark when selected
-// ---------------------------------------------------------------------------
 @Composable
 private fun ModeMenuItem(
     label: String,
@@ -203,13 +181,11 @@ private fun ModeMenuItem(
             )
         },
         trailingIcon = {
-            if (isSelected) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Actif",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+            if (isSelected) Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
         },
         onClick = onClick
     )
