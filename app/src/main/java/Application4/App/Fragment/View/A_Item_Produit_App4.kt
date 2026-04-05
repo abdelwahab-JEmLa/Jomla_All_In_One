@@ -125,12 +125,12 @@ fun A_Item_Produit_App4(
                 it.prixCurrency != 0.0
     }
 
-    // Prefer an Edited_Pour_Client that belongs to the current active bon-vent.
-    // This must be checked BEFORE falling back to supperGro/detaille so that a
-    // client-specific price is always pre-selected when one exists.
+    // Prefer an Edited_Pour_Client over the generic supperGro/detaille defaults.
+    // datasValue_distinct_type already holds at most one entry per typeChoisi
+    // (the most recent by creationTimestamps), so no further bon-vent filtering
+    // is needed here — we always want the latest client-specific price pre-selected.
     val editedPourClient = datasValue_distinct_type.find {
         it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
-                it.parent_M8BonVent_KeyId == centralValues.activeOnVent_M8BonVent?.keyID &&
                 it.prixCurrency != 0.0
     }
 

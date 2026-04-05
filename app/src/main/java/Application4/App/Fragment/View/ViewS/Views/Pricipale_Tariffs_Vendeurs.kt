@@ -11,10 +11,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,8 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
@@ -118,29 +113,18 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         }
     }
 
-    LazyRow(
-        modifier = modifier
-            .fillMaxWidth()
-            .semantics(mergeDescendants = true) {
-                set(value = tariff_Stocked_Au_OperationVent, key = SemanticsPropertyKey("tariff_Stocked_Au_OperationVent"))
-                set(value = relative_M10OperationVentCouleur, key = SemanticsPropertyKey("relative_M10OperationVentCouleur"))
-            },
-        reverseLayout = true,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        items(sortedTariffs, key = { it.keyID }) { tariff ->
-            TariffItemSelector(
-                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                tariff = tariff,
-                relative_M1produit = relative_M1produit,
-                isSelected = tariff.keyID == selectedTariff_Par_AncienProto.keyID,
-                compactMode = compactMode,
-                onClick = { onTariffSelected(tariff) },
-                tariffsList = tariffsList
-            )
-        }
-    }
+    Tariffs_MainList(
+        modifier = modifier,
+        sortedTariffs = sortedTariffs,
+        uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+        relative_M1produit = relative_M1produit,
+        selectedTariff_Par_AncienProto = selectedTariff_Par_AncienProto,
+        compactMode = compactMode,
+        onTariffSelected = onTariffSelected,
+        tariffsList = tariffsList,
+        tariff_Stocked_Au_OperationVent = tariff_Stocked_Au_OperationVent,
+        relative_M10OperationVentCouleur = relative_M10OperationVentCouleur,
+    )
 }
 
 @Composable

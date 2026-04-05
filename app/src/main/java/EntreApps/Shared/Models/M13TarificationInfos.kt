@@ -184,7 +184,6 @@ data class M13TarificationInfos(
 
         fun getNextProfitableType(): TypeChoisi? {
             return when (this) {
-                // Grossist app progression
                 Tariff_ItsWorkInGrossist_Achat -> Tariff_ItsWorkInGrossist_SuperGros
                 Tariff_ItsWorkInGrossist_SuperGros -> Tariff_ItsWorkInGrossist_Progressive
                 Tariff_ItsWorkInGrossist_Progressive -> Tariff_ItsWorkInGrossist_Gro
@@ -273,21 +272,7 @@ data class M13TarificationInfos(
             return M13TarificationInfos()
         }
 
-        /**
-         * Calculates the Edited_Pour_Client price by interpolating between
-         * Prix_SupperGro and Prix_Detaille using pourcentage_Prix_Progressive.
-         *
-         *   result = SupperGro + (Detaille - SupperGro) * (pourcentage / 100)
-         *
-         * pourcentage == 0   → full SupperGro price
-         * pourcentage == 100 → full Detaille price
-         * pourcentage == 60  → 60 % of the way from SupperGro to Detaille (default)
-         *
-         * Falls back gracefully when only one price is available:
-         *   - Only SupperGro  → uses SupperGro directly (no interpolation)
-         *   - Only Detaille   → uses Detaille directly (no interpolation)
-         *   - Both missing    → returns null
-         */
+
         fun remembered_calculated_progressive_changement_tariff(
             relative_Prix_Detaille: Double?,
             relative_Prix_SupperGro_Et_PresentationService: Double?,
