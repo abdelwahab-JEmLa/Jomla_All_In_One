@@ -40,12 +40,14 @@ fun drawHeaderSection(
     }.getOrNull()
 
     if (logoBitmap != null) {
-        // Scale height proportionally so the logo fills the full content width
-        val logoWidth  = contentWidth.toFloat()
+        // 65% of content width, centered horizontally
+        val our = 0.50f
+        val logoWidth  = contentWidth * our
         val logoHeight = logoWidth * logoBitmap.height / logoBitmap.width
-        val logoRect   = RectF(marginLeft, yPosition, marginLeft + logoWidth, yPosition + logoHeight)
+        val logoLeft   = marginLeft + (contentWidth - logoWidth) / 2f   // center
+        val logoRect   = RectF(logoLeft, yPosition, logoLeft + logoWidth, yPosition + logoHeight)
         canvas.drawBitmap(logoBitmap, null, logoRect, null)
-        yPosition += logoHeight + 4f   // small gap between logo and first text line
+        yPosition += logoHeight + 4f
     }
 
     // ── Title + optional poetry (always full content width) ───────────────────
