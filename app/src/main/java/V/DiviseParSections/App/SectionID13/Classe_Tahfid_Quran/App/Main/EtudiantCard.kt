@@ -10,10 +10,11 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.convertSingleCardToJpg
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.ParentCommunicationCardData_2
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.convertPdfPagesToJpgs
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.shareImageToWhatsAppBusiness
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.generatePdfDocument
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.getStoredCardUriForStudent
+
 import android.text.format.DateUtils.isToday
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -116,41 +117,68 @@ fun EtudiantCard(
         isSharing = true
         scope.launch {
             try {
-                // Build the same data structure used by the bulk PDF flow
-                val cardData = listOf(ParentCommunicationCardData_2.fromEtudiant(etudiant))
-
-                // Generate a temporary single-page PDF on the IO dispatcher
-                val pdfFile = withContext(Dispatchers.IO) {
-                    generatePdfDocument(context, cardData, aCentralFacade)
-                }
-
-                if (pdfFile == null || !pdfFile.exists()) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "❌ فشل إنشاء بطاقة PDF", Toast.LENGTH_SHORT).show()
+                // ── Fast path: card already generated today by the bulk button ──
+                // ── Slow path: generate a fresh single-page PDF + JPG            ──
+                // Both paths resolve to an imageUri, then share it once below.
+                val imageUri: android.net.Uri? = run {
+                    val existing = withContext(Dispatchers.IO) {
+                        getStoredCardUriForStudent(context, etudiant.keyID)
                     }
-                    return@launch
+                    if (existing != null) return@run existing
+
+                    val pdfFile = withContext(Dispatchers.IO) {
+                        generatePdfDocument(
+                            context,
+                            listOf(ParentCommunicationCardData_2.fromEtudiant(etudiant)),
+                            aCentralFacade
+                        )
+                    }
+                    if (pdfFile == null || !pdfFile.exists()) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "❌ فشل إنشاء بطاقة PDF", Toast.LENGTH_SHORT).show()
+                        }
+                        return@launch
+                    }
+                    // Saved to Pictures/whatsapp_cards/MM_dd/{keyID}_{nom}.jpg
+                    // so future taps on this card skip re-generation.
+                    withContext(Dispatchers.IO) {
+                        convertSingleCardToJpg(context, pdfFile, etudiant)
+                    }
                 }
 
-                // Render the single page to a JPEG
-                val jpgFiles = withContext(Dispatchers.IO) {
-                    convertPdfPagesToJpgs(context, pdfFile, pageCount = 1)
-                }
-                val jpgFile = jpgFiles.firstOrNull()
-
-                if (jpgFile == null || !jpgFile.exists()) {
+                if (imageUri == null) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "❌ فشل تحويل البطاقة إلى صورة", Toast.LENGTH_SHORT).show()
                     }
                     return@launch
                 }
 
-                // Share the image to the parent's WhatsApp Business number
+                // ── Send directly to the parent's WhatsApp Business contact ──
+                // Using setPackage + jid mirrors sendPdfViaWhatsAppBusiness and
+                // avoids the generic "share via" chooser.
                 withContext(Dispatchers.Main) {
-                    shareImageToWhatsAppBusiness(
-                        context   = context,
-                        imageFile = jpgFile,
-                        rawPhone  = phone
-                    )
+                    val formattedPhone = run {
+                        var n = phone.replace(Regex("[^0-9]"), "")
+                        if (!n.startsWith("213")) {
+                            if (n.startsWith("0")) n = n.drop(1)
+                            n = "213$n"
+                        }
+                        n
+                    }
+                    val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                        type = "image/jpeg"
+                        setPackage("com.whatsapp.w4b")
+                        putExtra(android.content.Intent.EXTRA_STREAM, imageUri)
+                        putExtra(android.content.Intent.EXTRA_TEXT,
+                            "هذه البطاقة هي أداة تواصل\n" +
+                                    "لمتابعة سير حفظ ابنكم ليلبسكم الله حلة الكرامة بما أقرأتماه و صبرتما\n\n" +
+                                    "وحلتان من الفردوس قد كسيت ... لوالديه لها الأكوان لم تقم\n" +
+                                    "قالا: بماذا كسيناها؟ فقيل: بما ... أقرأتما ابنكما فاشكر لذي النعم\n\n" +
+                                    "يرجى متابعة ووضع علامة إن أمكن، جزاكم الله خيرًا 🌿")
+                        putExtra("jid", "$formattedPhone@s.whatsapp.net")
+                        addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    context.startActivity(intent)
                 }
 
             } catch (e: Exception) {
@@ -288,8 +316,7 @@ fun EtudiantCard(
                     )
                 }
             }
-                 //<--
-                 //TODO(1): cree logs pk l image ne se cree pas 
+
             // ── Expanded actions ─────────────────────────────────────────────
             AnimatedVisibility(
                 visible = isExpanded,

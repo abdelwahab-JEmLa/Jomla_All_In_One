@@ -9,6 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.DropDownItem_Imprime_pdf_communication_ac_parent
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.DropDownItem_Send_Cards_WhatsApp_Parent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4.DropDownItem_Imprime_pdf_List_Talaba
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But5.DropDownItem_Imprime_pdf_Case_A_Cochet
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID6.DropDownItem_ID6
@@ -341,6 +342,7 @@ fun FabDropdownMenu_WhenIts_FragmentEducation(
             DropDownItem_ID6()
             DropDownItem_Imprime_pdf_List_Talaba()
             DropDownItem_Imprime_pdf_communication_ac_parent()
+            DropDownItem_Send_Cards_WhatsApp_Parent()
             DropDownItem_Imprime_pdf_Case_A_Cochet()
 
             Divider()

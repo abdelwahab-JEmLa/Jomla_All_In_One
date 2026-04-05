@@ -26,15 +26,6 @@ class A_LoadingViewModel(
     private val appContext: Context,
 ) : ViewModel() {
 
-    // TODO(1) — NOT FIXED: "fait que ca lence de utilisela fun du SyncFromImages2 enleve
-    //   to l atre drp init c avec init 3"
-    //   → Replace DropBox_Init.syncAll() calls with SyncFromImages2's sync function,
-    //     specifically for the DeleteInsertAll_Ref_All_Datas (init-3) case.
-    //   → The file SyncFromImages2.kt was NOT uploaded; supply it and then:
-    //       1. Replace `DropBox_Init.syncAll(result.colors) { … }` in Do.DeleteInsertAll_Ref_All_Datas
-    //          with `SyncFromImages2.syncAll(result.colors) { … }` (or equivalent call).
-    //       2. Remove the DropBox_Init import if it is no longer referenced.
-
     data class LoadingUiState(
         val initDone: Boolean = false,
         val progress: Float = 0f,

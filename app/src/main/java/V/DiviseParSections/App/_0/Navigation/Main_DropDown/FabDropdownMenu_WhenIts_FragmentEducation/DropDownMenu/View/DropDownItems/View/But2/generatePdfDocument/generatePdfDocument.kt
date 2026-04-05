@@ -94,11 +94,10 @@ fun generatePdfDocument(
                 strokeWidth = 1f
             }
 
-            // ✅ FIXED: Pass compactHeightMode to header section
             var yPosition = drawHeaderSection(
                 canvas, marginLeft, marginTop, pageWidth, marginRight, contentWidth,
                 paintHeaderLarge, paintSmall, paintVerySmall,
-                compactMode = false  // Use compact mode parameter
+                compactMode = compactHeightMode
             )
 
             yPosition = drawStudentHeader(
@@ -125,11 +124,10 @@ fun generatePdfDocument(
                 aCentralFacade = aCentralFacade
             )
 
-            // ✅ FIXED: Pass compactHeightMode to footer section
             drawFooterSection(
                 canvas, cardData, marginLeft, pageHeight, pageWidth, marginRight, contentWidth,
                 paintSmall, paintVerySmall, paintBorder,
-                compactMode = false  // Use compact mode parameter
+                compactMode = compactHeightMode
             )
 
             pdfDocument.finishPage(page)

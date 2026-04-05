@@ -5,8 +5,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etu
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.ParentCommunicationCardData_2
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.PdfSaverUtility_Tahfid
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.convertPdfPagesToJpgs
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.Table.shareImageToWhatsAppBusiness
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.generatePdfDocument.generatePdfDocument
 import android.content.Context
 import android.content.Intent
@@ -33,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
@@ -55,74 +52,56 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
 
     val todayStudentsCount = remember(repo19Etudiant.datasValue) {
         val todayStart = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
         }.timeInMillis
-
-        repo19Etudiant.datasValue.count { etudiant ->
-            etudiant.dernierTimeTampsSynchronisationAvecFireBase >= todayStart && !etudiant.absent
+        repo19Etudiant.datasValue.count {
+            it.dernierTimeTampsSynchronisationAvecFireBase >= todayStart && !it.absent
         }
     }
 
-    fun createAndOpenPdfDocument() {
+    fun createAndSave() {
         isLoading = true
         scope.launch {
             try {
-                // ── Step 1: Fetch and sort all students ──────────────────────────────
-                val allEtudiants = repo19Etudiant.datasValue.sortedWith(
-                    compareBy<M19Etudiant> { it.positon_don_classe }
-                        .thenBy { it.creationTimestamps }
-                )
-
                 val todayStart = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
+                    set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
                 }.timeInMillis
 
-                val targetedEtudiants = allEtudiants.filter { etudiant ->
-                    etudiant.dernierTimeTampsSynchronisationAvecFireBase >= todayStart && !etudiant.absent
-                }
+                // ── Step 1: today's students, sorted by seat position ─────────────
+                val targetedEtudiants = repo19Etudiant.datasValue
+                    .filter { it.dernierTimeTampsSynchronisationAvecFireBase >= todayStart && !it.absent }
+                    .sortedWith(compareBy<M19Etudiant> { it.positon_don_classe }.thenBy { it.creationTimestamps })
 
                 if (targetedEtudiants.isEmpty()) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "لا يوجد طلاب تم تحديثهم اليوم", Toast.LENGTH_LONG).show()
                     }
-                    isLoading = false
                     return@launch
                 }
 
-                // ── Step 2: Structure card data ───────────────────────────────────────
-                val cardsData = targetedEtudiants.map { etudiant ->
-                    ParentCommunicationCardData_2.fromEtudiant(etudiant)
-                }
+                // ── Step 2: build card data ───────────────────────────────────────
+                val cardsData = targetedEtudiants.map { ParentCommunicationCardData_2.fromEtudiant(it) }
 
-                // ── Step 3: Generate the multi-page PDF ──────────────────────────────
+                // ── Step 3: generate PDF ──────────────────────────────────────────
                 val pdfFile = withContext(Dispatchers.IO) {
                     generatePdfDocument(context, cardsData, aCentralFacade)
                 }
 
-                // ── Step 4: Persist a copy to Downloads ──────────────────────────────
+                // ── Step 4: save PDF to Downloads ─────────────────────────────────
                 val saveResult = withContext(Dispatchers.IO) {
                     if (pdfFile != null && pdfFile.exists()) {
                         val fileName = "بطاقة_التواصل_${
                             SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                         }.pdf"
-                        PdfSaverUtility_Tahfid.savePdf(
-                            context   = context,
-                            sourceFile = pdfFile,
-                            fileName  = fileName,
-                            subFolder = "Tahfide_Quran"
-                        )
+                        PdfSaverUtility_Tahfid.savePdf(context, pdfFile, fileName, "Tahfide_Quran")
                     } else {
                         Result.failure(Exception("فشل إنشاء ملف PDF"))
                     }
                 }
 
-                // ── Step 5: Open the PDF for the teacher to review ───────────────────
+                // ── Step 5: open PDF for review ───────────────────────────────────
                 withContext(Dispatchers.Main) {
                     saveResult.fold(
                         onSuccess = { savedPath ->
@@ -134,69 +113,34 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
                             ).show()
                         },
                         onFailure = { error ->
-                            Toast.makeText(
-                                context,
-                                "❌ خطأ في الحفظ: ${error.message}",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            Toast.makeText(context, "❌ خطأ في الحفظ: ${error.message}", Toast.LENGTH_LONG).show()
                         }
                     )
                 }
 
-                // ── Step 6: Convert each PDF page to a JPG ───────────────────────────
-                // One page = one student card; we render at 2× for a crisp image.
                 if (pdfFile == null || !pdfFile.exists()) return@launch
 
-                val jpgFiles = withContext(Dispatchers.IO) {
+                // ── Step 6: convert to JPGs named {keyID}_{nom}.jpg ───────────────
+                // Saved to Pictures/whatsapp_cards/MM_dd/ via MediaStore so they
+                // are visible in the gallery and ready for the send button.
+                val jpgUris = withContext(Dispatchers.IO) {
                     convertPdfPagesToJpgs(
-                        context   = context,
-                        pdfFile   = pdfFile,
-                        pageCount = targetedEtudiants.size
+                        context  = context,
+                        pdfFile  = pdfFile,
+                        students = targetedEtudiants   // ← named by student, not page index
                     )
                 }
 
-                // ── Step 7: Share each JPG to the parent's WhatsApp Business ─────────
-                // We stagger the intents by 800 ms so WhatsApp has time to open each
-                // conversation before the next intent arrives.
-                val studentsWithPhone = targetedEtudiants.zip(jpgFiles)
-                    .filter { (student, jpg) ->
-                        student.num_telephone_parent.isNotBlank() && jpg != null
-                    }
-
-                if (studentsWithPhone.isEmpty()) {
-                    Log.w("ParentCommPdf", "⚠️ No students with a phone number — WhatsApp sharing skipped.")
-                    return@launch
-                }
+                val saved = jpgUris.count { it != null }
+                Log.i("ParentCommPdf", "🖼️ $saved/${targetedEtudiants.size} JPGs ready for send button")
 
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "📲 جاري إرسال ${studentsWithPhone.size} بطاقة عبر واتساب بيزنس…",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                studentsWithPhone.forEachIndexed { index, (student, jpgFile) ->
-                    withContext(Dispatchers.Main) {
-                        shareImageToWhatsAppBusiness(
-                            context   = context,
-                            imageFile = jpgFile!!,       // null-filtered above
-                            rawPhone  = student.num_telephone_parent
-                        )
-                        Log.d(
-                            "ParentCommPdf",
-                            "📲 [${index + 1}/${studentsWithPhone.size}] " +
-                            "${student.nom} ${student.prenom} → ${student.num_telephone_parent}"
-                        )
-                    }
-                    // Give WhatsApp time between intents (skip delay after the last one)
-                    if (index < studentsWithPhone.lastIndex) {
-                        delay(800L)
-                    }
+                    if (saved > 0)
+                        Toast.makeText(context, "🖼️ $saved صورة جاهزة للإرسال عبر واتساب", Toast.LENGTH_SHORT).show()
                 }
 
             } catch (e: Exception) {
-                Log.e("ParentCommPdf", "❌ خطأ: ${e.message}", e)
+                Log.e("ParentCommPdf", "❌ ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "❌ خطأ: ${e.message}", Toast.LENGTH_LONG).show()
                 }
@@ -209,41 +153,27 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
     Card(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isLoading) {
-                MaterialTheme.colorScheme.secondaryContainer
-            } else {
-                MaterialTheme.colorScheme.errorContainer
-            }
+            containerColor = if (isLoading) MaterialTheme.colorScheme.secondaryContainer
+            else           MaterialTheme.colorScheme.errorContainer
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         DropdownMenuItem(
             leadingIcon = {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier    = Modifier.padding(4.dp),
-                        strokeWidth = 2.dp,
-                        color       = MaterialTheme.colorScheme.primary
-                    )
-                } else {
-                    Icon(
-                        imageVector     = Icons.Default.PictureAsPdf,
-                        contentDescription = null,
-                        tint            = MaterialTheme.colorScheme.error
-                    )
-                }
+                if (isLoading) CircularProgressIndicator(modifier = Modifier.padding(4.dp), strokeWidth = 2.dp)
+                else           Icon(Icons.Default.PictureAsPdf, null, tint = MaterialTheme.colorScheme.error)
             },
             text = {
                 Text(
                     text = when {
-                        isLoading             -> "جاري الإنشاء والإرسال…"
+                        isLoading            -> "جاري الإنشاء والتحويل…"
                         todayStudentsCount > 0 -> "$nomFun ($todayStudentsCount)"
-                        else                  -> nomFun
+                        else                 -> nomFun
                     },
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },
-            onClick  = { if (!isLoading) createAndOpenPdfDocument() },
+            onClick  = { if (!isLoading) createAndSave() },
             enabled  = !isLoading
         )
     }
@@ -251,27 +181,12 @@ fun DropDownItem_Imprime_pdf_communication_ac_parent(
 
 fun openPdfWithViewer(context: Context, pdfFile: File) {
     try {
-        val uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            pdfFile
-        )
-
+        val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", pdfFile)
         val intent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(uri, "application/pdf")
             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
         }
-
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            Toast.makeText(
-                context,
-                "⚠️ لا يوجد تطبيق PDF مثبت\nتم حفظ الملف في التنزيلات",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    } catch (e: Exception) {
-        Log.e("ParentCommPdf", "❌ خطأ في فتح PDF", e)
-    }
+        if (intent.resolveActivity(context.packageManager) != null) context.startActivity(intent)
+        else Toast.makeText(context, "⚠️ لا يوجد تطبيق PDF — تم الحفظ في التنزيلات", Toast.LENGTH_LONG).show()
+    } catch (e: Exception) { Log.e("ParentCommPdf", "❌ فتح PDF", e) }
 }
