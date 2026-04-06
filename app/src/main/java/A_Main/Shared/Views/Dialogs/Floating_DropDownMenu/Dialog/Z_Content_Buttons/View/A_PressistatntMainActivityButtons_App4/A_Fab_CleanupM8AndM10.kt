@@ -318,27 +318,29 @@ fun Fab_CleanupM8AndM10(
 
             val m1_keys_dispo_in_m13  = datasValue_repo13TarificationInfos.map { it.parent_M1Produit_KeyId }
 
-            fun catalogueKeyOf(color: M3CouleurProduitInfos) =
+            fun catalogueOf(color: M3CouleurProduitInfos) =
                 produitById[color.parentBProduitInfosKeyID]
                     ?.let { categorieById[it.idParentCategorie] }
                     ?.let { catalogueById[it.catalogueParentId] }
 
 
-            val size_ac_no_drp  by derivedStateOf {
-                list_m3.filter {
-                    it.dropBox_key.isNotEmpty()
-                }.size
+            val m3  by derivedStateOf {
+                list_m3.map {
+                    it.dropBox_key
+                }
             }
 
             val size_t3_cate  by derivedStateOf {
-                list_m3.associateBy { catalogueKeyOf(it) }
+                list_m3.groupBy {
+                    catalogueOf(it)
+                }
             }
 
 
             DropdownMenuItem(
                 modifier = Modifier.semantics(mergeDescendants = true) {
-                    set(value = size_ac_no_drp, key = SemanticsPropertyKey("size_ac_no_drp"))
-                    set(value = size_t3_cate, key = SemanticsPropertyKey("size_t3_cate"))
+                    set(value = m3, key = SemanticsPropertyKey("m3"))
+                    set(value = size_t3_cate, key = SemanticsPropertyKey("catalogueOf"))
                 },
                 leadingIcon = {
                     Icon(

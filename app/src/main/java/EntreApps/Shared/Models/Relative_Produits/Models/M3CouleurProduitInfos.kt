@@ -12,6 +12,8 @@ import java.io.File
 
 @Entity
 data class
+
+
 M3CouleurProduitInfos(
     @PrimaryKey
     var keyID: String = RepositorysMainGetter.Companion.getPushFireBase(ref),
