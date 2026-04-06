@@ -32,7 +32,7 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-private const val PROXIMITY_FILTER_RADIUS_METERS = 1000.0
+private const val PROXIMITY_FILTER_RADIUS_METERS = 200.0
 
 /**
  * Rebuilds map markers according to [currentFilterMode].

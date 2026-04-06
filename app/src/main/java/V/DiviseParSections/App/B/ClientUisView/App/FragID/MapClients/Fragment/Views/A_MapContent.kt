@@ -48,10 +48,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.clientjetpack.R
 import org.koin.compose.koinInject
 import org.osmdroid.config.Configuration
-import org.osmdroid.events.MapListener
-import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import kotlin.math.atan2
@@ -78,12 +75,6 @@ fun MapContent(
     val mapView = remember { MapView(context) }
     val showMarkerDetails by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
-//
-//    val list_client_ou_leur_position_proximite_dePROXIMITY_FILTER_RADIUS_METERS by remember { mutableDoubleStateOf(
-//        //<--
-//        //TODO(1): fait que ca soit la list des client
-//    ) }    //<--
-    //TODO(1): fait que ceta aussi utilise au filtre
 
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
         ?: MapClientsViewModel.VisibleClientsNow.showAll
