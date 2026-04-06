@@ -52,6 +52,7 @@ import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import kotlin.math.atan2
@@ -61,7 +62,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import androidx.compose.ui.graphics.Color as ComposeColor
 
-private const val SCROLL_RELOAD_THRESHOLD_METERS = 1000.0
+private const val SCROLL_RELOAD_THRESHOLD_METERS = 3 * 1000
 
 @Composable
 fun MapContent(
@@ -78,21 +79,12 @@ fun MapContent(
     val mapView = remember { MapView(context) }
     val showMarkerDetails by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
-//
-//    val list_client_ou_leur_position_proximite_dePROXIMITY_FILTER_RADIUS_METERS by remember { mutableDoubleStateOf(
-//        //<--
-//        //TODO(1): fait que ca soit la list des client
-//    ) }    //<--
-    //TODO(1): fait que ceta aussi utilise au filtre
 
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
         ?: MapClientsViewModel.VisibleClientsNow.showAll
 
-    // ── Proximity filter center ───────────────────────────────────────────────
-    // Driven exclusively by the FAB reload button via vm.relod_map_marques_du_1km_du_centre_map.
     val proximityFilterCenter = uiState.proximityFilterCenter
 
-    // Location tracker initialization
     val locationTracker = remember {
         LocationTracker(
             context = context,
@@ -102,51 +94,31 @@ fun MapContent(
         )
     }
 
-    // Listen for GPS follow mode changes from the FAB dropdown
-    val gpsFollowModeActive =
-        focusedValuesGetter.active_Central_Values.gps_follow_mode_active ?: false
-
+    val gpsFollowModeActive = focusedValuesGetter.active_Central_Values.gps_follow_mode_active ?: false
     LaunchedEffect(gpsFollowModeActive) {
-        if (gpsFollowModeActive) {
-            locationTracker.enableFollowMode()
-        } else {
-            locationTracker.disableFollowMode()
-        }
+        if (gpsFollowModeActive) locationTracker.enableFollowMode() else locationTracker.disableFollowMode()
     }
 
-    // Initialize map and start location tracking
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
         locationTracker.startTracking()
         ensureLocationOverlayIsAtBottom(mapView)
-        // Lancer le filtre de proximité dès l'init avec le centre initial de la map
         val center = mapView.mapCenter
-        android.util.Log.d("ProximityFilter", "INIT → lancement filtre proximité  lat=${center.latitude}  lng=${center.longitude}")
         viewModel.relod_map_marques_du_1km_du_centre_map(center.latitude, center.longitude)
     }
 
-    // Map configuration and cleanup
     DisposableEffect(context) {
-        Configuration.getInstance()
-            .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
+        Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
 
-        // ── Scroll → relance le filtre de proximité après 200 m ──────────────
-        var scrollAnchor: org.osmdroid.util.GeoPoint? = null
+        var scrollAnchor: GeoPoint? = null
         val scrollListener = object : MapListener {
             override fun onScroll(event: ScrollEvent?): Boolean {
-                val center = mapView.mapCenter as? org.osmdroid.util.GeoPoint ?: return false
-                val anchor = scrollAnchor
-                if (anchor == null) {
-                    scrollAnchor = center
-                    return false
-                }
-                val dist = haversineMeters(anchor.latitude, anchor.longitude, center.latitude, center.longitude)
-                if (dist >= SCROLL_RELOAD_THRESHOLD_METERS) {
-                    android.util.Log.d("ProximityFilter",
-                        "SCROLL ${dist.toInt()} m → relance filtre  lat=${center.latitude}  lng=${center.longitude}")
-                    scrollAnchor = org.osmdroid.util.GeoPoint(center.latitude, center.longitude)
+                val center = mapView.mapCenter as? GeoPoint ?: return false
+                val anchor = scrollAnchor ?: run { scrollAnchor = center; return false }
+                if (haversineMeters(anchor.latitude, anchor.longitude, center.latitude, center.longitude) >= SCROLL_RELOAD_THRESHOLD_METERS) {
+                    scrollAnchor = GeoPoint(center.latitude, center.longitude)
                     viewModel.relod_map_marques_du_1km_du_centre_map(center.latitude, center.longitude)
                 }
                 return false
@@ -162,7 +134,6 @@ fun MapContent(
         }
     }
 
-    // Update markers when data or proximity filter changes
     LaunchedEffect(
         viewModel.getter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         viewModel.getter.repo8BonVent.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
@@ -170,12 +141,9 @@ fun MapContent(
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         currentFilterMode,
-        proximityFilterCenter,   // re-render whenever the FAB reload button sets a new center
-        viewModel.mapReloadTrigger, // incrémenté dans relod_map_marques_du_1km_du_centre_map
+        proximityFilterCenter,
+        viewModel.mapReloadTrigger,
     ) {
-        android.util.Log.d("ProximityFilter",
-            "LaunchedEffect re-run → mapReloadTrigger=${viewModel.mapReloadTrigger}" +
-                    "  proximityFilterCenter=$proximityFilterCenter")
         addOuUpdateMapMarkers(
             uiState = uiState,
             viewModel = viewModel,
@@ -196,15 +164,7 @@ fun MapContent(
         onMarkerKeyIdChange: (M2Client?) -> Unit,
         zoomLevel: Double
     ) {
-        markerToEdit?.let { marker ->
-            handleMarkerPositionUpdate(
-                m2Client = marker,
-                uiState = uiState,
-                viewModel = viewModel,
-                mapView = mapView,
-            )
-        }
-
+        markerToEdit?.let { handleMarkerPositionUpdate(m2Client = it, uiState = uiState, viewModel = viewModel, mapView = mapView) }
         onEditModeChange(false)
         onMarkerKeyIdChange(null)
         mapView.controller.setZoom(zoomLevel)
@@ -213,51 +173,24 @@ fun MapContent(
     Box(modifier = Modifier.fillMaxSize()) {
         val markerStatusDialogActiveM2Client = uiState.markerStatusDialogActiveM2Client
 
-        // Main map view
-        AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { mapView }
-        )
+        AndroidView(modifier = Modifier.fillMaxSize(), factory = { mapView })
 
-        // Center crosshair indicator
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .background(ComposeColor.Red, CircleShape)
-                .align(Alignment.Center)
-        )
+        Box(modifier = Modifier.size(8.dp).background(ComposeColor.Red, CircleShape).align(Alignment.Center))
 
-        // Secteurs button handler
         val panelsGroupeButtonHandler = koinInject<PanelsGroupeButtonHandler>()
-        val isSecteursButtonVisible = panelsGroupeButtonHandler
-            ._paneleGroupeButtonList.value
-            .find {
-                it.key == PanelsGroupeButtonHandler
-                    .PanelsGroupeButtonDeClasse.Keys.MapSecteursPolygenHandelButtons
-            }
+        panelsGroupeButtonHandler._paneleGroupeButtonList.value
+            .find { it.key == PanelsGroupeButtonHandler.PanelsGroupeButtonDeClasse.Keys.MapSecteursPolygenHandelButtons }
             ?.isVisible ?: false
 
-        if (isSecteursButtonVisible) {
-            // MapSecteursPolygenHandelButtons(mapView, viewModel)
-        }
-
-        // Global options and controls
         A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             viewModel = viewModel,
             mapView = mapView,
             onClear = onClear,
             currentFilterMode = currentFilterMode,
-            onFilterMarkers = {
-                handleFilterMarkersClick(mapView, currentFilterMode) { newMode ->
-                    viewModel.update_filter_marqueClient(newMode)
-                }
-            },
-            onPickFilter = {
-                viewModel.update_filter_marqueClient(it)
-            }
+            onFilterMarkers = { handleFilterMarkersClick(mapView, currentFilterMode) { viewModel.update_filter_marqueClient(it) } },
+            onPickFilter = { viewModel.update_filter_marqueClient(it) }
         )
 
-        // Marker edit mode overlay
         if (uiState.m2Client_In_ShowEditMarkerMode != null) {
             MarkerEditModeOverlay(
                 onCancel = {
@@ -271,9 +204,7 @@ fun MapContent(
                         viewModel = viewModel,
                         mapView = mapView,
                         onEditModeChange = { },
-                        onMarkerKeyIdChange = {
-                            viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(null)
-                        },
+                        onMarkerKeyIdChange = { viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(null) },
                         zoomLevel = defaultZoom
                     )
                 },
@@ -284,19 +215,9 @@ fun MapContent(
             )
         }
 
-        // Fixed MarkerStatusDialog visibility condition
-        val activeOnVentM2ClientInfos =
-            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
-        val currentValues = focusedValuesGetter.active_Central_Values
-        val its_ADD_Au_Ciblage_Clients =
-            currentValues.click_On_Marque == ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
-
-        val shouldShowMarkerDialog = run {
-            val hasActiveClient =
-                activeOnVentM2ClientInfos != null || markerStatusDialogActiveM2Client != null
-            val isNotTargetingMode = !its_ADD_Au_Ciblage_Clients
-            hasActiveClient && isNotTargetingMode
-        }
+        val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
+        val shouldShowMarkerDialog = (activeOnVentM2ClientInfos != null || markerStatusDialogActiveM2Client != null) &&
+                focusedValuesGetter.active_Central_Values.click_On_Marque != ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
 
         if (shouldShowMarkerDialog) {
             MarkerStatusDialog(
@@ -305,51 +226,30 @@ fun MapContent(
                 relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
                 markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
-                onClickToEditeMarquerPosition = { client ->
-                    viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(client)
-                },
+                onClickToEditeMarquerPosition = { viewModel.update_uiState_m2Client_In_ShowEditMarkerMode(it) },
                 onRemoveMark = { relative_M2Client ->
-                    val marqueClick = mapView.overlays
-                        .filterIsInstance<Marker>()
-                        .find { marker ->
-                            marker.id == relative_M2Client?.id.toString()
-                        } ?: return@MarkerStatusDialog
-
-                    marqueClick.let {
-                        mapView.overlays.remove(it)
-                        mapView.invalidate()
-                    }
+                    mapView.overlays.filterIsInstance<Marker>()
+                        .find { it.id == relative_M2Client?.id.toString() }
+                        ?.let { mapView.overlays.remove(it); mapView.invalidate() }
                 },
                 on_dissmiss_dialog_avec_enleve_focuse_bon = {
                     viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
                     viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
                         .desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
-                    val currentValues = focusedValuesGetter.active_Central_Values
                     focusedValuesGetter.update_activeCentralValues(
-                        currentValues.copy(markerStatusDialogActiveM2Client = null)
+                        focusedValuesGetter.active_Central_Values.copy(markerStatusDialogActiveM2Client = null)
                     )
                 }
             )
         }
 
-        // Floating button for client targeting
-        val affiche_Floating_Button_Cible_Client =
-            focusedValuesGetter.active_Central_Values.affiche_Floating_Button_Cible_Client
-        affiche_Floating_Button_Cible_Client.ifTrue {
+        focusedValuesGetter.active_Central_Values.affiche_Floating_Button_Cible_Client.ifTrue {
             Floating_Separated_FragMap_Button_1()
         }
-
-        // Floating button for filter markers
-        val affiche_Floating_Button_TogleFilterMarquers =
-            focusedValuesGetter.active_Central_Values.affiche_Floating_Button_TogleFilterMarquers
-        affiche_Floating_Button_TogleFilterMarquers.ifTrue {
+        focusedValuesGetter.active_Central_Values.affiche_Floating_Button_TogleFilterMarquers.ifTrue {
             Floating_Separated_FragMap_Button_4()
         }
-
-        // Floating button for GPS follow mode
-        val affiche_Floating_Button_gps_follow_mode_active =
-            focusedValuesGetter.active_Central_Values.affiche_Floating_Button_gps_follow_mode_active
-        affiche_Floating_Button_gps_follow_mode_active.ifTrue {
+        focusedValuesGetter.active_Central_Values.affiche_Floating_Button_gps_follow_mode_active.ifTrue {
             Floating_Separated_FragMap_Button_2(
                 mapView = mapView,
                 viewModel = viewModel,
@@ -363,28 +263,15 @@ fun MapContent(
     }
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
 private fun ensureLocationOverlayIsAtBottom(mapView: MapView) {
-    val locationOverlay = mapView.overlays.find { overlay ->
-        overlay.javaClass.simpleName.contains("Location") ||
-                overlay.toString().contains("location", ignoreCase = true)
-    }
-    locationOverlay?.let { overlay ->
-        mapView.overlays.remove(overlay)
-        mapView.overlays.add(0, overlay)
-    }
+    mapView.overlays.find { it.javaClass.simpleName.contains("Location") || it.toString().contains("location", ignoreCase = true) }
+        ?.let { mapView.overlays.remove(it); mapView.overlays.add(0, it) }
 }
 
-/** Haversine distance in metres between two lat/lng points. */
-private fun haversineMeters(
-    lat1: Double, lng1: Double,
-    lat2: Double, lng2: Double,
-): Double {
+private fun haversineMeters(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
     val r = 6_371_000.0
     val dLat = Math.toRadians(lat2 - lat1)
     val dLng = Math.toRadians(lng2 - lng1)
-    val a = sin(dLat / 2).pow(2) +
-            cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLng / 2).pow(2)
+    val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLng / 2).pow(2)
     return r * 2 * atan2(sqrt(a), sqrt(1 - a))
 }
