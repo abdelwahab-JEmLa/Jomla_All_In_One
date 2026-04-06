@@ -1,11 +1,13 @@
 package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.A_PressistatntMainActivityButtons_App4
 
 import EntreApps.Shared.Models.AbdelwahabJomla_Client_Speciale
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 private const val TAG = "CleanupInvalidOps"
@@ -13,7 +15,7 @@ private const val TAG = "CleanupInvalidOps"
 fun cleanupInvalidOperations_Np(
     repo10OperationVentCouleur: Repo10OperationVentCouleur,
     on_vent_key: String,
-    onDone: () -> Unit = {},           // ← NEW: called on Main when the coroutine finishes
+    onDone: () -> Unit = {},
 ) {
     repo10OperationVentCouleur.repoScope.launch {
         Log.d(TAG, "coroutine started — total ops in repo=${repo10OperationVentCouleur.datasValue.size}  on_vent_key='$on_vent_key'")
@@ -32,8 +34,16 @@ fun cleanupInvalidOperations_Np(
             }
             Log.d(TAG, "operationsToDelete count=${operationsToDelete.size}")
 
+            // Batch all Firebase removes in one multi-path updateChildren call (null = delete).
+            // This replaces N individual removeValue() round-trips with a single atomic write.
+            val nullUpdates: Map<String, Any?> = operationsToDelete.associate { it.keyID to null }
+            M10OperationVentCouleur.ref.updateChildren(nullUpdates).await()
+            Log.d(TAG, "batch Firebase delete confirmed for ${operationsToDelete.size} items")
+
+            // Room deletes are sequential; the repo.delete() Firebase leg is a no-op
+            // since the node was already removed in the batch above.
             operationsToDelete.forEachIndexed { index, operation ->
-                Log.d(TAG, "  deleting [${index + 1}/${operationsToDelete.size}] keyID=${operation.keyID}")
+                Log.d(TAG, "  local delete [${index + 1}/${operationsToDelete.size}] keyID=${operation.keyID}")
                 repo10OperationVentCouleur.delete(operation)
             }
 

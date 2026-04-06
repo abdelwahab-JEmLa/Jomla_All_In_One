@@ -6,42 +6,39 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-
 fun cleanupDuplicateTariffs(
     repo13TarificationInfos: Repo13TarificationInfos,
     tariffs: List<M13TarificationInfos>,
-    onDone: () -> Unit = {},           // ← NEW: called on Main when Firebase writes finish
+    onDone: () -> Unit = {},
 ) {
     repo13TarificationInfos.repoScope.launch {
         try {
-            val grouped = tariffs.groupBy {
-                Pair(it.typeChoisi, it.parent_M1Produit_KeyId)
-            }
-
-            val toMove = mutableListOf<M13TarificationInfos>()
-
-            grouped.forEach { (_, tariffGroup) ->
-                if (tariffGroup.size > 1) {
-                    val sortedByTimestamp = tariffGroup.sortedByDescending {
+            val toMove = tariffs
+                .groupBy { Pair(it.typeChoisi, it.parent_M1Produit_KeyId) }
+                .values
+                .filter { it.size > 1 }
+                .flatMap { group ->
+                    group.sortedByDescending {
                         it.dernierTimeTampsSynchronisationAvecFireBase
-                    }
-                    toMove.addAll(sortedByTimestamp.drop(1))
+                    }.drop(1)   // keep the newest; move the rest
                 }
-            }
 
-            toMove.forEach { tariff ->
+            if (toMove.isNotEmpty()) {
+                // Batch write duplicates to the non-active node
+                val nonActiveUpdates: Map<String, Any> =
+                    toMove.associate { it.keyID to it.toFirebaseMap() }
                 M13TarificationInfos.ref_NonActiveDatas
-                    .child(tariff.keyID)
-                    .setValue(tariff.toFirebaseMap())
-                    .await()
-                M13TarificationInfos.ref
-                    .child(tariff.keyID)
-                    .removeValue()
-                    .await()
-                repo13TarificationInfos.dataBaseCreationFactory.delete(tariff)
+                    .updateChildren(nonActiveUpdates).await()
+
+                // Batch delete from the active node
+                val nullUpdates: Map<String, Any?> = toMove.associate { it.keyID to null }
+                M13TarificationInfos.ref.updateChildren(nullUpdates).await()
+
+                // Local Room deletes (no bulk-delete DAO, so still sequential)
+                toMove.forEach { repo13TarificationInfos.dataBaseCreationFactory.delete(it) }
             }
         } catch (_: Exception) { }
 
-        withContext(Dispatchers.Main) { onDone() }   // ← always fires, even on error
+        withContext(Dispatchers.Main) { onDone() }
     }
 }

@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonV
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 private const val TAG = "CleanupOldBonVents"
@@ -14,7 +15,7 @@ fun cleanupOldBonVents_Np(
     repo8BonVent: Repo8BonVent,
     bonVents: List<M8BonVent>,
     on_vent_key: String,
-    onDone: () -> Unit = {},           // ← NEW: called on Main when all deletes finish
+    onDone: () -> Unit = {},
 ) {
     val typesToKeep = setOf(
         M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit,
@@ -37,17 +38,29 @@ fun cleanupOldBonVents_Np(
 
     if (bonVentsToRemove.isEmpty()) {
         Log.d(TAG, "nothing to delete — firing onDone immediately")
-        // Nothing to delete – fire onDone immediately on Main so callers don't hang
         repo8BonVent.repoScope.launch(Dispatchers.Main) { onDone() }
         return
     }
 
     Log.d(TAG, "will delete ${bonVentsToRemove.size} bon-vents — launching coroutine")
     repo8BonVent.repoScope.launch {
+        // Batch all Firebase removes in one multi-path updateChildren call (null = delete).
+        // This replaces N individual removeValue() round-trips with a single atomic write.
+        val nullUpdates: Map<String, Any?> = bonVentsToRemove.associate { it.keyID to null }
+        try {
+            M8BonVent.ref.updateChildren(nullUpdates).await()
+            Log.d(TAG, "batch Firebase delete confirmed for ${bonVentsToRemove.size} items")
+        } catch (e: Exception) {
+            Log.e(TAG, "batch Firebase delete failed: ${e.message}", e)
+        }
+
+        // Room deletes are sequential (no multi-key delete in Room without a custom DAO query).
+        // The repo.delete() Firebase leg is a harmless no-op since the node is already removed.
         bonVentsToRemove.forEachIndexed { index, bonVent ->
-            Log.d(TAG, "  deleting [${index + 1}/${bonVentsToRemove.size}] keyID=${bonVent.keyID}")
+            Log.d(TAG, "  local delete [${index + 1}/${bonVentsToRemove.size}] keyID=${bonVent.keyID}")
             repo8BonVent.delete(bonVent)
         }
+
         Log.d(TAG, "all deletes done — calling onDone on Main")
         withContext(Dispatchers.Main) { onDone() }
     }

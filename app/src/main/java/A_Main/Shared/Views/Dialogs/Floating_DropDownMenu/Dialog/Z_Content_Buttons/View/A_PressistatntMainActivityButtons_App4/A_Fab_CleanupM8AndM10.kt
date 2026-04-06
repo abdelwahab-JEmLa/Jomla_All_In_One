@@ -35,8 +35,7 @@ fun Fab_CleanupM8AndM10(
     on_vent_key: String,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     onDismissDropdown: () -> Unit,
-) {          //<--
-//TODO(1): utilise le batch set fire base pour tot les operations
+) {
     val sizeM1 = repositorysMainGetter.repo1ProduitInfos.datasValue.size
     val sizeM3 = repositorysMainGetter.repo3CouleurProduit.datasValue.size
     val sizeM8 = repositorysMainGetter.repo8BonVent.datasValue.size
@@ -45,18 +44,21 @@ fun Fab_CleanupM8AndM10(
     val sizeM11 = repositorysMainGetter.repo11AchatOperation.datasValue.size
     val sizeM13 = repositorysMainGetter.repo13TarificationInfos.datasValue.size
 
-    // TODO(1) fix: a color is also moved when its parent product has no tariff at all.
-    // Badge counts mirror the two-condition filter used in moveColorsWithoutImagesToNonActive.
+    // Badge counts mirror the two-condition filter used in moveColorsWithoutImagesToNonActive:
+    // a color is moved when it has no backup image OR its parent product has no active tariff.
     val produitById = repositorysMainGetter.repo1ProduitInfos.datasValue.associateBy { it.keyID }
     val colorsByProduit =
         repositorysMainGetter.repo3CouleurProduit.datasValue.groupBy { it.parentBProduitInfosKeyID }
     val productIdsWithTariff = repositorysMainGetter.repo13TarificationInfos.datasValue
+        .filter { !it.typeChoisi.ignore_affiche && it.prixCurrency > 0 }
         .map { it.parent_M1Produit_KeyId }.toSet()
 
     val colorsToMoveIds = repositorysMainGetter.repo3CouleurProduit.datasValue
         .filter { color ->
+            // Condition 1: no image filename recorded (proxy for missing backup image)
             color.nomImageFichieSansEtansion.isBlank() ||
             color.nomImageFichieSansEtansion == "Non Dispo" ||
+            // Condition 2: parent product has no priced, non-ignored tariff
             color.parentBProduitInfosKeyID !in productIdsWithTariff
         }
         .map { it.keyID }.toSet()

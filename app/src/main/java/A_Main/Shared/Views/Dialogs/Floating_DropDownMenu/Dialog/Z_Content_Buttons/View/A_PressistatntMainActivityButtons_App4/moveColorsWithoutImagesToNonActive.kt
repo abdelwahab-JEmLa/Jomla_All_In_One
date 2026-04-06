@@ -22,10 +22,9 @@ fun moveColorsWithoutImagesToNonActive(
     repositorysMainGetter: RepositorysMainGetter,
     onProgress: (Float) -> Unit = {},
 ) {
-    val produitById = repositorysMainGetter.repo1ProduitInfos.datasValue.associateBy { it.keyID }
-    val categorieById =
-        repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
-    val catalogueById = get_ListM21CataloguesCategorie().associateBy { it.id }
+    val produitById    = repositorysMainGetter.repo1ProduitInfos.datasValue.associateBy { it.keyID }
+    val categorieById  = repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
+    val catalogueById  = get_ListM21CataloguesCategorie().associateBy { it.id }
 
     fun catalogueKeyOf(color: M3CouleurProduitInfos): String =
         produitById[color.parentBProduitInfosKeyID]
@@ -37,39 +36,34 @@ fun moveColorsWithoutImagesToNonActive(
     val allTariffs = repositorysMainGetter.repo13TarificationInfos.datasValue
     val productIdsWithTariff = allTariffs
         .filter { !it.typeChoisi.ignore_affiche && it.prixCurrency > 0 }
-        .map { it.parent_M1Produit_KeyId }
-        .toSet()
+        .map { it.parent_M1Produit_KeyId }.toSet()
 
-    // Move a color when: it has no backup image  OR  its parent product has no tariff at all
     val colorsToMove = allColors.filter { color ->
         !color.hasBackupImage(catalogueKeyOf(color)) ||
                 color.parentBProduitInfosKeyID !in productIdsWithTariff
     }.distinctBy { it.keyID }
 
-    if (colorsToMove.isEmpty()) {
-        onProgress(1f); return
-    }
+    if (colorsToMove.isEmpty()) { onProgress(1f); return }
 
     CoroutineScope(Dispatchers.IO).launch {
-        val total = colorsToMove.size.toFloat()
-        var done = 0
 
-        colorsToMove.forEach { color ->
-            try {
-                M3CouleurProduitInfos.ref_Non_Active_Datas.child(color.keyID)
-                    .setValue(color.toFirebaseMap()).await()
-                M3CouleurProduitInfos.ref.child(color.keyID).removeValue().await()
-            } catch (_: Exception) {
-            }
-            withContext(Dispatchers.Main) { onProgress(++done / total) }
-        }
+        // ── Phase 1 · Colors ─────────────────────────────────────────────────
+        try {
+            val nonActiveColors: Map<String, Any> =
+                colorsToMove.associate { it.keyID to it.toFirebaseMap() }
+            M3CouleurProduitInfos.ref_Non_Active_Datas.updateChildren(nonActiveColors).await()
 
-        // Products whose every color was moved have no active colors left → move them too
+            val nullColors: Map<String, Any?> = colorsToMove.associate { it.keyID to null }
+            M3CouleurProduitInfos.ref.updateChildren(nullColors).await()
+        } catch (_: Exception) { }
+
+        withContext(Dispatchers.Main) { onProgress(0.4f) }
+
+        // ── Phase 2 · Products that now have zero active colors ───────────────
         val movedColorIds    = colorsToMove.map { it.keyID }.toSet()
         val activeProductIds = allColors
             .filter { it.keyID !in movedColorIds }
-            .map { it.parentBProduitInfosKeyID }
-            .toSet()
+            .map { it.parentBProduitInfosKeyID }.toSet()
 
         val productsToMove = repositorysMainGetter.repo1ProduitInfos.datasValue.filter { product ->
             colorsToMove.any { it.parentBProduitInfosKeyID == product.keyID } &&
@@ -77,26 +71,33 @@ fun moveColorsWithoutImagesToNonActive(
         }
         val movedProductIds = productsToMove.map { it.keyID }.toSet()
 
-        productsToMove.forEach { product ->
+        if (productsToMove.isNotEmpty()) {
             try {
-                M01Produit.ref_Non_Active_Datas.child(product.keyFireBase)
-                    .setValue(product.toFirebaseMap()).await()
-                M01Produit.ref.child(product.keyFireBase).removeValue().await()
-            } catch (_: Exception) {
-            }
+                val nonActiveProducts: Map<String, Any> =
+                    productsToMove.associate { it.keyFireBase to it.toFirebaseMap() }
+                M01Produit.ref_Non_Active_Datas.updateChildren(nonActiveProducts).await()
+
+                val nullProducts: Map<String, Any?> =
+                    productsToMove.associate { it.keyFireBase to null }
+                M01Produit.ref.updateChildren(nullProducts).await()
+            } catch (_: Exception) { }
         }
 
-        // Move any tariffs that belonged to the now-inactive products
-        allTariffs
-            .filter { it.parent_M1Produit_KeyId in movedProductIds }
-            .forEach { tariff ->
-                try {
-                    M13TarificationInfos.ref_NonActiveDatas.child(tariff.keyID)
-                        .setValue(tariff.toFirebaseMap()).await()
-                    M13TarificationInfos.ref.child(tariff.keyID).removeValue().await()
-                } catch (_: Exception) {
-                }
-            }
+        withContext(Dispatchers.Main) { onProgress(0.7f) }
+
+        // ── Phase 3 · Tariffs that belonged to the now-inactive products ──────
+        val tariffsToMove = allTariffs.filter { it.parent_M1Produit_KeyId in movedProductIds }
+
+        if (tariffsToMove.isNotEmpty()) {
+            try {
+                val nonActiveTariffs: Map<String, Any> =
+                    tariffsToMove.associate { it.keyID to it.toFirebaseMap() }
+                M13TarificationInfos.ref_NonActiveDatas.updateChildren(nonActiveTariffs).await()
+
+                val nullTariffs: Map<String, Any?> = tariffsToMove.associate { it.keyID to null }
+                M13TarificationInfos.ref.updateChildren(nullTariffs).await()
+            } catch (_: Exception) { }
+        }
 
         withContext(Dispatchers.Main) { onProgress(1f) }
     }

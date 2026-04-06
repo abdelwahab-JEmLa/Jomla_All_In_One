@@ -37,16 +37,6 @@ private fun haversineMeters(lat1: Double, lng1: Double, lat2: Double, lng2: Doub
                cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLng / 2).pow(2)
     return r * 2 * atan2(sqrt(a), sqrt(1 - a))
 }
-
-// ─── Public function ──────────────────────────────────────────────────────────
-
-/**
- * Moves M2 client refs to the non-active node when:
- *  - their [M2Client.numTelephone] is blank, AND
- *  - their coordinates are within [THRESHOLD_METERS] metres of the default shop pin.
- *
- * [onProgress] is called on the Main thread with a fraction 0..1; 1f signals completion.
- */
 fun moveM2InvalidClients(
     repositorysMainGetter: RepositorysMainGetter,
     onProgress: (Float) -> Unit = {},
@@ -54,27 +44,20 @@ fun moveM2InvalidClients(
     val toMove = repositorysMainGetter.repo2Client.datasValue.filter { client ->
         invalidM2ClientPredicate(client.numTelephone, client.latitude, client.longitude)
     }
-
     if (toMove.isEmpty()) { onProgress(1f); return }
 
     CoroutineScope(Dispatchers.IO).launch {
-        val total = toMove.size.toFloat()
-        var done  = 0
+        try {
+            // Batch write to non-active node
+            val nonActiveUpdates: Map<String, Any> =
+                toMove.associate { it.keyID to it.toFirebaseMap() }
+            M2Client.ref_Non_Active_Datas.updateChildren(nonActiveUpdates).await()
+            withContext(Dispatchers.Main) { onProgress(0.5f) }
 
-        toMove.forEach { client ->
-            try {
-                M2Client.ref_Non_Active_Datas
-                    .child(client.keyID)
-                    .setValue(client.toFirebaseMap())
-                    .await()
-                M2Client.ref
-                    .child(client.keyID)
-                    .removeValue()
-                    .await()
-            } catch (_: Exception) { }
-
-            withContext(Dispatchers.Main) { onProgress(++done / total) }
-        }
+            // Batch delete from active node (null = delete in multi-path update)
+            val nullUpdates: Map<String, Any?> = toMove.associate { it.keyID to null }
+            M2Client.ref.updateChildren(nullUpdates).await()
+        } catch (_: Exception) { }
 
         withContext(Dispatchers.Main) { onProgress(1f) }
     }
