@@ -22,6 +22,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,7 +39,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,8 +62,8 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import androidx.compose.ui.graphics.Color as ComposeColor
 
-private const val SCROLL_RELOAD_THRESHOLD_METERS = 3 * 1000
-
+private const val SCROLL_RELOAD_DEBOUNCE_MS = 3_000L
+private const val TAG_SCROLL               = "ScrollVelocity"
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
@@ -78,7 +78,6 @@ fun MapContent(
     val currentZoom by remember { mutableDoubleStateOf(defaultZoom) }
     val mapView = remember { MapView(context) }
     val showMarkerDetails by remember { mutableStateOf(true) }
-    val coroutineScope = rememberCoroutineScope()
 
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
         ?: MapClientsViewModel.VisibleClientsNow.showAll
@@ -99,12 +98,23 @@ fun MapContent(
         if (gpsFollowModeActive) locationTracker.enableFollowMode() else locationTracker.disableFollowMode()
     }
 
+    // Velocity-based proximity reload:
+    //   - track position + timestamp of the previous scroll event
+    //   - if instantaneous speed ≥ viewModel.scrollSpeedThresholdMps  →  reload 3-km markers
+    //   - debounce: at most 1 reload every SCROLL_RELOAD_DEBOUNCE_MS
+    val lastScrollPoint = remember { mutableStateOf<GeoPoint?>(null) }
+    val lastScrollMs    = remember { mutableStateOf(0L) }
+    val lastReloadMs    = remember { mutableStateOf(0L) }
+
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
         locationTracker.startTracking()
         ensureLocationOverlayIsAtBottom(mapView)
-        val center = mapView.mapCenter
-        viewModel.relod_map_marques_du_1km_du_centre_map(center.latitude, center.longitude)
+        val center = mapView.mapCenter as? GeoPoint ?: return@LaunchedEffect
+        lastScrollPoint.value = GeoPoint(center.latitude, center.longitude)
+        lastScrollMs.value    = System.currentTimeMillis()
+        Log.i(TAG_SCROLL, "INIT — rechargement initial au centre (${center.latitude}, ${center.longitude})")
+        viewModel.relod_map_marques_du_3km_du_centre_map(center.latitude, center.longitude)
     }
 
     DisposableEffect(context) {
@@ -112,14 +122,47 @@ fun MapContent(
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
 
-        var scrollAnchor: GeoPoint? = null
         val scrollListener = object : MapListener {
             override fun onScroll(event: ScrollEvent?): Boolean {
-                val center = mapView.mapCenter as? GeoPoint ?: return false
-                val anchor = scrollAnchor ?: run { scrollAnchor = center; return false }
-                if (haversineMeters(anchor.latitude, anchor.longitude, center.latitude, center.longitude) >= SCROLL_RELOAD_THRESHOLD_METERS) {
-                    scrollAnchor = GeoPoint(center.latitude, center.longitude)
-                    viewModel.relod_map_marques_du_1km_du_centre_map(center.latitude, center.longitude)
+                val center = mapView.mapCenter as? GeoPoint ?: run {
+                    Log.w(TAG_SCROLL, "onScroll — mapCenter est null, ignoré")
+                    return false
+                }
+                val nowMs  = System.currentTimeMillis()
+                val prevPt = lastScrollPoint.value
+                val prevMs = lastScrollMs.value
+
+                // Always update the last-known scroll position
+                lastScrollPoint.value = GeoPoint(center.latitude, center.longitude)
+                lastScrollMs.value    = nowMs
+
+                if (prevPt == null) {
+                    Log.d(TAG_SCROLL, "onScroll — premier événement, ancre initialisée → (${"$"}{center.latitude}, ${"$"}{center.longitude})")
+                    return false
+                }
+
+                val deltaMs   = (nowMs - prevMs).coerceAtLeast(1L)
+                val meters    = haversineMeters(prevPt.latitude, prevPt.longitude, center.latitude, center.longitude)
+                val speedMps  = meters / (deltaMs / 1_000.0)
+                val speedStr  = "%.1f".format(speedMps)   // extracted to avoid Throwable? mismatch in Log.v
+
+                Log.v(TAG_SCROLL, "onScroll — Δ=${meters.toInt()} m  Δt=${deltaMs} ms  vitesse=$speedStr m/s  (seuil=${viewModel.scrollSpeedThresholdMps} m/s)")
+
+                val debounceOk = (nowMs - lastReloadMs.value) >= SCROLL_RELOAD_DEBOUNCE_MS
+
+                when {
+                    speedMps < viewModel.scrollSpeedThresholdMps -> {
+                        Log.v(TAG_SCROLL, "  → vitesse insuffisante ($speedStr < ${viewModel.scrollSpeedThresholdMps} m/s), pas de rechargement")
+                    }
+                    !debounceOk -> {
+                        val waitMs = SCROLL_RELOAD_DEBOUNCE_MS - (nowMs - lastReloadMs.value)
+                        Log.d(TAG_SCROLL, "  → vitesse OK mais debounce actif, attendre encore ${waitMs} ms")
+                    }
+                    else -> {
+                        Log.i(TAG_SCROLL, "  ✓ RECHARGEMENT DÉCLENCHÉ — vitesse=$speedStr m/s  centre=(${center.latitude}, ${center.longitude})")
+                        lastReloadMs.value = nowMs
+                        viewModel.relod_map_marques_du_3km_du_centre_map(center.latitude, center.longitude)
+                    }
                 }
                 return false
             }

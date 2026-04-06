@@ -62,6 +62,8 @@ data class UiState(
     val proximityFilterCenter: GeoPoint? = null,
 )
 
+private const val TAG_PROXIMITY = "ProximityFilter"
+
 class MapClientsViewModel(
     private val context: Context,
     val aCentralFacade: ACentralFacade,
@@ -98,6 +100,8 @@ class MapClientsViewModel(
     var auClickeCaUpdateClientPar by mutableStateOf(M2Client.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTrigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
+    /** Editable from the FAB speed-input field. Replaces the old private const. */
+    var scrollSpeedThresholdMps by mutableStateOf(20.0)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(
         emptyList()
     )
@@ -319,18 +323,20 @@ class MapClientsViewModel(
     // ===============================================
 
     /**
-     * Called by the FAB reload button.
+     * Called when the map is first shown and after every scroll of ≥ 2 200 m.
      * Stores [centerLat]/[centerLng] as the new proximity-filter anchor so that
-     * [MapContent] re-renders only the markers within 1 km of this point.
+     * [MapContent] re-renders only the markers within 3 km of this point.
      */
-    fun relod_map_marques_du_1km_du_centre_map(centerLat: Double, centerLng: Double) {
-        Log.d("ProximityFilter", "  VM.relod_map → reçu lat=$centerLat  lng=$centerLng")
+    fun relod_map_marques_du_3km_du_centre_map(centerLat: Double, centerLng: Double) {
+        Log.i(TAG_PROXIMITY, "━━━ RELOAD DEMANDÉ ━━━  lat=$centerLat  lng=$centerLng")
+        val before = _uiState.value.proximityFilterCenter
         _uiState.value = _uiState.value.copy(
             proximityFilterCenter = GeoPoint(centerLat, centerLng)
         )
-        Log.d("ProximityFilter", "  VM.relod_map → uiState.proximityFilterCenter mis à jour : ${_uiState.value.proximityFilterCenter}")
+        Log.d(TAG_PROXIMITY, "  proximityFilterCenter : $before  →  ${_uiState.value.proximityFilterCenter}")
+        Log.d(TAG_PROXIMITY, "  mapReloadTrigger : $mapReloadTrigger → ${mapReloadTrigger + 1}")
         mapReloadTrigger++
-        Log.d("ProximityFilter", "  VM.relod_map → mapReloadTrigger=$mapReloadTrigger (note: pas une clé du LaunchedEffect)")
+        Log.i(TAG_PROXIMITY, "  ✓ uiState mis à jour, mapReloadTrigger=$mapReloadTrigger")
     }
 
     // ===============================================

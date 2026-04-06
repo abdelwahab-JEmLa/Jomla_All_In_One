@@ -14,16 +14,21 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.GpsNotFixed
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,8 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 import org.osmdroid.views.MapView
 import kotlin.math.roundToInt
@@ -121,7 +130,7 @@ fun Floating_Separated_FragMap_Button_2(
                     )
                 }
 
-                //<-- Reload: show only markers within 1 km of the current map centre
+                // ── Reload FAB ────────────────────────────────────────────────────────
                 FloatingActionButton(
                     modifier = Modifier.size(48.dp),
                     onClick = {
@@ -131,7 +140,7 @@ fun Floating_Separated_FragMap_Button_2(
                         if (center.latitude == 0.0 && center.longitude == 0.0) {
                             Log.w("ProximityFilter", "  ⚠️ centre (0,0) — la map n'est peut-être pas encore initialisée !")
                         }
-                        viewModel.relod_map_marques_du_1km_du_centre_map(
+                        viewModel.relod_map_marques_du_3km_du_centre_map(
                             centerLat = center.latitude,
                             centerLng = center.longitude,
                         )
@@ -140,12 +149,72 @@ fun Floating_Separated_FragMap_Button_2(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
-                        contentDescription = "Reload markers within 1 km",
+                        contentDescription = "Reload markers within 3 km",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
                 }
+
+                // ── Speed threshold input ──────────────────────────────────────────────
+                // Outlined text field whose initial value is the current scrollSpeedThresholdMps.
+                // Border = red while the user is editing (dirty), green once the value is applied.
+                SpeedThresholdField(viewModel = viewModel)
             }
         }
     }
+}
+
+
+/**
+ * Outlined text field that lets the user edit [MapClientsViewModel.scrollSpeedThresholdMps] live.
+ *
+ * Colour logic:
+ *   - Red border  → the typed text differs from the applied value (dirty / en cours d'édition)
+ *   - Green border → the typed value has been applied (confirmed with Done / Enter)
+ */
+@Composable
+private fun SpeedThresholdField(viewModel: MapClientsViewModel) {
+    // Local draft text — initialised from the ViewModel value
+    var draftText by remember { mutableStateOf(viewModel.scrollSpeedThresholdMps.toString()) }
+    // True while the draft differs from the applied ViewModel value
+    val isDirty = draftText.toDoubleOrNull() != viewModel.scrollSpeedThresholdMps
+
+    val borderColor = when {
+        isDirty -> Color.Red    // editing — not yet applied
+        else    -> Color.Green  // matches the applied value
+    }
+
+    fun applyValue() {
+        val parsed = draftText.toDoubleOrNull()
+        if (parsed != null && parsed > 0.0) {
+            viewModel.scrollSpeedThresholdMps = parsed
+            Log.d("SpeedThreshold", "scrollSpeedThresholdMps mis à jour → $parsed m/s")
+        } else {
+            // Revert draft to last valid value
+            draftText = viewModel.scrollSpeedThresholdMps.toString()
+        }
+    }
+
+    OutlinedTextField(
+        value = draftText,
+        onValueChange = { input ->
+            draftText = input          // border turns red immediately
+        },
+        label = { Text("Vitesse (m/s)", color = Color.White, fontSize = 10.sp) },
+        singleLine = true,
+        textStyle = TextStyle(color = Color.White, fontSize = 13.sp),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Decimal,
+            imeAction    = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { applyValue() }  // border turns green on confirm
+        ),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor   = borderColor,
+            unfocusedBorderColor = borderColor,
+            cursorColor          = Color.White,
+        ),
+        modifier = Modifier.size(width = 110.dp, height = 64.dp)
+    )
 }
