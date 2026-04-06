@@ -99,7 +99,7 @@ data class M00CentralParametresOfAllApps(
     companion object {
         val centralRef = Firebase.database.getReference(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
-        )
+        )              //anccien Proto
 
         val central_All_References_Production = Firebase.database
             .getReference("00_DataBase_06_06")
@@ -107,7 +107,7 @@ data class M00CentralParametresOfAllApps(
         val central_MainDataBases_RefProduction = central_All_References_Production
             .child("A_Main_DataBases")
 
-        val centralRef_Non_Active_Datas_PourLightApp = central_MainDataBases_RefProduction
+        val centralRef_Non_Active_Datas_PourLightApp = central_All_References_Production
             .child("Z_NonActiveDatas")
 
 

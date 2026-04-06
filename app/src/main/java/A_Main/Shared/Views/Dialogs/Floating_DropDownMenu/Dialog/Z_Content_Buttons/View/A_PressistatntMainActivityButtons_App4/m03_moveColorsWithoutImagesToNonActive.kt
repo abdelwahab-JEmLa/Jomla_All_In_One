@@ -26,6 +26,7 @@ fun moveColorsWithoutImagesToNonActive(
     val categorieById  = repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
     val catalogueById  = get_ListM21CataloguesCategorie().associateBy { it.id }
 
+    // Returns "" when any link in the color→produit→categorie→catalogue chain is missing.
     fun catalogueKeyOf(color: M3CouleurProduitInfos): String =
         produitById[color.parentBProduitInfosKeyID]
             ?.let { categorieById[it.idParentCategorie] }
@@ -39,7 +40,14 @@ fun moveColorsWithoutImagesToNonActive(
         .map { it.parent_M1Produit_KeyId }.toSet()
 
     val colorsToMove = allColors.filter { color ->
-        !color.hasBackupImage(catalogueKeyOf(color)) ||
+        val catalogueKey = catalogueKeyOf(color)
+        // If the catalogue chain is broken the key resolves to "". In that case
+        // hasBackupImage("") would always return false (path "/<empty>/$name.ext"
+        // never exists), which would wrongly flag the color as image-less and move
+        // it to non-active. Skip such colors entirely — they belong to a product
+        // whose catalogue/category metadata hasn't loaded or is missing.
+        if (catalogueKey.isEmpty()) return@filter false
+        !color.hasBackupImage(catalogueKey) ||
                 color.parentBProduitInfosKeyID !in productIdsWithTariff
     }.distinctBy { it.keyID }
 

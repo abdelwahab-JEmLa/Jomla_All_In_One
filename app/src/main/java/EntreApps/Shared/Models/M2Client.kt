@@ -173,6 +173,13 @@ data class M2Client(
 
         val ref_Non_Active_Datas = M00CentralParametresOfAllApps.centralRef_Non_Active_Datas_PourLightApp
             .child(pathString)
+//
+//        val parent = Firebase.database.getReference(
+//            "00_DataPrototype-04-02" +
+//                    "/_1_developingRef" +
+//                    "/C_InfosSqlDataBases"
+//        )
+//        val ref = parent.child("B_ClientInfosProtoJuin3")
 
         fun generePushKey() = RepositorysMainSetter.genereUnPushKeyFireBase(ref)
 
