@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons

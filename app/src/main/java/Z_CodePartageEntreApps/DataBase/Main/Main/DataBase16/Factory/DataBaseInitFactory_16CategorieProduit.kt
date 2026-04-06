@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager

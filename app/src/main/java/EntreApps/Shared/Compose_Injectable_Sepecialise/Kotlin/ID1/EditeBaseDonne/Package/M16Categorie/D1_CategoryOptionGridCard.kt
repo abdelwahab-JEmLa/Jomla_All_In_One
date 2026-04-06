@@ -1,8 +1,8 @@
 package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie
 
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.ActivationTigger
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.FunctionsBase.ifTrue
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

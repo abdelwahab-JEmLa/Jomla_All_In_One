@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models
 
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.room.Entity
 import androidx.room.PrimaryKey

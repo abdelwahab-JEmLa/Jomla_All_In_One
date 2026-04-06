@@ -2,9 +2,9 @@ package A_Main.Shared.Proto
 
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log

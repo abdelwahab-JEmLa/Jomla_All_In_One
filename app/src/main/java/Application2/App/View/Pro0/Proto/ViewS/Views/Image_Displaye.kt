@@ -1,7 +1,7 @@
 package Application2.App.View.Pro0.Proto.ViewS.Views
 
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

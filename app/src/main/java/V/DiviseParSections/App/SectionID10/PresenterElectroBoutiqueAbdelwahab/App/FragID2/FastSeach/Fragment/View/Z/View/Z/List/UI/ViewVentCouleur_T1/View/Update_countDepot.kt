@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 
 /**
  * Data class to hold the result of depot update operation

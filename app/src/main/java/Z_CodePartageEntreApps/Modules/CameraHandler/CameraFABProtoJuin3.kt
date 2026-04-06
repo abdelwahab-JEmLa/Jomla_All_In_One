@@ -4,9 +4,9 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast

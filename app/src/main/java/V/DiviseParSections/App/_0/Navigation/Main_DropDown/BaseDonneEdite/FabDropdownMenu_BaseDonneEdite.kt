@@ -1,10 +1,10 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M21CataloguesCategorie
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M3CouleurProduitInfos.Companion.rootFolder_DropBox
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos.Companion.rootFolder_DropBox
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View.DropDownItem_WhenItsAchatsFragment_1

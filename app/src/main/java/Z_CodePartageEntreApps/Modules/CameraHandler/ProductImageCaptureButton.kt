@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import android.net.Uri
 import android.widget.Toast

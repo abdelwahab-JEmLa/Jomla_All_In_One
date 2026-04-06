@@ -2,8 +2,8 @@ package Application2.App.Base.Modules
 
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context

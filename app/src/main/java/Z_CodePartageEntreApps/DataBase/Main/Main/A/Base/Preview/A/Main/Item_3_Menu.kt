@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.util.Log
 import androidx.compose.foundation.layout.Row

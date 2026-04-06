@@ -1,10 +1,10 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
-import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

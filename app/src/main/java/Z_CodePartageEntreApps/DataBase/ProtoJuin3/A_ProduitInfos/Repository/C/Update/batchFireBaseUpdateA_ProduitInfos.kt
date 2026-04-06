@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update
 
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import kotlinx.coroutines.tasks.await
 
 suspend fun batchFireBaseUpdateA_ProduitInfos(datas: List<M01Produit>) {

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
 import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import android.util.Log
 import com.google.firebase.database.Exclude
 import org.mongodb.kbson.BsonObjectId

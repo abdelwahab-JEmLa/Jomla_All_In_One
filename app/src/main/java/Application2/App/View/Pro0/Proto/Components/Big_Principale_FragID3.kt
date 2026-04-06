@@ -1,7 +1,7 @@
 package Application2.App.View.Pro0.Proto.Components
 
 import Application2.App.View.Pro0.Proto.ViewS.ColorImageCard_AppEcranPresntoireJemlaCom
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

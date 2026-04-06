@@ -6,11 +6,11 @@ import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Dro
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.DropDownItemWBaseDonne_UpdateLocalTimestamps
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Ui.AvertissementDialog
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Fab_CleanupM8AndM10
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M21CataloguesCategorie
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

@@ -1,7 +1,7 @@
 package Application4.App.Modules.Wi.Module
 
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context

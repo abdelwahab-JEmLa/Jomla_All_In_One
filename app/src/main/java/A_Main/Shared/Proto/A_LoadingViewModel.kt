@@ -5,9 +5,9 @@ import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Do
 import EntreApps.Shared.Models.Jomla_Clients
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.lifecycle.ViewModel

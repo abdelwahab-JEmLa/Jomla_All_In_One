@@ -1,12 +1,12 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import android.widget.Toast

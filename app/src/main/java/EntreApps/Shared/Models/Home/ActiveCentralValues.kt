@@ -4,12 +4,12 @@ import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Utilisateur
 import EntreApps.Shared.Models.Compts
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M14VentPeriode
-import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model.FilterState_Facad_Boutique_FragId5
 import EntreApps.Shared.Models.M10OperationVentCouleur

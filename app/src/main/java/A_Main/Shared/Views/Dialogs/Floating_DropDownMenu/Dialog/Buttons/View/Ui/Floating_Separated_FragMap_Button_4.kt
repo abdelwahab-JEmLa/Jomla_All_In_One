@@ -1,9 +1,9 @@
 package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Ui
 
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.FragMap_DropdownMenu
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

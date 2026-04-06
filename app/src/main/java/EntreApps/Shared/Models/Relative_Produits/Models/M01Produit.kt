@@ -1,6 +1,9 @@
-package EntreApps.Shared.Models
+package EntreApps.Shared.Models.Relative_Produits.Models
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
@@ -328,11 +331,15 @@ data class M01Produit(
             ref.removeValue()
         }
 
-        val ref = M00CentralParametresOfAllApps.centralRef
+        val ref = central_MainDataBases_RefProduction
+            .child("M01Produit")
+
+        val ref_Ancien_Proto = M00CentralParametresOfAllApps.Companion.centralRef
             .child("A_ProduitInfos")
 
-        val ref_Non_Active_Datas = M00CentralParametresOfAllApps.centralRef_Non_Active_Datas_PourLightApp
-            .child("M01Produit")
+        val ref_Non_Active_Datas =
+            M00CentralParametresOfAllApps.Companion.centralRef_Non_Active_Datas_PourLightApp
+                .child("M01Produit")
 
 
         fun removeRef(preparedData: M01Produit) {

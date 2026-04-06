@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase
 
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.tasks.await
 

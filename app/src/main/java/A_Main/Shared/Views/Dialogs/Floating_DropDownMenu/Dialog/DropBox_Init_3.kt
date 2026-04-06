@@ -2,8 +2,8 @@ package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog
 
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.DropBox_Init_3.buildImages2Index
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M21CataloguesCategorie
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.util.Log
 import com.dropbox.core.DbxRequestConfig
 import com.dropbox.core.oauth.DbxCredential

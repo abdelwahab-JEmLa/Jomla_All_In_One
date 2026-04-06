@@ -1,7 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices.Affich
 
-import EntreApps.Shared.Models.M21CataloguesCategorie
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import androidx.compose.animation.core.RepeatMode

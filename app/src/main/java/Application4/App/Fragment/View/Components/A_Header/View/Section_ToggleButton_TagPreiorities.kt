@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.Components.A_Header.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically

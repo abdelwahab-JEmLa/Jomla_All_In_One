@@ -2,8 +2,8 @@ package Application2.App.Fragment
 
 import Application2.App.App.ViewModel.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.Item_Produit_AppEcranPresntoireJemlaCom
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

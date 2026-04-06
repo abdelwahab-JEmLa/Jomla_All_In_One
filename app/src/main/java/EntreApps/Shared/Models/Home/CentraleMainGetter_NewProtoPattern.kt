@@ -1,7 +1,7 @@
 package EntreApps.Shared.Models.Home
 
 import Application4.App.Archive.Archive.Initializer_App4
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.compose.runtime.Stable

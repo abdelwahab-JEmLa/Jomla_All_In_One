@@ -2,7 +2,7 @@ package Views.FragId4_EStorePresentationToClient.Ui
 
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement

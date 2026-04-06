@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model
 
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

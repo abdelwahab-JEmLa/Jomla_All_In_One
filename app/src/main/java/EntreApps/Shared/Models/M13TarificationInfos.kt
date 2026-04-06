@@ -1,5 +1,7 @@
 package EntreApps.Shared.Models
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -12,8 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 
 @Entity
 data class M13TarificationInfos(
@@ -250,9 +250,12 @@ data class M13TarificationInfos(
     )
 
     companion object {
-        val ref = Firebase.database.getReference(
-            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DataBase13TarificationInfos"
-        )
+        val ref = central_MainDataBases_RefProduction
+            .child("M13Tariffication")
+
+        /*  val ref = Firebase.database.getReference(
+              "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DataBase13TarificationInfos"
+          )                   */
 
         val ref_NonActiveDatas =
             M00CentralParametresOfAllApps.centralRef_Non_Active_Datas_PourLightApp

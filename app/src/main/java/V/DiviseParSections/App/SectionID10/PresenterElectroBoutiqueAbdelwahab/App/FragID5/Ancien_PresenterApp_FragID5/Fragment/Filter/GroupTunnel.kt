@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter
 
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M16CategorieProduit
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
-import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 

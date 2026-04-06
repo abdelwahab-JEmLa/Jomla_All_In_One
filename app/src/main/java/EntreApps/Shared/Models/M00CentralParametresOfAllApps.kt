@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models
 
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App._0.Navigation.Screen
 import androidx.room.Entity
@@ -100,8 +101,13 @@ data class M00CentralParametresOfAllApps(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
         )
 
-        val centralRef_Non_Active_Datas_PourLightApp = Firebase.database
+        val central_All_References_Production = Firebase.database
             .getReference("00_DataBase_06_06")
+
+        val central_MainDataBases_RefProduction = central_All_References_Production
+            .child("A_Main_DataBases")
+
+        val centralRef_Non_Active_Datas_PourLightApp = central_MainDataBases_RefProduction
             .child("Z_NonActiveDatas")
 
 

@@ -2,7 +2,7 @@ package V.DiviseParSections.App._0.Navigation
 
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen

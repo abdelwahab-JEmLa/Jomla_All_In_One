@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models
 
-import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import Z_CodePartageEntreApps.Model.I_CategoriesProduits
 import android.util.Log
 import androidx.room.PrimaryKey

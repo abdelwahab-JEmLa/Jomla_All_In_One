@@ -1,9 +1,9 @@
 package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.View
 
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,12 +13,10 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 private fun M3CouleurProduitInfos.hasBackupImage(catalogueKeyId: String): Boolean =
-    nomImageFichieSansEtansion.isNotBlank() &&
-            nomImageFichieSansEtansion != "Non Dispo" &&
-            File(
-                M3CouleurProduitInfos.backup_Images_storageLink,
-                "$catalogueKeyId/$nomImageFichieSansEtansion.$extensionDisponible"
-            ).exists()
+    File(
+        M3CouleurProduitInfos.backup_Images_storageLink,
+        "$catalogueKeyId/$nomImageFichieSansEtansion.$extensionDisponible"
+    ).exists()
 
 fun moveColorsWithoutImagesToNonActive(
     repositorysMainGetter: RepositorysMainGetter,

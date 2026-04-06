@@ -1,6 +1,6 @@
 package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

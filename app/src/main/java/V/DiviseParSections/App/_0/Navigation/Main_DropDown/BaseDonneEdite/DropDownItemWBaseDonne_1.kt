@@ -3,7 +3,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding

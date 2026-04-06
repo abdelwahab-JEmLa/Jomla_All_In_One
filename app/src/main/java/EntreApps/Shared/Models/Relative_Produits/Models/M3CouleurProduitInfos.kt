@@ -1,6 +1,9 @@
-package EntreApps.Shared.Models
+package EntreApps.Shared.Models.Relative_Produits.Models
 
+import EntreApps.Shared.Models.Client_Speciale
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -86,10 +89,13 @@ M3CouleurProduitInfos(
     enum class ProcessPositioningInFactory { CreeDepuitRechercheRapid, CreeAuGeneralHandler }
 
     companion object {
-        val ref = M00CentralParametresOfAllApps.centralRef
-            .child("B1CouleurOuGoutProduitDataBase")
+        val ref = central_MainDataBases_RefProduction
+            .child("M03Couleur")
 
-        val ref_Non_Active_Datas = M00CentralParametresOfAllApps.centralRef_Non_Active_Datas_PourLightApp
+//        val ref = M00CentralParametresOfAllApps.centralRef
+//            .child("B1CouleurOuGoutProduitDataBase")
+
+        val ref_Non_Active_Datas = M00CentralParametresOfAllApps.Companion.centralRef_Non_Active_Datas_PourLightApp
             .child("M03Couleur")
 
         //Second Nom Ref_Active_Keys_M03Couleurs

@@ -8,9 +8,9 @@ import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring

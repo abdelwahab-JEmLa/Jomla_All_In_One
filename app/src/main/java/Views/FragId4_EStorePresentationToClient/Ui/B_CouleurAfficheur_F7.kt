@@ -1,7 +1,7 @@
 package Views.FragId4_EStorePresentationToClient.Ui
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.View.ImageDisplayerGlid_ProtoAvrile11
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

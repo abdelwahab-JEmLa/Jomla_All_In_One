@@ -1,7 +1,7 @@
 package Application2.App.Fragment.Z.Components
 
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
-import EntreApps.Shared.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

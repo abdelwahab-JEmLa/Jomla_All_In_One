@@ -4,6 +4,9 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -92,9 +95,9 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         appCompt: M09AppCompt,
         bonVent: List<M8BonVent>,
         clients: List<M2Client>,
-        categories: List<EntreApps.Shared.Models.M16CategorieProduit>,
-        products: List<EntreApps.Shared.Models.M01Produit>,
-        colours: List<EntreApps.Shared.Models.M3CouleurProduitInfos>,
+        categories: List<M16CategorieProduit>,
+        products: List<M01Produit>,
+        colours: List<M3CouleurProduitInfos>,
         allOperations: List<EntreApps.Shared.Models.M10OperationVentCouleur>,
     ) {
         AViewModel_NewProtoPatterns.active_Datas.active_M9Compt = appCompt

@@ -5,8 +5,8 @@ import EntreApps.Shared.Models.Home.SortVentMode
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
@@ -14,7 +14,7 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Utilisateur
 import EntreApps.Shared.Models.Compts
-import EntreApps.Shared.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import java.io.File

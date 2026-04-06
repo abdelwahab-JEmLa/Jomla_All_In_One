@@ -1,7 +1,7 @@
 package Application4.App.Archive.Archive
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import com.dropbox.core.DbxRequestConfig
 import com.dropbox.core.oauth.DbxCredential

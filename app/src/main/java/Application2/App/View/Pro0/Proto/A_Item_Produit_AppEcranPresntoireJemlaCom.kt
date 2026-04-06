@@ -5,8 +5,8 @@ import Application2.App.View.Pro0.Proto.Components.Big_Principale_AppEcranPresnt
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import Application2.App.View.Pro0.Proto.Components.SubColorCard_WithButton_app2
 import Application2.App.View.Pro0.Proto.ViewS.Compact_Header_AppEcranPresntoireJemlaCom
-import EntreApps.Shared.Models.M01Produit
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

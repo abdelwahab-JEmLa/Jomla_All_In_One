@@ -1,6 +1,6 @@
 package EntreApps.Shared.Modules.Base.SQL
 
-import EntreApps.Shared.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

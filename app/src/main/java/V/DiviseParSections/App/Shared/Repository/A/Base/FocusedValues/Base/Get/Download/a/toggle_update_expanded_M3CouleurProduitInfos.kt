@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
