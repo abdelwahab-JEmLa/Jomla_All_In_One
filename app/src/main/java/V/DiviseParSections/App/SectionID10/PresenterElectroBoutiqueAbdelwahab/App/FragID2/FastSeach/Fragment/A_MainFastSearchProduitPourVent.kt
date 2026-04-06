@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment
 
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Ui.Floating_Separated_Button
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
@@ -350,6 +351,16 @@ fun MainFastSearchProduitPourVent(
                         boitEditModeProductId = productId
                     }
                 )
+                 val getter = aCentralFacade.repositorysMainGetter
+                 val getter_Actives = aCentralFacade.focusedActiveValuesFacade .focusedValuesGetter
+
+                if (getter_Actives.currentActive_M9AppCompt?.its_Admin ?: false) {
+                    Floating_Separated_Button(
+                        list_m16 = getter.repoM16CategorieProduit.datasValue,
+                        list_m1 = getter.repoM1Produit.datasValue,
+                        list_m3 = getter.repo3CouleurProduit.datasValue,
+                    )
+                }
             }
             val currentActive_M9AppCompt = focusedValuesGetter.currentActive_M9AppCompt
             val affiche_Dialog_Fast_Affiche_Panie_App4 = currentActive_M9AppCompt?.affiche_Dialog_Fast_Affiche_Panie_App4

@@ -17,11 +17,13 @@ import com.google.firebase.database.database
 
 @Entity
 data class M13TarificationInfos(
+    //<--
+//TODO(1): mem chose pour ca au move des parent produit tariffs au ref_NonActiveDatas
     @PrimaryKey
     val keyID: String = M09AppCompt.Companion.getPushFireBase(ref),
 
     val id: Long = 0L,
-    var creationTimestamps: Long =  System.currentTimeMillis(),
+    var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var defaultNonSaved_Entre: Boolean = true,
 
@@ -126,8 +128,8 @@ data class M13TarificationInfos(
             Color.Companion.Black,
             5,
             "أعلى",
-            its_gro_app = false ,
-            ignore_affiche=true
+            its_gro_app = false,
+            ignore_affiche = true
         ),
 
         Historique(
@@ -137,7 +139,7 @@ data class M13TarificationInfos(
             Color.Companion.White,
             5,
             "أخير",
-            its_gro_app = false ,
+            its_gro_app = false,
             ignore_affiche = true  // Only shown in grossist app
         ),
 
@@ -226,30 +228,36 @@ data class M13TarificationInfos(
     }
 
     fun toFirebaseMap(): Map<String, Any?> = mapOf(
-        "keyID"                                         to keyID,
-        "id"                                            to id,
-        "creationTimestamps"                            to creationTimestamps,
-        "dernierTimeTampsSynchronisationAvecFireBase"   to dernierTimeTampsSynchronisationAvecFireBase,
-        "defaultNonSaved_Entre"                         to defaultNonSaved_Entre,
-        "its_From_CalculeParNewBenifice"                to its_From_CalculeParNewBenifice,
-        "laisse_Au_Gerant"                              to laisse_Au_Gerant,
-        "typeChoisi"                                    to typeChoisi.name,
-        "prixCurrency"                                  to prixCurrency,
-        "profitMargin"                                  to profitMargin,
-        "suggestedUpgrade"                              to suggestedUpgrade?.name,
-        "parent_M14VentPeriod_KeyId"                    to parent_M14VentPeriod_KeyId,
-        "parent_M14VentPeriod_DebugInfos"               to parent_M14VentPeriod_DebugInfos,
-        "parent_M1Produit_KeyId"                        to parent_M1Produit_KeyId,
-        "parent_M1Produit_DebugInfos"                   to parent_M1Produit_DebugInfos,
-        "parent_M8BonVent_KeyId"                        to parent_M8BonVent_KeyId,
-        "parent_M8BonVent_DebugInfos"                   to parent_M8BonVent_DebugInfos,
-        "parent_M2Client_KeyId"                         to parent_M2Client_KeyId,
-        "parent_M2Client_DebugInfos"                    to parent_M2Client_DebugInfos,
+        "keyID" to keyID,
+        "id" to id,
+        "creationTimestamps" to creationTimestamps,
+        "dernierTimeTampsSynchronisationAvecFireBase" to dernierTimeTampsSynchronisationAvecFireBase,
+        "defaultNonSaved_Entre" to defaultNonSaved_Entre,
+        "its_From_CalculeParNewBenifice" to its_From_CalculeParNewBenifice,
+        "laisse_Au_Gerant" to laisse_Au_Gerant,
+        "typeChoisi" to typeChoisi.name,
+        "prixCurrency" to prixCurrency,
+        "profitMargin" to profitMargin,
+        "suggestedUpgrade" to suggestedUpgrade?.name,
+        "parent_M14VentPeriod_KeyId" to parent_M14VentPeriod_KeyId,
+        "parent_M14VentPeriod_DebugInfos" to parent_M14VentPeriod_DebugInfos,
+        "parent_M1Produit_KeyId" to parent_M1Produit_KeyId,
+        "parent_M1Produit_DebugInfos" to parent_M1Produit_DebugInfos,
+        "parent_M8BonVent_KeyId" to parent_M8BonVent_KeyId,
+        "parent_M8BonVent_DebugInfos" to parent_M8BonVent_DebugInfos,
+        "parent_M2Client_KeyId" to parent_M2Client_KeyId,
+        "parent_M2Client_DebugInfos" to parent_M2Client_DebugInfos,
     )
+
     companion object {
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DataBase13TarificationInfos"
         )
+
+        val ref_NonActiveDatas =
+            M00CentralParametresOfAllApps.centralRef_Non_Active_Datas_PourLightApp
+                .child("M13Tariffication")
+
 
         fun get_default_P0(
             parentM1ProduitInfos: M01Produit,
@@ -286,7 +294,8 @@ data class M13TarificationInfos(
             val calculatedPrice = when {
                 // Both available → interpolate with pourcentage_Prix_Progressive
                 relative_Prix_SupperGro_Et_PresentationService != null && relative_Prix_Detaille != null -> {
-                    val weight = relative_produit.pourcentage_Prix_Progressive.coerceIn(0, 100) / 100.0
+                    val weight =
+                        relative_produit.pourcentage_Prix_Progressive.coerceIn(0, 100) / 100.0
                     relative_Prix_SupperGro_Et_PresentationService +
                             (relative_Prix_Detaille - relative_Prix_SupperGro_Et_PresentationService) * weight
                 }

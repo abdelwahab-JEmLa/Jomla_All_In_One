@@ -39,7 +39,7 @@ class Repo03CouleurProduitInfos(
     val mainInitDataBase: DataBaseInitFactory_M3CouleurProduitInfos,
 ) {
     val dao = mainInitDataBase.dao
-    private val composScope = CoroutineScope(Dispatchers.IO)
+    val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M3CouleurProduitInfos>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 

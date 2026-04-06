@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory
 
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import EntreApps.Shared.Modules.Base.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
+import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener

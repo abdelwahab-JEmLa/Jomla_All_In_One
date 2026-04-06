@@ -1,6 +1,6 @@
-package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.Ui
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Ui
 
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.SyncReport
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.SyncReport
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 /**
- * Displays a summary of what [Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.DropBox_Init_3.syncFromImages2] did:
+ * Displays a summary of what [A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.DropBox_Init_3.syncFromImages2] did:
  * - how many files were newly added
  * - how many files were overwritten
  * with the individual file names listed under each heading.

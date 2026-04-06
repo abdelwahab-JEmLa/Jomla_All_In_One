@@ -100,13 +100,16 @@ data class M00CentralParametresOfAllApps(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
         )
 
+        val centralRef_Non_Active_Datas_PourLightApp = Firebase.database
+            .getReference("00_DataBase_06_06")
+            .child("Z_NonActiveDatas")
+
+
         val central_Local_storageLink = buildString {
             append("/storage/emulated/0/Abdelwahab_jeMla.com")
         }
 
 
-        val images_central_Local_storageLink =
-            M3CouleurProduitInfos.images_central_Local_storageLink
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
@@ -147,6 +150,8 @@ data class M00CentralParametresOfAllApps(
                 else -> Utilisateur.Admin
             }
         }
+        val images_central_Local_storageLink =
+            M3CouleurProduitInfos.images_central_Local_storageLink
 
         /**
          * Check if edit/modification features should be visible

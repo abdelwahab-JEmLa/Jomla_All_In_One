@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main
+package EntreApps.Shared.Modules.Loading_Datas.Init
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
@@ -16,9 +16,13 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -41,7 +45,8 @@ class WDatabaseInitializationManager(
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
-    private val scope = CoroutineScope(Dispatchers.Main)
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    fun cancel() = scope.cancel()
 
     enum class Repository {
         FCouleurVentOperation,
@@ -64,146 +69,96 @@ class WDatabaseInitializationManager(
 
         mutex.withLock { repoNames.forEach { repositories[it] = 0f } }
 
-        val jobs = listOf(
-            scope.launch {
+        val internet = isInternetAvailable(context)
+        val allInits: List<suspend () -> Unit> = listOf(
+            {
                 initRepo(Repository.Z_AppComptEntity.name, context) {
-                    dataBaseInitZ_AppCompt.init(
-                        isInternetAvailable = isInternetAvailable(
-                            context
-                        )
-                    ) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                    }
+                    dataBaseInitZ_AppCompt.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
                     dataBaseInitZ_AppCompt.triggerUpdateFbParTimestampsListener()
                 }
             },
-            scope.launch {
+            {
                 initRepo(Repository.M3CouleurProduitInfos_Entit.name, context) {
-                    achatOperationRepository.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        achatOperationRepository.triggerUpdateFbParTimestampsListener()
-                    }
+                    achatOperationRepository.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    achatOperationRepository.triggerUpdateFbParTimestampsListener()
                 }
-            } ,
-            scope.launch {
+            },
+            {
                 initRepo(Repository.FCouleurVentOperation.name, context) {
-                    dataBaseFactory_B1CouleurOuGoutProduitDataBase.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        dataBaseFactory_B1CouleurOuGoutProduitDataBase.triggerUpdateFbParTimestampsListener()
-                    }
+                    dataBaseFactory_B1CouleurOuGoutProduitDataBase.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    dataBaseFactory_B1CouleurOuGoutProduitDataBase.triggerUpdateFbParTimestampsListener()
                 }
-            } ,
-            scope.launch {
+            },
+            {
                 initRepo(Repository.M13TarificationInfosEntity.name, context) {
-                    dataBaseCreationFactory13TarificationInfos.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        dataBaseCreationFactory13TarificationInfos.triggerUpdateFbParTimestampsListener()
-                    }
+                    dataBaseCreationFactory13TarificationInfos.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    dataBaseCreationFactory13TarificationInfos.triggerUpdateFbParTimestampsListener()
                 }
-            } ,
-            scope.launch {
-               val factory =dataBaseInitFactory_14VentPeriode
+            },
+            {
+                val factory = dataBaseInitFactory_14VentPeriode
                 initRepo(Repository.M14VentPeriode_Entity.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
-
-                        factory.triggerUpdateFbParTimestampsListener()}
+                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+                        factory.triggerUpdateFbParTimestampsListener()
                     }
                 }
-            } ,
-            scope.launch {
-               val factory =dataBaseInitFactory_15Grossist
+            },
+            {
+                val factory = dataBaseInitFactory_15Grossist
                 initRepo(Repository.M15Grossist_Entity.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        factory.triggerUpdateFbParTimestampsListener()
-                    }
+                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    factory.triggerUpdateFbParTimestampsListener()
                 }
-            } ,
-            scope.launch {
-               val factory =dataBaseInitFactory_11AchatOperation
+            },
+            {
+                val factory = dataBaseInitFactory_11AchatOperation
                 initRepo(Repository.M11AchatOperation_Entity.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
-
-                        factory.triggerUpdateFbParTimestampsListener()}
+                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    M00CentralParametresOfAllApps().listens_on_data_change_resources_consolation.ifTrue {
+                        factory.triggerUpdateFbParTimestampsListener()
                     }
                 }
-            } ,
-            scope.launch {
-               val factory =dataBaseInitFactory_8BonVent
+            },
+            {
+                val factory = dataBaseInitFactory_8BonVent
                 initRepo(Repository.Entity_8BonVent.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                      //  factory.triggerUpdateFbParTimestampsListener()
-                    }
+                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
                 }
-            } ,
-            scope.launch {
-               val factory =dataBaseInitFactory_16CategorieProduit
+            },
+            {
+                val factory = dataBaseInitFactory_16CategorieProduit
                 initRepo(Repository.Entity_16CategorieProduit.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        factory.triggerUpdateFbParTimestampsListener()
-                    }
+                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    factory.triggerUpdateFbParTimestampsListener()
                 }
-            } ,
-            scope.launch {
-               val factory =dataBaseInitFactory_2ClientProtoJuil28
+            },
+            {
+                val factory = dataBaseInitFactory_2ClientProtoJuil28
                 initRepo(Repository.Entity_2Client.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        factory.triggerUpdateFbParTimestampsListener()
-                    }
+                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    factory.triggerUpdateFbParTimestampsListener()
                 }
-            } ,
-            scope.launch {
-               val factory =dataBaseInitFactory_19Etudiant
+            },
+            {
+                val factory = dataBaseInitFactory_19Etudiant
                 initRepo(Repository.Entity_19Etudiant.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        factory.triggerUpdateFbParTimestampsListener()
-                    }
+                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    factory.triggerUpdateFbParTimestampsListener()
                 }
-            } ,
-            scope.launch {
-               val factory =dataBaseInitFactory_M_20ObsarvationEtudion
+            },
+            {
+                val factory = dataBaseInitFactory_M_20ObsarvationEtudion
                 initRepo(Repository.Entity_M20ObsarvationEtudion.name, context) {
-                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
-                        scope.launch {
-                            updateRepoProgress(name, progress)
-                        }
-                        factory.triggerUpdateFbParTimestampsListener()
-                    }
+                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
+                    factory.triggerUpdateFbParTimestampsListener()
                 }
-            } ,
+            },
         )
 
-        jobs.joinAll()
+        allInits.chunked(3).forEach { chunk ->
+            chunk.map { scope.launch { it() } }.joinAll()
+        }
         updateProgress(1.0f)
     }
 
@@ -259,9 +214,10 @@ class WDatabaseInitializationManager(
 
     private fun isInternetAvailable(context: Context): Boolean {
         return try {
-            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE)
-                    as android.net.ConnectivityManager
-            connectivityManager.activeNetworkInfo?.isConnected == true
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val network = cm.activeNetwork ?: return false
+            val caps = cm.getNetworkCapabilities(network) ?: return false
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         } catch (e: Exception) {
             false
         }

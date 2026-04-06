@@ -1,10 +1,13 @@
-package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View
 
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.SyncProgressIndicator
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +23,14 @@ fun DropDownItemWBaseDonne_SyncDepuisImages2(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    imageVector        = Icons.Default.CloudDownload,
+                    contentDescription = null,
+                    tint               = if (enabled) MaterialTheme.colorScheme.tertiary
+                                         else MaterialTheme.colorScheme.tertiary.copy(alpha = 0.4f)
+                )
+            },
             text = {
                 Text(
                     text = when {
@@ -29,7 +40,7 @@ fun DropDownItemWBaseDonne_SyncDepuisImages2(
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (enabled) MaterialTheme.colorScheme.onSurface
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                 )
             },
             enabled = enabled,
@@ -37,23 +48,18 @@ fun DropDownItemWBaseDonne_SyncDepuisImages2(
         )
 
         if (progress != null) {
-            // Current file label (product name + index)
             if (currentLabel.isNotBlank()) {
                 Text(
                     text     = currentLabel,
                     style    = MaterialTheme.typography.labelSmall,
                     color    = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                 )
             }
             SyncProgressIndicator(
                 progress = progress,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)
             )
         }
     }

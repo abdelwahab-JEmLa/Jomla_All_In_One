@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Modules.Base.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
+import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager.Repository
 import android.annotation.SuppressLint
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

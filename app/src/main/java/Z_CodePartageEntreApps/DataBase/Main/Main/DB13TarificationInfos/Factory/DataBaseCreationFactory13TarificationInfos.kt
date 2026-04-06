@@ -4,7 +4,7 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager.Repository
+import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager.Repository
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener

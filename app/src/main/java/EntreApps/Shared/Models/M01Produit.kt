@@ -331,6 +331,10 @@ data class M01Produit(
         val ref = M00CentralParametresOfAllApps.centralRef
             .child("A_ProduitInfos")
 
+        val ref_Non_Active_Datas = M00CentralParametresOfAllApps.centralRef_Non_Active_Datas_PourLightApp
+            .child("M01Produit")
+
+
         fun removeRef(preparedData: M01Produit) {
             ref.child(preparedData.keyFireBase).removeValue()
         }

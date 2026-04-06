@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory
 
 import EntreApps.Shared.Models.M14VentPeriode
 import EntreApps.Shared.Modules.Base.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
+import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener

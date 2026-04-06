@@ -1,10 +1,11 @@
-package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog
 
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserParCatalogue
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_SyncDepuisImages2
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.DropDownItemWBaseDonne_UpdateLocalTimestamps
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.Ui.AvertissementDialog
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserParCatalogue
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.DropDownItemWBaseDonne_SyncDepuisImages2
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.DropDownItemWBaseDonne_UpdateLocalTimestamps
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Ui.AvertissementDialog
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Fab_CleanupM8AndM10
 import EntreApps.Shared.Models.M01Produit
 import EntreApps.Shared.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M21CataloguesCategorie
@@ -43,32 +44,28 @@ private enum class PendingAction { DropBox, Local, SyncFromImages2, UpdateLocalT
 
 @Composable
 fun FragMap_DropdownMenu(
-    expanded:  Boolean,
-    onDismiss: () -> Unit,
-    list_m16:  List<M16CategorieProduit>?,
-    list_m1:   List<M01Produit>?,
-    list_m3:   List<M3CouleurProduitInfos>?,
-    modifier:  Modifier = Modifier,
+    expanded:    Boolean,
+    onDismiss:   () -> Unit,
+    list_m16:    List<M16CategorieProduit>?,
+    list_m1:     List<M01Produit>?,
+    list_m3:     List<M3CouleurProduitInfos>?,
+    on_vent_key: String = "",
+    modifier:    Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
+    val context        = LocalContext.current
 
-    var organizeDropBoxProgress    by remember { mutableStateOf<Float?>(null) }
-    var organizeLocalProgress      by remember { mutableStateOf<Float?>(null) }
-    var syncImages2Progress        by remember { mutableStateOf<Float?>(null) }
-    var syncImages2Label           by remember { mutableStateOf("") }
-    var updateTimestampsProgress   by remember { mutableStateOf<Float?>(null) }
-
-    var pendingAction by remember { mutableStateOf<PendingAction?>(null) }
-    var syncReport    by remember { mutableStateOf<SyncReport?>(null) }
-
-    // ── Sync result summary dialog ────────────────────────────────────────────
+    var organizeDropBoxProgress  by remember { mutableStateOf<Float?>(null) }
+    var organizeLocalProgress    by remember { mutableStateOf<Float?>(null) }
+    var syncImages2Progress      by remember { mutableStateOf<Float?>(null) }
+    var syncImages2Label         by remember { mutableStateOf("") }
+    var updateTimestampsProgress by remember { mutableStateOf<Float?>(null) }
+    var pendingAction            by remember { mutableStateOf<PendingAction?>(null) }
+    var syncReport               by remember { mutableStateOf<SyncReport?>(null) }
 
     syncReport?.let { report ->
         SyncReportDialog(report = report, onDismiss = { syncReport = null })
     }
-
-    // ── Confirmation dialogs ──────────────────────────────────────────────────
 
     pendingAction?.let { action ->
         when (action) {
@@ -79,7 +76,7 @@ fun FragMap_DropdownMenu(
                         "catalogues sur DropBox. Les fichiers seront déplacés de façon " +
                         "permanente. Continuer ?",
                 confirmLabel = "Déplacer",
-                onConfirm = {
+                onConfirm    = {
                     pendingAction = null
                     coroutineScope.launch {
                         organizeDropBoxProgress = 0f
@@ -92,7 +89,7 @@ fun FragMap_DropdownMenu(
                         onDismiss()
                     }
                 },
-                onDismiss = { pendingAction = null }
+                onDismiss    = { pendingAction = null }
             )
 
             PendingAction.Local -> AvertissementDialog(
@@ -101,7 +98,7 @@ fun FragMap_DropdownMenu(
                         "central local vers leurs dossiers catalogues dans le dossier " +
                         "de sauvegarde. Les fichiers sources seront supprimés. Continuer ?",
                 confirmLabel = "Déplacer",
-                onConfirm = {
+                onConfirm    = {
                     pendingAction = null
                     coroutineScope.launch {
                         organizeLocalProgress = 0f
@@ -114,67 +111,36 @@ fun FragMap_DropdownMenu(
                         onDismiss()
                     }
                 },
-                onDismiss = { pendingAction = null }
+                onDismiss    = { pendingAction = null }
             )
 
-            PendingAction.SyncFromImages2 -> AvertissementDialog(      //<--
-            //TODO(1): ajot des de colors au burrons et icons animable pour distencte les clicks on utili lottif . 
+            PendingAction.SyncFromImages2 -> AvertissementDialog(
                 title        = "Sync local ← DropBox Images_2",
                 message      = "Seules les images des catalogues t1 et t4 modifiées sur DropBox " +
                         "dans les 20 derniers jours seront téléchargées. " +
                         "Les fichiers locaux plus anciens seront écrasés. Continuer ?",
                 confirmLabel = "Synchroniser",
-                onConfirm = {      //<--
-                    //TODO(1): exctract pour l utilise au init vec le progress edites
+                onConfirm    = {
                     pendingAction = null
                     coroutineScope.launch {
-                        syncImages2Progress = 0f
-                        syncImages2Label    = ""
-
-                        // ── Filters ───────────────────────────────────────────
-                        val cutoffMs   = System.currentTimeMillis() - 20L * 24 * 3_600 * 1_000
-                        val filteredM3 = filterM3ByCatalogueKeys(
-                            catalogueKeys = setOf("t1", "t4"),
-                            list_m16      = list_m16,
-                            list_m1       = list_m1,
-                            list_m3       = list_m3,
-                        )
-
-                        val TAG = "DropBox_Sync"
-                        Log.d(TAG, "=== SYNC DÉMARRÉ ===")
-                        Log.d(TAG, "cutoffMs = $cutoffMs " +
-                                "(${java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date(cutoffMs))})")
-                        Log.d(TAG, "list_m3 total=${list_m3?.size} | après filtre catalogue(t1,t4)=${filteredM3?.size}")
-                        if (filteredM3.isNullOrEmpty()) {
-                            Log.w(TAG, "⚠️ filteredM3 VIDE — l'image cherchée n'est peut-être pas dans catalogue t1 ou t4")
-                        }
-                        val produitKeyToName = list_m1
-                            ?.associate { it.keyID to it.nom }
-                            ?: emptyMap()
-                        // ─────────────────────────────────────────────────────
-
-                        val report = DropBox_Init_3.syncFromImages2(
-                            list_m3          = filteredM3,
-                            sinceMs          = cutoffMs,
-                            produitKeyToName = produitKeyToName,
-                            onProgress       = { p, label ->
+                        syncReport = launchSyncFromImages2(
+                            list_m16        = list_m16,
+                            list_m1         = list_m1,
+                            list_m3         = list_m3,
+                            context         = context,
+                            onProgress      = { p, label ->
                                 syncImages2Progress = p
                                 syncImages2Label    = label
+                            },
+                            onDone          = {
+                                syncImages2Progress = null
+                                syncImages2Label    = ""
                             }
                         )
-                        syncImages2Progress = null
-                        syncImages2Label    = ""
-
-                        // Invalidate Glide cache so every displayer in the app
-                        // picks up the newly downloaded files immediately.
-                        withContext(Dispatchers.Main) { Glide.get(context).clearMemory() }
-                        launch(Dispatchers.IO)        { Glide.get(context).clearDiskCache() }
-
                         onDismiss()
-                        syncReport = report
                     }
                 },
-                onDismiss = { pendingAction = null }
+                onDismiss    = { pendingAction = null }
             )
 
             PendingAction.UpdateLocalTimestamps -> AvertissementDialog(
@@ -183,7 +149,7 @@ fun FragMap_DropdownMenu(
                         "remplacée par l'heure actuelle. Cela forcera un re-téléchargement " +
                         "lors de la prochaine synchronisation. Continuer ?",
                 confirmLabel = "Mettre à jour",
-                onConfirm = {
+                onConfirm    = {
                     pendingAction = null
                     coroutineScope.launch {
                         updateTimestampsProgress = 0f
@@ -195,17 +161,15 @@ fun FragMap_DropdownMenu(
                         onDismiss()
                     }
                 },
-                onDismiss = { pendingAction = null }
+                onDismiss    = { pendingAction = null }
             )
         }
     }
 
-    // ── Dropdown menu ─────────────────────────────────────────────────────────
-
     val anyRunning = organizeDropBoxProgress  != null
-            || organizeLocalProgress    != null
-            || syncImages2Progress      != null
-            || updateTimestampsProgress != null
+            || organizeLocalProgress          != null
+            || syncImages2Progress            != null
+            || updateTimestampsProgress       != null
 
     DropdownMenu(
         expanded         = expanded,
@@ -236,7 +200,59 @@ fun FragMap_DropdownMenu(
             enabled  = updateTimestampsProgress == null && pendingAction == null && !anyRunning,
             onClick  = { pendingAction = PendingAction.UpdateLocalTimestamps }
         )
+
+        if (on_vent_key.isNotEmpty()) {
+            Fab_CleanupM8AndM10(
+                on_vent_key        = on_vent_key,
+                onDismissDropdown  = onDismiss,
+            )
+        }
     }
+}
+
+// ─── Extracted sync logic ─────────────────────────────────────────────────────
+
+private suspend fun launchSyncFromImages2(
+    list_m16:   List<M16CategorieProduit>?,
+    list_m1:    List<M01Produit>?,
+    list_m3:    List<M3CouleurProduitInfos>?,
+    context:    android.content.Context,
+    onProgress: (Float, String) -> Unit,
+    onDone:     () -> Unit,
+): SyncReport {
+    val TAG      = "DropBox_Sync"
+    val cutoffMs = System.currentTimeMillis() - 20L * 24 * 3_600 * 1_000
+
+    val filteredM3 = filterM3ByCatalogueKeys(
+        catalogueKeys = setOf("t1", "t4"),
+        list_m16      = list_m16,
+        list_m1       = list_m1,
+        list_m3       = list_m3,
+    )
+
+    Log.d(TAG, "=== SYNC DÉMARRÉ ===")
+    Log.d(TAG, "cutoffMs = $cutoffMs " +
+            "(${java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date(cutoffMs))})")
+    Log.d(TAG, "list_m3 total=${list_m3?.size} | après filtre catalogue(t1,t4)=${filteredM3?.size}")
+    if (filteredM3.isNullOrEmpty()) {
+        Log.w(TAG, "⚠️ filteredM3 VIDE — l'image cherchée n'est peut-être pas dans catalogue t1 ou t4")
+    }
+
+    val produitKeyToName = list_m1?.associate { it.keyID to it.nom } ?: emptyMap()
+
+    onProgress(0f, "")
+    val report = DropBox_Init_3.syncFromImages2(
+        list_m3          = filteredM3,
+        sinceMs          = cutoffMs,
+        produitKeyToName = produitKeyToName,
+        onProgress       = onProgress,
+    )
+    onDone()
+
+    withContext(Dispatchers.Main) { Glide.get(context).clearMemory() }
+    kotlinx.coroutines.withContext(Dispatchers.IO) { Glide.get(context).clearDiskCache() }
+
+    return report
 }
 
 // ─── Sync report dialog ───────────────────────────────────────────────────────
@@ -312,11 +328,6 @@ private fun SyncReportDialog(report: SyncReport, onDismiss: () -> Unit) {
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
-/**
- * Returns only the [M3CouleurProduitInfos] entries whose parent catalogue
- * has a [M21CataloguesCategorie.keyID] in [catalogueKeys].
- * Lookup chain: colour → produit → catégorie → catalogue.
- */
 private suspend fun filterM3ByCatalogueKeys(
     catalogueKeys: Set<String>,
     list_m16:      List<M16CategorieProduit>?,

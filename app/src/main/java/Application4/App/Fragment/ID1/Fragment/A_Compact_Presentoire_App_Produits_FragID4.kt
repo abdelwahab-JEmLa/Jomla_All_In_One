@@ -1,7 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment
 
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.Buttons.View.Ui.Floating_Separated_Button
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.PressistatntMainActivityButtons_App4
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.PressistatntMainActivityButtons_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
@@ -156,11 +155,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
             }
         )
     }
-    if (viewModelNewProtoPatterns.active_Datas.active_M9Compt?.its_Admin ?: false) {
-        Floating_Separated_Button(
-            list_m16 = active_Datas.list_M16CategorieProduit,
-            list_m1 = active_Datas.list_M1Produit,
-            list_m3 = active_Datas.list_M03CouleurProduitInfos,
-        )
-    }
+    val activeM9compt = viewModelNewProtoPatterns.active_Datas.active_M9Compt
+
 }

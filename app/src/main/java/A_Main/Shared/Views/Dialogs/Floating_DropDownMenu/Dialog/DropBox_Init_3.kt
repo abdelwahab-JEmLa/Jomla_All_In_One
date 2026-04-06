@@ -1,6 +1,6 @@
-package Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog
 
-import Application4.App.Fragment.ID1.Fragment.Dialogs.Dialog.DropBox_Init_3.buildImages2Index
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.DropBox_Init_3.buildImages2Index
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.M3CouleurProduitInfos

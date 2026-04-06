@@ -28,8 +28,8 @@ import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Main.Main.WDatabaseInitializationManager
+import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
+import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import android.content.Context
 import androidx.compose.runtime.Stable

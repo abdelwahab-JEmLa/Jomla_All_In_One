@@ -1,4 +1,4 @@
-package V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.But.View
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.View
 
 import EntreApps.Shared.Models.Client_Speciale
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur

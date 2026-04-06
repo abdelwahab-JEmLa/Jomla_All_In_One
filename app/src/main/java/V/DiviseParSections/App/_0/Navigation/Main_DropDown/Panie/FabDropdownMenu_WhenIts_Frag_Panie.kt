@@ -15,6 +15,7 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Fa
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WindowsShare
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WindowsShare_Facture_Impots
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.DropDownItem_WindowsShare_WithCredit
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Fab_CleanupM8AndM10
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.Fab_Stigns
 import android.content.Context
 import android.content.Intent
@@ -109,6 +110,7 @@ fun FabDropdownMenu_WhenIts_Frag_Panie(
             onDismissRequest = onDismissDropdown,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
+
             Fab_Stigns(onClickImageToShowControles, onDismissDropdown)
 
             DropDownItem_ThermiquePrint(
@@ -193,6 +195,12 @@ fun FabDropdownMenu_WhenIts_Frag_Panie(
                 }
             )
 
+            Fab_CleanupM8AndM10(
+                repositorysMainGetter = aCentralFacade.repositorysMainGetter,
+                onDismissDropdown = onDismissDropdown,
+                on_vent_key = focusedValuesGetter.currentActive_M9AppCompt?.onVentM8BonVentKey ?: ""
+            )
+
             DropDownItem_WindowsShare_Facture_Impots(
                 nomFun = "Partager PDF Facture_Impots ",
                 onDismissDropdown = onDismissDropdown
@@ -202,6 +210,8 @@ fun FabDropdownMenu_WhenIts_Frag_Panie(
                 nomFun = "DropDownItem_WhenIts_FragFastVent_4",
                 onDismissDropdown = onDismissDropdown
             )
+
+            // Button: show M8 / M10 data sizes and trigger cleanup on click
 
             DropDownItem_WhenIts_FragFastVent_3(
                 onDismissDropdown = onDismissDropdown
@@ -214,6 +224,7 @@ fun FabDropdownMenu_WhenIts_Frag_Panie(
                 nomFun = "affiche_CheckList_ChoisiseurActiveFilter",
                 onDismissDropdown = onDismissDropdown
             )
+
         }
     }
 }

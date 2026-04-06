@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Juin3.Proto
+package EntreApps.Shared.Modules.Loading_Datas.Init
 
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
@@ -7,6 +7,8 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Reposi
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,11 +31,14 @@ class A_MasterRepositorysGrpProtoJuin3(
     val d_EtateMessageVocaleRepository: Repo17MessageVocale,
     val e_GroupedDataBasesRepositoryProtoAvant3Juin: GroupeRepositorysProtoAvJuin3,
 ) {
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    fun cancel() = scope.cancel()
+
     private val _model = MutableStateFlow<MasterRepositorysModel?>(null)
     val model: StateFlow<MasterRepositorysModel?> = _model.asStateFlow()
 
     init {
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             combine(
                 repoA_ProduitInfos.repoState,
                 b_ClientInfosProtoJuin3Repository.repoState,
@@ -42,17 +47,13 @@ class A_MasterRepositorysGrpProtoJuin3(
             ) { repoA_ProduitInfos,
                 b_ClientInfosProtoJuin3Repository,
                 repoC_CategorieProduitInfos,
-                d_EtateMessageVocaleRepository ,
-                ->
-                val progressA = repoA_ProduitInfos?.mainProgressRepo ?: 0f
-                val progressC = repoC_CategorieProduitInfos?.mainProgressRepo ?: 0f
-                val progressD = d_EtateMessageVocaleRepository?.mainProgressRepo ?: 0f
+                d_EtateMessageVocaleRepository ->
                 val combinedProgress = (
-                        progressA
-                                + progressC
-                                + progressD
+                        (repoA_ProduitInfos?.mainProgressRepo ?: 0f)
                                 + (b_ClientInfosProtoJuin3Repository?.mainProgressRepo ?: 0f)
-                        ) / 2f
+                                + (repoC_CategorieProduitInfos?.mainProgressRepo ?: 0f)
+                                + (d_EtateMessageVocaleRepository?.mainProgressRepo ?: 0f)
+                        ) / 4f
 
                 MasterRepositorysModel(
                     repoStateA_ProduitInfos = repoA_ProduitInfos,
@@ -61,9 +62,7 @@ class A_MasterRepositorysGrpProtoJuin3(
                     d_EtateMessageVocaleRepository = d_EtateMessageVocaleRepository,
                     progress = combinedProgress
                 )
-            }.collect { masterModel ->
-                _model.value = masterModel
-            }
+            }.collect { _model.value = it }
         }
     }
 }
