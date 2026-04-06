@@ -2,6 +2,7 @@ package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Butto
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,12 +28,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
+private const val TAG_CLEANUP = "CleanupM8M10"
+
 @Composable
 fun Fab_CleanupM8AndM10(
     on_vent_key: String,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     onDismissDropdown: () -> Unit,
-) {
+) {          //<--
+//TODO(1): utilise le batch set fire base pour tot les operations
     val sizeM1 = repositorysMainGetter.repo1ProduitInfos.datasValue.size
     val sizeM3 = repositorysMainGetter.repo3CouleurProduit.datasValue.size
     val sizeM8 = repositorysMainGetter.repo8BonVent.datasValue.size
@@ -40,35 +45,44 @@ fun Fab_CleanupM8AndM10(
     val sizeM11 = repositorysMainGetter.repo11AchatOperation.datasValue.size
     val sizeM13 = repositorysMainGetter.repo13TarificationInfos.datasValue.size
 
-    val sizeNoImage = repositorysMainGetter.repo3CouleurProduit.datasValue.count { color ->
-        color.nomImageFichieSansEtansion.isBlank() || color.nomImageFichieSansEtansion == "Non Dispo"
-    }
-    // Colors that WILL remain active after the move
-    val sizeM3AfterImageMove = sizeM3 - sizeNoImage
-
-    // Products that will become fully inactive once all their colors are moved
+    // TODO(1) fix: a color is also moved when its parent product has no tariff at all.
+    // Badge counts mirror the two-condition filter used in moveColorsWithoutImagesToNonActive.
     val produitById = repositorysMainGetter.repo1ProduitInfos.datasValue.associateBy { it.keyID }
     val colorsByProduit =
         repositorysMainGetter.repo3CouleurProduit.datasValue.groupBy { it.parentBProduitInfosKeyID }
+    val productIdsWithTariff = repositorysMainGetter.repo13TarificationInfos.datasValue
+        .map { it.parent_M1Produit_KeyId }.toSet()
+
+    val colorsToMoveIds = repositorysMainGetter.repo3CouleurProduit.datasValue
+        .filter { color ->
+            color.nomImageFichieSansEtansion.isBlank() ||
+            color.nomImageFichieSansEtansion == "Non Dispo" ||
+            color.parentBProduitInfosKeyID !in productIdsWithTariff
+        }
+        .map { it.keyID }.toSet()
+    val sizeNoImage = colorsToMoveIds.size
+    val sizeM3AfterImageMove = sizeM3 - sizeNoImage
+
+    val activeColorProductIds = repositorysMainGetter.repo3CouleurProduit.datasValue
+        .filter { it.keyID !in colorsToMoveIds }
+        .map { it.parentBProduitInfosKeyID }.toSet()
     val productsWithNoActiveColor =
         repositorysMainGetter.repo1ProduitInfos.datasValue.count { product ->
             val colors = colorsByProduit[product.keyID] ?: emptyList()
-            colors.isNotEmpty() && colors.all { it.nomImageFichieSansEtansion.isBlank() || it.nomImageFichieSansEtansion == "Non Dispo" }
+            colors.isNotEmpty() && product.keyID !in activeColorProductIds
         }
     val sizeM1AfterImageMove = sizeM1 - productsWithNoActiveColor
 
-    // Tariffs that will be moved alongside their products
     val inactiveProductIds = repositorysMainGetter.repo1ProduitInfos.datasValue
         .filter { product ->
             val colors = colorsByProduit[product.keyID] ?: emptyList()
-            colors.isNotEmpty() && colors.all { it.nomImageFichieSansEtansion.isBlank() || it.nomImageFichieSansEtansion == "Non Dispo" }
+            colors.isNotEmpty() && product.keyID !in activeColorProductIds
         }
         .map { it.keyID }.toSet()
     val sizeM13MovedWithImages = repositorysMainGetter.repo13TarificationInfos.datasValue
         .count { it.parent_M1Produit_KeyId in inactiveProductIds }
     val sizeM13AfterImageMove = sizeM13 - sizeM13MovedWithImages
 
-    // Duplicate tariff count: entries beyond the newest per (type, produit) pair
     val duplicateTariffCount = repositorysMainGetter.repo13TarificationInfos.datasValue
         .groupBy { Pair(it.typeChoisi, it.parent_M1Produit_KeyId) }
         .values.filter { it.size > 1 }
@@ -148,40 +162,65 @@ fun Fab_CleanupM8AndM10(
                     Text(
                         text = when {
                             isRunningM8M10 -> "Running…"
-                            confirmM8M10 -> "Sure? Tap again to confirm  ⚠️"
-                            else -> "Cleanup  M8: $sizeM8  |  M10: $sizeM10  |  M11: $sizeM11  "
+                            confirmM8M10   -> "Sure? Tap again to confirm  ⚠️"
+                            else           -> "Cleanup  M8: $sizeM8  |  M10: $sizeM10  |  M11: $sizeM11  "
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         color = when {
                             isRunningM8M10 -> MaterialTheme.colorScheme.outline
-                            confirmM8M10 -> MaterialTheme.colorScheme.error
-                            else -> MaterialTheme.colorScheme.onSurface
+                            confirmM8M10   -> MaterialTheme.colorScheme.error
+                            else           -> MaterialTheme.colorScheme.onSurface
                         }
                     )
                 },
                 enabled = !isRunningM8M10,
                 onClick = {
                     if (isRunningM8M10) return@DropdownMenuItem
-                    if (!confirmM8M10) {
-                        confirmM8M10 = true; return@DropdownMenuItem
-                    }
+                    if (!confirmM8M10) { confirmM8M10 = true; return@DropdownMenuItem }
 
                     isRunningM8M10 = true
                     confirmM8M10 = false
 
+                    Log.d(TAG_CLEANUP, "── onClick START ──────────────────────────────")
+                    Log.d(TAG_CLEANUP, "on_vent_key='$on_vent_key'")
+                    Log.d(TAG_CLEANUP, "M8 size=${repositorysMainGetter.repo8BonVent.datasValue.size}  " +
+                            "M10 size=${repositorysMainGetter.repo10OperationVentCouleur.datasValue.size}  " +
+                            "M11 size=${repositorysMainGetter.repo11AchatOperation.datasValue.size}")
+
+                    // Two async operations run in parallel; close only when BOTH finish.
+                    var pendingOps by mutableIntStateOf(2)
+                    Log.d(TAG_CLEANUP, "pendingOps initialised → $pendingOps")
+
+                    val onOneDone = {
+                        val remaining = --pendingOps
+                        Log.d(TAG_CLEANUP, "onOneDone fired — pendingOps now=$remaining")
+                        if (remaining == 0) {
+                            Log.d(TAG_CLEANUP, "ALL ops done → dismissing dropdown")
+                            isRunningM8M10 = false
+                            showSubMenu = false
+                            onDismissDropdown()
+                        }
+                    }
+
+                    Log.d(TAG_CLEANUP, "launching cleanupOldBonVents_Np …")
                     cleanupOldBonVents_Np(
                         repo8BonVent = repositorysMainGetter.repo8BonVent,
                         bonVents = repositorysMainGetter.repo8BonVent.datasValue,
-                        on_vent_key = on_vent_key
+                        on_vent_key = on_vent_key,
+                        onDone = onOneDone
                     )
+
+                    Log.d(TAG_CLEANUP, "launching cleanupInvalidOperations_Np …")
                     cleanupInvalidOperations_Np(
                         repo10OperationVentCouleur = repositorysMainGetter.repo10OperationVentCouleur,
-                        on_vent_key = on_vent_key
+                        on_vent_key = on_vent_key,
+                        onDone = onOneDone
                     )
-                    M11AchatOperation.Companion.remove_ref()
 
-                    showSubMenu = false
-                    onDismissDropdown()
+                    // M11 is synchronous fire-and-forget
+                    Log.d(TAG_CLEANUP, "calling M11AchatOperation.remove_ref() (sync)")
+                    M11AchatOperation.Companion.remove_ref()
+                    Log.d(TAG_CLEANUP, "── onClick END (coroutines still running) ──────")
                 }
             )
 
@@ -229,8 +268,8 @@ fun Fab_CleanupM8AndM10(
                         contentDescription = null,
                         tint = when {
                             progressNoImage != null -> MaterialTheme.colorScheme.outline
-                            sizeNoImage == 0 -> MaterialTheme.colorScheme.outline
-                            else -> MaterialTheme.colorScheme.secondary
+                            sizeNoImage == 0        -> MaterialTheme.colorScheme.outline
+                            else                    -> MaterialTheme.colorScheme.secondary
                         }
                     )
                 },
@@ -247,7 +286,6 @@ fun Fab_CleanupM8AndM10(
                             color = if (sizeNoImage == 0) MaterialTheme.colorScheme.outline
                             else MaterialTheme.colorScheme.onSurface
                         )
-
                         else -> LinearProgressIndicator(
                             progress = { p },
                             modifier = Modifier.fillMaxWidth(),
@@ -301,12 +339,16 @@ fun Fab_CleanupM8AndM10(
                 onClick = {
                     if (isRunningM13) return@DropdownMenuItem
                     isRunningM13 = true
+                    // FIX: close only after Firebase writes complete
                     cleanupDuplicateTariffs(
                         repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos,
-                        tariffs = repositorysMainGetter.repo13TarificationInfos.datasValue
+                        tariffs = repositorysMainGetter.repo13TarificationInfos.datasValue,
+                        onDone = {
+                            isRunningM13 = false
+                            showSubMenu = false
+                            onDismissDropdown()
+                        }
                     )
-                    showSubMenu = false
-                    onDismissDropdown()
                 }
             )
         }

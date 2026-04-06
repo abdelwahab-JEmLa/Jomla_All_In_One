@@ -33,8 +33,19 @@ fun moveColorsWithoutImagesToNonActive(
             ?.let { catalogueById[it.catalogueParentId] }
             ?.keyID ?: ""
 
-    val allColors = repositorysMainGetter.repo3CouleurProduit.datasValue
-    val colorsToMove = allColors.filter { !it.hasBackupImage(catalogueKeyOf(it)) }
+    val allColors  = repositorysMainGetter.repo3CouleurProduit.datasValue
+    val allTariffs = repositorysMainGetter.repo13TarificationInfos.datasValue
+    val productIdsWithTariff = allTariffs
+        .filter { !it.typeChoisi.ignore_affiche && it.prixCurrency > 0 }
+        .map { it.parent_M1Produit_KeyId }
+        .toSet()
+
+    // Move a color when: it has no backup image  OR  its parent product has no tariff at all
+    val colorsToMove = allColors.filter { color ->
+        !color.hasBackupImage(catalogueKeyOf(color)) ||
+                color.parentBProduitInfosKeyID !in productIdsWithTariff
+    }.distinctBy { it.keyID }
+
     if (colorsToMove.isEmpty()) {
         onProgress(1f); return
     }
@@ -53,9 +64,12 @@ fun moveColorsWithoutImagesToNonActive(
             withContext(Dispatchers.Main) { onProgress(++done / total) }
         }
 
+        // Products whose every color was moved have no active colors left → move them too
+        val movedColorIds    = colorsToMove.map { it.keyID }.toSet()
         val activeProductIds = allColors
-            .filter { it.hasBackupImage(catalogueKeyOf(it)) }
-            .map { it.parentBProduitInfosKeyID }.toSet()
+            .filter { it.keyID !in movedColorIds }
+            .map { it.parentBProduitInfosKeyID }
+            .toSet()
 
         val productsToMove = repositorysMainGetter.repo1ProduitInfos.datasValue.filter { product ->
             colorsToMove.any { it.parentBProduitInfosKeyID == product.keyID } &&
@@ -72,7 +86,8 @@ fun moveColorsWithoutImagesToNonActive(
             }
         }
 
-        repositorysMainGetter.repo13TarificationInfos.datasValue
+        // Move any tariffs that belonged to the now-inactive products
+        allTariffs
             .filter { it.parent_M1Produit_KeyId in movedProductIds }
             .forEach { tariff ->
                 try {

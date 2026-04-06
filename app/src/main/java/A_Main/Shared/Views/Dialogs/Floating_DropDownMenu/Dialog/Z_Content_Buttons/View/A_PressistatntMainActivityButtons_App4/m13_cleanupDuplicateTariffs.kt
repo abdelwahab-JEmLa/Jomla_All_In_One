@@ -2,12 +2,15 @@ package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Butto
 
 import EntreApps.Shared.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 fun cleanupDuplicateTariffs(
     repo13TarificationInfos: Repo13TarificationInfos,
-    tariffs: List<M13TarificationInfos>
+    tariffs: List<M13TarificationInfos>,
+    onDone: () -> Unit = {},           // ← NEW: called on Main when Firebase writes finish
 ) {
     repo13TarificationInfos.repoScope.launch {
         try {
@@ -19,7 +22,6 @@ fun cleanupDuplicateTariffs(
 
             grouped.forEach { (_, tariffGroup) ->
                 if (tariffGroup.size > 1) {
-                    // Keep the most recently synchronised entry; move the rest to non-active
                     val sortedByTimestamp = tariffGroup.sortedByDescending {
                         it.dernierTimeTampsSynchronisationAvecFireBase
                     }
@@ -27,25 +29,19 @@ fun cleanupDuplicateTariffs(
                 }
             }
 
-            if (toMove.isNotEmpty()) {
-                toMove.forEach { tariff ->
-                    // Move to non-active node first, then remove from active ref
-                    M13TarificationInfos.ref_NonActiveDatas
-                        .child(tariff.keyID)
-                        .setValue(tariff.toFirebaseMap())
-                        .await()
-
-                    M13TarificationInfos.ref
-                        .child(tariff.keyID)
-                        .removeValue()
-                        .await()
-
-                    // Keep local DB in sync
-                    repo13TarificationInfos.dataBaseCreationFactory.delete(tariff)
-                }
+            toMove.forEach { tariff ->
+                M13TarificationInfos.ref_NonActiveDatas
+                    .child(tariff.keyID)
+                    .setValue(tariff.toFirebaseMap())
+                    .await()
+                M13TarificationInfos.ref
+                    .child(tariff.keyID)
+                    .removeValue()
+                    .await()
+                repo13TarificationInfos.dataBaseCreationFactory.delete(tariff)
             }
-        } catch (e: Exception) {
-            // Log error if needed
-        }
+        } catch (_: Exception) { }
+
+        withContext(Dispatchers.Main) { onDone() }   // ← always fires, even on error
     }
 }
