@@ -19,6 +19,7 @@ import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_Au
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import android.content.Context
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Filter
@@ -323,10 +324,13 @@ class MapClientsViewModel(
      * [MapContent] re-renders only the markers within 1 km of this point.
      */
     fun relod_map_marques_du_1km_du_centre_map(centerLat: Double, centerLng: Double) {
+        Log.d("ProximityFilter", "  VM.relod_map → reçu lat=$centerLat  lng=$centerLng")
         _uiState.value = _uiState.value.copy(
             proximityFilterCenter = GeoPoint(centerLat, centerLng)
         )
+        Log.d("ProximityFilter", "  VM.relod_map → uiState.proximityFilterCenter mis à jour : ${_uiState.value.proximityFilterCenter}")
         mapReloadTrigger++
+        Log.d("ProximityFilter", "  VM.relod_map → mapReloadTrigger=$mapReloadTrigger (note: pas une clé du LaunchedEffect)")
     }
 
     // ===============================================
@@ -345,9 +349,7 @@ class MapClientsViewModel(
                 println("Error during resource cleanup: ${e.message}")
             }
         }
-
     }
-
 
     fun cancelActiveOperations() {
         try {

@@ -61,7 +61,7 @@ data class M00CentralParametresOfAllApps(
     //TODO(1): 
 //<--
 //TODO(1): fait que start tariff c Prix_SupperGro_Et_PresentationService acun n ai selectione  //<--
-//TODO(1): ajou t au utidion un createur du xml qui cree l image //<--
+//TODO(1): ajou t au utidion un createur du composaffiche par des columns et row  qui cree l image //<--
 //TODO(1): enlve l historique et signature 
 //extracy l app 
 //utilis eles mutable state get depuit fire base 

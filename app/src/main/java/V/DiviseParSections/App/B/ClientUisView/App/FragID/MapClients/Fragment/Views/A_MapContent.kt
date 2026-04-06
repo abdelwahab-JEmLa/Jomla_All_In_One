@@ -48,6 +48,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.clientjetpack.R
 import org.koin.compose.koinInject
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -58,7 +61,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import androidx.compose.ui.graphics.Color as ComposeColor
 
-private const val PROXIMITY_FILTER_RADIUS_METERS = 1000.0
+private const val SCROLL_RELOAD_THRESHOLD_METERS = 1000.0
 
 @Composable
 fun MapContent(
@@ -75,6 +78,12 @@ fun MapContent(
     val mapView = remember { MapView(context) }
     val showMarkerDetails by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
+//
+//    val list_client_ou_leur_position_proximite_dePROXIMITY_FILTER_RADIUS_METERS by remember { mutableDoubleStateOf(
+//        //<--
+//        //TODO(1): fait que ca soit la list des client
+//    ) }    //<--
+    //TODO(1): fait que ceta aussi utilise au filtre
 
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
         ?: MapClientsViewModel.VisibleClientsNow.showAll
@@ -110,6 +119,10 @@ fun MapContent(
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
         locationTracker.startTracking()
         ensureLocationOverlayIsAtBottom(mapView)
+        // Lancer le filtre de proximité dès l'init avec le centre initial de la map
+        val center = mapView.mapCenter
+        android.util.Log.d("ProximityFilter", "INIT → lancement filtre proximité  lat=${center.latitude}  lng=${center.longitude}")
+        viewModel.relod_map_marques_du_1km_du_centre_map(center.latitude, center.longitude)
     }
 
     // Map configuration and cleanup
@@ -119,7 +132,31 @@ fun MapContent(
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
 
+        // ── Scroll → relance le filtre de proximité après 200 m ──────────────
+        var scrollAnchor: org.osmdroid.util.GeoPoint? = null
+        val scrollListener = object : MapListener {
+            override fun onScroll(event: ScrollEvent?): Boolean {
+                val center = mapView.mapCenter as? org.osmdroid.util.GeoPoint ?: return false
+                val anchor = scrollAnchor
+                if (anchor == null) {
+                    scrollAnchor = center
+                    return false
+                }
+                val dist = haversineMeters(anchor.latitude, anchor.longitude, center.latitude, center.longitude)
+                if (dist >= SCROLL_RELOAD_THRESHOLD_METERS) {
+                    android.util.Log.d("ProximityFilter",
+                        "SCROLL ${dist.toInt()} m → relance filtre  lat=${center.latitude}  lng=${center.longitude}")
+                    scrollAnchor = org.osmdroid.util.GeoPoint(center.latitude, center.longitude)
+                    viewModel.relod_map_marques_du_1km_du_centre_map(center.latitude, center.longitude)
+                }
+                return false
+            }
+            override fun onZoom(event: ZoomEvent?): Boolean = false
+        }
+        mapView.addMapListener(scrollListener)
+
         onDispose {
+            mapView.removeMapListener(scrollListener)
             locationTracker.stopTracking()
             cleanupMapResources(mapView, viewModel)
         }
@@ -134,7 +171,11 @@ fun MapContent(
         focusedValuesGetter.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         currentFilterMode,
         proximityFilterCenter,   // re-render whenever the FAB reload button sets a new center
+        viewModel.mapReloadTrigger, // incrémenté dans relod_map_marques_du_1km_du_centre_map
     ) {
+        android.util.Log.d("ProximityFilter",
+            "LaunchedEffect re-run → mapReloadTrigger=${viewModel.mapReloadTrigger}" +
+                    "  proximityFilterCenter=$proximityFilterCenter")
         addOuUpdateMapMarkers(
             uiState = uiState,
             viewModel = viewModel,
@@ -311,6 +352,7 @@ fun MapContent(
         affiche_Floating_Button_gps_follow_mode_active.ifTrue {
             Floating_Separated_FragMap_Button_2(
                 mapView = mapView,
+                viewModel = viewModel,
                 buttonState = Button_State.get_Default().copy(
                     text_Label = "affiche_Floating_Button_gps_follow_mode_active",
                     icons = Pair(Icons.Default.GpsNotFixed, Icons.Default.GpsFixed),

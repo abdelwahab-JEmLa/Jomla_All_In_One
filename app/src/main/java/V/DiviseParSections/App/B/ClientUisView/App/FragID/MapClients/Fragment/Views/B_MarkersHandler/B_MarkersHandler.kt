@@ -18,6 +18,7 @@ import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -32,15 +33,9 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+private const val DBG = "ProximityFilter"
 private const val PROXIMITY_FILTER_RADIUS_METERS = 200.0
 
-/**
- * Rebuilds map markers according to [currentFilterMode].
- *
- * When [proximityFilterCenter] is non-null (i.e. the user has scrolled more than
- * 20 m since the map was last anchored) an additional pass keeps only markers
- * whose client lies within [PROXIMITY_FILTER_RADIUS_METERS] (1 km) of that centre.
- */
 fun addOuUpdateMapMarkers(
     uiState: UiState,
     viewModel: MapClientsViewModel,
@@ -49,34 +44,89 @@ fun addOuUpdateMapMarkers(
     showMarkerDetails: Boolean,
     proximityFilterCenter: GeoPoint?,
 ) {
+    // ── DEBUG ① : état d'entrée ──────────────────────────────────────────────
+    Log.d(DBG, "=== addOuUpdateMapMarkers called ===")
+    Log.d(DBG, "  proximityFilterCenter = $proximityFilterCenter" +
+            if (proximityFilterCenter != null)
+                "  (lat=${proximityFilterCenter.latitude}, lng=${proximityFilterCenter.longitude})"
+            else " → filtre proximité INACTIF, tous les markers seront affichés")
+    Log.d(DBG, "  currentFilterMode = $currentFilterMode")
+
     val clientDataBaseSnapList = uiState.b_ClientInfosProtoJuin3List
+    Log.d(DBG, "  uiState.b_ClientInfosProtoJuin3List.size = ${clientDataBaseSnapList.size}" +
+            if (clientDataBaseSnapList.isEmpty()) " ⚠️ LISTE VIDE → aucun marker ne sera supprimé !" else "")
 
     val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
     existingMarkers.forEach { it.closeInfoWindow() }
 
-    val markersToRemove = mapView.overlays.filterIsInstance<Marker>()
+    // ── DEBUG ② : cleanup des markers existants ──────────────────────────────
+    val markersOnMap = mapView.overlays.filterIsInstance<Marker>()
+    Log.d(DBG, "  markers actuellement sur la map = ${markersOnMap.size}")
+
+    val markersToRemove = markersOnMap
         .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
+    Log.d(DBG, "  markers à supprimer (trouvés dans clientDataBaseSnapList) = ${markersToRemove.size}")
+
+    val markersNotRemoved = markersOnMap.size - markersToRemove.size
+    if (markersNotRemoved > 0) {
+        Log.w(DBG, "  ⚠️ $markersNotRemoved marker(s) NE SERONT PAS supprimés" +
+                " (IDs absents de uiState.b_ClientInfosProtoJuin3List) :")
+        markersOnMap.filter { m -> markersToRemove.none { it.id == m.id } }
+            .forEach { Log.w(DBG, "    marker id=${it.id} title=${it.title}") }
+    }
     mapView.overlays.removeAll(markersToRemove)
 
     val locationOverlay = preserveLocationOverlay(mapView)
 
-    // 1. Apply the active filter mode (existing logic unchanged)
+    // ── DEBUG ③ : filtre par mode ────────────────────────────────────────────
     val modeFilteredClients = filterClientsBasedOnMode(viewModel, currentFilterMode)
+    Log.d(DBG, "  après filterClientsBasedOnMode → ${modeFilteredClients.size} client(s)")
 
-    // 2. When the user has scrolled > 20 m, additionally keep only clients
-    //    within 1 km of the current map centre.
+    // ── DEBUG ④ : filtre de proximité ────────────────────────────────────────
     val clientsToShow = if (proximityFilterCenter != null) {
-        modeFilteredClients.filter { client ->
-            haversineMeters(
+        val withDistances = modeFilteredClients.map { client ->
+            val dist = haversineMeters(
                 proximityFilterCenter.latitude,
                 proximityFilterCenter.longitude,
                 client.latitude,
                 client.longitude,
-            ) <= PROXIMITY_FILTER_RADIUS_METERS
+            )
+            Triple(client, dist, dist <= PROXIMITY_FILTER_RADIUS_METERS)
         }
+
+        val kept   = withDistances.filter { it.third }
+        val rejected = withDistances.filter { !it.third }
+
+        Log.d(DBG, "  filtre 1 km actif → gardés=${kept.size}  rejetés=${rejected.size}")
+
+        // Log chaque client rejeté avec sa distance réelle
+        rejected.forEach { (client, dist, _) ->
+            Log.d(DBG, "    ❌ REJETÉ  id=${client.id}  nom=${client.nom}" +
+                    "  lat=${client.latitude}  lng=${client.longitude}" +
+                    "  dist=${dist.toInt()} m")
+        }
+        // Log les clients gardés aussi (utile pour vérifier les coords)
+        kept.forEach { (client, dist, _) ->
+            Log.d(DBG, "    ✅ GARDÉ   id=${client.id}  nom=${client.nom}" +
+                    "  lat=${client.latitude}  lng=${client.longitude}" +
+                    "  dist=${dist.toInt()} m")
+        }
+
+        // Cas suspect : coordonnées invalides (0,0) gardées dans le rayon
+        val invalidCoords = kept.filter { (c, _, _) -> c.latitude == 0.0 || c.longitude == 0.0 }
+        if (invalidCoords.isNotEmpty()) {
+            Log.w(DBG, "  ⚠️ ${invalidCoords.size} client(s) avec lat=0 ou lng=0 gardés " +
+                    "(coordonnées non initialisées ?)")
+        }
+
+        kept.map { it.first }
     } else {
+        Log.d(DBG, "  filtre 1 km INACTIF → affiche tous les ${modeFilteredClients.size} clients")
         modeFilteredClients
     }
+
+    Log.d(DBG, "  → markers à ajouter = ${clientsToShow.size}")
+    Log.d(DBG, "=====================================")
 
     addMarkersForFilteredClients(
         mapView,

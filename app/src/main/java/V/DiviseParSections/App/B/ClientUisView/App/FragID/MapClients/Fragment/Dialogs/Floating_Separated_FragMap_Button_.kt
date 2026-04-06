@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.D
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -40,8 +41,7 @@ import kotlin.math.roundToInt
 fun Floating_Separated_FragMap_Button_2(
     mapView: MapView,
     aCentralFacade: ACentralFacade = koinInject(),
-    viewModel: MapClientsViewModel= koinInject(),
-
+    viewModel: MapClientsViewModel,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     buttonState: Button_State = Button_State.get_Default().copy(
         text_Label = "GPS Follow Mode",
@@ -126,6 +126,11 @@ fun Floating_Separated_FragMap_Button_2(
                     modifier = Modifier.size(48.dp),
                     onClick = {
                         val center = mapView.mapCenter
+                        Log.d("ProximityFilter", "=== FAB Reload clicked ===")
+                        Log.d("ProximityFilter", "  mapView.mapCenter → lat=${center.latitude}  lng=${center.longitude}")
+                        if (center.latitude == 0.0 && center.longitude == 0.0) {
+                            Log.w("ProximityFilter", "  ⚠️ centre (0,0) — la map n'est peut-être pas encore initialisée !")
+                        }
                         viewModel.relod_map_marques_du_1km_du_centre_map(
                             centerLat = center.latitude,
                             centerLng = center.longitude,
