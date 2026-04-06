@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.PersonOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -27,7 +28,7 @@ fun Fab_CleanupM8AndM10(
     val sizeM1  = repositorysMainGetter.repo1ProduitInfos.datasValue.size
     val sizeM3  = repositorysMainGetter.repo3CouleurProduit.datasValue.size
     val sizeM8  = repositorysMainGetter.repo8BonVent.datasValue.size
-    val repo2Clients = repositorysMainGetter.repo2Client.datasValue.size
+    val sizeM2  = repositorysMainGetter.repo2Client.datasValue.size
     val sizeM10 = repositorysMainGetter.repo10OperationVentCouleur.datasValue.size
     val sizeM11 = repositorysMainGetter.repo11AchatOperation.datasValue.size
     val sizeM13 = repositorysMainGetter.repo13TarificationInfos.datasValue.size
@@ -36,13 +37,19 @@ fun Fab_CleanupM8AndM10(
         color.nomImageFichieSansEtansion.isBlank() || color.nomImageFichieSansEtansion == "Non Dispo"
     }
 
-    var showSubMenu      by remember { mutableStateOf(false) }
-    var confirmM8M10     by remember { mutableStateOf(false) }
-    var isRunningM8M10   by remember { mutableStateOf(false) }
-    var isRunningM13     by remember { mutableStateOf(false) }
+    // Badge count reuses the same predicate as the move function — no duplication.
+    val sizeInvalidM2 = repositorysMainGetter.repo2Client.datasValue.count { client ->
+        invalidM2ClientPredicate(client.numTelephone, client.latitude, client.longitude)
+    }
+
+    var showSubMenu    by remember { mutableStateOf(false) }
+    var confirmM8M10   by remember { mutableStateOf(false) }
+    var isRunningM8M10 by remember { mutableStateOf(false) }
+    var isRunningM13   by remember { mutableStateOf(false) }
+    var isRunningM2    by remember { mutableStateOf(false) }
 
     // ── No-image move: granular progress (null = idle, 0..1 = running) ───────
-    var progressNoImage  by remember { mutableStateOf<Float?>(null) }
+    var progressNoImage by remember { mutableStateOf<Float?>(null) }
 
     Box {
         DropdownMenuItem(
@@ -64,8 +71,8 @@ fun Fab_CleanupM8AndM10(
         )
 
         DropdownMenu(
-            expanded          = showSubMenu,
-            onDismissRequest  = { showSubMenu = false; confirmM8M10 = false }
+            expanded         = showSubMenu,
+            onDismissRequest = { showSubMenu = false; confirmM8M10 = false }
         ) {
             // ── M8 / M10 / M11 cleanup (2-click guard) ──────────────────────
             DropdownMenuItem(
@@ -73,10 +80,8 @@ fun Fab_CleanupM8AndM10(
                     Icon(
                         imageVector        = Icons.Default.DeleteSweep,
                         contentDescription = null,
-                        tint               = when {
-                            isRunningM8M10 -> MaterialTheme.colorScheme.outline
-                            else           -> MaterialTheme.colorScheme.error
-                        }
+                        tint               = if (isRunningM8M10) MaterialTheme.colorScheme.outline
+                        else MaterialTheme.colorScheme.error
                     )
                 },
                 text = {
@@ -84,7 +89,7 @@ fun Fab_CleanupM8AndM10(
                         text = when {
                             isRunningM8M10 -> "Running…"
                             confirmM8M10   -> "Sure? Tap again to confirm  ⚠️"
-                            else           -> "Cleanup  M8: $sizeM8  |  M10: $sizeM10  |  M11: $sizeM11  |  M2: $repo2Clients"
+                            else           -> "Cleanup  M8: $sizeM8  |  M10: $sizeM10  |  M11: $sizeM11  |  M2: $sizeM2"
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         color = when {
@@ -104,12 +109,12 @@ fun Fab_CleanupM8AndM10(
 
                     cleanupOldBonVents_Np(
                         repo8BonVent = repositorysMainGetter.repo8BonVent,
-                        bonVents = repositorysMainGetter.repo8BonVent.datasValue,
-                        on_vent_key = on_vent_key
+                        bonVents     = repositorysMainGetter.repo8BonVent.datasValue,
+                        on_vent_key  = on_vent_key
                     )
                     cleanupInvalidOperations_Np(
                         repo10OperationVentCouleur = repositorysMainGetter.repo10OperationVentCouleur,
-                        on_vent_key = on_vent_key
+                        on_vent_key                = on_vent_key
                     )
                     M11AchatOperation.Companion.remove_ref()
 
@@ -117,11 +122,44 @@ fun Fab_CleanupM8AndM10(
                     onDismissDropdown()
                 }
             )
-                    //<--
-                    //TODO(1): ajout un drop dow item au click il lence moveM2 qui deplace les ref des client ou leur num telephone empty && leur map cordene au 10 m de 
-                    //  latitude = 36.720027701275505,
-            //        longitude = 3.1436710147865483,
 
+            // ── M2 invalid clients: no phone + sitting on default pin ────────
+            DropdownMenuItem(
+                leadingIcon = {
+                    Icon(
+                        imageVector        = Icons.Default.PersonOff,
+                        contentDescription = null,
+                        tint               = if (isRunningM2) MaterialTheme.colorScheme.outline
+                        else MaterialTheme.colorScheme.error
+                    )
+                },
+                text = {
+                    Text(
+                        text = if (isRunningM2) "Running…"
+                        else "Move invalid M2 clients  |  $sizeInvalidM2 / $sizeM2",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (isRunningM2) MaterialTheme.colorScheme.outline
+                        else MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                enabled = !isRunningM2 && sizeInvalidM2 > 0,
+                onClick = {
+                    if (isRunningM2) return@DropdownMenuItem
+                    isRunningM2 = true
+                    moveM2InvalidClients(
+                        repositorysMainGetter = repositorysMainGetter,
+                        onProgress = { fraction ->
+                            if (fraction >= 1f) {
+                                isRunningM2 = false
+                                showSubMenu = false
+                                onDismissDropdown()
+                            }
+                        }
+                    )
+                }
+            )
+
+            // ── M13 duplicate tariffs ────────────────────────────────────────
             DropdownMenuItem(
                 leadingIcon = {
                     Icon(
@@ -146,7 +184,7 @@ fun Fab_CleanupM8AndM10(
                     isRunningM13 = true
                     cleanupDuplicateTariffs(
                         repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos,
-                        tariffs = repositorysMainGetter.repo13TarificationInfos.datasValue
+                        tariffs                 = repositorysMainGetter.repo13TarificationInfos.datasValue
                     )
                     showSubMenu = false
                     onDismissDropdown()
@@ -155,11 +193,10 @@ fun Fab_CleanupM8AndM10(
 
             DropDownItemWBaseDonne_OrganiserLocaleParCatalogue(
                 progress = progressNoImage,
-                enabled = sizeNoImage > 0 && progressNoImage == null,
-                onClick = {
+                enabled  = sizeNoImage > 0 && progressNoImage == null,
+                onClick  = {
                     if (progressNoImage != null) return@DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
 
-                    // Seed with 0f to show the progress bar immediately.
                     progressNoImage = 0f
 
                     moveColorsWithoutImagesToNonActive(

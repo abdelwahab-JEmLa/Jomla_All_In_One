@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -12,8 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import org.mongodb.kbson.BsonObjectId
 
 @Entity
@@ -57,6 +56,39 @@ data class M2Client(
     val register_Commerce_Nm: String = "16/00 – 5138424 D20",
     val nif_Num: String = "16291403036"
 ) {
+    fun toFirebaseMap(): Map<String, Any?> = mapOf(
+        "keyID"                                          to keyID,
+        "dernierTimeTampsSynchronisationAvecFireBase"    to dernierTimeTampsSynchronisationAvecFireBase,
+        "creationTimestamps"                             to creationTimestamps,
+        "nom"                                            to nom,
+        "cretionTimestamps"                              to cretionTimestamps,
+        "its_Fournisseur"                                to its_Fournisseur,
+        "parentComptCreateurKEyID"                       to parentComptCreateurKEyID,
+        "numTelephone"                                   to numTelephone,
+        "couleur"                                        to couleur,
+        "bonDuClientsSu"                                 to bonDuClientsSu,
+        "currentCreditBalance"                           to currentCreditBalance,
+        "positionDonClientsList"                         to positionDonClientsList,
+        "cUnClientTemporaire"                            to cUnClientTemporaire,
+        "auFilterFAB"                                    to auFilterFAB,
+        "typeDeSonMagasine"                              to typeDeSonMagasine.name,
+        "clientTypeMode"                                 to clientTypeMode.name,
+        "caMarqueGpsEstOuvert"                           to caMarqueGpsEstOuvert,
+        "latitude"                                       to latitude,
+        "longitude"                                      to longitude,
+        "title"                                          to title,
+        "snippet"                                        to snippet,
+        "actuelleEtat"                                   to actuelleEtat.name,
+        "edite_Exact_Gps_est_fait"                       to edite_Exact_Gps_est_fait,
+        "tagCeBonEstOuvertPourComptsIds"                 to tagCeBonEstOuvertPourComptsIds,
+        "id"                                             to id,
+        "keyByParent"                                    to keyByParent,
+        "bsonObjectId"                                   to bsonObjectId,
+        "nomPrenomArabe"                                 to nomPrenomArabe,
+        "register_Commerce_Nm"                           to register_Commerce_Nm,
+        "nif_Num"                                        to nif_Num,
+    )
+
     /**
      * Get Arabic name with fallback to French name
      */
@@ -74,7 +106,6 @@ data class M2Client(
             "$nom ($nomPrenomArabe)"
         }
     }
-
 
     fun get_DebugInfos(): String {
         return buildString {
@@ -135,7 +166,16 @@ data class M2Client(
     }
 
     companion object {
-        fun generePushKey() = RepositorysMainSetter.Companion.genereUnPushKeyFireBase(ref)
+        const val pathString = "M02Client"
+
+        val ref = central_MainDataBases_RefProduction
+            .child(pathString)
+
+        val ref_Non_Active_Datas = M00CentralParametresOfAllApps.centralRef_Non_Active_Datas_PourLightApp
+            .child(pathString)
+
+        fun generePushKey() = RepositorysMainSetter.genereUnPushKeyFireBase(ref)
+
         const val keyModel = "ID2"
 
         fun getCurrentDefaultLatitude(): Double {
@@ -149,13 +189,6 @@ data class M2Client(
         fun getCurrentDefaultLongitude(): Double {
             return 0.0
         }
-
-        val parent = Firebase.database.getReference(
-            "00_DataPrototype-04-02" +
-                    "/_1_developingRef" +
-                    "/C_InfosSqlDataBases"
-        )
-        val ref = parent.child("B_ClientInfosProtoJuin3")
 
         fun safe_Remove_MainDatas_Ref(onDone: () -> Unit = {}) {
             ref.removeValue().addOnSuccessListener { onDone() }
