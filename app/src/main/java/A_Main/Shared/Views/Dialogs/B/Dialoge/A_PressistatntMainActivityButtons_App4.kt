@@ -1,4 +1,4 @@
-package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog
+package A_Main.Shared.Views.Dialogs.B.Dialoge
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Ui
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
@@ -22,32 +22,32 @@ import androidx.compose.ui.graphics.Color
  */
 @Composable
 fun AvertissementDialog(
-    title:        String,
-    message:      String,
+    title: String,
+    message: String,
     confirmLabel: String = "Confirmer",
-    cancelLabel:  String = "Annuler",
-    onConfirm:    () -> Unit,
-    onDismiss:    () -> Unit,
+    cancelLabel: String = "Annuler",
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = {
             Icon(
-                imageVector        = Icons.Default.Warning,
+                imageVector = Icons.Default.Warning,
                 contentDescription = null,
-                tint               = Color(0xFFFFA000)   // amber warning colour
+                tint = Color(0xFFFFA000)   // amber warning colour
             )
         },
         title = {
             Text(
-                text  = title,
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         },
         text = {
             Text(
-                text  = message,
+                text = message,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -58,7 +58,7 @@ fun AvertissementDialog(
                 onDismiss()
             }) {
                 Text(
-                    text  = confirmLabel,
+                    text = confirmLabel,
                     color = MaterialTheme.colorScheme.error,
                 )
             }
@@ -66,7 +66,7 @@ fun AvertissementDialog(
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(
-                    text  = cancelLabel,
+                    text = cancelLabel,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }

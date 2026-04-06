@@ -1,4 +1,4 @@
-package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.View
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.A_PressistatntMainActivityButtons_App4
 
 import EntreApps.Shared.Models.Client_Speciale
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur

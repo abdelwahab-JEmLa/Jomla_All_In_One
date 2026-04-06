@@ -1,16 +1,20 @@
 package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog
 
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.DropDownItemWBaseDonne_OrganiserParCatalogue
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.DropDownItemWBaseDonne_SyncDepuisImages2
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.DropDownItemWBaseDonne_UpdateLocalTimestamps
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Ui.AvertissementDialog
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Fab_CleanupM8AndM10
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.AvertissementDialog
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.DropBox_Init_3
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.Local_Organizer
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.SyncReport
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.A_PressistatntMainActivityButtons_App4.Fab_CleanupM8AndM10
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_OrganiserParCatalogue
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_SyncDepuisImages2
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_UpdateLocalTimestamps
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -39,6 +43,9 @@ import com.bumptech.glide.Glide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private enum class PendingAction { DropBox, Local, SyncFromImages2, UpdateLocalTimestamps }
 
@@ -216,7 +223,7 @@ private suspend fun launchSyncFromImages2(
     list_m16:   List<M16CategorieProduit>?,
     list_m1:    List<M01Produit>?,
     list_m3:    List<M3CouleurProduitInfos>?,
-    context:    android.content.Context,
+    context:    Context,
     onProgress: (Float, String) -> Unit,
     onDone:     () -> Unit,
 ): SyncReport {
@@ -232,7 +239,7 @@ private suspend fun launchSyncFromImages2(
 
     Log.d(TAG, "=== SYNC DÉMARRÉ ===")
     Log.d(TAG, "cutoffMs = $cutoffMs " +
-            "(${java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date(cutoffMs))})")
+            "(${SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(cutoffMs))})")
     Log.d(TAG, "list_m3 total=${list_m3?.size} | après filtre catalogue(t1,t4)=${filteredM3?.size}")
     if (filteredM3.isNullOrEmpty()) {
         Log.w(TAG, "⚠️ filteredM3 VIDE — l'image cherchée n'est peut-être pas dans catalogue t1 ou t4")
@@ -250,7 +257,7 @@ private suspend fun launchSyncFromImages2(
     onDone()
 
     withContext(Dispatchers.Main) { Glide.get(context).clearMemory() }
-    kotlinx.coroutines.withContext(Dispatchers.IO) { Glide.get(context).clearDiskCache() }
+    withContext(Dispatchers.IO) { Glide.get(context).clearDiskCache() }
 
     return report
 }

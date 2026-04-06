@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View
 
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.DropBox_Init_3
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.DropBox_Init_3
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos

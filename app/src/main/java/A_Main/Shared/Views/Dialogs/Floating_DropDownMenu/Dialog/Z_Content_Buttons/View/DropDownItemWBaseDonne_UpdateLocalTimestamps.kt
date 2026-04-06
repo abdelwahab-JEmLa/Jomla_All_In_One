@@ -1,4 +1,4 @@
-package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View
 
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.SyncProgressIndicator
 import androidx.compose.foundation.layout.Column

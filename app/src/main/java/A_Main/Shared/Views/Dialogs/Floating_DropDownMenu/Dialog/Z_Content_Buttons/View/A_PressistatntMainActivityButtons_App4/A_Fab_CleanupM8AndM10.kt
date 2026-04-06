@@ -1,9 +1,6 @@
-package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.A_PressistatntMainActivityButtons_App4
 
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.View.cleanupDuplicateTariffs
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.View.cleanupInvalidOperations_Np
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.View.cleanupOldBonVents_Np
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.View.moveColorsWithoutImagesToNonActive
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.layout.Box
@@ -120,8 +117,11 @@ fun Fab_CleanupM8AndM10(
                     onDismissDropdown()
                 }
             )
+                    //<--
+                    //TODO(1): ajout un drop dow item au click il lence moveM2 qui deplace les ref des client ou leur num telephone empty && leur map cordene au 10 m de 
+                    //  latitude = 36.720027701275505,
+            //        longitude = 3.1436710147865483,
 
-            // ── M13 duplicate tariff cleanup ─────────────────────────────────
             DropdownMenuItem(
                 leadingIcon = {
                     Icon(
@@ -153,13 +153,10 @@ fun Fab_CleanupM8AndM10(
                 }
             )
 
-            // ── Move M3 colors without images → ref_Non_Active_Datas ─────────
-            // Uses DropDownItemWBaseDonne_OrganiserLocaleParCatalogue for the
-            // progress-bar treatment (same visual pattern as other sync items).
             DropDownItemWBaseDonne_OrganiserLocaleParCatalogue(
                 progress = progressNoImage,
-                enabled  = sizeNoImage > 0 && progressNoImage == null,
-                onClick  = {
+                enabled = sizeNoImage > 0 && progressNoImage == null,
+                onClick = {
                     if (progressNoImage != null) return@DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
 
                     // Seed with 0f to show the progress bar immediately.

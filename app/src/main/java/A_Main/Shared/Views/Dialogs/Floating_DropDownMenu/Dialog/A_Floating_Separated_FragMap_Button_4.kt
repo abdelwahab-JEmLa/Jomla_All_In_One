@@ -1,6 +1,5 @@
-package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Buttons.View.Ui
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog
 
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.FragMap_DropdownMenu
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
@@ -50,25 +49,25 @@ data class Button_State(
 
 @Composable
 fun Floating_Separated_Button(
-    list_m16:    List<M16CategorieProduit>? = emptyList(),
-    list_m1:     List<M01Produit>?          = emptyList(),
-    list_m3:     List<M3CouleurProduitInfos>? = emptyList(),
+    list_m16: List<M16CategorieProduit>? = emptyList(),
+    list_m1: List<M01Produit>? = emptyList(),
+    list_m3: List<M3CouleurProduitInfos>? = emptyList(),
     on_vent_key: String = "",
     buttonState: Button_State = Button_State.get_Default().copy(
         text_Label = "",
-        icons      = Pair(Icons.Default.FilterList, Icons.Default.AllInbox),
-        colors     = Pair(Color.Red, Color.Blue)
+        icons = Pair(Icons.Default.FilterList, Icons.Default.AllInbox),
+        colors = Pair(Color.Red, Color.Blue)
     )
 ) {
-    val isShowingAll     = true
+    val isShowingAll = true
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
 
-    val configuration  = LocalConfiguration.current
-    val screenWidth    = configuration.screenWidthDp.dp
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
 
-    var offsetX      by remember { mutableFloatStateOf(screenWidth.value - 200f) }
-    var offsetY      by remember { mutableFloatStateOf(screenHeightDp.value - 300f) }
+    var offsetX by remember { mutableFloatStateOf(screenWidth.value - 200f) }
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 300f) }
     var showDropdown by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -85,12 +84,12 @@ fun Floating_Separated_Button(
                 .padding(16.dp)
         ) {
             Row(
-                verticalAlignment     = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 FloatingActionButton(
-                    modifier       = Modifier.size(48.dp),
-                    onClick        = { showDropdown = true },
+                    modifier = Modifier.size(48.dp),
+                    onClick = { showDropdown = true },
                     containerColor = if (updatedButtonState.its_Active)
                         updatedButtonState.colors.second
                     else
@@ -102,18 +101,18 @@ fun Floating_Separated_Button(
                         else
                             updatedButtonState.icons.first,
                         contentDescription = if (isShowingAll) "Switch to Targeted View" else "Switch to Show All",
-                        tint               = Color.White,
-                        modifier           = Modifier.size(24.dp)
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
 
                 FragMap_DropdownMenu(
-                    expanded     = showDropdown,
-                    onDismiss    = { showDropdown = false },
-                    list_m16     = list_m16,
-                    list_m1      = list_m1,
-                    list_m3      = list_m3,
-                    on_vent_key  = on_vent_key,
+                    expanded = showDropdown,
+                    onDismiss = { showDropdown = false },
+                    list_m16 = list_m16,
+                    list_m1 = list_m1,
+                    list_m3 = list_m3,
+                    on_vent_key = on_vent_key,
                 )
             }
         }

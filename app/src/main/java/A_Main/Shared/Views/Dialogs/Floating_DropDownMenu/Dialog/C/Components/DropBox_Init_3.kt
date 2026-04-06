@@ -1,6 +1,6 @@
-package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components
 
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.DropBox_Init_3.buildImages2Index
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.DropBox_Init_3.buildImages2Index
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
@@ -16,6 +16,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * Result of a [DropBox_Init_3.syncFromImages2] operation.
@@ -182,8 +185,8 @@ object DropBox_Init_3 {
 
             Log.d(TAG, "[$fullName] " +
                     "localExists=${localFile.exists()} | " +
-                    "localMod=${java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date(localModMs))} | " +
-                    "dropBoxMod=${java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date(dropBoxModMs))} | " +
+                    "localMod=${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(localModMs))} | " +
+                    "dropBoxMod=${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(dropBoxModMs))} | " +
                     "dropBox>local=${dropBoxModMs > localModMs}"
             )
 
@@ -296,7 +299,7 @@ object DropBox_Init_3 {
             client.files()
                 .uploadBuilder(targetPath)
                 .withMode(WriteMode.OVERWRITE)
-                .withClientModified(java.util.Date(clientModifiedMs))
+                .withClientModified(Date(clientModifiedMs))
                 .uploadAndFinish(imageBytes.inputStream())
             targetPath
         } catch (_: Exception) {

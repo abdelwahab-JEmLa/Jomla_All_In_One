@@ -1,4 +1,4 @@
-package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog
+package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
