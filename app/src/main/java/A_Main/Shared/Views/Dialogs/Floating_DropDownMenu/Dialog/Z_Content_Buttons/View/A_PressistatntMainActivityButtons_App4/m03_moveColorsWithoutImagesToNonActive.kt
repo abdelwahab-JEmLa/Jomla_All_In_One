@@ -18,40 +18,79 @@ private fun M3CouleurProduitInfos.hasBackupImage(catalogueKeyId: String): Boolea
         "$catalogueKeyId/$nomImageFichieSansEtansion.$extensionDisponible"
     ).exists()
 
+// Returns true when this color is missing its backup image in ALL catalogue folders.
+// A color must have an image present in every catalogue folder to be considered valid.
+private fun M3CouleurProduitInfos.isMissingImageInAnyCatalogue(): Boolean {
+    val hasName = nomImageFichieSansEtansion.isNotBlank() && nomImageFichieSansEtansion != "Non Dispo"
+    if (!hasName) return true
+    for (catalogue in get_ListM21CataloguesCategorie()) {
+        if (!hasBackupImage(catalogue.keyID)) return true
+    }
+    return false
+}
+
 fun moveColorsWithoutImagesToNonActive(
     repositorysMainGetter: RepositorysMainGetter,
     onProgress: (Float) -> Unit = {},
+    onSummary: (String) -> Unit = {},
 ) {
-    val produitById    = repositorysMainGetter.repo1ProduitInfos.datasValue.associateBy { it.keyID }
-    val categorieById  = repositorysMainGetter.repoM16CategorieProduit.datasValue.associateBy { it.id }
-    val catalogueById  = get_ListM21CataloguesCategorie().associateBy { it.id }
+    val allColors    = repositorysMainGetter.repo3CouleurProduit.datasValue
+    val allTariffs   = repositorysMainGetter.repo13TarificationInfos.datasValue
+    val allProducts  = repositorysMainGetter.repo1ProduitInfos.datasValue
+    val allCategories = repositorysMainGetter.repoM16CategorieProduit.datasValue
 
-    // Returns "" when any link in the color→produit→categorie→catalogue chain is missing.
-    fun catalogueKeyOf(color: M3CouleurProduitInfos): String =
-        produitById[color.parentBProduitInfosKeyID]
-            ?.let { categorieById[it.idParentCategorie] }
-            ?.let { catalogueById[it.catalogueParentId] }
-            ?.keyID ?: ""
+    fun catalogueKeyOf(color: M3CouleurProduitInfos): String {
+        var productKeyId: Long = -1
+        for (product in allProducts) {
+            if (product.keyID == color.parentBProduitInfosKeyID) {
+                productKeyId = product.idParentCategorie
+                break
+            }
+        }
+        if (productKeyId == -1L) return ""
 
-    val allColors  = repositorysMainGetter.repo3CouleurProduit.datasValue
-    val allTariffs = repositorysMainGetter.repo13TarificationInfos.datasValue
-    val productIdsWithTariff = allTariffs
-        .filter { !it.typeChoisi.ignore_affiche && it.prixCurrency > 0 }
-        .map { it.parent_M1Produit_KeyId }.toSet()
+        var catalogueParentId: Long = -1
+        for (category in allCategories) {
+            if (category.id == productKeyId) {
+                catalogueParentId = category.catalogueParentId
+                break
+            }
+        }
+        if (catalogueParentId == -1L) return ""
+
+        for (catalogue in get_ListM21CataloguesCategorie()) {
+            if (catalogue.id == catalogueParentId) return catalogue.keyID
+        }
+        return ""
+    }
+
+    val productIdsWithTariff = mutableSetOf<String>()
+    for (tariff in allTariffs) {
+        if (!tariff.typeChoisi.ignore_affiche && tariff.prixCurrency > 0) {
+            productIdsWithTariff.add(tariff.parent_M1Produit_KeyId)
+        }
+    }
 
     val colorsToMove = allColors.filter { color ->
         val catalogueKey = catalogueKeyOf(color)
-        // If the catalogue chain is broken the key resolves to "". In that case
-        // hasBackupImage("") would always return false (path "/<empty>/$name.ext"
-        // never exists), which would wrongly flag the color as image-less and move
-        // it to non-active. Skip such colors entirely — they belong to a product
-        // whose catalogue/category metadata hasn't loaded or is missing.
         if (catalogueKey.isEmpty()) return@filter false
-        !color.hasBackupImage(catalogueKey) ||
-                color.parentBProduitInfosKeyID !in productIdsWithTariff
+
+        val hasTariff = color.parentBProduitInfosKeyID in productIdsWithTariff
+        if (!hasTariff) return@filter true
+
+        color.isMissingImageInAnyCatalogue()        // missing image in any folder → move
     }.distinctBy { it.keyID }
 
-    if (colorsToMove.isEmpty()) { onProgress(1f); return }
+    if (colorsToMove.isEmpty()) {
+        onSummary("Aucun changement — données déjà propres ✓")
+        onProgress(1f)
+        return
+    }
+
+    // Snapshot before-counts for summary — computed here before anything is deleted
+    val beforeM3  = allColors.size
+    val beforeM1  = allProducts.size
+    val beforeM13 = allTariffs.size
 
     CoroutineScope(Dispatchers.IO).launch {
 
@@ -69,11 +108,12 @@ fun moveColorsWithoutImagesToNonActive(
 
         // ── Phase 2 · Products that now have zero active colors ───────────────
         val movedColorIds    = colorsToMove.map { it.keyID }.toSet()
-        val activeProductIds = allColors
-            .filter { it.keyID !in movedColorIds }
-            .map { it.parentBProduitInfosKeyID }.toSet()
+        val activeProductIds = mutableSetOf<String>()
+        for (color in allColors) {
+            if (color.keyID !in movedColorIds) activeProductIds.add(color.parentBProduitInfosKeyID)
+        }
 
-        val productsToMove = repositorysMainGetter.repo1ProduitInfos.datasValue.filter { product ->
+        val productsToMove = allProducts.filter { product ->
             colorsToMove.any { it.parentBProduitInfosKeyID == product.keyID } &&
                     product.keyID !in activeProductIds
         }
@@ -107,6 +147,22 @@ fun moveColorsWithoutImagesToNonActive(
             } catch (_: Exception) { }
         }
 
-        withContext(Dispatchers.Main) { onProgress(1f) }
+        // TODO(1): build and emit the before→after summary text
+        val afterM3  = beforeM3  - colorsToMove.size
+        val afterM1  = beforeM1  - productsToMove.size
+        val afterM13 = beforeM13 - tariffsToMove.size
+        val summary = buildString {
+            appendLine("Nettoyage terminé ✓")
+            append("M3: $beforeM3 → $afterM3  (−${colorsToMove.size})")
+            appendLine()
+            append("M1: $beforeM1 → $afterM1  (−${productsToMove.size})")
+            appendLine()
+            append("M13: $beforeM13 → $afterM13  (−${tariffsToMove.size})")
+        }
+
+        withContext(Dispatchers.Main) {
+            onSummary(summary)
+            onProgress(1f)
+        }
     }
 }

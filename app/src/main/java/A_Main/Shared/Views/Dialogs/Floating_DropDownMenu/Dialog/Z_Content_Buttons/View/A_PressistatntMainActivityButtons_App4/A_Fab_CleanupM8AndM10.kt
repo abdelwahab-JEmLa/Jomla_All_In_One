@@ -35,8 +35,7 @@ fun Fab_CleanupM8AndM10(
     on_vent_key: String,
     repositorysMainGetter: RepositorysMainGetter = koinInject(),
     onDismissDropdown: () -> Unit,
-) {  //<--
-//TODO(1): ca affiche m 3 2057 > 808 
+) {
     val sizeM1 = repositorysMainGetter.repo1ProduitInfos.datasValue.size
     val sizeM3 = repositorysMainGetter.repo3CouleurProduit.datasValue.size
     val sizeM8 = repositorysMainGetter.repo8BonVent.datasValue.size
@@ -45,22 +44,17 @@ fun Fab_CleanupM8AndM10(
     val sizeM11 = repositorysMainGetter.repo11AchatOperation.datasValue.size
     val sizeM13 = repositorysMainGetter.repo13TarificationInfos.datasValue.size
 
-    // Badge counts mirror the two-condition filter used in moveColorsWithoutImagesToNonActive:
-    // a color is moved when it has no backup image OR its parent product has no active tariff.
-    val produitById = repositorysMainGetter.repo1ProduitInfos.datasValue.associateBy { it.keyID }
-    val colorsByProduit =
-        repositorysMainGetter.repo3CouleurProduit.datasValue.groupBy { it.parentBProduitInfosKeyID }
+    // Badge counts: approximate (no file I/O in composition) — mirrors the two conditions
+    // used in moveColorsWithoutImagesToNonActive (tariff check + name-presence proxy for image).
     val productIdsWithTariff = repositorysMainGetter.repo13TarificationInfos.datasValue
         .filter { !it.typeChoisi.ignore_affiche && it.prixCurrency > 0 }
         .map { it.parent_M1Produit_KeyId }.toSet()
 
     val colorsToMoveIds = repositorysMainGetter.repo3CouleurProduit.datasValue
         .filter { color ->
-            // Condition 1: no image filename recorded (proxy for missing backup image)
             color.nomImageFichieSansEtansion.isBlank() ||
-            color.nomImageFichieSansEtansion == "Non Dispo" ||
-            // Condition 2: parent product has no priced, non-ignored tariff
-            color.parentBProduitInfosKeyID !in productIdsWithTariff
+                    color.nomImageFichieSansEtansion == "Non Dispo" ||
+                    color.parentBProduitInfosKeyID !in productIdsWithTariff
         }
         .map { it.keyID }.toSet()
     val sizeNoImage = colorsToMoveIds.size
@@ -69,6 +63,8 @@ fun Fab_CleanupM8AndM10(
     val activeColorProductIds = repositorysMainGetter.repo3CouleurProduit.datasValue
         .filter { it.keyID !in colorsToMoveIds }
         .map { it.parentBProduitInfosKeyID }.toSet()
+    val colorsByProduit =
+        repositorysMainGetter.repo3CouleurProduit.datasValue.groupBy { it.parentBProduitInfosKeyID }
     val productsWithNoActiveColor =
         repositorysMainGetter.repo1ProduitInfos.datasValue.count { product ->
             val colors = colorsByProduit[product.keyID] ?: emptyList()
@@ -102,6 +98,8 @@ fun Fab_CleanupM8AndM10(
     var isRunningM13 by remember { mutableStateOf(false) }
     var isRunningM2 by remember { mutableStateOf(false) }
     var progressNoImage by remember { mutableStateOf<Float?>(null) }
+    // TODO(1): summary text emitted by moveColorsWithoutImagesToNonActive after it finishes
+    var summaryText by remember { mutableStateOf("") }
 
     Box {
         DropdownMenuItem(
@@ -124,10 +122,14 @@ fun Fab_CleanupM8AndM10(
 
         DropdownMenu(
             expanded = showSubMenu,
-            onDismissRequest = { showSubMenu = false; confirmM8M10 = false }
+            onDismissRequest = {
+                showSubMenu = false
+                confirmM8M10 = false
+                summaryText = ""
+            }
         ) {
 
-            // ── Header: snapshot of all repo sizes ───────────────────────────
+            // ── Header: snapshot of all repo sizes + last cleanup summary ────
             DropdownMenuItem(
                 enabled = false,
                 text = {
@@ -137,10 +139,18 @@ fun Fab_CleanupM8AndM10(
                             append("M1: $sizeM1  M2: $sizeM2  M3: $sizeM3")
                             appendLine()
                             append("M8: $sizeM8  M10: $sizeM10  M11: $sizeM11  M13: $sizeM13")
+                            if (summaryText.isNotBlank()) {
+                                appendLine()
+                                appendLine()
+                                append(summaryText)
+                            }
                         },
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = if (summaryText.isNotBlank())
+                            MaterialTheme.colorScheme.secondary
+                        else
+                            MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 4.dp, vertical = 2.dp)
@@ -190,7 +200,6 @@ fun Fab_CleanupM8AndM10(
                             "M10 size=${repositorysMainGetter.repo10OperationVentCouleur.datasValue.size}  " +
                             "M11 size=${repositorysMainGetter.repo11AchatOperation.datasValue.size}")
 
-                    // Two async operations run in parallel; close only when BOTH finish.
                     var pendingOps by mutableIntStateOf(2)
                     Log.d(TAG_CLEANUP, "pendingOps initialised → $pendingOps")
 
@@ -220,7 +229,6 @@ fun Fab_CleanupM8AndM10(
                         onDone = onOneDone
                     )
 
-                    // M11 is synchronous fire-and-forget
                     Log.d(TAG_CLEANUP, "calling M11AchatOperation.remove_ref() (sync)")
                     M11AchatOperation.Companion.remove_ref()
                     Log.d(TAG_CLEANUP, "── onClick END (coroutines still running) ──────")
@@ -299,15 +307,19 @@ fun Fab_CleanupM8AndM10(
                 onClick = {
                     if (progressNoImage != null) return@DropdownMenuItem
                     progressNoImage = 0f
+                    summaryText = ""
                     moveColorsWithoutImagesToNonActive(
                         repositorysMainGetter = repositorysMainGetter,
                         onProgress = { fraction ->
                             progressNoImage = fraction
                             if (fraction >= 1f) {
                                 progressNoImage = null
-                                showSubMenu = false
-                                onDismissDropdown()
+                                // stay open so user can read the summary; they can dismiss manually
                             }
+                        },
+                        // TODO(1): receive and store summary so header can display it
+                        onSummary = { text ->
+                            summaryText = text
                         }
                     )
                 }
@@ -342,7 +354,6 @@ fun Fab_CleanupM8AndM10(
                 onClick = {
                     if (isRunningM13) return@DropdownMenuItem
                     isRunningM13 = true
-                    // FIX: close only after Firebase writes complete
                     cleanupDuplicateTariffs(
                         repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos,
                         tariffs = repositorysMainGetter.repo13TarificationInfos.datasValue,
