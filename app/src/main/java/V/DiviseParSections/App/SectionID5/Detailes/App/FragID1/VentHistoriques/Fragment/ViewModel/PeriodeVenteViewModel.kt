@@ -94,10 +94,8 @@ class PeriodeVenteViewModel(
     private fun loadPeriodesVente() {
         viewModelScope.launch {
             try {
-                // Check if we have add_New selected period and upsertLenceCommandeRepoGroupedProtoAvantJuin3 it if it exists
                 val currentSelection = _uiState.value.selectedPeriode
                 val updatedSelection = if (currentSelection != null) {
-                    // Try to find updated version of currently selected period
                     periodesVente.find { it.fireBaseKeyID == currentSelection.fireBaseKeyID }
                 } else {
                     null

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.A.loadCreditForGrossist
-import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import com.google.firebase.database.ValueEventListener
 
 // Helper function to load credits for all grossists with real-time updates

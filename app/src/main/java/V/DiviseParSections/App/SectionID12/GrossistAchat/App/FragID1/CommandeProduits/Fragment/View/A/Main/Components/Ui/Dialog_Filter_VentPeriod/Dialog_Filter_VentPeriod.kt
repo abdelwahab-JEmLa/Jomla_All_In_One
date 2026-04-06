@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -162,7 +163,7 @@ fun LazyColumn_VentPeriod(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     currentActivePeriod: M14VentPeriode?,
-    activeGrossist: V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist?,
+    activeGrossist: M15Grossist?,
     focusedValuesGetter: FocusedValuesGetter, // Add this parameter
     onPeriodSelected_To_onDismiss: (M14VentPeriode) -> Unit
 ) {

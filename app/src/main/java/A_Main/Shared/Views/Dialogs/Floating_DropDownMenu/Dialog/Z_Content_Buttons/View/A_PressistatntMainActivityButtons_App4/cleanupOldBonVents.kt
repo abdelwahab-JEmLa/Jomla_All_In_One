@@ -1,6 +1,6 @@
 package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.A_PressistatntMainActivityButtons_App4
 
-import EntreApps.Shared.Models.Client_Speciale
+import EntreApps.Shared.Models.AbdelwahabJomla_Client_Speciale
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ fun cleanupOldBonVents_Np(
         M8BonVent.EtateActuellementEst.Versemment,
     )
 
-    val specialClientKeyIDs = Client_Speciale.entries
+    val specialClientKeyIDs = AbdelwahabJomla_Client_Speciale.entries
         .map { it.keyID }
         .filter { it.isNotEmpty() }
         .toSet()

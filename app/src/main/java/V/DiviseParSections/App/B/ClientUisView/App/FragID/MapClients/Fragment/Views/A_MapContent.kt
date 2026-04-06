@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.M2Client
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_2
@@ -17,10 +18,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M2Client
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.content.Context
 import androidx.compose.foundation.background
@@ -53,7 +52,9 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import androidx.compose.ui.graphics.Color as ComposeColor
-
+    //<--
+    //(1): ajout n autre filter fait stock  var mstable state user_a_scrolle_plus_de_20m  a chaque change porsitio
+    // don le map view si le scroll et defirrent de 20 m cree un mutable state qui suit les marque withine 1 km  du current postion qui filter les marques withine 1 km elle supdate par
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
@@ -164,23 +165,7 @@ fun MapContent(
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
-                .getSemanticsTag(
-                    nomVal = "markerStatusDialogActiveM2Client",
-                    data = markerStatusDialogActiveM2Client
-                )
-                // FIXED: Add debug info about timing state
-                .getSemanticsTag(
-                    nomVal = "currentFilterMode",
-                    data = currentFilterMode.toString()
-                )
-                .getSemanticsTag(
-                    nomVal = "isInTemporaryMode",
-                    data = focusedValuesGetter.active_Central_Values.isInTemporaryShowAllMode.toString()
-                )
-                .getSemanticsTag(
-                    nomVal = "activeClient",
-                    data = focusedValuesGetter.activeOnVentM2ClientInfos?.nom ?: "null"
-                ),
+              ,
             factory = { mapView }
         )
 

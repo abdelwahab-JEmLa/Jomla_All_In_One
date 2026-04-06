@@ -17,7 +17,7 @@ import kotlin.math.sqrt
 
 private const val DEFAULT_LAT       = 36.720027701275505
 private const val DEFAULT_LNG       = 3.1436710147865483
-private const val THRESHOLD_METERS  = 10.0
+private const val THRESHOLD_METERS  = 200.0
 
 // ─── Shared predicate (also used by Fab_CleanupM8AndM10 for the badge count) ─
 

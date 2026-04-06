@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
-import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

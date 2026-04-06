@@ -1,6 +1,6 @@
 package EntreApps.Shared.Models.Relative_Produits.Models
 
-import EntreApps.Shared.Models.Client_Speciale
+import EntreApps.Shared.Models.AbdelwahabJomla_Client_Speciale
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
@@ -206,5 +206,5 @@ data class Ref_list_Filtred_Keys_M3Couleur_Main_Values(
     val parentProduitKeyID: String = "",
     val parentProduitDebugName: String = "",
     val parentProduitClassement: Int = 0,
-    val its_couleur_du_Jomla_ECHATILLANTS_Client: Client_Speciale? = null
+    val its_couleur_du_Jomla_ECHATILLANTS_Client: AbdelwahabJomla_Client_Speciale? = null
 )

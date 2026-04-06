@@ -25,7 +25,7 @@ import EntreApps.Shared.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
-import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit

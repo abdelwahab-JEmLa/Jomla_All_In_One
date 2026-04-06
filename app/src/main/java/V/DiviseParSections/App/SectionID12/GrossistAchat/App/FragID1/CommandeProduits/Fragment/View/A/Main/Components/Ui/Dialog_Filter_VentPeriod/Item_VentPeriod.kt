@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.M14VentPeriode
-import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

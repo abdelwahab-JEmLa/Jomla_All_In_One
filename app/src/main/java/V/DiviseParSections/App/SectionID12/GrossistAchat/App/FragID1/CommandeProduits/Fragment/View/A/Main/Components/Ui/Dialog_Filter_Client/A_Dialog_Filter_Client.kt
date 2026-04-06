@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.filtersAndSorts_Central.calculateClientSalesSummary
 import EntreApps.Shared.Models.M14VentPeriode
-import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

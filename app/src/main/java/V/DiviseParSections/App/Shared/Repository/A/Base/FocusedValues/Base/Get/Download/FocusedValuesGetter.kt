@@ -19,7 +19,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
-import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable

@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M14VentPeriode
-import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

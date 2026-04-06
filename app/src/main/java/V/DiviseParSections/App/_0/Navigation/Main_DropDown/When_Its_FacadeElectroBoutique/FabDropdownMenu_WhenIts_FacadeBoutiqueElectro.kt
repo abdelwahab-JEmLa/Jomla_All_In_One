@@ -85,13 +85,6 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(
                 }
             )
 
-            // Button: show M8 / M10 data sizes and trigger cleanup on click
-            Fab_CleanupM8AndM10(
-                repositorysMainGetter = repositorysMainGetter,
-                onDismissDropdown = onDismissDropdown,
-                on_vent_key = focusedValuesGetter.currentActive_M9AppCompt?.onVentM8BonVentKey ?: ""
-            )
-
             Fab_Stigns(onClickImageToShowControles, onDismissDropdown)
         }
     }

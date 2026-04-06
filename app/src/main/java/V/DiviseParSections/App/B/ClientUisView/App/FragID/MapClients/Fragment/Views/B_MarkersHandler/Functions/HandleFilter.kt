@@ -1,14 +1,20 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
+import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.Fournisseur_Speciale
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.find_its_Confirmation_de_Transaction
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 fun handleFilterMarkersClick(
     mapView: MapView,
@@ -183,9 +189,29 @@ fun filterClientsBasedOnMode(
         }
     }
 
-    val finalClientsList = (filteredClients + alwaysVisibleClients).distinctBy { it.id }
+    val finalClientsList = (filteredClients + alwaysVisibleClients)
+        .distinctBy { it.id }
+        .filter { !it.isWithin100mOfAmiJamel() }
 
     return finalClientsList
+}
+
+// ─── Ami_Jamel proximity exclusion ───────────────────────────────────────────
+
+private const val AMI_JAMEL_EXCLUSION_RADIUS_METERS = 100.0
+
+private fun M2Client.isWithin100mOfAmiJamel(): Boolean {
+    val jamel = Fournisseur_Speciale.Ami_Jamel
+    return haversineMeters(latitude, longitude, jamel.latitude, jamel.longitude) <= AMI_JAMEL_EXCLUSION_RADIUS_METERS
+}
+
+private fun haversineMeters(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
+    val r = 6_371_000.0
+    val dLat = Math.toRadians(lat2 - lat1)
+    val dLng = Math.toRadians(lng2 - lng1)
+    val a = sin(dLat / 2).pow(2) +
+            cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLng / 2).pow(2)
+    return r * 2 * atan2(sqrt(a), sqrt(1 - a))
 }
 
 private fun getAlwaysVisibleClients(

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import EntreApps.Shared.Models.Client_Speciale
+import EntreApps.Shared.Models.AbdelwahabJomla_Client_Speciale
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import kotlinx.coroutines.launch
@@ -17,7 +17,7 @@ fun cleanupOldBonVents(
         M8BonVent.EtateActuellementEst.Versemment,
     )
 
-    val specialClientKeyIDs = Client_Speciale.entries
+    val specialClientKeyIDs = AbdelwahabJomla_Client_Speciale.entries
         .map { it.keyID }
         .filter { it.isNotEmpty() }
         .toSet()

@@ -1,6 +1,6 @@
 package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.A_PressistatntMainActivityButtons_App4
 
-import EntreApps.Shared.Models.Client_Speciale
+import EntreApps.Shared.Models.AbdelwahabJomla_Client_Speciale
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +13,7 @@ fun cleanupInvalidOperations_Np(
 ) {
     repo10OperationVentCouleur.repoScope.launch {
         try {
-            val specialClientKeyIDs = Client_Speciale.entries
+            val specialClientKeyIDs = AbdelwahabJomla_Client_Speciale.entries
                 .map { it.keyID }
                 .filter { it.isNotEmpty() }
                 .toSet()

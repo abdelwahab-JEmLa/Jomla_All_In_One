@@ -2,25 +2,24 @@ package EntreApps.Shared.Modules.Base
 
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Archive.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Archive.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Archive.A_PolygonCreateur.Models.PolygonGeoLimite
 import V.DiviseParSections.App.Shared.Repository.C_TypeTarificationInfos
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
-import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
@@ -142,7 +141,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
 
     abstract fun e1SecteurDeClientsDao(): E1SecteurDeClientsDao
-    abstract fun polygonGeoLimiteDaoDao(): PolygonGeoLimiteDao
 
     abstract fun a_ProduitInfosDao(): A_ProduitInfosDao
 

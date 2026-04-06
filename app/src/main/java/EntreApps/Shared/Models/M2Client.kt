@@ -205,11 +205,10 @@ data class M2Client(
 }
 
 object Jomla_Clients {
-    val ECHATILLANTS_KEY_ID = Client_Speciale.AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a.keyID
-    const val Au_Command_KEY_ID = ""
+    val ECHATILLANTS_KEY_ID = AbdelwahabJomla_Client_Speciale.AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a.keyID
 }
 
-enum class Client_Speciale(
+enum class AbdelwahabJomla_Client_Speciale(
     val keyID: String = "",
     val autre_nom: String = "",
     val moulahada: String = "",
