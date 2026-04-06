@@ -1,5 +1,9 @@
 package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.A_PressistatntMainActivityButtons_App4
 
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import android.util.Log
@@ -18,12 +22,15 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
@@ -42,21 +49,61 @@ fun Fab_CleanupM8AndM10(
     val sizeM2 = repositorysMainGetter.repo2Client.datasValue.size
     val sizeM10 = repositorysMainGetter.repo10OperationVentCouleur.datasValue.size
     val sizeM11 = repositorysMainGetter.repo11AchatOperation.datasValue.size
-    val sizeM13 = repositorysMainGetter.repo13TarificationInfos.datasValue.size
+    val datasValue_repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos.datasValue
+    val sizeM13 = datasValue_repo13TarificationInfos.size
+    val allColors    = repositorysMainGetter.repo3CouleurProduit.datasValue
+    val allTariffs   = repositorysMainGetter.repo13TarificationInfos.datasValue
+    val allProducts  = repositorysMainGetter.repo1ProduitInfos.datasValue
+    val allCategories = repositorysMainGetter.repoM16CategorieProduit.datasValue
 
-    // Badge counts: approximate (no file I/O in composition) — mirrors the two conditions
-    // used in moveColorsWithoutImagesToNonActive (tariff check + name-presence proxy for image).
-    val productIdsWithTariff = repositorysMainGetter.repo13TarificationInfos.datasValue
+    var list_m3 by remember(repositorysMainGetter.repo3CouleurProduit.datasValue.size) {
+        mutableStateOf(repositorysMainGetter.repo3CouleurProduit.datasValue) }
+
+    val produitById    = emptyList<M01Produit>().associateBy { it.keyID }
+    val categorieById  = emptyList<M16CategorieProduit>().associateBy { it.id }
+    val catalogueById  = get_ListM21CataloguesCategorie().associateBy { it.id }
+
+    val m1_keys_dispo_in_m13  = datasValue_repo13TarificationInfos.map { it.parent_M1Produit_KeyId }
+
+    fun catalogueKeyOf(color: M3CouleurProduitInfos) =
+        produitById[color.parentBProduitInfosKeyID]
+            ?.let { categorieById[it.idParentCategorie] }
+            ?.let { catalogueById[it.catalogueParentId] }
+
+
+    val size_ac_no_drp  by derivedStateOf {
+        list_m3.filter {
+            it.dropBox_key.isNotEmpty()
+        }.size
+    }
+
+    val size_t3_cate  by derivedStateOf {
+        list_m3.associateBy { catalogueKeyOf(it) }
+    }
+
+    val list_m3_size_after_clean  by derivedStateOf {
+        list_m3.filter {
+            it.dropBox_key.isNotEmpty()   //<--
+            //TODO(1): comme fait on utilison ma logiqe
+        }
+    }
+
+    val productIdsWithTariff = datasValue_repo13TarificationInfos
         .filter { !it.typeChoisi.ignore_affiche && it.prixCurrency > 0 }
         .map { it.parent_M1Produit_KeyId }.toSet()
 
     val colorsToMoveIds = repositorysMainGetter.repo3CouleurProduit.datasValue
         .filter { color ->
-            color.nomImageFichieSansEtansion.isBlank() ||
-                    color.nomImageFichieSansEtansion == "Non Dispo" ||
-                    color.parentBProduitInfosKeyID !in productIdsWithTariff
+            val productExists = repositorysMainGetter.repo1ProduitInfos
+                .datasValue.any { it.keyID == color.parentBProduitInfosKeyID }
+            if (!productExists) return@filter false
+
+            color.parentBProduitInfosKeyID !in productIdsWithTariff ||
+                    color.nomImageFichieSansEtansion.isBlank() ||
+                    color.nomImageFichieSansEtansion == "Non Dispo"
         }
         .map { it.keyID }.toSet()
+
     val sizeNoImage = colorsToMoveIds.size
     val sizeM3AfterImageMove = sizeM3 - sizeNoImage
 
@@ -78,11 +125,11 @@ fun Fab_CleanupM8AndM10(
             colors.isNotEmpty() && product.keyID !in activeColorProductIds
         }
         .map { it.keyID }.toSet()
-    val sizeM13MovedWithImages = repositorysMainGetter.repo13TarificationInfos.datasValue
+    val sizeM13MovedWithImages = datasValue_repo13TarificationInfos
         .count { it.parent_M1Produit_KeyId in inactiveProductIds }
     val sizeM13AfterImageMove = sizeM13 - sizeM13MovedWithImages
 
-    val duplicateTariffCount = repositorysMainGetter.repo13TarificationInfos.datasValue
+    val duplicateTariffCount = datasValue_repo13TarificationInfos
         .groupBy { Pair(it.typeChoisi, it.parent_M1Produit_KeyId) }
         .values.filter { it.size > 1 }
         .sumOf { it.size - 1 }
@@ -98,7 +145,6 @@ fun Fab_CleanupM8AndM10(
     var isRunningM13 by remember { mutableStateOf(false) }
     var isRunningM2 by remember { mutableStateOf(false) }
     var progressNoImage by remember { mutableStateOf<Float?>(null) }
-    // TODO(1): summary text emitted by moveColorsWithoutImagesToNonActive after it finishes
     var summaryText by remember { mutableStateOf("") }
 
     Box {
@@ -173,30 +219,25 @@ fun Fab_CleanupM8AndM10(
                 },
                 text = {
                     Text(
-                        text = when {
-                            isRunningM8M10 -> "Running…"
-                            confirmM8M10   -> "Sure? Tap again to confirm  ⚠️"
-                            else           -> "Cleanup  M8: $sizeM8  |  M10: $sizeM10  |  M11: $sizeM11  "
-                        },
+                        text = if (isRunningM8M10) "Running…"
+                        else if (confirmM8M10) "Confirmer suppression M8/M10/M11 ?"
+                        else "Cleanup M8 / M10 / M11  |  M8: $sizeM8  M10: $sizeM10  M11: $sizeM11",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = when {
-                            isRunningM8M10 -> MaterialTheme.colorScheme.outline
-                            confirmM8M10   -> MaterialTheme.colorScheme.error
-                            else           -> MaterialTheme.colorScheme.onSurface
-                        }
+                        color = if (isRunningM8M10) MaterialTheme.colorScheme.outline
+                        else if (confirmM8M10) MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.onSurface
                     )
                 },
                 enabled = !isRunningM8M10,
                 onClick = {
                     if (isRunningM8M10) return@DropdownMenuItem
                     if (!confirmM8M10) { confirmM8M10 = true; return@DropdownMenuItem }
-
-                    isRunningM8M10 = true
                     confirmM8M10 = false
+                    isRunningM8M10 = true
 
                     Log.d(TAG_CLEANUP, "── onClick START ──────────────────────────────")
-                    Log.d(TAG_CLEANUP, "on_vent_key='$on_vent_key'")
-                    Log.d(TAG_CLEANUP, "M8 size=${repositorysMainGetter.repo8BonVent.datasValue.size}  " +
+                    Log.d(TAG_CLEANUP,
+                        "M8 size=${repositorysMainGetter.repo8BonVent.datasValue.size}  " +
                             "M10 size=${repositorysMainGetter.repo10OperationVentCouleur.datasValue.size}  " +
                             "M11 size=${repositorysMainGetter.repo11AchatOperation.datasValue.size}")
 
@@ -271,8 +312,34 @@ fun Fab_CleanupM8AndM10(
                 }
             )
 
-            // ── M3 colors without images → move to non-active ────────────────
+            val produitById    = emptyList<M01Produit>().associateBy { it.keyID }
+            val categorieById  = emptyList<M16CategorieProduit>().associateBy { it.id }
+            val catalogueById  = get_ListM21CataloguesCategorie().associateBy { it.id }
+
+            val m1_keys_dispo_in_m13  = datasValue_repo13TarificationInfos.map { it.parent_M1Produit_KeyId }
+
+            fun catalogueKeyOf(color: M3CouleurProduitInfos) =
+                produitById[color.parentBProduitInfosKeyID]
+                    ?.let { categorieById[it.idParentCategorie] }
+                    ?.let { catalogueById[it.catalogueParentId] }
+
+
+            val size_ac_no_drp  by derivedStateOf {
+                list_m3.filter {
+                    it.dropBox_key.isNotEmpty()
+                }.size
+            }
+
+            val size_t3_cate  by derivedStateOf {
+                list_m3.associateBy { catalogueKeyOf(it) }
+            }
+
+
             DropdownMenuItem(
+                modifier = Modifier.semantics(mergeDescendants = true) {
+                    set(value = size_ac_no_drp, key = SemanticsPropertyKey("size_ac_no_drp"))
+                    set(value = size_t3_cate, key = SemanticsPropertyKey("size_t3_cate"))
+                },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.ImageNotSupported,
@@ -314,10 +381,8 @@ fun Fab_CleanupM8AndM10(
                             progressNoImage = fraction
                             if (fraction >= 1f) {
                                 progressNoImage = null
-                                // stay open so user can read the summary; they can dismiss manually
                             }
                         },
-                        // TODO(1): receive and store summary so header can display it
                         onSummary = { text ->
                             summaryText = text
                         }
@@ -356,7 +421,7 @@ fun Fab_CleanupM8AndM10(
                     isRunningM13 = true
                     cleanupDuplicateTariffs(
                         repo13TarificationInfos = repositorysMainGetter.repo13TarificationInfos,
-                        tariffs = repositorysMainGetter.repo13TarificationInfos.datasValue,
+                        tariffs = datasValue_repo13TarificationInfos,
                         onDone = {
                             isRunningM13 = false
                             showSubMenu = false

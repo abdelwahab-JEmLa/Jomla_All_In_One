@@ -60,7 +60,11 @@ data class M00CentralParametresOfAllApps(
     //<--
     //TODO(1): 
 //<--
-//TODO(1): fait que start tariff c Prix_SupperGro_Et_PresentationService acun n ai selectione
+//TODO(1): fait que start tariff c Prix_SupperGro_Et_PresentationService acun n ai selectione  //<--
+//TODO(1): ajou t au utidion un createur du xml qui cree l image //<--
+//TODO(1): enlve l historique et signature 
+//extracy l app 
+//utilis eles mutable state get depuit fire base 
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
 //────────────────────────────au_Lence_Set_Compt_Ac_KeyId──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val au_Lence_Set_Compt_Ac_KeyId: String = Compts.AbdelwahabTravailleChezGros_KeyId.keyId,

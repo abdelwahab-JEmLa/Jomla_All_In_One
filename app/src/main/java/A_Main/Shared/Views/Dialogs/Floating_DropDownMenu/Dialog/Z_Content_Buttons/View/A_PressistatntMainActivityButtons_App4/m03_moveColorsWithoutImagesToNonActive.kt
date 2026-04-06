@@ -5,6 +5,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -12,14 +13,14 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
 
+private const val TAG_M3 = "M3Cleanup"
+
 private fun M3CouleurProduitInfos.hasBackupImage(catalogueKeyId: String): Boolean =
     File(
         M3CouleurProduitInfos.backup_Images_storageLink,
         "$catalogueKeyId/$nomImageFichieSansEtansion.$extensionDisponible"
     ).exists()
 
-// Returns true when this color is missing its backup image in ALL catalogue folders.
-// A color must have an image present in every catalogue folder to be considered valid.
 private fun M3CouleurProduitInfos.isMissingImageInAnyCatalogue(): Boolean {
     val hasName = nomImageFichieSansEtansion.isNotBlank() && nomImageFichieSansEtansion != "Non Dispo"
     if (!hasName) return true
@@ -38,6 +39,8 @@ fun moveColorsWithoutImagesToNonActive(
     val allTariffs   = repositorysMainGetter.repo13TarificationInfos.datasValue
     val allProducts  = repositorysMainGetter.repo1ProduitInfos.datasValue
     val allCategories = repositorysMainGetter.repoM16CategorieProduit.datasValue
+
+    Log.d(TAG_M3, "START — M3=${allColors.size}  M1=${allProducts.size}  M13=${allTariffs.size}  cats=${allCategories.size}")
 
     fun catalogueKeyOf(color: M3CouleurProduitInfos): String {
         var productKeyId: Long = -1
@@ -71,15 +74,28 @@ fun moveColorsWithoutImagesToNonActive(
         }
     }
 
+    val noCatalogue    = allColors.count { catalogueKeyOf(it).isEmpty() }
+    val noTariff       = allColors.count { c -> catalogueKeyOf(c).isNotEmpty() && c.parentBProduitInfosKeyID !in productIdsWithTariff }
+    val missingImgOnly = allColors.count { c ->
+        catalogueKeyOf(c).isNotEmpty() &&
+        c.parentBProduitInfosKeyID in productIdsWithTariff &&
+        c.isMissingImageInAnyCatalogue()
+    }
+    Log.d(TAG_M3, "filter breakdown — noCatalogue=$noCatalogue  noTariff=$noTariff  hasTariff+missingBackupImg=$missingImgOnly")
+    Log.d(TAG_M3, "badge est. (string-only) ≈ ${noTariff + allColors.count { c -> catalogueKeyOf(c).isNotEmpty() && c.parentBProduitInfosKeyID !in productIdsWithTariff || (c.nomImageFichieSansEtansion.isBlank() || c.nomImageFichieSansEtansion == "Non Dispo") }}")
+
     val colorsToMove = allColors.filter { color ->
         val catalogueKey = catalogueKeyOf(color)
-        if (catalogueKey.isEmpty()) return@filter false
+        //if (catalogueKey.isEmpty()) return@filter false
 
         val hasTariff = color.parentBProduitInfosKeyID in productIdsWithTariff
         if (!hasTariff) return@filter true
 
-        color.isMissingImageInAnyCatalogue()        // missing image in any folder → move
+        color.dropBox_key.isNotBlank()
     }.distinctBy { it.keyID }
+
+
+    Log.d(TAG_M3, "colorsToMove=${colorsToMove.size}  (noTariff=$noTariff + missingImg=$missingImgOnly = ${noTariff + missingImgOnly}, distinctBy deduped=${noTariff + missingImgOnly - colorsToMove.size})")
 
     if (colorsToMove.isEmpty()) {
         onSummary("Aucun changement — données déjà propres ✓")
@@ -87,7 +103,6 @@ fun moveColorsWithoutImagesToNonActive(
         return
     }
 
-    // Snapshot before-counts for summary — computed here before anything is deleted
     val beforeM3  = allColors.size
     val beforeM1  = allProducts.size
     val beforeM13 = allTariffs.size
@@ -147,7 +162,6 @@ fun moveColorsWithoutImagesToNonActive(
             } catch (_: Exception) { }
         }
 
-        // TODO(1): build and emit the before→after summary text
         val afterM3  = beforeM3  - colorsToMove.size
         val afterM1  = beforeM1  - productsToMove.size
         val afterM13 = beforeM13 - tariffsToMove.size
