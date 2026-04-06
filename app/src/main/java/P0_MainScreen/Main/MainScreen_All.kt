@@ -1,5 +1,6 @@
 package P0_MainScreen.Main
 
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Floating_Separated_Button
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M14VentPeriode
@@ -461,6 +462,12 @@ fun MainScreen_All(
 
                 if (isHostPhone && shouldShowContent && !hideAppScreen) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
+                    val getter = aCentralFacade.repositorysMainGetter
+                    Floating_Separated_Button(
+                        list_m16 = getter.repoM16CategorieProduit.datasValue,
+                        list_m1 = getter.repoM1Produit.datasValue,
+                        list_m3 = getter.repo3CouleurProduit.datasValue,
+                    )
                 }
 
 

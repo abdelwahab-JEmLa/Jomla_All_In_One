@@ -17,8 +17,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class M13TarificationInfos(
-    //<--
-//TODO(1): mem chose pour ca au move des parent produit tariffs au ref_NonActiveDatas
+
     @PrimaryKey
     val keyID: String = M09AppCompt.Companion.getPushFireBase(ref),
 

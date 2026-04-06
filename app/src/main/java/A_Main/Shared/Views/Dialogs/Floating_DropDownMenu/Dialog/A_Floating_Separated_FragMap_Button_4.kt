@@ -28,8 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
@@ -62,6 +64,7 @@ fun Floating_Separated_Button(
     val isShowingAll = true
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
 
+    val haptic = LocalHapticFeedback.current
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
@@ -89,7 +92,10 @@ fun Floating_Separated_Button(
             ) {
                 FloatingActionButton(
                     modifier = Modifier.size(48.dp),
-                    onClick = { showDropdown = true },
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showDropdown = true
+                    },
                     containerColor = if (updatedButtonState.its_Active)
                         updatedButtonState.colors.second
                     else

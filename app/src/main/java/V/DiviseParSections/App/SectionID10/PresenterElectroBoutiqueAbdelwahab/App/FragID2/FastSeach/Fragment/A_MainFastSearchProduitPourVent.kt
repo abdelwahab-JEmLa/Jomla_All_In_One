@@ -354,12 +354,7 @@ fun MainFastSearchProduitPourVent(
 
             }
 
-            val getter = aCentralFacade.repositorysMainGetter
-            Floating_Separated_Button(
-                list_m16 = getter.repoM16CategorieProduit.datasValue,
-                list_m1 = getter.repoM1Produit.datasValue,
-                list_m3 = getter.repo3CouleurProduit.datasValue,
-            )
+
 
             val currentActive_M9AppCompt = focusedValuesGetter.currentActive_M9AppCompt
             val affiche_Dialog_Fast_Affiche_Panie_App4 = currentActive_M9AppCompt?.affiche_Dialog_Fast_Affiche_Panie_App4
