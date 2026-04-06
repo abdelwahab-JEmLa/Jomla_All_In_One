@@ -347,6 +347,7 @@ class MapClientsViewModel(
         }
     }
 
+
     fun cancelActiveOperations() {
         try {
             mapReloadTrigger++
