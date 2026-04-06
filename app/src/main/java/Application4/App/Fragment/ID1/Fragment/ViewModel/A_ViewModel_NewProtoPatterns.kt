@@ -97,49 +97,23 @@ class A_ViewModel_NewProtoPatterns(
         val currentBonVent = active_Datas.activeOnVent_M8BonVent
         val isGrossist = active_Datas.currentApp_ItsWorkChezGrossisst
 
-        if (isGrossist || currentBonVent == null || synthetic == null) {
-            android.util.Log.d(
-                "TariffFix",
-                "[maybeCreate] SKIP — isGrossist=$isGrossist bonVent=${currentBonVent?.keyID} synthetic=${synthetic?.keyID}"
-            )
-            return null
-        }
+        if (isGrossist || currentBonVent == null || synthetic == null) return null
         if (datasValue_distinct_type.any {
                 it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
                         it.parent_M8BonVent_KeyId == currentBonVent.keyID &&
                         it.parent_M1Produit_KeyId == produit.keyID
-            }) {
-            android.util.Log.d(
-                "TariffFix",
-                "[maybeCreate] SKIP — Edited_Pour_Client already exists for produit=${produit.keyID} bonVent=${currentBonVent.keyID}"
-            )
-            return null
-        }
+            }) return null
 
         val currentClient = active_Datas.activeOnVent_M2Client
         val clientBonVents = active_Datas.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
             .filter { it.parent_M2Client_KeyID == currentClient?.keyID }
             .sortedByDescending { it.creationTimestamps }
 
-        if (clientBonVents.firstOrNull()?.keyID != currentBonVent.keyID) {
-            android.util.Log.d(
-                "TariffFix",
-                "[maybeCreate] SKIP — bonVent is not the latest for client=${currentClient?.keyID}"
-            )
-            return null
-        }
-        val age = System.currentTimeMillis() - currentBonVent.creationTimestamps
-        if (age >= 5 * 60 * 1000) {
-            android.util.Log.d(
-                "TariffFix",
-                "[maybeCreate] SKIP — bonVent too old (${age / 1000}s) bonVent=${currentBonVent.keyID}"
-            )
-            return null
-        }
+        if (clientBonVents.firstOrNull()?.keyID != currentBonVent.keyID) return null
+        if (System.currentTimeMillis() - currentBonVent.creationTimestamps >= 5 * 60 * 1000) return null
 
         val now = System.currentTimeMillis()
         val newTariff = synthetic.copy(
-            // ── BUG FIX: was missing — copy kept Prix_Progressive_Editable ──
             typeChoisi = M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
             parent_M8BonVent_KeyId = currentBonVent.keyID,
             parent_M8BonVent_DebugInfos = currentBonVent.get_DebugInfos(),
@@ -147,10 +121,6 @@ class A_ViewModel_NewProtoPatterns(
             parent_M2Client_DebugInfos = currentClient?.nom ?: "null",
             creationTimestamps = now,
             dernierTimeTampsSynchronisationAvecFireBase = now
-        )
-        android.util.Log.d(
-            "TariffFix",
-            "[maybeCreate] CREATED Edited_Pour_Client keyID=${newTariff.keyID} prix=${newTariff.prixCurrency} produit=${produit.keyID} bonVent=${currentBonVent.keyID}"
         )
         update_M13TarificationInfos(newTariff)
         return newTariff
