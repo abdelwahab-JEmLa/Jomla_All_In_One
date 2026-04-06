@@ -1,5 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler
 
+import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
@@ -7,11 +10,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.get_sum_Bon_Vents
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
@@ -26,13 +26,28 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
+private const val PROXIMITY_FILTER_RADIUS_METERS = 1000.0
+
+/**
+ * Rebuilds map markers according to [currentFilterMode].
+ *
+ * When [proximityFilterCenter] is non-null (i.e. the user has scrolled more than
+ * 20 m since the map was last anchored) an additional pass keeps only markers
+ * whose client lies within [PROXIMITY_FILTER_RADIUS_METERS] (1 km) of that centre.
+ */
 fun addOuUpdateMapMarkers(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     mapView: MapView,
     currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     showMarkerDetails: Boolean,
+    proximityFilterCenter: GeoPoint?,
 ) {
     val clientDataBaseSnapList = uiState.b_ClientInfosProtoJuin3List
 
@@ -45,7 +60,23 @@ fun addOuUpdateMapMarkers(
 
     val locationOverlay = preserveLocationOverlay(mapView)
 
-    val clientsToShow = filterClientsBasedOnMode(viewModel, currentFilterMode)
+    // 1. Apply the active filter mode (existing logic unchanged)
+    val modeFilteredClients = filterClientsBasedOnMode(viewModel, currentFilterMode)
+
+    // 2. When the user has scrolled > 20 m, additionally keep only clients
+    //    within 1 km of the current map centre.
+    val clientsToShow = if (proximityFilterCenter != null) {
+        modeFilteredClients.filter { client ->
+            haversineMeters(
+                proximityFilterCenter.latitude,
+                proximityFilterCenter.longitude,
+                client.latitude,
+                client.longitude,
+            ) <= PROXIMITY_FILTER_RADIUS_METERS
+        }
+    } else {
+        modeFilteredClients
+    }
 
     addMarkersForFilteredClients(
         mapView,
@@ -464,4 +495,17 @@ private fun restoreLocationOverlayAtBottom(mapView: MapView, locationOverlay: An
         mapView.overlays.remove(overlay)
         mapView.overlays.add(0, overlay as Overlay?)
     }
+}
+
+/** Haversine distance in metres between two lat/lng points. */
+private fun haversineMeters(
+    lat1: Double, lng1: Double,
+    lat2: Double, lng2: Double,
+): Double {
+    val r = 6_371_000.0
+    val dLat = Math.toRadians(lat2 - lat1)
+    val dLng = Math.toRadians(lng2 - lng1)
+    val a = sin(dLat / 2).pow(2) +
+            cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLng / 2).pow(2)
+    return r * 2 * atan2(sqrt(a), sqrt(1 - a))
 }

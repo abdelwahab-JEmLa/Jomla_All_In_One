@@ -3,15 +3,15 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.FlowsFunctions_ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
-import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
+import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Archive.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Archive.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Update.deleteData
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import java.util.Date
 
@@ -56,6 +57,8 @@ data class UiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val m2Client_In_ShowEditMarkerMode: M2Client? = null,
+    /** Set by the FAB reload button; drives the 1 km proximity filter in MapContent. */
+    val proximityFilterCenter: GeoPoint? = null,
 )
 
 class MapClientsViewModel(
@@ -308,6 +311,22 @@ class MapClientsViewModel(
         showAlimentionlients(LottieJsonGetterR_Raw_Icons.alimentation),
         showClientsWithConfirmedProducts(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
+    }
+
+    // ===============================================
+    // PROXIMITY FILTER (1 km around map centre)
+    // ===============================================
+
+    /**
+     * Called by the FAB reload button.
+     * Stores [centerLat]/[centerLng] as the new proximity-filter anchor so that
+     * [MapContent] re-renders only the markers within 1 km of this point.
+     */
+    fun relod_map_marques_du_1km_du_centre_map(centerLat: Double, centerLng: Double) {
+        _uiState.value = _uiState.value.copy(
+            proximityFilterCenter = GeoPoint(centerLat, centerLng)
+        )
+        mapReloadTrigger++
     }
 
     // ===============================================

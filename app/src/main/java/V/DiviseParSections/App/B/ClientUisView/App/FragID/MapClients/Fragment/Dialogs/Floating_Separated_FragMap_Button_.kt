@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.GpsNotFixed
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -32,11 +33,15 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
+import org.osmdroid.views.MapView
 import kotlin.math.roundToInt
 
 @Composable
 fun Floating_Separated_FragMap_Button_2(
+    mapView: MapView,
     aCentralFacade: ACentralFacade = koinInject(),
+    viewModel: MapClientsViewModel= koinInject(),
+
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     buttonState: Button_State = Button_State.get_Default().copy(
         text_Label = "GPS Follow Mode",
@@ -93,10 +98,8 @@ fun Floating_Separated_FragMap_Button_2(
                 }
                 FloatingActionButton(
                     modifier = Modifier
-                        .getSemanticsTag(updatedButtonState, "gpsFollowButtonState")
                         .size(48.dp),
                     onClick = {
-                        // FIXED: Toggle GPS follow mode instead of click_On_Marque
                         val newValues = currentValues.copy(
                             gps_follow_mode_active = !isGpsFollowActive
                         )
@@ -113,6 +116,26 @@ fun Floating_Separated_FragMap_Button_2(
                         else
                             updatedButtonState.icons.first, // GpsNotFixed when inactive
                         contentDescription = if (isGpsFollowActive) "Disable GPS Follow" else "Enable GPS Follow",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                //<-- Reload: show only markers within 1 km of the current map centre
+                FloatingActionButton(
+                    modifier = Modifier.size(48.dp),
+                    onClick = {
+                        val center = mapView.mapCenter
+                        viewModel.relod_map_marques_du_1km_du_centre_map(
+                            centerLat = center.latitude,
+                            centerLng = center.longitude,
+                        )
+                    },
+                    containerColor = Color(0xFF1565C0),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Reload markers within 1 km",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
