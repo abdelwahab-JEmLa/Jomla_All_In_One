@@ -39,8 +39,7 @@ fun A_Item_Produit_App4(
     onCategoryClick: (() -> Unit)? = null,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     relative_ListM3Couleurs_override: List<M3CouleurProduitInfos>? = null,
-) {         //<--
-//TODO(1):enleve les commantaire et logs et les sementics pour but de consise le max possible  tallie du code sans change le foctionemen
+) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
     val centralValues = viewModel.active_Datas
@@ -55,16 +54,9 @@ fun A_Item_Produit_App4(
 
     val isEchatillantsMode = centralValues.isEchatillantsMode
 
-
-    val relative_ListM3Couleurs = remember(
-        allColorsForProduit,
-        isEchatillantsMode,
-    ) {
-        if (isEchatillantsMode) {
-            allColorsForProduit.filter { it.its_in_echantiallants == true }
-        } else {
-            allColorsForProduit
-        }
+    val relative_ListM3Couleurs = remember(allColorsForProduit, isEchatillantsMode) {
+        if (isEchatillantsMode) allColorsForProduit.filter { it.its_in_echantiallants == true }
+        else allColorsForProduit
     }
 
     val expanded_M1Produit = wifiState.expanded_M1Produit
@@ -73,7 +65,7 @@ fun A_Item_Produit_App4(
     val isThisProductExpanded = remember(expanded_M1Produit) {
         expanded_M1Produit?.keyID == relative_M1produit.keyID
     }
-    val shouldShowButtons = true // compactMode = !isThisProductExpanded gère le layout
+    val shouldShowButtons = true
 
     val initialColorIndex = remember(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
@@ -105,7 +97,6 @@ fun A_Item_Produit_App4(
         }
     }
 
-
     val datasValue_distinct_type =
         uiState.list_M13TarificationInfos
             .filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
@@ -126,10 +117,6 @@ fun A_Item_Produit_App4(
                 it.prixCurrency != 0.0
     }
 
-    // Prefer an Edited_Pour_Client over the generic supperGro/detaille defaults.
-    // datasValue_distinct_type already holds at most one entry per typeChoisi
-    // (the most recent by creationTimestamps), so no further bon-vent filtering
-    // is needed here — we always want the latest client-specific price pre-selected.
     val editedPourClient = datasValue_distinct_type.find {
         it.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
                 it.prixCurrency != 0.0
@@ -142,16 +129,7 @@ fun A_Item_Produit_App4(
         )
     }
 
-    // Priority: client-specific edited price > supperGro > detaille > editable chip
     val tariff_algorithme_De_Start = editedPourClient ?: supperGro ?: detaille
-
-    android.util.Log.d(
-        "TariffFix",
-        "[tariff_algorithme_De_Start] produit=${relative_M1produit.keyID} " +
-                "editedPourClient=${editedPourClient?.keyID} " +
-                "supperGro=${supperGro?.keyID} detaille=${detaille?.keyID} " +
-                "→ selected=${tariff_algorithme_De_Start?.keyID} type=${tariff_algorithme_De_Start?.typeChoisi}"
-    )
 
     var selectedTariffKeyID by remember(tariff_algorithme_De_Start?.keyID) {
         mutableStateOf(tariff_algorithme_De_Start?.keyID ?: new_Prix_Progressive_Editable.keyID)
@@ -170,9 +148,6 @@ fun A_Item_Produit_App4(
     if (safeIndex != big_presenter_couleur_produit) big_presenter_couleur_produit = safeIndex
     val selectedCouleur = relative_ListM3Couleurs[safeIndex]
 
-    // Guard flag: once the user explicitly taps a tariff chip we must not let the
-    // async DB-update LaunchedEffect race back and overwrite their choice.
-    // Resets automatically whenever the product or the active colour changes.
     var isUserManuallySelectedTariff by remember(relative_M1produit.keyID, selectedCouleur.keyID) {
         mutableStateOf(false)
     }
@@ -188,34 +163,13 @@ fun A_Item_Produit_App4(
     }
 
     LaunchedEffect(activeM10ForSelectedCouleur) {
-        if (isUserManuallySelectedTariff) {
-            android.util.Log.d(
-                "TariffFix",
-                "[LaunchedEffect] SKIPPED — user already manually selected tariff=$selectedTariffKeyID  produit=${relative_M1produit.keyID}"
-            )
-            return@LaunchedEffect
-        }
-        val opTariffKeyID = activeM10ForSelectedCouleur?.parentM13TarificationKeyID ?: run {
-            android.util.Log.d(
-                "TariffFix",
-                "[LaunchedEffect] no active M10 for couleur=${selectedCouleur.keyID} — nothing to sync"
-            )
-            return@LaunchedEffect
-        }
+        if (isUserManuallySelectedTariff) return@LaunchedEffect
+        val opTariffKeyID = activeM10ForSelectedCouleur?.parentM13TarificationKeyID
+            ?: return@LaunchedEffect
         if (datasValue_distinct_type.any { it.keyID == opTariffKeyID }) {
-            android.util.Log.d(
-                "TariffFix",
-                "[LaunchedEffect] SYNCING selectedTariffKeyID: $selectedTariffKeyID → $opTariffKeyID  produit=${relative_M1produit.keyID}"
-            )
             selectedTariffKeyID = opTariffKeyID
-        } else {
-            android.util.Log.d(
-                "TariffFix",
-                "[LaunchedEffect] opTariffKeyID=$opTariffKeyID not found in datasValue_distinct_type — no sync"
-            )
         }
     }
-
 
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
 
@@ -245,20 +199,13 @@ fun A_Item_Produit_App4(
             section_ToggleButton_TagPreiorities__start_Collapsed = viewModel.active_Datas.section_ToggleButton_TagPrioriter__start_Collapsed == true
         )
 
-
         Big_Principale_FragID3(
             uiState_NewProtoPatterns_viewModel,
             relative_M1produit = relative_M1produit,
             selectedCouleur = selectedCouleur,
             selectedTariff = selectedTariff,
             onTariffSelected = { newTariff ->
-                // Mark as manual so the async LaunchedEffect does not race back and
-                // overwrite this selection before the DB write has propagated.
                 isUserManuallySelectedTariff = true
-                android.util.Log.d(
-                    "TariffFix",
-                    "[onTariffSelected] user picked tariff=${newTariff.keyID} type=${newTariff.typeChoisi}  produit=${relative_M1produit.keyID}"
-                )
 
                 val parentM13TarificationKeyID =
                     if (newTariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) "Prix_Progressive_Editable Non Saved"
@@ -266,35 +213,17 @@ fun A_Item_Produit_App4(
 
                 selectedTariffKeyID = newTariff.keyID
 
-                // Si c'est un Prix_Progressive_Editable, on tente de créer un Edited_Pour_Client
-                // persisté (no-op si un existe déjà pour ce bon vent + produit).
                 if (newTariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable) {
                     val createdTariff = viewModel.maybeCreateEditedPourClientTariff(
                         produit = relative_M1produit,
                         synthetic = newTariff,
                         datasValue_distinct_type = datasValue_distinct_type.toList(),
                     )
-                    android.util.Log.d(
-                        "TariffFix",
-                        "[onTariffSelected] maybeCreate → createdTariff=${createdTariff?.keyID} " +
-                                "type=${createdTariff?.typeChoisi} prix=${createdTariff?.prixCurrency} " +
-                                "produit=${relative_M1produit.keyID} bonVent=${viewModel.active_Datas.activeOnVent_M8BonVent?.keyID}"
-                    )
-                    // BUG FIX: select the newly saved Edited_Pour_Client so the chip
-                    // highlights correctly (previously selectedTariffKeyID stayed on the
-                    // synthetic Prix_Progressive_Editable keyID which is not in the list).
                     if (createdTariff != null) {
                         selectedTariffKeyID = createdTariff.keyID
-                        android.util.Log.d(
-                            "TariffFix",
-                            "[onTariffSelected] selectedTariffKeyID updated → ${createdTariff.keyID} (Edited_Pour_Client)"
-                        )
                     }
                 }
 
-                // On ne propage le tarif aux opérations existantes QUE si le prix est réel.
-                // Un prix à 0.0 (Edited_Pour_Client fraîchement créé ou pas encore renseigné)
-                // ne doit jamais écraser le prix déjà sauvegardé dans les M10.
                 val currentList = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
                 val affected = currentList?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
                 if (!affected.isNullOrEmpty() && newTariff.prixCurrency > 0.0) {
@@ -309,15 +238,13 @@ fun A_Item_Produit_App4(
                             )
                         else op
                     }
-
                     viewModel.update_listM10OperationVentCouleur(updatedList)
                 }
             },
             tariffsList = datasValue_distinct_type,
             isThisProductExpanded = isThisProductExpanded,
             shouldShowButtons = shouldShowButtons,
-
-            )
+        )
 
         if (relative_ListM3Couleurs.size > 1) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -336,7 +263,6 @@ fun A_Item_Produit_App4(
                                 couleur = couleur,
                                 relative_M1produit = relative_M1produit,
                                 selectedTariff = selectedTariff,
-
                                 isExpanded = true,
                                 modifier = Modifier.weight(1f, fill = false),
                                 shouldShowButtons = shouldShowButtons,
@@ -356,7 +282,6 @@ fun A_Item_Produit_App4(
                                 couleur = couleur,
                                 relative_M1produit = relative_M1produit,
                                 selectedTariff = selectedTariff,
-
                                 shouldShowButtons = shouldShowButtons,
                                 isExpanded = false,
                                 modifier = Modifier.fillMaxWidth()
