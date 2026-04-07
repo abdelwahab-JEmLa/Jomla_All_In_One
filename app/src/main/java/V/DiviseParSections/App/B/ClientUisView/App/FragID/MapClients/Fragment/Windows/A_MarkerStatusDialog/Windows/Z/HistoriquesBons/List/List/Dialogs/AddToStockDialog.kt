@@ -125,7 +125,7 @@ fun AddToStockDialog(
     )
 }
 
-private fun add_Bon_Au_Stock(
+fun add_Bon_Au_Stock(
     repositorysMainGetter: RepositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter,
     relative_M8BonVent: M8BonVent,

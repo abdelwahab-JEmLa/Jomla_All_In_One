@@ -75,7 +75,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     isAvailable: Boolean = true,
     compact_taille: Boolean = false,
     show_depot_card_on_top_in_flow_row: Boolean = false,
-    is_admin: Boolean = false,
+    is_admin: Boolean = true,
     add_spacing_between_depot_and_sale: Boolean = false,
     on_admin_depot_update: (Int) -> Unit = {},
     modifier: Modifier = Modifier,

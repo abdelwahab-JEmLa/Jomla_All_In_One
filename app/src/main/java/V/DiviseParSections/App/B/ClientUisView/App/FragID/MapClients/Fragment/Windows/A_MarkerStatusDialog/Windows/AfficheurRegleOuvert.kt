@@ -5,6 +5,7 @@ import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View.Buttons.View.But2_Add_Rapide
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View.Buttons.View.Button_StockOptions_SubtractFromDepot
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -120,6 +121,16 @@ fun AfficheurRegleOuvert(
 
                 relative_M8BonVent?.let {
                     Button_StockOptions_SubtractFromDepot(
+                        onDismiss = { showStockOptionsDialog = false },
+                        repositorysMainGetter = repositorysMainGetter,
+                        repositorysMainSetter = aCentralFacade.repositorysMainSetter,
+                        relative_M8BonVent = it,
+                        context = context,
+                    )
+                }
+
+                relative_M8BonVent?.let {
+                    But2_Add_Rapide(
                         onDismiss = { showStockOptionsDialog = false },
                         repositorysMainGetter = repositorysMainGetter,
                         repositorysMainSetter = aCentralFacade.repositorysMainSetter,
