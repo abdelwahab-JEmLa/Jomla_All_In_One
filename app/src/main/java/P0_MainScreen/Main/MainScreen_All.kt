@@ -1,6 +1,8 @@
 package P0_MainScreen.Main
 
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Floating_Separated_Button
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M14VentPeriode
@@ -77,7 +79,9 @@ fun MainScreen_All(
     repo14VentPeriode: Repo14VentPeriode = aCentralFacade.repositorysMainGetter.repo14VentPeriode,
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
+    panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject(),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
     val navigationHandler = koinInject<FragmentNavigationHandler>()
@@ -354,6 +358,7 @@ fun MainScreen_All(
                                 }
                             } else {
                                 AppNavHost(
+                                    viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                                     isWifiClientConnected_1 = isWifiClientConnected_1,
                                     modifier = Modifier.fillMaxSize(),
                                     viewModel = headViewModel,
@@ -461,9 +466,12 @@ fun MainScreen_All(
                 }
 
                 if (isHostPhone && shouldShowContent && !hideAppScreen) {
-                    PressistatntMainActivityButtons_Sec8FWinID1()
+                    PressistatntMainActivityButtons_Sec8FWinID1(
+                        viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                    )
                     val getter = aCentralFacade.repositorysMainGetter
                     Floating_Separated_Button(
+                        fragmentNavigationHandler=fragmentNavigationHandler,
                         list_m16 = getter.repoM16CategorieProduit.datasValue,
                         list_m1 = getter.repoM1Produit.datasValue,
                         list_m3 = getter.repo3CouleurProduit.datasValue,

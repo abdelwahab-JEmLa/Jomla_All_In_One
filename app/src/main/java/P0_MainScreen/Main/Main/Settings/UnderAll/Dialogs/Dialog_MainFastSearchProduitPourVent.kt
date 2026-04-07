@@ -1,12 +1,13 @@
 package P0_MainScreen.Main.Main.Settings.UnderAll.Dialogs
 
+import EntreApps.Shared.Models.Home.ActiveCentralValues
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
-import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ModernToastMessageLo
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -37,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
 
 @Composable
@@ -92,7 +92,9 @@ fun Dialog_MainFastSearchProduitPourVent(
                     sourceLenceurDeCetteFragment = sourceLenceurDeCetteFragment,
                 )
 
-                PressistatntMainActivityButtons_Sec8FWinID1()
+                PressistatntMainActivityButtons_Sec8FWinID1(
+                    viewModelNewProtoPatterns = koinInject ()
+                )
 
                 Row(
                     modifier = Modifier

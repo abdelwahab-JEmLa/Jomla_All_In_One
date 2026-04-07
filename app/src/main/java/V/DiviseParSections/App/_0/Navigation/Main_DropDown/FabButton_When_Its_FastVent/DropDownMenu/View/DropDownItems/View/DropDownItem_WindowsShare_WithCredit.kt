@@ -1,9 +1,9 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import android.annotation.SuppressLint
 import android.content.Context
@@ -37,9 +37,6 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @SuppressLint("DefaultLocale")
@@ -112,7 +109,7 @@ fun DropDownItem_WindowsShare_WithCredit(
             ).show()
             return
         }
-
+      /*
         isLoading = true
         scope.launch {
             try {
@@ -187,7 +184,7 @@ fun DropDownItem_WindowsShare_WithCredit(
                 showCreditInput = false
                 onDismissDropdown()
             }
-        }
+        }       */
     }
 
     Card(

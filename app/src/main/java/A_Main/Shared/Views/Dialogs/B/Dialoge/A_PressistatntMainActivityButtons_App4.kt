@@ -47,6 +47,7 @@ enum class ProductDisplayMode {
 fun PressistatntMainActivityButtons_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
+
     val currentMode by remember {
         derivedStateOf {
             val datas = viewModelNewProtoPatterns.active_Datas

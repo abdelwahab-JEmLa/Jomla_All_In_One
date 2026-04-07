@@ -372,7 +372,7 @@ private suspend fun shareViaWhatsApp(
         )
 
         delay(500)
-
+           /*
         // Generate PDF with images
         val result = (printHandler as? PrintReceiptHandler_Juil)
             ?.printPdfOnly(
@@ -444,7 +444,7 @@ private suspend fun shareViaWhatsApp(
                     Toast.LENGTH_LONG
                 ).show()
             }
-        }
+        }           */
 
     } catch (e: Exception) {
         CoroutineScope(Dispatchers.Main).launch {

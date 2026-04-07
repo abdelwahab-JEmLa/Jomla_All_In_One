@@ -1,22 +1,16 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B9.View
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import V.DiviseParSections.App._0.Navigation.Buttons_Gps.PdfSaverUtility
 import android.content.Context
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
-import java.io.File
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
- suspend fun initiateBackgroundPdfCreation(
+suspend fun initiateBackgroundPdfCreation(
     context: Context,
     aCentralFacade: ACentralFacade,
     focusedValuesGetter: FocusedValuesGetter,
@@ -63,7 +57,7 @@ import java.time.format.DateTimeFormatter
         }
 
         delay(300)
-
+          /*
         val pdfFilePath = withTimeout(30_000L) {
             (aCentralFacade.modulesCentral.printReceiptHandler as? PrintReceiptHandler_Juil)
                 ?.printPdfOnly(
@@ -119,7 +113,7 @@ import java.time.format.DateTimeFormatter
                 }
             }
 
-        tempFile.delete()
+        tempFile.delete()      */
 
     } catch (e: TimeoutCancellationException) {
         withContext(Dispatchers.Main) {

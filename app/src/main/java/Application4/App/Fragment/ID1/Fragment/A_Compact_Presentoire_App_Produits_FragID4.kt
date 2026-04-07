@@ -6,8 +6,6 @@ import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_Ne
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
-import EntreApps.Shared.Modules.Base.AppDatabase
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -24,37 +22,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.delay
-import org.koin.compose.koinInject
 
 @Composable
 fun A_Compact_Presentoire_App_Produits_App4(
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
-    appDatabase: AppDatabase = koinInject(),
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto ,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = viewModel(
-        factory = viewModelFactory {
-            initializer {
-                A_ViewModel_NewProtoPatterns(
-                    context = context.applicationContext,
-                    appDatabase = appDatabase,
-                    fragmentNavigationHandler = fragmentNavigationHandler,
-                )
-            }
-        }
-    ),
-    onClickImageToShowControles: () -> Unit = {}
-) {
+    onClickImageToShowControles: () -> Unit = {},
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+
+    ) {
+    val active_Datas = viewModelNewProtoPatterns.active_Datas
+
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
 
-    val active_Datas = viewModelNewProtoPatterns.active_Datas
 
     val allCategories: List<M16CategorieProduit>? by remember {
         derivedStateOf {

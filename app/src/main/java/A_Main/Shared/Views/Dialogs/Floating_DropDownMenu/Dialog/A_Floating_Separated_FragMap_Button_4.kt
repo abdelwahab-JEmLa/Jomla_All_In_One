@@ -1,5 +1,6 @@
 package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
@@ -59,7 +60,8 @@ fun Floating_Separated_Button(
         text_Label = "",
         icons = Pair(Icons.Default.FilterList, Icons.Default.AllInbox),
         colors = Pair(Color.Red, Color.Blue)
-    )
+    ),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto
 ) {
     val isShowingAll = true
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)

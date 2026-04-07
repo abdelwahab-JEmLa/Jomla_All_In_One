@@ -1,5 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -90,11 +91,13 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
-    onClickAnulationButton: () -> Unit = {},
     onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns ,
+    onClickAnulationButton: () -> Unit = {},
 ) {
     var searchTextForFastPanier by remember { mutableStateOf("") }
 
+    val uiState_viewModelNewProtoPatterns by viewModelNewProtoPatterns.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
     val showButtons by remember { mutableStateOf(true) }
@@ -392,8 +395,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
 
                     if (focusedValuesGetter.activeOnVent_M8BonVent != null) {
-                        // PDF staleness (count + total price) is tracked via last_sort_pdf_locale_totale_a_paye in M8BonVent — handled in PdfBonVentFAB
                         PdfBonVentFAB(
+                            listm13=uiState_viewModelNewProtoPatterns.list_M13TarificationInfos,
                             showLabels = showLabels,
                             onPdfSaved = { path, count ->
                                 sharedPdfPath  = path
@@ -404,10 +407,12 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             showLabels    = showLabels,
                             overridePath  = sharedPdfPath,
                             overrideCount = sharedPdfCount,
+                            viewModelNewProtoPatterns=viewModelNewProtoPatterns
                         )
                     }
 
                         ID4ClientSearchButton(
+                            list_m13_uiState_viewModelNewProtoPatterns=uiState_viewModelNewProtoPatterns.list_M13TarificationInfos,
                             uiState = uiState,
                             hClientRepository = uiState.hClientRepository,
                             showLabels = showLabels,

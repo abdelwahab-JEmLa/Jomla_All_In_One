@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
 import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import java.io.File
 
@@ -34,7 +34,7 @@ data class PdfGenerationParams(
     val type: PdfType,
     val client: M2Client? = null,
     val operations: List<M10OperationVentCouleur> = emptyList(),
-    val tarificationRepo: Repo13TarificationInfos? = null,
+    val tarificationRepo: List<M13TarificationInfos> = emptyList(),
     val produitRepo: RepoM1Produit? = null,
     val bonVent: M8BonVent? = null,
     val versement: Double = 0.0,

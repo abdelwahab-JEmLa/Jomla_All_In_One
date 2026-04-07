@@ -4,4 +4,3 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
-@Preview @Composable fun PanierFinaleDAchatSecBFrag3Preview() { PanierFinaleDAchatSec1Frag3() }

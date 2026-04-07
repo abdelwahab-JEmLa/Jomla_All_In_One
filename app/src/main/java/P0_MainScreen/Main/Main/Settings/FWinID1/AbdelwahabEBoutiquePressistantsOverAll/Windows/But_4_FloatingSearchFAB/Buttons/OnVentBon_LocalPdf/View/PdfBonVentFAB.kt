@@ -1,8 +1,13 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -27,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -37,7 +43,12 @@ fun PdfBonVentFAB(
     modifier: Modifier = Modifier,
     onPdfSaved: ((savedPath: String, count: Int) -> Unit)? = null,
     aCentralFacade: ACentralFacade = koinInject(),
+    appDatabase: AppDatabase = koinInject(),
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
+    context: Context = LocalContext.current,
+    listm13: List<M13TarificationInfos>
 ) {
+
     val context = LocalContext.current
     val focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 
@@ -49,8 +60,8 @@ fun PdfBonVentFAB(
     // Compute the live total value of the current bon so we can detect price-change staleness
     val activeTotal = remember(activeVents) {
         activeVents.sumOf { vent ->
-            val tariff = aCentralFacade.repositorysMainGetter
-                .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+            val tariff =
+                listm13.find { it.keyID == vent.parentM13TarificationKeyID }
             (tariff?.prixCurrency ?: 0.0) * vent.quantity
         }
     }
@@ -91,7 +102,9 @@ fun PdfBonVentFAB(
         modifier = modifier
     ) {
         FloatingActionButton(
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(40.dp)
+                .semantics(mergeDescendants = true) {
+            },
             onClick = {
 
                 if (isGenerating) return@FloatingActionButton
@@ -99,6 +112,7 @@ fun PdfBonVentFAB(
                 scope.launch {
                     try {
                         initiateBackgroundPdfCreation_NewP(
+                            list_M13TarificationInfos=listm13,
                             context = context,
                             aCentralFacade = aCentralFacade,
                             focusedValuesGetter = focusedValuesGetter,
@@ -146,9 +160,9 @@ fun PdfBonVentFAB(
                 modifier = Modifier
                     .background(
                         color = when {
-                            isGenerating  -> MaterialTheme.colorScheme.surfaceVariant
+                            isGenerating -> MaterialTheme.colorScheme.surfaceVariant
                             isPdfUpToDate -> Color(0xFF4CAF50)
-                            else          -> Color(0xFFFF9800)
+                            else -> Color(0xFFFF9800)
                         },
                         shape = RoundedCornerShape(4.dp)
                     )

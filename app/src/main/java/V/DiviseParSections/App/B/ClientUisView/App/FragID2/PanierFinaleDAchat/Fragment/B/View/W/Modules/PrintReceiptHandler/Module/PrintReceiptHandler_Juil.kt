@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler
 import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
@@ -73,7 +74,7 @@ class PrintReceiptHandler_Juil(
         client: M2Client?,
         scope: CoroutineScope? = null,
         relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
-        repo13TarificationInfos: Repo13TarificationInfos,
+        repo13TarificationInfos: List<M13TarificationInfos>,
         relative_bonVent: M8BonVent? = null,
         showCreditSection: Boolean = true,
         versement: Double = 0.0,

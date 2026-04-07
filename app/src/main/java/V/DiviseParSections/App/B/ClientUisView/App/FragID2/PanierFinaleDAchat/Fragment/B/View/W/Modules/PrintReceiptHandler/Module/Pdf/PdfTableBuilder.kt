@@ -2,9 +2,9 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M8BonVent
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -47,7 +47,7 @@ class PdfTableBuilder(
     fun createProductTable(
         doc: Document,
         operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos,
+        tarificationRepo: List<M13TarificationInfos>,
         produitRepo: RepoM1Produit,
         regularFont: PdfFont,
         boldFont: PdfFont,
@@ -110,7 +110,7 @@ class PdfTableBuilder(
     private fun addTableRows(
         table: Table,
         operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos,
+        tarificationRepo: List<M13TarificationInfos>,
         produitRepo: RepoM1Produit,
         regularFont: PdfFont,
         boldFont: PdfFont,
@@ -126,7 +126,7 @@ class PdfTableBuilder(
         }
 
         sortedGroupedOps.forEachIndexed { index, (produitId, ops) ->
-            val tarification = tarificationRepo.datasValue.find {
+            val tarification = tarificationRepo.find {
                 it.keyID == ops.first().parentM13TarificationKeyID
             }
 
@@ -432,7 +432,7 @@ class PdfTableBuilder(
     fun createProductTableAndReturnTotal(
         doc: Document,
         operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos,
+        tarificationRepo: List<M13TarificationInfos>,
         produitRepo: RepoM1Produit,
         regularFont: PdfFont,
         boldFont: PdfFont

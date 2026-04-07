@@ -1,6 +1,7 @@
 package V.DiviseParSections.App._0.Navigation
 
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
@@ -80,6 +81,7 @@ fun AppNavHost(
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto = koinInject(),
     isWifiClientConnected_1: Boolean,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
 ) {
     // Initialize UI state and navigation
     val uiState by viewModel.uiState.collectAsState()
@@ -243,6 +245,7 @@ fun AppNavHost(
                 composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
                     A_Compact_Presentoire_App_Produits_App4(
                         fragmentNavigationHandler=fragmentNavigationHandler_NewProto,
+                        viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                     )
                 }
 
@@ -297,8 +300,10 @@ fun AppNavHost(
 
             if (opnerSaleWindows) {
                 A_VendeurAfficheurInfosProduit_FragmentMainId3(
+                    viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                     uiState = uiState,
                     viewModelHeadViewModel = viewModel,
+                    viewModelInitApp = viewModelInitApp,
                     onDismiss = {
                         viewModel.clearCurrentSale()
                         opnerSaleWindows = false
@@ -309,12 +314,12 @@ fun AppNavHost(
                     modifier = Modifier.padding(horizontal = 3.dp),
                     lockExpandedPrices = lockExpandedPrices,
                     onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
-                    viewModelInitApp = viewModelInitApp,
                     currentClient = currentClient,
                     clickedCouleurIndex = pendingIndexColor,
                     onFermDialoge = {
                         opnerSaleWindows = false
                     },
+                    fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto,
                 )
             }
         }

@@ -19,7 +19,6 @@ import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_Au
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import android.content.Context
-import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Filter
@@ -58,11 +57,8 @@ data class UiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val m2Client_In_ShowEditMarkerMode: M2Client? = null,
-    /** Set by the FAB reload button; drives the 1 km proximity filter in MapContent. */
     val proximityFilterCenter: GeoPoint? = null,
 )
-
-private const val TAG_PROXIMITY = "ProximityFilter"
 
 class MapClientsViewModel(
     private val context: Context,
@@ -81,7 +77,6 @@ class MapClientsViewModel(
     val getter = aCentralFacade.repositorysMainGetter
     val setter = aCentralFacade.repositorysMainSetter
 
-    // Repository references
     val groupeRepositorysProtoAvJuin3 =
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
     val b_ClientDataBaseRepository =
@@ -96,15 +91,11 @@ class MapClientsViewModel(
     val bProto_ClientsDataBase: List<M2Client>
         get() = this.repo2Client.datasState.value
 
-    // UI State variables
     var auClickeCaUpdateClientPar by mutableStateOf(M2Client.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTrigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
-    /** Editable from the FAB speed-input field. Replaces the old private const. */
-    var scrollSpeedThresholdMps by mutableStateOf(20.0)
-    var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(
-        emptyList()
-    )
+    var scrollSpeedThresholdMps by mutableStateOf(1.0)
+    var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
 
     private fun updateUiState() {
         _uiState.value = _uiState.value.copy(
@@ -121,6 +112,7 @@ class MapClientsViewModel(
             m2Client_In_ShowEditMarkerMode = m2Client_In_ShowEditMarkerMode,
         )
     }
+
     fun update_active_Compt(compt: M09AppCompt) {
         active_Datas.active_M9Compt = compt
         repositorysMainSetter_NewProtoPatterns.update_M9AppCompt(compt)
@@ -149,51 +141,35 @@ class MapClientsViewModel(
                 }
         }
     }
+
     fun set_M2Client_UiState_In_MarkerStatusDialog(data: M2Client?) {
-        _uiState.value = _uiState.value.copy(
-            markerStatusDialogActiveM2Client = data
-        )
+        _uiState.value = _uiState.value.copy(markerStatusDialogActiveM2Client = data)
     }
 
     fun clear_UiState_MarkerStatusDialog_Active_M2Client() {
-        _uiState.value = _uiState.value.copy(
-            markerStatusDialogActiveM2Client = null
-        )
+        _uiState.value = _uiState.value.copy(markerStatusDialogActiveM2Client = null)
     }
 
     private fun initializeDataObservers() {
         viewModelScope.launch {
-            snapshotFlow { transactionsState.datasValue }.collect { transactionsList ->
-                updateUiState()
-            }
+            snapshotFlow { transactionsState.datasValue }.collect { updateUiState() }
         }
-
         viewModelScope.launch {
-            snapshotFlow { getter.repo9AppCompt.currentAppCompt }.collect { transactionsList ->
-                updateUiState()
-            }
+            snapshotFlow { getter.repo9AppCompt.currentAppCompt }.collect { updateUiState() }
         }
-
-        // Observe clients data
         viewModelScope.launch {
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
-                    val clients =
-                        model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList()
+                    val clients = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList()
                     this@MapClientsViewModel.repo2Client.updateClients(clients)
-
-                    // Update UI State
                     updateUiState()
                 }
             }
         }
-
     }
 
     fun getLastTransaction(m2Client: M2Client): M8BonVent? {
-        return getter.get_Last_M8BonVent_Par_M2Client(
-            m2Client
-        )
+        return getter.get_Last_M8BonVent_Par_M2Client(m2Client)
     }
 
     fun updateData(client: M2Client) {
@@ -208,16 +184,9 @@ class MapClientsViewModel(
     fun onClickAddMarkerButton(mapView: MapView) {
         val center = mapView.mapCenter
         if (center.latitude == 0.0) return
-
         try {
-            val newID = if (this.repo2Client.isEmpty) {
-                1L
-            } else {
-                this.repo2Client.maxId + 1
-            }
-
+            val newID = if (this.repo2Client.isEmpty) 1L else this.repo2Client.maxId + 1
             val newnom = "ز.$newID"
-
             val newClientAchteur = M2Client().apply {
                 id = newID
                 nom = newnom
@@ -228,7 +197,6 @@ class MapClientsViewModel(
                 title = newnom
                 snippet = "ClientAchteur temporaire"
             }
-
             viewModelScope.launch {
                 repo2Client.upsert(newClientAchteur)
                 delay(1500)
@@ -237,36 +205,24 @@ class MapClientsViewModel(
                 updateUiState()
             }
         } catch (e: Exception) {
-            // Error handling
         }
     }
 
-    fun add_Cible(m2Client:M2Client): Unit {
+    fun add_Cible(m2Client: M2Client) {
         val activeCentralValues = focusedValuesGetter.active_Central_Values
-
-        val actuelle_Ciblage_MaxPosition = activeCentralValues
-            .actuelle_Ciblage_MaxPosition
-
-        val newPosition = actuelle_Ciblage_MaxPosition + 1
+        val newPosition = activeCentralValues.actuelle_Ciblage_MaxPosition + 1
         val found_Or_Default_M8BonVent = get_Found_Or_Default_M8BonVent(
             aCentralFacade = aCentralFacade,
             relative_M2Client = m2Client,
             etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
-        )        ?: return
-
-
+        ) ?: return
         aCentralFacade.repositorysMainSetter
             .addNew_M8BonVent(
                 found_Or_Default_M8BonVent.default_If_No_Found
-                    .copy(
-                        position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition
-                    )
+                    .copy(position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition)
             )
-
         focusedValuesGetter.update_activeCentralValues(
-            activeCentralValues.copy(
-                actuelle_Ciblage_MaxPosition = newPosition
-            )
+            activeCentralValues.copy(actuelle_Ciblage_MaxPosition = newPosition)
         )
     }
 
@@ -287,21 +243,14 @@ class MapClientsViewModel(
                     valueLong = value,
                     date = Date()
                 )
-
                 Firebase.database.getReference("A_AppSettingsSaverModel")
                     .child(appSettingsSaverModel.id.toString())
                     .setValue(appSettingsSaverModel)
                     .await()
             } catch (e: Exception) {
-                // Error handling
             }
         }
     }
-
-
-    // ===============================================
-    // FILTER AND VISIBILITY METHODS
-    // ===============================================
 
     enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
         Filter_Leur_Last_TRX_Est_Credit(Icons.Default.Map, Color.Red),
@@ -318,30 +267,12 @@ class MapClientsViewModel(
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
 
-    // ===============================================
-    // PROXIMITY FILTER (1 km around map centre)
-    // ===============================================
-
-    /**
-     * Called when the map is first shown and after every scroll of ≥ 2 200 m.
-     * Stores [centerLat]/[centerLng] as the new proximity-filter anchor so that
-     * [MapContent] re-renders only the markers within 3 km of this point.
-     */
     fun relod_map_marques_du_3km_du_centre_map(centerLat: Double, centerLng: Double) {
-        Log.i(TAG_PROXIMITY, "━━━ RELOAD DEMANDÉ ━━━  lat=$centerLat  lng=$centerLng")
-        val before = _uiState.value.proximityFilterCenter
         _uiState.value = _uiState.value.copy(
             proximityFilterCenter = GeoPoint(centerLat, centerLng)
         )
-        Log.d(TAG_PROXIMITY, "  proximityFilterCenter : $before  →  ${_uiState.value.proximityFilterCenter}")
-        Log.d(TAG_PROXIMITY, "  mapReloadTrigger : $mapReloadTrigger → ${mapReloadTrigger + 1}")
         mapReloadTrigger++
-        Log.i(TAG_PROXIMITY, "  ✓ uiState mis à jour, mapReloadTrigger=$mapReloadTrigger")
     }
-
-    // ===============================================
-    // CLEANUP METHODS
-    // ===============================================
 
     fun cleanupResources() {
         viewModelScope.launch {
@@ -350,9 +281,7 @@ class MapClientsViewModel(
                 mapReloadTrigger = 0
                 filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = emptyList()
                 updateUiState()
-                println("Map resources cleaned up successfully")
             } catch (e: Exception) {
-                println("Error during resource cleanup: ${e.message}")
             }
         }
     }
@@ -361,9 +290,7 @@ class MapClientsViewModel(
         try {
             mapReloadTrigger++
             afficheLesJoursAuNoms = true
-            println("Active operations canceled successfully")
         } catch (e: Exception) {
-            println("Error canceling active operations: ${e.message}")
         }
     }
 

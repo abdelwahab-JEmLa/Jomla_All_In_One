@@ -2,12 +2,10 @@ package V.DiviseParSections.App._0.Navigation
 
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
-import V.DiviseParSections.App._0.Navigation.Buttons_Gps.PdfSaverUtility
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabButton_When_ItsEditeBaseDonne
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.FabDropdownMenu_BaseDonneEdite
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite.Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit
@@ -16,7 +14,6 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.FabDropdownMenu_WhenItsAchatsFragment
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FabButton_When_Its_Achats
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FragAchats_FloatingOutlinedSearcher_4
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.FabDropdownMenu_WhenIts_FragFastVent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.FloatingItems.Views.CheckList_ChoisiseurActiveFilter
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabButton_When_Its_EducationFragment
@@ -26,8 +23,6 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectr
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -53,13 +48,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
-import java.io.File
 
 private const val TAG = "NavigationBarWithFab"
 
@@ -297,7 +285,7 @@ fun NavigationBarWithFab(
                 vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
                         vent.quantity > 0
             }
-
+          /*
         val initiateBackgroundPdfCreation: () -> Unit = {
             Log.d(TAG, "═══════════════════════════════════════════════════════")
             Log.d(TAG, "🚀 initiateBackgroundPdfCreation: Starting")
@@ -485,13 +473,13 @@ fun NavigationBarWithFab(
 
                 Log.d(TAG, "🚀 Background task launched")
             }
-        }
+        }        */
         if (showFabDropdownFastVent && its_FragmentProduitFastSearchDialog) {
-            FabDropdownMenu_WhenIts_FragFastVent(
+            /*abDropdownMenu_WhenIts_FragFastVent(
                 onDismissDropdown = { showFabDropdownFastVent = false },
                 onClick_to_initiateBackgroundPdfCreation = initiateBackgroundPdfCreation ,
                 onClickImageToShowControles= onClickImageToShowControles
-            )
+            )              */
         }
 
         if (focusedValuesGetter.active_Central_Values.affiche_Floating_Button_SelecteCategorieEtAddNewProduit) {

@@ -1,11 +1,9 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.DropDownMenu.View.DropDownItems.View.B10.EnvoyerPDFviaWhatsAppBusiness.View
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Juil
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,13 +45,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import java.io.File
 
 @Composable
 fun DropDownItem_WhenIts_FragFastVent_10 (
@@ -372,7 +368,7 @@ private suspend fun shareViaWhatsApp(
         )
 
         delay(500)
-
+           /*
         // Generate PDF with images
         val result = (printHandler as? PrintReceiptHandler_Juil)
             ?.printPdfOnly(
@@ -444,7 +440,7 @@ private suspend fun shareViaWhatsApp(
                     Toast.LENGTH_LONG
                 ).show()
             }
-        }
+        }          */
 
     } catch (e: Exception) {
         CoroutineScope(Dispatchers.Main).launch {

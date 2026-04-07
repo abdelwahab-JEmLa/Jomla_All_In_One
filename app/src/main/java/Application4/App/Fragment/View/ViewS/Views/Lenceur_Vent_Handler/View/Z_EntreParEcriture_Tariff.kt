@@ -2,9 +2,9 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -116,6 +118,9 @@ fun EntreParEcriture_Tariff(
 
     Column(
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = newTariff, key = SemanticsPropertyKey("newTariff"))
+            }
             .border(width = borderWidth, color = borderColor, shape = CircleShape)
             .background(bg, CircleShape)
             .padding(horizontal = hPad, vertical = vPad),
@@ -135,7 +140,6 @@ fun EntreParEcriture_Tariff(
             }
         }
 
-        // FIX TODO(1): centered decoration box + reduced width
         BasicTextField(
             value = textValue,
             onValueChange = { raw ->
@@ -170,20 +174,22 @@ fun EntreParEcriture_Tariff(
                         dernierTimeTampsSynchronisationAvecFireBase = now,
                     )
                     viewModel.update_M13TarificationInfos(finalTariff)
-                    val activeList = listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-                    val productOps = activeList?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
+
+                    val productOps =
+                        listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
                     if (!productOps.isNullOrEmpty()) {
-                        viewModel.update_listM10OperationVentCouleur(activeList.map { op ->
-                            if (op.parent_M1Produit_KeyId == relative_M1produit.keyID)
-                                op.copy(
-                                    parentM13TarificationKeyID = finalTariff.keyID,
-                                    parentM13TarificationDebugInfos = finalTariff.getDebugInfos(),
-                                    prix_de_Vent_entre_directement_NewProto = finalTariff.prixCurrency,
-                                    typeTarificationEnumT2 = finalTariff.typeChoisi,
-                                    dernierTimeTampsSynchronisationAvecFireBase = now,
-                                )
-                            else op
-                        })
+                        viewModel.update_listM10OperationVentCouleur(
+                            listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state.map { op ->
+                                if (op.parent_M1Produit_KeyId == relative_M1produit.keyID)
+                                    op.copy(
+                                        parentM13TarificationKeyID = finalTariff.keyID,
+                                        parentM13TarificationDebugInfos = finalTariff.getDebugInfos(),
+                                        prix_de_Vent_entre_directement_NewProto = finalTariff.prixCurrency,
+                                        typeTarificationEnumT2 = finalTariff.typeChoisi,
+                                        dernierTimeTampsSynchronisationAvecFireBase = now,
+                                    )
+                                else op
+                            })
                     }
                     onTariffSelected(finalTariff)
                     textValue = ""
@@ -193,7 +199,6 @@ fun EntreParEcriture_Tariff(
                 focusManager.clearFocus()
             }),
             decorationBox = { innerTextField ->
-                // FIX TODO(1): Box ensures placeholder and cursor are both centered
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -212,7 +217,6 @@ fun EntreParEcriture_Tariff(
                     innerTextField()
                 }
             },
-            // FIX TODO(1): reduced max width so the field stays compact
             modifier = Modifier
                 .widthIn(min = 40.dp, max = 64.dp)
                 .onFocusChanged { isFocused = it.isFocused },

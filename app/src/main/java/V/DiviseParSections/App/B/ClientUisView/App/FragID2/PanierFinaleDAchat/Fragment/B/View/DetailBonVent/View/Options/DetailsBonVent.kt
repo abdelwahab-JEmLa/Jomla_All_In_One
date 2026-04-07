@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options
 
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.CartSummarySection
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.ClientDetailsSection
@@ -9,7 +10,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,7 +57,6 @@ import org.koin.compose.koinInject
 @Preview
 @Composable
 fun DetailsBonVentPrev() {
-    DetailsBonVent()
 }
 
 val petitePaddine = 4.dp
@@ -93,24 +92,7 @@ fun DetailsBonVent(
                     onShare = { operations ->
                         scope.launch {
                             try {
-                                val result = printHandler.printPdfOnly(
-                                    context = context,
-                                    repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
-                                    repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
-                                    repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
-                                    client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
-                                    scope = scope,
-                                    relative_ListM10OperationVentCouleur = operations,
-                                    relative_bonVent = focusedValuesGetter.activeOnVent_M8BonVent
-                                )
 
-                                result.onSuccess { message ->
-                                    val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")
-                                    val pdfFile = java.io.File(filePath)
-                                    if (pdfFile.exists()) {
-                                        printHandler.sharePdfWithWindowsApps(context, pdfFile)
-                                    }
-                                }
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
@@ -128,16 +110,16 @@ fun DetailsBonVent(
                     showLabel = !isMinimized,
                     onPrint = { operations ->
                         scope.launch {
-                            printHandler.printPdfOnly(
-                                context = context,
-                                repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
-                                repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
-                                repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
-                                client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
-                                scope = scope,
-                                relative_ListM10OperationVentCouleur = operations,
-                                relative_bonVent = focusedValuesGetter.activeOnVent_M8BonVent
-                            )
+//                            printHandler.printPdfOnly(
+//                                context = context,
+//                                repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
+//                                repoM1Produit = viewModel.uiStateCentralRepositorys.repo1ProduitInfos,
+//                                repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo03CouleurProduitInfos,
+//                                client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
+//                                scope = scope,
+//                                relative_ListM10OperationVentCouleur = operations,
+//                                relative_bonVent = focusedValuesGetter.activeOnVent_M8BonVent
+//                            )
                         }
                     }
                 )

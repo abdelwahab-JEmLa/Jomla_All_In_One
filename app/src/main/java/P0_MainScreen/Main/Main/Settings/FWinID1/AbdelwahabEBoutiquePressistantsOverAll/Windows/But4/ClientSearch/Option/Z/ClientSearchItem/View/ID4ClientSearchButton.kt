@@ -1,6 +1,9 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View
 
 import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M2Client
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.CreateNewClientIcon
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ZChildView.View_List_DropDownButtons.List.View_List_DropDownButtons
@@ -10,8 +13,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -69,6 +70,7 @@ fun ID4ClientSearchButton(
         .currentActive_M9AppCompt,
     onVentList: List<M10OperationVentCouleur> = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent,
+    list_m13_uiState_viewModelNewProtoPatterns: List<M13TarificationInfos>,
 ) {
 
     val getter = uiState.focusedVarsHandlerFacade.focusedValuesGetter
@@ -171,7 +173,7 @@ fun ID4ClientSearchButton(
                     } else {
                         onVentId8BonVent?.let { bon ->
                             val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
-                            val (totalProducts, totalValue) = get_vents_datas(aCentralFacade)
+                            val (totalProducts, totalValue) = get_vents_datas(aCentralFacade,list_m13_uiState_viewModelNewProtoPatterns)
 
                             if (bon.parent_M2Client_DebugInfos.isNotEmpty() &&
                                 bon.parent_M2Client_DebugInfos != "Non Defini"
@@ -350,8 +352,15 @@ fun ID4ClientSearchButton(
 }
 
 
-fun get_vents_datas(aCentralFacade: ACentralFacade): Pair<Int, Double> {
-    val onVentList = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+fun get_vents_datas(
+    aCentralFacade: ACentralFacade,
+    list_m13_uiState_viewModelNewProtoPatterns: List<M13TarificationInfos>
+): Pair<Int, Double> {
+
+    val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    val  its_non_gros =!focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+
+    val onVentList = focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
     val ventsTrouve = onVentList.filter {
@@ -361,8 +370,11 @@ fun get_vents_datas(aCentralFacade: ACentralFacade): Pair<Int, Double> {
     val totalProducts = ventsTrouve.groupBy { it.parent_M1Produit_KeyId }.size
 
     val totalValue = ventsTrouve.sumOf { vent ->
-        val provisoireMonPrix = aCentralFacade.repositorysMainGetter
-            .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+        val findM13tarificationByKeyid =
+              if (its_non_gros) list_m13_uiState_viewModelNewProtoPatterns.find { it.keyID == vent.parentM13TarificationKeyID }
+              else aCentralFacade.repositorysMainGetter.find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+
+        val provisoireMonPrix = findM13tarificationByKeyid
             ?.prixCurrency ?: 0.0
         vent.quantity * provisoireMonPrix
     }

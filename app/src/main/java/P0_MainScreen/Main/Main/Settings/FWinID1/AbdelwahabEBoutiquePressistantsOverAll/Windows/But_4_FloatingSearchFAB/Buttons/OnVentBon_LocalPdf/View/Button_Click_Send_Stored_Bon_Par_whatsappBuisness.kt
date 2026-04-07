@@ -1,6 +1,9 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import android.content.Context
@@ -31,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -48,6 +52,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -76,12 +83,15 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
             it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve
                     && it.quantity > 0
         }
+    val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
 
     // Detect products whose tariff price is 0 — sending a PDF with zero-priced items risks financial loss
     val zeroOrNullPriceProducts = remember(activeVents) {
         activeVents.mapNotNull { vent ->
-            val tariff = aCentralFacade.repositorysMainGetter
-                .find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+            val tariff = uiState.list_M13TarificationInfos
+                .find {
+                    it.keyID == vent.parentM13TarificationKeyID
+                }
             val produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
                 .datasValue.find { it.keyID == vent.parent_M1Produit_KeyId }
             if (tariff?.prixCurrency == null || tariff.prixCurrency == 0.0) {
@@ -198,7 +208,12 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                                 containerColor = androidx.compose.ui.graphics.Color(0xFFFF9800)
                             ),
                             modifier = Modifier.weight(1f)
-                        ) { Text("أرسل على أي حال", color = androidx.compose.ui.graphics.Color.White) }
+                        ) {
+                            Text(
+                                "أرسل على أي حال",
+                                color = androidx.compose.ui.graphics.Color.White
+                            )
+                        }
                     }
                 }
             }
@@ -278,17 +293,17 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                 }
             },
             containerColor = when {
-                isSending              -> MaterialTheme.colorScheme.surfaceVariant
-                !pdfExists             -> Color(0xFF9E9E9E)
-                hasZeroPriceProducts   -> Color(0xFFFF9800)   // orange — prix manquants
-                else                   -> Color(0xFF25D366)   // vert — tout est bon
+                isSending -> MaterialTheme.colorScheme.surfaceVariant
+                !pdfExists -> Color(0xFF9E9E9E)
+                hasZeroPriceProducts -> Color(0xFFFF9800)   // orange — prix manquants
+                else -> Color(0xFF25D366)   // vert — tout est bon
             }
         ) {
             Icon(
                 imageVector = when {
-                    isSending            -> Icons.Default.Phone
+                    isSending -> Icons.Default.Phone
                     hasZeroPriceProducts -> Icons.Default.Warning
-                    else                 -> Icons.Default.Send
+                    else -> Icons.Default.Send
                 },
                 contentDescription = "Envoyer via WhatsApp Business",
                 tint = Color.White
@@ -304,10 +319,11 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
             val phone = activeClient?.numTelephone?.trim() ?: ""
 
             val labelText = when {
-                isSending            -> "Envoi…"
-                !pdfExists           -> "PDF non prêt"
+                isSending -> "Envoi…"
+                !pdfExists -> "PDF non prêt"
                 hasZeroPriceProducts ->
                     "⚠️ ${zeroOrNullPriceProducts.size} prix manquant${if (zeroOrNullPriceProducts.size > 1) "s" else ""}"
+
                 else -> buildString {
                     if (phone.isNotEmpty()) append("📱 $phone")
                     if (creationDate.isNotEmpty()) {
@@ -324,6 +340,21 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White,
                 modifier = Modifier
+                    .semantics(mergeDescendants = true) {
+                        set(value = activeVents, key = SemanticsPropertyKey("activeVents"))
+                        set(
+                            value =
+                                activeVents.map {
+                                    aCentralFacade.repositorysMainGetter
+                                        .find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)
+                                }, key = SemanticsPropertyKey("find_M13Tarification_By_KeyID")
+                        )
+                        set(value = activeVents.map {
+                            it.parentM13TarificationKeyID
+                        },
+                            key = SemanticsPropertyKey(activeVents.map {
+                            it.parentM13TarificationKeyID
+                        }.toString())) }
                     .background(
                         color = when {
                             isSending            -> MaterialTheme.colorScheme.surfaceVariant

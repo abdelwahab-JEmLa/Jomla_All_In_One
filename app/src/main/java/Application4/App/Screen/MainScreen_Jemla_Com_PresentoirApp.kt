@@ -8,7 +8,6 @@ import Application4.App.Main.A.Navigation.Component.NavigationItems
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
-import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import android.annotation.SuppressLint
 import android.os.Build
@@ -21,34 +20,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import org.koin.compose.koinInject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainScreen_NewProtoPattern(
     modifier: Modifier = Modifier,
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
-    appDatabase: AppDatabase =koinInject ()
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto
 ) {
-    val context = LocalContext.current
-    val viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = viewModel(
-        factory = viewModelFactory {
-            initializer {
-                A_ViewModel_NewProtoPatterns(
-                    context = context.applicationContext,
-                    appDatabase  = appDatabase,
-                    fragmentNavigationHandler  = fragmentNavigationHandler,
-                )
-            }
-        }
-    )
+
     val wifiState = viewModelNewProtoPatterns.wifiState.collectAsState()
 
     val navController = rememberNavController()

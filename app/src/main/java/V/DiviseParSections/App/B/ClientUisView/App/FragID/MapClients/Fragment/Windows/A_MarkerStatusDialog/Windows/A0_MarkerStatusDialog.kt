@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M8BonVent
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
@@ -11,10 +14,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -587,7 +587,9 @@ fun MarkerStatusDialog(
         }
 
         if(!M00CentralParametresOfAllApps.get_Default().itsDevMode) {
-            PressistatntMainActivityButtons_Sec8FWinID1()
+            PressistatntMainActivityButtons_Sec8FWinID1(
+                viewModelNewProtoPatterns = koinInject ()
+            )
         }
     }
 }

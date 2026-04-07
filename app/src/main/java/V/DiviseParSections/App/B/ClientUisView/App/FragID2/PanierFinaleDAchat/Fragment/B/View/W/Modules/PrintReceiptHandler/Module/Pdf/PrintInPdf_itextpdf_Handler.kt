@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M2Client
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
 
@@ -51,7 +51,7 @@ class PrintInPdf_itextpdf_Handler(
         context: Context,
         client: M2Client?,
         operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos,
+        tarificationRepo: List<M13TarificationInfos>,
         produitRepo: RepoM1Produit,
         transactionId: String = "",
         its_GrossistApp: Boolean = true,
@@ -110,7 +110,7 @@ class PrintInPdf_itextpdf_Handler(
         context: Context,
         client: M2Client?,
         operations: List<M10OperationVentCouleur>,
-        tarificationRepo: Repo13TarificationInfos,
+        tarificationRepo: List<M13TarificationInfos>,
         produitRepo: RepoM1Produit,
         transactionId: String = "",
         relative_bonVent: M8BonVent,

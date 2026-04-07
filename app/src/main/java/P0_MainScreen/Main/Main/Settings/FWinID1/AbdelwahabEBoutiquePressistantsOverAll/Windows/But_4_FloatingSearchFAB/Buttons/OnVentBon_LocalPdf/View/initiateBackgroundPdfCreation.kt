@@ -1,9 +1,10 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View
 
+import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M13TarificationInfos
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfSaverUtility_Proto2
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
 import android.content.Context
 import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +21,7 @@ suspend fun initiateBackgroundPdfCreation_NewP(
     aCentralFacade: ACentralFacade,
     focusedValuesGetter: FocusedValuesGetter,
     onPdfSaved: ((savedPath: String) -> Unit)? = null,
+    list_M13TarificationInfos: List<M13TarificationInfos>,
 ) {
     val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
     val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
@@ -46,7 +48,7 @@ suspend fun initiateBackgroundPdfCreation_NewP(
         val rawResult = withTimeout(30_000L) {
             aCentralFacade.modulesCentral.printReceiptHandler.printPdfOnly(
                 context = context,
-                repo13TarificationInfos = aCentralFacade.repositorysMainGetter.repo13TarificationInfos,
+                repo13TarificationInfos =list_M13TarificationInfos,
                 repoM1Produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
                 repo3CouleurProduitInfos = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
                 scope = CoroutineScope(currentCoroutineContext()),

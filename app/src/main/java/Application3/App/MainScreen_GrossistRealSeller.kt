@@ -1,6 +1,5 @@
 package Application3.App
 
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
 import androidx.compose.foundation.layout.Box
@@ -33,7 +32,6 @@ fun MainScreen_GrossistRealSeller(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             MainFastSearchProduitPourVent()
-            PressistatntMainActivityButtons_Sec8FWinID1()
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),

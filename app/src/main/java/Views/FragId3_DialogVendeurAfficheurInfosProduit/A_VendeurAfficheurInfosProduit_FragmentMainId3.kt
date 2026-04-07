@@ -1,14 +1,19 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
+import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
+import V.DiviseParSections.App.Shared.ViewModel.UiState
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -56,8 +61,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
-import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
-import V.DiviseParSections.App.Shared.ViewModel.UiState
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -75,6 +78,8 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     currentClient: M2Client?,
     clickedCouleurIndex: Int,
     onFermDialoge: () -> Unit,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
 ) {
     val currentSale by viewModelHeadViewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
@@ -87,12 +92,12 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     currentSale?.let {
         MainUi(
             viewModel = viewModel,
-            viewModelHeadViewModel = viewModelHeadViewModel,
-            viewModelInitApp = viewModelInitApp,
             currentSale = it,
             currentClient = currentClient,
+            viewModelInitApp = viewModelInitApp,
             modifier = modifier,
             articlesBaseStats = articlesBaseStats,
+            viewModelHeadViewModel = viewModelHeadViewModel,
             isDetailsVisible = isDetailsVisible,
             onDismiss = onDismiss,
             uiState = uiState,
@@ -100,7 +105,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
             onToggleLockExpandedPricex = onToggleLockExpandedPricex,
             colorsArticlesTabelleModele = viewModelHeadViewModel._uiState.value.colorsArticlesTabelleModel,
             clickedCouleurIndex = clickedCouleurIndex,
-            onPourFermeWindows = onFermDialoge
+            onPourFermeWindows = onFermDialoge,viewModelNewProtoPatterns=viewModelNewProtoPatterns
         )
     }
 }
@@ -178,7 +183,8 @@ fun MainUi(
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
     clickedCouleurIndex: Int,
-    onPourFermeWindows: () -> Unit
+    onPourFermeWindows: () -> Unit,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
     // Toast state management inside MainUi
     var showToast by remember { mutableStateOf(false) }
@@ -392,6 +398,7 @@ fun MainUi(
                         )
                         onPourFermeWindows()
                     },
+                    viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                     onPourFermeWindows = { buttonResult ->
                         updateState(
                             viewModelInitApp = viewModelInitApp,
@@ -403,7 +410,7 @@ fun MainUi(
                         viewModelHeadViewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
                         onPourFermeWindows()
-                    }
+                    },
                 )
             }
         }

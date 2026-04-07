@@ -3,9 +3,12 @@ package com.example.clientjetpack
 import A_Main.Shared.Proto.A_LoadingApp4_Init_Screen
 import Application2.App.App.appModule_App2_ac_app1
 import Application2.App.Fragment.Compact_Presentoire_App_Produits_App2
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Screen.MainScreen_NewProtoPattern
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Base.PermissionHandler
 import EntreApps.Shared.Modules.Base.StoragePermissionDialog
 import EntreApps.Shared.Modules.Base.modules_NewProtoPatterns
@@ -29,7 +32,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -105,6 +112,9 @@ class MainActivity : ComponentActivity() {
                 ClientJetPackTheme {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
+                         val appDatabase=   koinInject<AppDatabase>()
+                         val fragmentNavigationHandler=   koinInject<FragmentNavigationHandler_NewProto>()
+                         val context =  LocalContext.current
                             if (permissionsChecked) {
                                 var initDone by rememberSaveable { mutableStateOf(false) }
 
@@ -115,17 +125,34 @@ class MainActivity : ComponentActivity() {
                                         appDatabase = koinInject()
                                     )
                                 } else {
+                                        val viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = viewModel(
+                                            factory = viewModelFactory {
+                                                initializer {
+                                                    A_ViewModel_NewProtoPatterns(
+                                                        context = context,
+                                                        appDatabase  = appDatabase,
+                                                        fragmentNavigationHandler  = fragmentNavigationHandler,
+                                                    )
+                                                }
+                                            }
+                                        )
                                     when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
                                         AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
                                             Compact_Presentoire_App_Produits_App2()
                                         }
 
                                         AppType.JomLaElectroLivreurGrossist_VendeurHost -> {
-                                            MainScreen_NewProtoPattern()
+                                            MainScreen_NewProtoPattern(
+                                                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                                                fragmentNavigationHandler=fragmentNavigationHandler
+                                            )
                                         }
 
                                         else -> {
-                                            MainScreen_All()
+                                            MainScreen_All(
+                                                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                                                fragmentNavigationHandler=fragmentNavigationHandler
+                                            )
                                         }
                                     }
                                 }

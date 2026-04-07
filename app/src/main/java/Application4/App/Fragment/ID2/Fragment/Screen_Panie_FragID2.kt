@@ -1,5 +1,6 @@
 package Application4.App.Fragment.ID2.Fragment
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
@@ -45,9 +46,10 @@ import org.koin.compose.koinInject
 
 @Composable
 fun Screen_Panie_FragID2(
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto ,
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject(),
-    aCentralFacade: ACentralFacade = koinInject()
+    aCentralFacade: ACentralFacade = koinInject(),
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
     val isControleFabVisible =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.isControleFabVisible
@@ -60,7 +62,9 @@ fun Screen_Panie_FragID2(
             MainFastSearchProduitPourVent_App4(
                 fragmentNavigationHandler=fragmentNavigationHandler,
             )
-            PressistatntMainActivityButtons_Sec8FWinID1()
+            PressistatntMainActivityButtons_Sec8FWinID1(
+                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+            )
             isControleFabVisible.ifTrue {
                 Box(
                     modifier = Modifier

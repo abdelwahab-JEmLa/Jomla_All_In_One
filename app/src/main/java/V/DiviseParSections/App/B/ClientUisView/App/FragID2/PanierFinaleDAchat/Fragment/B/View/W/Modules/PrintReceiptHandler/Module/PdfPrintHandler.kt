@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.CreditReceiptData
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler
 import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.CreditReceiptData
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
 import android.content.Intent
@@ -36,7 +36,7 @@ class PdfPrintHandler(
         context: Context,
         client: M2Client?,
         operations: List<M10OperationVentCouleur>,
-        repo13TarificationInfos: Repo13TarificationInfos,
+        repo13TarificationInfos: List<M13TarificationInfos>,
         repoM1Produit: RepoM1Produit,
         relative_bonVent: M8BonVent? = null,
         showCreditSection: Boolean = false,
