@@ -1,12 +1,13 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -18,6 +19,8 @@ import androidx.compose.runtime.setValue
 class ActiveDatasFragNewProto {
     var active_M9Compt: M09AppCompt? by mutableStateOf(null)
     var affiche_Dialog_Fast_Affiche_Panie: Boolean? by mutableStateOf(null)
+
+    var click_On_Marque: ActiveCentralValues.Click_On_Marque? by mutableStateOf(null)
 
     var section_ToggleButton_TagPrioriter__start_Collapsed: Boolean? by mutableStateOf(true)
     var filter_marqueClient_enum_entries: MapClientsViewModel.VisibleClientsNow? by mutableStateOf(

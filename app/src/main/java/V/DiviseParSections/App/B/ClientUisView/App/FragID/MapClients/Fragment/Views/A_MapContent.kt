@@ -22,7 +22,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,7 +62,7 @@ import kotlin.math.sqrt
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 private const val SCROLL_RELOAD_DEBOUNCE_MS = 3_000L
-private const val TAG_SCROLL               = "ScrollVelocity"
+
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
@@ -71,8 +70,7 @@ fun MapContent(
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
-) {          //<--
-//TODO(1): fait aussi a chaque 2 sec de relode et la proximite c 10km
+) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val defaultZoom = 18.2
@@ -99,10 +97,6 @@ fun MapContent(
         if (gpsFollowModeActive) locationTracker.enableFollowMode() else locationTracker.disableFollowMode()
     }
 
-    // Velocity-based proximity reload:
-    //   - track position + timestamp of the previous scroll event
-    //   - if instantaneous speed ≥ viewModel.scrollSpeedThresholdMps  →  reload 3-km markers
-    //   - debounce: at most 1 reload every SCROLL_RELOAD_DEBOUNCE_MS
     val lastScrollPoint = remember { mutableStateOf<GeoPoint?>(null) }
     val lastScrollMs    = remember { mutableStateOf(0L) }
     val lastReloadMs    = remember { mutableStateOf(0L) }
@@ -114,7 +108,6 @@ fun MapContent(
         val center = mapView.mapCenter as? GeoPoint ?: return@LaunchedEffect
         lastScrollPoint.value = GeoPoint(center.latitude, center.longitude)
         lastScrollMs.value    = System.currentTimeMillis()
-        Log.i(TAG_SCROLL, "INIT — rechargement initial au centre (${center.latitude}, ${center.longitude})")
         viewModel.relod_map_marques_du_3km_du_centre_map(center.latitude, center.longitude)
     }
 
@@ -125,42 +118,26 @@ fun MapContent(
 
         val scrollListener = object : MapListener {
             override fun onScroll(event: ScrollEvent?): Boolean {
-                val center = mapView.mapCenter as? GeoPoint ?: run {
-                    Log.w(TAG_SCROLL, "onScroll — mapCenter est null, ignoré")
-                    return false
-                }
+                val center = mapView.mapCenter as? GeoPoint ?: return false
                 val nowMs  = System.currentTimeMillis()
                 val prevPt = lastScrollPoint.value
                 val prevMs = lastScrollMs.value
 
-                // Always update the last-known scroll position
                 lastScrollPoint.value = GeoPoint(center.latitude, center.longitude)
                 lastScrollMs.value    = nowMs
 
-                if (prevPt == null) {
-                    Log.d(TAG_SCROLL, "onScroll — premier événement, ancre initialisée → (${"$"}{center.latitude}, ${"$"}{center.longitude})")
-                    return false
-                }
+                if (prevPt == null) return false
 
                 val deltaMs   = (nowMs - prevMs).coerceAtLeast(1L)
                 val meters    = haversineMeters(prevPt.latitude, prevPt.longitude, center.latitude, center.longitude)
                 val speedMps  = meters / (deltaMs / 1_000.0)
-                val speedStr  = "%.1f".format(speedMps)   // extracted to avoid Throwable? mismatch in Log.v
-
-                Log.v(TAG_SCROLL, "onScroll — Δ=${meters.toInt()} m  Δt=${deltaMs} ms  vitesse=$speedStr m/s  (seuil=${viewModel.scrollSpeedThresholdMps} m/s)")
 
                 val debounceOk = (nowMs - lastReloadMs.value) >= SCROLL_RELOAD_DEBOUNCE_MS
 
                 when {
-                    speedMps < viewModel.scrollSpeedThresholdMps -> {
-                        Log.v(TAG_SCROLL, "  → vitesse insuffisante ($speedStr < ${viewModel.scrollSpeedThresholdMps} m/s), pas de rechargement")
-                    }
-                    !debounceOk -> {
-                        val waitMs = SCROLL_RELOAD_DEBOUNCE_MS - (nowMs - lastReloadMs.value)
-                        Log.d(TAG_SCROLL, "  → vitesse OK mais debounce actif, attendre encore ${waitMs} ms")
-                    }
+                    speedMps < viewModel.scrollSpeedThresholdMps -> Unit
+                    !debounceOk -> Unit
                     else -> {
-                        Log.i(TAG_SCROLL, "  ✓ RECHARGEMENT DÉCLENCHÉ — vitesse=$speedStr m/s  centre=(${center.latitude}, ${center.longitude})")
                         lastReloadMs.value = nowMs
                         viewModel.relod_map_marques_du_3km_du_centre_map(center.latitude, center.longitude)
                     }
@@ -196,6 +173,7 @@ fun MapContent(
             currentFilterMode = currentFilterMode,
             showMarkerDetails = showMarkerDetails,
             proximityFilterCenter = proximityFilterCenter,
+            proximityFilterRadiusMeters = viewModel.proximite_de_vision_meter.toDouble(),
         )
         ensureLocationOverlayIsAtBottom(mapView)
     }
@@ -289,7 +267,9 @@ fun MapContent(
         }
 
         focusedValuesGetter.active_Central_Values.affiche_Floating_Button_Cible_Client.ifTrue {
-            Floating_Separated_FragMap_Button_1()
+            Floating_Separated_FragMap_Button_1(
+                viewModel=viewModel
+            )
         }
         focusedValuesGetter.active_Central_Values.affiche_Floating_Button_TogleFilterMarquers.ifTrue {
             Floating_Separated_FragMap_Button_4()

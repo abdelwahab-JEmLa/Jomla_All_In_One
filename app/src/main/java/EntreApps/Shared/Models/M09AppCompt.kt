@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models
 
+import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import android.os.Build
 import androidx.room.Entity
@@ -12,7 +13,7 @@ enum class Do() {
     StandartInit_Sans_RienFair,
     DeleteInsertAll_Active_Key(),
     DeleteAll_To_Let_Ancien_Repositorys_GetAll(),
-    DeleteInsertAll_Ref_All_Datas();   // deletes all local data then re-fetches ALL ref data without M3 active-key filtering
+    DeleteInsertAll_Ref_All_Datas();
 }
 
 @Entity
@@ -29,8 +30,6 @@ data class M09AppCompt(
 
     var credit_fait: Double = 0.0,
 
-    // Section InfosDeBase
-
     var nom: String = "",
     var autres_Noms_SepareParComma: String = "",
 
@@ -43,8 +42,6 @@ data class M09AppCompt(
     var keys_clients_a_cible_groupe_n2: String = ",",
     var keys_clients_a_cible_groupe_n3: String = ",",
 
-
-    // Section Options Personnel
     var image_detail_produit_s_affiche: Boolean = true,
 
     var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String = "",
@@ -68,16 +65,9 @@ data class M09AppCompt(
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
-
-    // Section Centralization Valeurs Pour Injection add_New TOu modules
-
-    // Section Paramaters App telephone
-
-
     var mainInitDataBaseProgressEtate: Float = 0f,
-    //---------------------------------Centrale_Focuces_Values.----------------------------------------------------------------------------------------------------------------------------------
-    var its_Panie_Mode_Au_Lence_Boutique: Boolean = false,
 
+    var its_Panie_Mode_Au_Lence_Boutique: Boolean = false,
 
     val filter_marqueClient_Name: String = "no Filter",
 
@@ -91,76 +81,59 @@ data class M09AppCompt(
     val affiche_Dialog_Fast_Affiche_Panie_App4: Boolean = false,
 
     val affiche_ProduitDataBaseEdites_ComposableViews: Boolean = true,
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
     var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
     var ouvertProduitOnVentNom: String = "",
 
-    //---------------------------------Parent.M14VentPeriode----------------------------------------------------------------------------------------------------------------------------------
     var current_OnVent_M14VentPeriode_KeyID: String = "",
     var current_OnVent_M14VentPeriode_DebugInfos: String = "",
-    //---------------------------------------------------Vent Createur--------------------------------------------------------------
+
     var onVentM8BonVentKey: String = "",
     var onVentM8BonVentDebugInfos: String = "",
-    //---------------------------------Parent.M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+
     var onVentM1ProduitInfosKeyID: String = "",
     var onVentM1ProduitInfosDebugName: String = "",
-    //---------------------------------Parent.M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+
     var onVentM3CouleurProduitInfosKeyID: String = "null",
     val onVentM3CouleurProduitDebugInfos: String = "null",
-    //------------------------------------------------------------------------------------------------------------------------------------------------
 
-    //---------------------------------DialogOpner.DialogAboveAll.OutlinedSearchListProduits----------------------------------------------------------------------------------------------------------------------------------
     var dialogAboveAll_OutlinedSearchListProduits: Boolean = false,
 
-    //---------------------------------dialogChoisireQuantityM1Produit----------------------------------------------------------------------------------------------------------------------------------
     var dialogChoisireQuantityM1ProduitInfosKeyID: String = "null",
     var dialogChoisireQuantityM1ProduitInfosDebugName: String = "null",
 
-    //---------------------------------M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var activeFocuce_TariffPrixDifineur_M1ProduitKeyID: String = "null",
     var activeFocuceTariffPrixDifineurM1ProduitDebugInfos: String = "null",
-    //---------------------------------M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-    var startTextSearchM1Produit: String = "",
-    //------------------------------------------------------------------------------------------------------------------------------------------------
 
-    //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
+    var startTextSearchM1Produit: String = "",
+
+    // ---- mode de clic sur un marqueur carte ----
+    var click_On_Marque: ActiveCentralValues.Click_On_Marque = ActiveCentralValues.Click_On_Marque.Standart,
+
     var KeyByParent: String = "",
     var vid: Long = 1,
 ) {
 
-    fun get_DebugInfos(): String {
-        return buildString {
-            append("(M9=")
-            append(nom)
-            append("[")
-            append(keyID.takeLast(3).uppercase())
-            append("])")
-        }
+    fun get_DebugInfos(): String = buildString {
+        append("(M9=")
+        append(nom)
+        append("[")
+        append(keyID.takeLast(3).uppercase())
+        append("])")
     }
 
     fun M09AppCompt.addStringAuNomsMutableTags(str: String): List<String> {
-        val currentTags = if (autres_Noms_SepareParComma.isNotEmpty()) {
+        val currentTags = if (autres_Noms_SepareParComma.isNotEmpty())
             autres_Noms_SepareParComma.split(",").map { it.trim() }
-        } else {
-            emptyList()
-        }
-
-        return if (currentTags.contains(str)) {
-            currentTags
-        } else {
-            currentTags + str
-        }
+        else emptyList()
+        return if (currentTags.contains(str)) currentTags else currentTags + str
     }
 
-    fun getList_autres_Noms_SepareParComma(): List<String> {
-        return if (autres_Noms_SepareParComma.isNotEmpty()) {
+    fun getList_autres_Noms_SepareParComma(): List<String> =
+        if (autres_Noms_SepareParComma.isNotEmpty())
             autres_Noms_SepareParComma.split(",").map { it.trim() }.filter { it.isNotEmpty() }
-        } else {
-            emptyList()
-        }
-    }
+        else emptyList()
 
     fun toFirebaseMap(): Map<String, Any?> = mapOf(
         "keyID"                                                 to keyID,
@@ -218,6 +191,7 @@ data class M09AppCompt(
         "activeFocuce_TariffPrixDifineur_M1ProduitKeyID"        to activeFocuce_TariffPrixDifineur_M1ProduitKeyID,
         "activeFocuceTariffPrixDifineurM1ProduitDebugInfos"     to activeFocuceTariffPrixDifineurM1ProduitDebugInfos,
         "startTextSearchM1Produit"                              to startTextSearchM1Produit,
+        "click_On_Marque"                                       to click_On_Marque.name,
         "KeyByParent"                                           to KeyByParent,
         "vid"                                                   to vid,
     )
@@ -229,7 +203,6 @@ data class M09AppCompt(
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
         fun get_Default() = M09AppCompt()
-
 
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"

@@ -168,6 +168,7 @@ fun Floating_Separated_FragMap_Button_4(
                         },
                         onClick = {
                             mapClientsViewModel.update_filter_marqueClient(visibleClientsNow1)
+                            mapClientsViewModel.clearProximityFilter()
                             showDropdown = false
                         }
                     )
@@ -190,31 +191,7 @@ fun Floating_Separated_FragMap_Button_4(
                     val filterLabel3 = "COMMANDE_LIVRAI Filter (${acceptedBons.size})"
                     DropdownMenuItem(
                         modifier = Modifier
-                            .semantics(mergeDescendants = true) {
-                                set(
-                                    value = acceptedBons,
-                                    key = SemanticsPropertyKey("acceptedBons")
-                                )
-                            }
-                            .semantics(mergeDescendants = true) {
-                                set(
-                                    value = filteredClients,
-                                    key = SemanticsPropertyKey("filteredClients")
-                                )
-                            }
-                            .semantics(mergeDescendants = true) {
-                                set(
-                                    value = bons.lastOrNull { bon ->
-                                        bon.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                                    }?.let { bon ->
-                                        find_its_Confirmation_de_Transaction(
-                                            repositorysMainGetter,
-                                            bon
-                                        )
-                                    },
-                                    key = SemanticsPropertyKey("lastCommandeLivraiTransaction")
-                                )
-                            },
+                        ,
                         text = {
                             Text(
                                 text = filterLabel3,

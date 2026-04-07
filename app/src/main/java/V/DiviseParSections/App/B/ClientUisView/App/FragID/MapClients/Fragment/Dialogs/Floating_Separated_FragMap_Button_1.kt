@@ -1,9 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -46,26 +45,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @Composable
 fun Floating_Separated_FragMap_Button_1(
-    aCentralFacade: ACentralFacade = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     buttonState: Button_State = Button_State.get_Default().copy(
         text_Label = "Mode Selection",
         icons = Pair(Icons.Default.Remove, Icons.Default.Add)
-    )
+    ),
+    viewModel: MapClientsViewModel,
 ) {
-    val currentValues = focusedValuesGetter.active_Central_Values
-    val isActive = currentValues.click_On_Marque == ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
-
-    // Get the color from the current Click_On_Marque enum
-    val currentModeColor = currentValues.click_On_Marque.couleur
+    val compt = viewModel.active_Datas.active_M9Compt
+    val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
+    val currentModeColor = currentMode.couleur
 
     val updatedButtonState = buttonState.copy(
-        its_Active = isActive,
+        its_Active = currentMode == ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients,
         colors = Pair(currentModeColor, Color.Gray)
     )
 
@@ -73,7 +68,7 @@ fun Floating_Separated_FragMap_Button_1(
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
 
-    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 200f)) }
+    var offsetX by remember { mutableFloatStateOf(screenWidth.value - 200f) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 200f) }
     var expanded by remember { mutableStateOf(false) }
 
@@ -84,11 +79,8 @@ fun Floating_Separated_FragMap_Button_1(
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
-
-                        offsetX = offsetX.coerceIn(0f, screenWidth.value - 100f)
-                        offsetY = offsetY.coerceIn(0f, screenHeightDp.value - 100f)
+                        offsetX = (offsetX + dragAmount.x).coerceIn(0f, screenWidth.value - 100f)
+                        offsetY = (offsetY + dragAmount.y).coerceIn(0f, screenHeightDp.value - 100f)
                     }
                 }
                 .padding(16.dp)
@@ -97,10 +89,9 @@ fun Floating_Separated_FragMap_Button_1(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Display mode label
                 if (updatedButtonState.showLabels) {
                     Text(
-                        text = getModeLabel(currentValues.click_On_Marque),
+                        text = getModeLabel(currentMode),
                         color = Color.White,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
@@ -114,25 +105,21 @@ fun Floating_Separated_FragMap_Button_1(
                 }
 
                 Box {
-                    // Main FAB with icon based on current mode
                     FloatingActionButton(
                         modifier = Modifier
                             .getSemanticsTag(updatedButtonState, "buttonState")
                             .size(56.dp),
-                        onClick = {
-                            expanded = true
-                        },
+                        onClick = { expanded = true },
                         containerColor = currentModeColor,
                         contentColor = Color.White
                     ) {
                         Icon(
-                            imageVector = getModeIcon(currentValues.click_On_Marque),
+                            imageVector = getModeIcon(currentMode),
                             contentDescription = "Select Click On Marque Mode",
                             modifier = Modifier.size(28.dp)
                         )
                     }
 
-                    // Dropdown menu with all modes
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
@@ -146,18 +133,13 @@ fun Floating_Separated_FragMap_Button_1(
                                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                                         modifier = Modifier.padding(vertical = 4.dp)
                                     ) {
-                                        // Mode icon
                                         Icon(
                                             imageVector = getModeIcon(clickMode),
                                             contentDescription = null,
                                             tint = clickMode.couleur,
                                             modifier = Modifier.size(24.dp)
                                         )
-
-                                        // Mode text with description
-                                        Column(
-                                            verticalArrangement = Arrangement.spacedBy(2.dp)
-                                        ) {
+                                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                             Text(
                                                 text = getModeLabel(clickMode),
                                                 fontWeight = FontWeight.Medium,
@@ -169,8 +151,6 @@ fun Floating_Separated_FragMap_Button_1(
                                                 color = Color.Gray
                                             )
                                         }
-
-                                        // Color indicator
                                         Box(
                                             modifier = Modifier
                                                 .size(12.dp)
@@ -182,10 +162,10 @@ fun Floating_Separated_FragMap_Button_1(
                                     }
                                 },
                                 onClick = {
-                                    val newValues = currentValues.copy(
-                                        click_On_Marque = clickMode
-                                    )
-                                    focusedValuesGetter.update_activeCentralValues(newValues)
+                                    compt?.let {
+                                        viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
+                                    }
+                                    viewModel.mapReloadTrigger++
                                     expanded = false
                                 },
                                 modifier = Modifier.padding(horizontal = 4.dp)
@@ -198,42 +178,32 @@ fun Floating_Separated_FragMap_Button_1(
     }
 }
 
-// Helper function to get icon for each mode
-private fun getModeIcon(mode: ActiveCentralValues.Click_On_Marque): ImageVector {
-    return when (mode) {
-        ActiveCentralValues.Click_On_Marque.Standart -> Icons.Default.Info
-        ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> Icons.Default.Add
-        ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> Icons.Default.ShoppingCart
-        ActiveCentralValues.Click_On_Marque.Call -> Icons.Default.Call
-        ActiveCentralValues.Click_On_Marque.Navigate -> Icons.Default.Explore
-        ActiveCentralValues.Click_On_Marque.Marck_Ferme -> Icons.Default.Close
-        ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> Icons.Default.LocalShipping
-    }
+private fun getModeIcon(mode: ActiveCentralValues.Click_On_Marque): ImageVector = when (mode) {
+    ActiveCentralValues.Click_On_Marque.Standart -> Icons.Default.Info
+    ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> Icons.Default.Add
+    ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> Icons.Default.ShoppingCart
+    ActiveCentralValues.Click_On_Marque.Call -> Icons.Default.Call
+    ActiveCentralValues.Click_On_Marque.Navigate -> Icons.Default.Explore
+    ActiveCentralValues.Click_On_Marque.Marck_Ferme -> Icons.Default.Close
+    ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> Icons.Default.LocalShipping
 }
 
-// Helper function to get label for each mode
-private fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String {
-    return when (mode) {
-        ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
-        ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Ajouter Ciblage"
-        ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Afficher Commande"
-        ActiveCentralValues.Click_On_Marque.Call -> "Appeler Client"
-        ActiveCentralValues.Click_On_Marque.Navigate -> "Navigation GPS"
-        ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer Fermé"
-        ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer Livré"
-    }
+private fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
+    ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
+    ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Ajouter Ciblage"
+    ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Afficher Commande"
+    ActiveCentralValues.Click_On_Marque.Call -> "Appeler Client"
+    ActiveCentralValues.Click_On_Marque.Navigate -> "Navigation GPS"
+    ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer Fermé"
+    ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer Livré"
 }
 
-// Helper function to get description for each mode
-private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): String {
-    return when (mode) {
-        ActiveCentralValues.Click_On_Marque.Standart -> "Afficher les détails du client"
-        ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Ajouter à la liste de ciblage"
-        ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Voir le bon de commande actif"
-        ActiveCentralValues.Click_On_Marque.Call -> "Lancer un appel téléphonique"
-        ActiveCentralValues.Click_On_Marque.Navigate -> "Ouvrir dans Google Maps"
-        ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer le client comme fermé"
-        ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer la commande comme livrée"
-    }
+private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
+    ActiveCentralValues.Click_On_Marque.Standart -> "Afficher les détails du client"
+    ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Ajouter à la liste de ciblage"
+    ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Voir le bon de commande actif"
+    ActiveCentralValues.Click_On_Marque.Call -> "Lancer un appel téléphonique"
+    ActiveCentralValues.Click_On_Marque.Navigate -> "Ouvrir dans Google Maps"
+    ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer le client comme fermé"
+    ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer la commande comme livrée"
 }
-

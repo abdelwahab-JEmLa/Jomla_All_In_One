@@ -36,8 +36,6 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-
-
 fun addOuUpdateMapMarkers(
     uiState: UiState,
     viewModel: MapClientsViewModel,
@@ -45,8 +43,9 @@ fun addOuUpdateMapMarkers(
     currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     showMarkerDetails: Boolean,
     proximityFilterCenter: GeoPoint?,
+    proximityFilterRadiusMeters: Double,
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
-) {
+) {        //<--
     val clientDataBaseSnapList = uiState.b_ClientInfosProtoJuin3List
 
     val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
@@ -68,18 +67,17 @@ fun addOuUpdateMapMarkers(
                 proximityFilterCenter.longitude,
                 client.latitude,
                 client.longitude,
-            ) <= viewModel.PROXIMITY_FILTER_RADIUS_METERS
+            ) <= proximityFilterRadiusMeters
         }
     } else {
         modeFilteredClients
     }
-
     addMarkersForFilteredClients(
         mapView,
         clientsToShow,
         viewModel,
         showMarkerDetails,
-        fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
+        fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto,
     )
 
     restoreLocationOverlayAtBottom(mapView, locationOverlay)

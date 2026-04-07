@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.D
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -135,43 +134,71 @@ fun Floating_Separated_FragMap_Button_2(
                     modifier = Modifier.size(48.dp),
                     onClick = {
                         val center = mapView.mapCenter
-                        Log.d("ProximityFilter", "=== FAB Reload clicked ===")
-                        Log.d("ProximityFilter", "  mapView.mapCenter → lat=${center.latitude}  lng=${center.longitude}")
-                        if (center.latitude == 0.0 && center.longitude == 0.0) {
-                            Log.w("ProximityFilter", "  ⚠️ centre (0,0) — la map n'est peut-être pas encore initialisée !")
+                        if (center.latitude != 0.0 || center.longitude != 0.0) {
+                            viewModel.relod_map_marques_du_3km_du_centre_map(
+                                centerLat = center.latitude,
+                                centerLng = center.longitude,
+                            )
                         }
-                        viewModel.relod_map_marques_du_3km_du_centre_map(
-                            centerLat = center.latitude,
-                            centerLng = center.longitude,
-                        )
                     },
                     containerColor = Color(0xFF1565C0),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
-                        contentDescription = "Reload markers within 3 km",
+                        contentDescription = "Reload markers",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
                 }
 
                 // ── Speed threshold input ──────────────────────────────────────────────
-                // Outlined text field whose initial value is the current scrollSpeedThresholdMps.
-                // Border = red while the user is editing (dirty), green once the value is applied.
                 SpeedThresholdField(viewModel = viewModel)
+
+                editer_proximite_de_vision_meter(viewModel = viewModel)
             }
         }
     }
 }
 
+@Composable
+private fun editer_proximite_de_vision_meter(viewModel: MapClientsViewModel) {
+    var draftText by remember { mutableStateOf(viewModel.proximite_de_vision_meter.toString()) }
+    val isDirty = draftText.toIntOrNull() != viewModel.proximite_de_vision_meter
 
-/**
- * Outlined text field that lets the user edit [MapClientsViewModel.scrollSpeedThresholdMps] live.
- *
- * Colour logic:
- *   - Red border  → the typed text differs from the applied value (dirty / en cours d'édition)
- *   - Green border → the typed value has been applied (confirmed with Done / Enter)
- */
+    val borderColor = when {
+        isDirty -> Color.Red    // editing — not yet applied
+        else    -> Color.Green  // matches the applied value
+    }
+
+    fun applyValue() {
+        val parsed = draftText.toIntOrNull()
+        if (parsed != null && parsed > 0.0) {
+            viewModel.proximite_de_vision_meter = parsed
+        } else {
+            draftText = viewModel.proximite_de_vision_meter.toString()
+        }
+    }
+
+    OutlinedTextField(
+        value = draftText,
+        onValueChange = { input -> draftText = input },
+        label = { Text("", color = Color.White, fontSize = 10.sp) },
+        singleLine = true,
+        textStyle = TextStyle(color = Color.White, fontSize = 13.sp),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Decimal,
+            imeAction    = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(onDone = { applyValue() }),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor   = borderColor,
+            unfocusedBorderColor = borderColor,
+            cursorColor          = Color.White,
+        ),
+        modifier = Modifier.size(width = 110.dp, height = 64.dp)
+    )
+}
+
 @Composable
 private fun SpeedThresholdField(viewModel: MapClientsViewModel) {
     // Local draft text — initialised from the ViewModel value
@@ -188,18 +215,14 @@ private fun SpeedThresholdField(viewModel: MapClientsViewModel) {
         val parsed = draftText.toDoubleOrNull()
         if (parsed != null && parsed > 0.0) {
             viewModel.scrollSpeedThresholdMps = parsed
-            Log.d("SpeedThreshold", "scrollSpeedThresholdMps mis à jour → $parsed m/s")
         } else {
-            // Revert draft to last valid value
             draftText = viewModel.scrollSpeedThresholdMps.toString()
         }
     }
 
     OutlinedTextField(
         value = draftText,
-        onValueChange = { input ->
-            draftText = input          // border turns red immediately
-        },
+        onValueChange = { input -> draftText = input },
         label = { Text("Vitesse (m/s)", color = Color.White, fontSize = 10.sp) },
         singleLine = true,
         textStyle = TextStyle(color = Color.White, fontSize = 13.sp),
@@ -207,9 +230,7 @@ private fun SpeedThresholdField(viewModel: MapClientsViewModel) {
             keyboardType = KeyboardType.Decimal,
             imeAction    = ImeAction.Done
         ),
-        keyboardActions = KeyboardActions(
-            onDone = { applyValue() }  // border turns green on confirm
-        ),
+        keyboardActions = KeyboardActions(onDone = { applyValue() }),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor   = borderColor,
             unfocusedBorderColor = borderColor,
