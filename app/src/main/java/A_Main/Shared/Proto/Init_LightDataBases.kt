@@ -14,7 +14,7 @@ object Init_LightDataBases {
         val m14VentPeriode: List<M14VentPeriode> = emptyList(),
         val m8BonVent: List<M8BonVent> = emptyList(),
         val m10OperationVentCouleur: List<M10OperationVentCouleur> = emptyList(),
-        val m2Clients: List<M2Client> = emptyList(),   // ← TODO(1) fixed: clients seeded
+        val m2Clients: List<M2Client> = emptyList(),
     )
 
     suspend fun returne_FireBase_LightDataBases(

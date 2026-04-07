@@ -48,6 +48,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -68,6 +70,7 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     overrideCount: Int = 0,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns ,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -357,10 +360,10 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                         }.toString())) }
                     .background(
                         color = when {
-                            isSending            -> MaterialTheme.colorScheme.surfaceVariant
-                            !pdfExists           -> Color(0xFF9E9E9E)
+                            isSending -> MaterialTheme.colorScheme.surfaceVariant
+                            !pdfExists -> Color(0xFF9E9E9E)
                             hasZeroPriceProducts -> Color(0xFFFF9800)
-                            else                 -> Color(0xFF25D366)
+                            else -> Color(0xFF25D366)
                         },
                         shape = RoundedCornerShape(4.dp)
                     )

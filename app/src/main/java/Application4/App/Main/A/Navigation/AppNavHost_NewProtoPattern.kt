@@ -1,5 +1,6 @@
 package Application4.App.Main.A.Navigation
 
+import A_Main.Shared.Proto.A_LoadingApp4_Init_Screen
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
@@ -20,6 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -54,8 +58,7 @@ fun AppNavHost_NewProtoPattern(
         fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
     }
 
-    // State flag: true only after heavy modules are confirmed loaded in Koin
-    val heavyReady = androidx.compose.runtime.remember { mutableStateOf(heavyModulesLoaded.get()) }
+    val heavyReady = remember { mutableStateOf(heavyModulesLoaded.get()) }
 
     Surface(
         modifier = modifier
@@ -78,10 +81,20 @@ fun AppNavHost_NewProtoPattern(
                     }
                 }
 
-                A_Compact_Presentoire_App_Produits_App4(
-                    fragmentNavigationHandler=fragmentNavigationHandler,
-                    viewModelNewProtoPatterns=viewModelNewProtoPatterns
-                )
+                var initDone by rememberSaveable { mutableStateOf(false) }
+
+                if (!initDone) {
+                    A_LoadingApp4_Init_Screen(
+                        innerPadding = PaddingValues(),
+                        onInitDone = { initDone = true },
+                        appDatabase = koinInject()
+                    )
+                } else {
+                    A_Compact_Presentoire_App_Produits_App4(
+                        fragmentNavigationHandler=fragmentNavigationHandler,
+                        viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                    )
+                }
             }
 
             composable(route = Screen_NewProtoPattern.Panier.route) {
@@ -97,9 +110,20 @@ fun AppNavHost_NewProtoPattern(
                     }
                 }
                 if (heavyReady.value) {
-                    Screen_Panie_FragID2(
-                        fragmentNavigationHandler=fragmentNavigationHandler,
+                    var initDone by rememberSaveable { mutableStateOf(false) }
+
+                    if (!initDone) {
+                        A_LoadingApp4_Init_Screen(
+                            innerPadding = PaddingValues(),
+                            onInitDone = { initDone = true },
+                            appDatabase = koinInject()
                         )
+                    } else {
+                        Screen_Panie_FragID2(
+                            viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                            fragmentNavigationHandler = fragmentNavigationHandler,
+                        )
+                    }
                 }
             }
 
@@ -116,17 +140,26 @@ fun AppNavHost_NewProtoPattern(
                     }
                 }
                 if (heavyReady.value) {
-                    A_MapClients_A2FragID_1(
-                        onUpdateLongAppSetting = {
-                            fragmentNavigationHandler.navigateTo(
-                                Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route
-                            )
-                        },
-                        onClear = {}
-                        ,fragmentNavigationHandler_NewProto=fragmentNavigationHandler,
+                    var initDone by rememberSaveable { mutableStateOf(false) }
 
+                    if (!initDone) {
+                        A_LoadingApp4_Init_Screen(
+                            innerPadding = PaddingValues(),
+                            onInitDone = { initDone = true },
+                            appDatabase = koinInject()
                         )
+                    } else {
+                        A_MapClients_A2FragID_1(
+                            onUpdateLongAppSetting = {
+                                fragmentNavigationHandler.navigateTo(
+                                    Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route
+                                )
+                            },
+                            onClear = {},
+                            fragmentNavigationHandler_NewProto = fragmentNavigationHandler,
 
+                            )
+                    }
                 }
             }
         }
