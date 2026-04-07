@@ -7,11 +7,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -46,7 +47,7 @@ import org.osmdroid.views.MapView
 import kotlin.math.roundToInt
 
 @Composable
-fun Floating_Separated_FragMap_Button_2(
+fun But2_GPSFollowMode(
     mapView: MapView,
     aCentralFacade: ACentralFacade = koinInject(),
     viewModel: MapClientsViewModel,
@@ -84,77 +85,94 @@ fun Floating_Separated_FragMap_Button_2(
                     }
                 }
                 .padding(16.dp)
+                // Constrain to screen width so LazyRow has a bounded scroll area
+                .widthIn(max = screenWidth - 32.dp)
         ) {
-            Row(
+            // FIX TODO(1): replaced Row with LazyRow so items scroll horizontally
+            // instead of overflowing / clipping when the screen is narrow.
+            LazyRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // ── Optional label ────────────────────────────────────────────────
                 if (updatedButtonState.showLabels) {
-                    Text(
-                        text = if (isGpsFollowActive) "GPS Active" else "GPS Inactive",
-                        color = Color.White,
-                        modifier = Modifier
-                            .background(
-                                color = if (updatedButtonState.its_Active)
-                                    updatedButtonState.colors.second.copy(alpha = 0.8f)
-                                else
-                                    updatedButtonState.colors.first.copy(alpha = 0.8f),
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-                }
-                FloatingActionButton(
-                    modifier = Modifier
-                        .size(48.dp),
-                    onClick = {
-                        val newValues = currentValues.copy(
-                            gps_follow_mode_active = !isGpsFollowActive
+                    item {
+                        Text(
+                            text = if (isGpsFollowActive) "GPS Active" else "GPS Inactive",
+                            color = Color.White,
+                            modifier = Modifier
+                                .background(
+                                    color = if (updatedButtonState.its_Active)
+                                        updatedButtonState.colors.second.copy(alpha = 0.8f)
+                                    else
+                                        updatedButtonState.colors.first.copy(alpha = 0.8f),
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
                         )
-                        focusedValuesGetter.update_activeCentralValues(newValues)
-                    },
-                    containerColor = if (updatedButtonState.its_Active)
-                        updatedButtonState.colors.second
-                    else
-                        updatedButtonState.colors.first
-                ) {
-                    Icon(
-                        imageVector = if (updatedButtonState.its_Active)
-                            updatedButtonState.icons.second // GpsFixed when active
-                        else
-                            updatedButtonState.icons.first, // GpsNotFixed when inactive
-                        contentDescription = if (isGpsFollowActive) "Disable GPS Follow" else "Enable GPS Follow",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    }
                 }
 
-                // ── Reload FAB ────────────────────────────────────────────────────────
-                FloatingActionButton(
-                    modifier = Modifier.size(48.dp),
-                    onClick = {
-                        val center = mapView.mapCenter
-                        if (center.latitude != 0.0 || center.longitude != 0.0) {
-                            viewModel.relod_map_marques_du_3km_du_centre_map(
-                                centerLat = center.latitude,
-                                centerLng = center.longitude,
+                // ── GPS Follow FAB ────────────────────────────────────────────────
+                item {
+                    FloatingActionButton(
+                        modifier = Modifier.size(48.dp),
+                        onClick = {
+                            val newValues = currentValues.copy(
+                                gps_follow_mode_active = !isGpsFollowActive
                             )
-                        }
-                    },
-                    containerColor = Color(0xFF1565C0),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = "Reload markers",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
+                            focusedValuesGetter.update_activeCentralValues(newValues)
+                        },
+                        containerColor = if (updatedButtonState.its_Active)
+                            updatedButtonState.colors.second
+                        else
+                            updatedButtonState.colors.first
+                    ) {
+                        Icon(
+                            imageVector = if (updatedButtonState.its_Active)
+                                updatedButtonState.icons.second // GpsFixed when active
+                            else
+                                updatedButtonState.icons.first, // GpsNotFixed when inactive
+                            contentDescription = if (isGpsFollowActive) "Disable GPS Follow" else "Enable GPS Follow",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
 
-                // ── Speed threshold input ──────────────────────────────────────────────
-                SpeedThresholdField(viewModel = viewModel)
+                // ── Reload FAB ────────────────────────────────────────────────────
+                item {
+                    FloatingActionButton(
+                        modifier = Modifier.size(48.dp),
+                        onClick = {
+                            val center = mapView.mapCenter
+                            if (center.latitude != 0.0 || center.longitude != 0.0) {
+                                viewModel.relod_map_marques_du_3km_du_centre_map(
+                                    centerLat = center.latitude,
+                                    centerLng = center.longitude,
+                                )
+                            }
+                        },
+                        containerColor = Color(0xFF1565C0),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Reload markers",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
 
-                editer_proximite_de_vision_meter(viewModel = viewModel)
+                // ── Speed threshold input ─────────────────────────────────────────
+                item {
+                    SpeedThresholdField(viewModel = viewModel)
+                }
+
+                // ── Proximity vision input ────────────────────────────────────────
+                item {
+                    editer_proximite_de_vision_meter(viewModel = viewModel)
+                }
             }
         }
     }
@@ -201,9 +219,7 @@ private fun editer_proximite_de_vision_meter(viewModel: MapClientsViewModel) {
 
 @Composable
 private fun SpeedThresholdField(viewModel: MapClientsViewModel) {
-    // Local draft text — initialised from the ViewModel value
     var draftText by remember { mutableStateOf(viewModel.scrollSpeedThresholdMps.toString()) }
-    // True while the draft differs from the applied ViewModel value
     val isDirty = draftText.toDoubleOrNull() != viewModel.scrollSpeedThresholdMps
 
     val borderColor = when {

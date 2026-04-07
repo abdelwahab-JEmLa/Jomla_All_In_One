@@ -46,7 +46,7 @@ import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @Composable
-fun Floating_Separated_FragMap_Button_4(
+fun ClientFilterMode_Button_4(
     mapClientsViewModel: MapClientsViewModel = koinViewModel(),
     aCentralFacade: ACentralFacade = koinInject(),
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
@@ -74,6 +74,29 @@ fun Floating_Separated_FragMap_Button_4(
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 300f) }
     var showDropdown by remember { mutableStateOf(false) }
 
+    // FIX TODO(1): hoist count calculations above the Row so the label can
+    // display the same counts that appear in the dropdown items.
+    val bons = repositorysMainGetter.repo8BonVent.datasValue
+
+    val acceptedBons = bons.filter { bon ->
+        val lastTransaction = find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, bon)
+        (bon.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI)
+                && (lastTransaction?.parent_M14VentPeriod_KeyId ?: "") == keyID_currentActiveFocused_M14VentPeriode
+    }
+
+    val creditBons = bons.filter { bon ->
+        val lastTransaction = find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, bon)
+        (bon.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit)
+                && (lastTransaction?.parent_M14VentPeriod_KeyId ?: "") == keyID_currentActiveFocused_M14VentPeriode
+    }
+
+    // Resolve the count relevant to the currently active filter for the label.
+    val currentFilterCount: Int? = when (filter_marqueClient_enum_entrie) {
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> acceptedBons.size
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> creditBons.size
+        else -> null
+    }
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
             modifier = Modifier
@@ -95,9 +118,11 @@ fun Floating_Separated_FragMap_Button_4(
             ) {
                 if (updatedButtonState.showLabels) {
                     Text(
+                        // FIX: pass currentFilterCount so the label matches the dropdown text
                         text = getFilterLabelForMode(
                             filter_marqueClient_enum_entrie
-                                ?: MapClientsViewModel.VisibleClientsNow.showAll
+                                ?: MapClientsViewModel.VisibleClientsNow.showAll,
+                            count = currentFilterCount
                         ),
                         color = Color.White,
                         modifier = Modifier
@@ -138,12 +163,11 @@ fun Floating_Separated_FragMap_Button_4(
                     onDismissRequest = { showDropdown = false },
                     modifier = Modifier.background(Color.White, RoundedCornerShape(8.dp))
                 ) {
-                    // Show All Clients option
-                    val filterLabel1 = "Show All Clients"
+                    // Show All Clients
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = filterLabel1,
+                                text = "Show All Clients",
                                 color = if (filter_marqueClient_enum_entrie == MapClientsViewModel.VisibleClientsNow.showAll
                                     || filter_marqueClient_enum_entrie == null)
                                     Color.Blue else Color.Black
@@ -155,13 +179,12 @@ fun Floating_Separated_FragMap_Button_4(
                         }
                     )
 
-                    // Filter for A_COMMANDE_CONFIRME
-                    val filterLabel2 = "A_COMMANDE_CONFIRME Filter"
+                    // A_COMMANDE_CONFIRME
                     val visibleClientsNow1 = MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = filterLabel2,
+                                text = "A_COMMANDE_CONFIRME Filter",
                                 color = if (filter_marqueClient_enum_entrie == visibleClientsNow1)
                                     Color.Red else Color.Black
                             )
@@ -173,28 +196,16 @@ fun Floating_Separated_FragMap_Button_4(
                         }
                     )
 
-                    // Filter for COMMANDE_LIVRAI
+                    // COMMANDE_LIVRAI — reuses hoisted acceptedBons
                     val visibleClientsNow2 = MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
-                    val bons = repositorysMainGetter.repo8BonVent.datasValue
-
-                    val acceptedBons = bons.filter { bon ->
-                        val lastTransaction = find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, bon)
-                        (bon.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI)
-                                && (lastTransaction?.parent_M14VentPeriod_KeyId ?: "") == keyID_currentActiveFocused_M14VentPeriode
-                    }
-
                     val filteredClients = filterClientsBasedOnMode(
                         viewModel = mapClientsViewModel,
                         currentFilterMode = visibleClientsNow2
                     )
-
-                    val filterLabel3 = "COMMANDE_LIVRAI Filter (${acceptedBons.size})"
                     DropdownMenuItem(
-                        modifier = Modifier
-                        ,
                         text = {
                             Text(
-                                text = filterLabel3,
+                                text = "COMMANDE_LIVRAI Filter (${acceptedBons.size})",
                                 color = if (filter_marqueClient_enum_entrie == visibleClientsNow2)
                                     Color.Red else Color.Black
                             )
@@ -205,21 +216,12 @@ fun Floating_Separated_FragMap_Button_4(
                         }
                     )
 
-                    // Filter for Credit Transactions
+                    // Credit — reuses hoisted creditBons
                     val visibleClientsNow3 = MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit
-
-                    val creditBons = bons.filter { bon ->
-                        val lastTransaction = find_its_Confirmation_de_Transaction(aCentralFacade.repositorysMainGetter, bon)
-                        (bon.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit)
-                                && (lastTransaction?.parent_M14VentPeriod_KeyId ?: "") == keyID_currentActiveFocused_M14VentPeriode
-                    }
-
                     val creditFilteredClients = filterClientsBasedOnMode(
                         viewModel = mapClientsViewModel,
                         currentFilterMode = visibleClientsNow3
                     )
-
-                    val filterLabel4 = "Credit Filter (${creditBons.size})"
                     DropdownMenuItem(
                         modifier = Modifier
                             .semantics(mergeDescendants = true) {
@@ -249,7 +251,7 @@ fun Floating_Separated_FragMap_Button_4(
                             },
                         text = {
                             Text(
-                                text = filterLabel4,
+                                text = "Credit Filter (${creditBons.size})",
                                 color = if (filter_marqueClient_enum_entrie == visibleClientsNow3)
                                     Color.Red else Color.Black
                             )

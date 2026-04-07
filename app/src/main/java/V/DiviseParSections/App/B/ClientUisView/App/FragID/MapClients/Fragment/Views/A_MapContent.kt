@@ -4,9 +4,9 @@ import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_Ne
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M2Client
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_2
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Floating_Separated_FragMap_Button_4
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_OnClickMode
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But2_GPSFollowMode
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.ClientFilterMode_Button_4
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
@@ -267,15 +267,15 @@ fun MapContent(
         }
 
         focusedValuesGetter.active_Central_Values.affiche_Floating_Button_Cible_Client.ifTrue {
-            Floating_Separated_FragMap_Button_1(
+            But1_OnClickMode(
                 viewModel=viewModel
             )
         }
         focusedValuesGetter.active_Central_Values.affiche_Floating_Button_TogleFilterMarquers.ifTrue {
-            Floating_Separated_FragMap_Button_4()
+            ClientFilterMode_Button_4()
         }
         focusedValuesGetter.active_Central_Values.affiche_Floating_Button_gps_follow_mode_active.ifTrue {
-            Floating_Separated_FragMap_Button_2(
+            But2_GPSFollowMode(
                 mapView = mapView,
                 viewModel = viewModel,
                 buttonState = Button_State.get_Default().copy(

@@ -140,16 +140,70 @@ fun createAndAddMarker(
             configureMarkerInfoWindow(this, mapView, context, viewModel, m2Client)
         } catch (_: Exception) {
         }
-
+        val compt = viewModel.active_Datas.active_M9Compt
+        val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
         setOnMarkerClickListener { clickedMarker, _ ->
             val activeCentralValues = focusedValuesGetter.active_Central_Values
-            val current_ADD_Au_Ciblage_Clients = activeCentralValues.click_On_Marque
             val actuelle_Ciblage_MaxPosition = activeCentralValues.actuelle_Ciblage_MaxPosition
             val newPosition = actuelle_Ciblage_MaxPosition + 1
 
-            when (current_ADD_Au_Ciblage_Clients) {
+            val modeLabel = when (currentMode) {
+                ActiveCentralValues.Click_On_Marque.Standart                              -> "Standard"
+                ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients                -> "Ajouter Ciblage"
+                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Afficher Commande"
+                ActiveCentralValues.Click_On_Marque.Call                                  -> "Appeler Client"
+                ActiveCentralValues.Click_On_Marque.Navigate                              -> "Navigation GPS"
+                ActiveCentralValues.Click_On_Marque.Marck_Ferme                          -> "Marquer Fermé"
+                ActiveCentralValues.Click_On_Marque.Marck_Command_Livret                 -> "Marquer Livré"
+            }
+            Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_SHORT).show()
 
-                // Standard mode - show details
+            when (currentMode) {
+                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> {
+                    val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+
+                    val onCommandBon_ventPeriod = datasValue.lastOrNull {
+                        it.parent_M2Client_KeyID == m2Client.keyID
+                                &&
+                                it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+                            ?.keyID ?: "")
+                                && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                    }
+
+                    if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
+                        onCommandBon_ventPeriod?.let {
+                            aCentralFacade.focusedActiveValuesFacade
+                                .focusedValuesSetter
+                                .setIN_M9CurrentApp_onVentM8BonVentKey(
+                                    it
+                                )
+                            fragmentNavigationHandler_NewProto.navigateTo(
+                                Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
+                            )
+                        }?: Toast.makeText(
+                            context,
+                            "Aucune commande en cours pour ce client",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    } else {
+                        if (onCommandBon_ventPeriod != null) {
+                            aCentralFacade.focusedActiveValuesFacade
+                                .focusedValuesSetter
+                                .setIN_M9CurrentApp_onVentM8BonVentKey(
+                                    onCommandBon_ventPeriod
+                                )
+                            fragmentNavigationHandler.navigateToCartScreen()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Aucune commande en cours pour ce client",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                    true
+                }
                 ActiveCentralValues.Click_On_Marque.Standart -> {
                     val clickedMarkerM2Client =
                         repo.datasValue.find { it.id.toString() == clickedMarker.id }
@@ -196,39 +250,6 @@ fun createAndAddMarker(
                 }
 
                 // Show on-command transaction
-                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> {
-                    val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-
-                    val onCommandBon_ventPeriod = datasValue.lastOrNull {
-                        it.parent_M2Client_KeyID == m2Client.keyID
-                                &&
-                                it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
-                            ?.keyID ?: "")
-                                && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                    }
-
-                    if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
-                        fragmentNavigationHandler_NewProto.navigateTo(
-                            Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
-                        )
-                    } else {
-                        if (onCommandBon_ventPeriod != null) {
-                            aCentralFacade.focusedActiveValuesFacade
-                                .focusedValuesSetter
-                                .setIN_M9CurrentApp_onVentM8BonVentKey(
-                                    onCommandBon_ventPeriod
-                                )
-                            fragmentNavigationHandler.navigateToCartScreen()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Aucune commande en cours pour ce client",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                    true
-                }
 
                 // Direct phone call to client
                 ActiveCentralValues.Click_On_Marque.Call -> {

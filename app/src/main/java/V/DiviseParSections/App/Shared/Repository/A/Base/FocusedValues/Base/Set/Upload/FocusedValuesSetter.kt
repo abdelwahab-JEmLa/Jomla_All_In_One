@@ -29,6 +29,8 @@ class FocusedValuesSetter(
 //--------------------By.Repo.Position-----------------------------------------------------------------------------------------------------------------------------
     //--------------------Repo10OperationVentCouleur----------------------------------------------------------------------------------------------------------------------------
 
+    lateinit var IN_M9CurrentApp_onVentM8BonVentKey: M8BonVent?
+
     fun upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
         updatedDefaultId8BonVent: M8BonVent,
         newCurrentM9AppCompt: M09AppCompt?

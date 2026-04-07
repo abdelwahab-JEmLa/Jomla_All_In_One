@@ -113,7 +113,8 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                          val appDatabase=   koinInject<AppDatabase>()
-                         val fragmentNavigationHandler=   koinInject<FragmentNavigationHandler_NewProto>()
+                         val fragmentNavigationHandler= FragmentNavigationHandler_NewProto()
+
                          val context =  LocalContext.current
                             if (permissionsChecked) {
                                 var initDone by rememberSaveable { mutableStateOf(false) }

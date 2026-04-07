@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 
 @Composable
-fun Floating_Separated_FragMap_Button_1(
+fun But1_OnClickMode(
     buttonState: Button_State = Button_State.get_Default().copy(
         text_Label = "Mode Selection",
         icons = Pair(Icons.Default.Remove, Icons.Default.Add)
