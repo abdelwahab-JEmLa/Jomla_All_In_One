@@ -95,6 +95,8 @@ class MapClientsViewModel(
     var mapReloadTrigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
     var scrollSpeedThresholdMps by mutableStateOf(1.0)
+
+    var PROXIMITY_FILTER_RADIUS_METERS by mutableStateOf( 1_000.0)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
 
     private fun updateUiState() {
@@ -108,9 +110,7 @@ class MapClientsViewModel(
     }
 
     fun update_uiState_m2Client_In_ShowEditMarkerMode(m2Client_In_ShowEditMarkerMode: M2Client? = null) {
-        _uiState.value = _uiState.value.copy(
-            m2Client_In_ShowEditMarkerMode = m2Client_In_ShowEditMarkerMode,
-        )
+        _uiState.value = _uiState.value.copy(m2Client_In_ShowEditMarkerMode = m2Client_In_ShowEditMarkerMode)
     }
 
     fun update_active_Compt(compt: M09AppCompt) {
@@ -168,9 +168,8 @@ class MapClientsViewModel(
         }
     }
 
-    fun getLastTransaction(m2Client: M2Client): M8BonVent? {
-        return getter.get_Last_M8BonVent_Par_M2Client(m2Client)
-    }
+    fun getLastTransaction(m2Client: M2Client): M8BonVent? =
+        getter.get_Last_M8BonVent_Par_M2Client(m2Client)
 
     fun updateData(client: M2Client) {
         viewModelScope.launch {
@@ -204,8 +203,7 @@ class MapClientsViewModel(
                 delay(1500)
                 updateUiState()
             }
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) { }
     }
 
     fun add_Cible(m2Client: M2Client) {
@@ -216,11 +214,12 @@ class MapClientsViewModel(
             relative_M2Client = m2Client,
             etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
         ) ?: return
-        aCentralFacade.repositorysMainSetter
-            .addNew_M8BonVent(
-                found_Or_Default_M8BonVent.default_If_No_Found
-                    .copy(position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition)
+
+        aCentralFacade.repositorysMainSetter.addNew_M8BonVent(
+            found_Or_Default_M8BonVent.default_If_No_Found.copy(
+                position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition
             )
+        )
         focusedValuesGetter.update_activeCentralValues(
             activeCentralValues.copy(actuelle_Ciblage_MaxPosition = newPosition)
         )
@@ -238,17 +237,13 @@ class MapClientsViewModel(
         viewModelScope.launch {
             try {
                 val appSettingsSaverModel = AppSettingsSaverModel(
-                    id = 1,
-                    name = name,
-                    valueLong = value,
-                    date = Date()
+                    id = 1, name = name, valueLong = value, date = Date()
                 )
                 Firebase.database.getReference("A_AppSettingsSaverModel")
                     .child(appSettingsSaverModel.id.toString())
                     .setValue(appSettingsSaverModel)
                     .await()
-            } catch (e: Exception) {
-            }
+            } catch (e: Exception) { }
         }
     }
 
@@ -281,8 +276,7 @@ class MapClientsViewModel(
                 mapReloadTrigger = 0
                 filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = emptyList()
                 updateUiState()
-            } catch (e: Exception) {
-            }
+            } catch (e: Exception) { }
         }
     }
 
@@ -290,11 +284,12 @@ class MapClientsViewModel(
         try {
             mapReloadTrigger++
             afficheLesJoursAuNoms = true
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) { }
     }
 
-    fun startRecordIfNot() {
-        recordingHandler.startRecordIfNot()
+    fun startRecordIfNot() { recordingHandler.startRecordIfNot() }
+
+    fun update_active_M9Compt_its_panie_mode_par(bool: Boolean) {
+        update_active_Compt(active_Datas.active_M9Compt!!.copy(its_Panie_Mode_Au_Lence_Boutique = bool))
     }
 }
