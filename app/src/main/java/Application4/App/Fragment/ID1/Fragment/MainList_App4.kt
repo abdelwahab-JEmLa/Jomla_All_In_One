@@ -8,8 +8,8 @@ import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -66,7 +66,6 @@ fun Etager_LazyColumn(
     val isScrollEnabled = isHostPhone || !isConnected
     val expanded_M3CouleurProduitInfos = wifiState.expanded_M3CouleurProduitInfos
 
-    // TODO(1) FIXED: displayList now handles its_Panie_Mode —
     // when active, only colours that own an M10 vent operation on the current bon are shown.
     val displayList by remember {
         derivedStateOf {
@@ -74,6 +73,9 @@ fun Etager_LazyColumn(
             val allProducts = activeDatas.list_M1Produit ?: emptyList()
             val isEchatillantsMode = activeDatas.isEchatillantsMode
             val isPanieMode = activeDatas.its_Panie_Mode
+
+            // ── Search filter (case-insensitive, trims whitespace) ────────────
+            val searchQuery = activeDatas.filter_echatilaten.trim().lowercase()
 
             val echaKeys = allColours
                 .filter { it.its_in_echantiallants }
@@ -137,6 +139,10 @@ fun Etager_LazyColumn(
                     // ─────────────────────────────────────────────────────────
 
                     if (filtered.isEmpty()) null else product to filtered
+                }
+                // ── Apply search filter across all modes ──────────────────────
+                .filter { (product, _) ->
+                   if(isEchatillantsMode) searchQuery.isEmpty() || product.nom.lowercase().contains(searchQuery) else false
                 }
         }
     }
