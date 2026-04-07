@@ -9,7 +9,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoPatterns) {
@@ -56,7 +56,14 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         progress(5 / 9f)
         val appCompt =
             AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().getBy_M00_Lence_Key_Flow()
-                .first()
+                .firstOrNull()
+                ?: run {
+                    AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
+                        AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(
+                            initDatasProgressEtate = 0f
+                        )
+                    return
+                }
         progress(6 / 9f)
         val bonVent = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
         progress(7 / 9f)
@@ -92,7 +99,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     }
 
     private fun seedActiveDatas(
-        appCompt: M09AppCompt,
+        appCompt: M09AppCompt?,  // nullable : aucun NPE possible si le compte est absent
         bonVent: List<M8BonVent>,
         clients: List<M2Client>,
         categories: List<M16CategorieProduit>,
@@ -107,7 +114,9 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         AViewModel_NewProtoPatterns.active_Datas.list_M1Produit = products
         AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = colours
         AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = allOperations
-        AViewModel_NewProtoPatterns.active_Datas.its_Panie_Mode = appCompt.its_Panie_Mode_Au_Lence_Boutique
+        // Accès sécurisé : false par défaut si le compte est null
+        AViewModel_NewProtoPatterns.active_Datas.its_Panie_Mode =
+            appCompt?.its_Panie_Mode_Au_Lence_Boutique ?: false
     }
 
     private suspend fun collectActiveM9Compt() {

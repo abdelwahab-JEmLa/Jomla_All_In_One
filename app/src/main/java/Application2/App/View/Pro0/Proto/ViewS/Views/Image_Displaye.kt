@@ -18,7 +18,14 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import java.io.File
 
-enum class ImageQualite { max_possible, standart, min_possible }
+enum class ImageQualite(
+    val encodeQuality: Int = 0,
+    val override: Int = 0
+) {
+    max_possible,
+    standart(350, 60) ,      // (400,70)
+    min_possible
+}
 
 private fun resolveQualite(expandState: ProduitExpandState) = when {
     expandState.isExpanded -> ImageQualite.max_possible
@@ -78,7 +85,7 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     .override(
         when (qualite) {
             ImageQualite.max_possible -> 800
-            ImageQualite.standart -> 400
+            ImageQualite.standart -> ImageQualite.standart.override
             ImageQualite.min_possible -> 150
         }
     )
@@ -93,7 +100,7 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     .encodeQuality(
         when (qualite) {
             ImageQualite.max_possible -> 100
-            ImageQualite.standart -> 70
+            ImageQualite.standart -> ImageQualite.standart.encodeQuality
             ImageQualite.min_possible -> 20
         }
     )
