@@ -156,7 +156,7 @@ fun createAndAddMarker(
                 ActiveCentralValues.Click_On_Marque.Marck_Ferme                          -> "Marquer Fermé"
                 ActiveCentralValues.Click_On_Marque.Marck_Command_Livret                 -> "Marquer Livré"
             }
-            Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_LONG).show()
 
             when (currentMode) {
                 ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> {
@@ -180,9 +180,9 @@ fun createAndAddMarker(
                             fragmentNavigationHandler_NewProto.navigateTo(
                                 Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
                             )
-                        }?: Toast.makeText(
+                        } ?: Toast.makeText(
                             context,
-                            "Aucune commande en cours pour ce client",
+                            "Aucune onCommandBon_ventPeriod",
                             Toast.LENGTH_SHORT
                         ).show()
 
