@@ -1,5 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
+import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
@@ -86,6 +89,7 @@ fun View_MainItem(
     repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto ,
     printReceiptHandler: PrintReceiptHandler_Juil = aCentralFacade.modulesCentral.printReceiptHandler,
     relative_M8BonVent: M8BonVent,
 ) {
@@ -108,7 +112,6 @@ fun View_MainItem(
     val etateActuellementEst = relative_M8BonVent.etateActuellementEst
     val activeM8BonVentId =
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M8BonVent?.vid
-    val blinkState = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
@@ -176,7 +179,6 @@ fun View_MainItem(
     ) {
         LaunchedEffect(key1 = Unit) {
             while (true) {
-                blinkState.value = !blinkState.value
                 delay(500)
             }
         }
@@ -514,17 +516,22 @@ fun View_MainItem(
                                         relative_M8BonVent
                                     )
 
-                                fragmentNavigationHandler.navigateToCartScreen()
+                                if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
+                                    fragmentNavigationHandler.navigateToCartScreen()
+                                } else {
+                                    fragmentNavigationHandler_NewProto.navigateTo(
+                                        Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
+                                    )
+                                }
                             }
                         ) {
-                            Icon(           //<--
-                            //TODO(1): fait que si le app est vendeur d aller au compact au lieu panie si le mode est non deliveri
+                            Icon(
                                 imageVector = Icons.Default.ShoppingCart,
                                 contentDescription = "Select Transaction",
                                 tint = if (activeM8BonVentId == relative_M8BonVent.vid) {
                                     Color.White
                                 } else {
-                                    if (blinkState.value) Color.Red else Color.Gray
+                                     Color.Red
                                 }
                             )
                         }

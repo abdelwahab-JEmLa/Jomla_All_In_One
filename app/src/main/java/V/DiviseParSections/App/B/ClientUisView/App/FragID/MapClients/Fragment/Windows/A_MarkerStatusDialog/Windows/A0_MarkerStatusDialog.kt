@@ -214,7 +214,7 @@ private fun CustomStatusDropdownMenu(
 fun MarkerStatusDialog(
     viewModel: MapClientsViewModel = koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto ,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8: M8BonVent? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -344,7 +344,7 @@ fun MarkerStatusDialog(
                                             relative_Etate = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             context = context,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting ,
-                                                    fragmentNavigationHandler=fragmentNavigationHandler,
+                                                    fragmentNavigationHandler=fragmentNavigationHandler_NewProto,
                                         )
                                     }
 
@@ -421,6 +421,7 @@ fun MarkerStatusDialog(
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
+                            fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto,
                             relative_Client = relative_M2Client,
                             modifier = Modifier.fillMaxWidth()
                         )

@@ -67,11 +67,12 @@ private const val TAG_SCROLL               = "ScrollVelocity"
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
-) {
+) {          //<--
+//TODO(1): fait aussi a chaque 2 sec de relode et la proximite c 10km
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val defaultZoom = 18.2
@@ -188,6 +189,7 @@ fun MapContent(
         viewModel.mapReloadTrigger,
     ) {
         addOuUpdateMapMarkers(
+            fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto,
             uiState = uiState,
             viewModel = viewModel,
             mapView = mapView,
@@ -264,7 +266,7 @@ fun MapContent(
 
         if (shouldShowMarkerDialog) {
             MarkerStatusDialog(
-                fragmentNavigationHandler = fragmentNavigationHandler,
+                fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
                 viewModel = viewModel,
                 relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
                 markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,

@@ -1,6 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
+import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
@@ -43,18 +47,24 @@ fun addOuUpdateMapMarkers(
     currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     showMarkerDetails: Boolean,
     proximityFilterCenter: GeoPoint?,
-) {
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
+) {        //<--
+//TODO(1): enleve logs
     // ── DEBUG ① : état d'entrée ──────────────────────────────────────────────
     Log.d(DBG, "=== addOuUpdateMapMarkers called ===")
-    Log.d(DBG, "  proximityFilterCenter = $proximityFilterCenter" +
-            if (proximityFilterCenter != null)
-                "  (lat=${proximityFilterCenter.latitude}, lng=${proximityFilterCenter.longitude})"
-            else " → filtre proximité INACTIF, tous les markers seront affichés")
+    Log.d(
+        DBG, "  proximityFilterCenter = $proximityFilterCenter" +
+                if (proximityFilterCenter != null)
+                    "  (lat=${proximityFilterCenter.latitude}, lng=${proximityFilterCenter.longitude})"
+                else " → filtre proximité INACTIF, tous les markers seront affichés"
+    )
     Log.d(DBG, "  currentFilterMode = $currentFilterMode")
 
     val clientDataBaseSnapList = uiState.b_ClientInfosProtoJuin3List
-    Log.d(DBG, "  uiState.b_ClientInfosProtoJuin3List.size = ${clientDataBaseSnapList.size}" +
-            if (clientDataBaseSnapList.isEmpty()) " ⚠️ LISTE VIDE → aucun marker ne sera supprimé !" else "")
+    Log.d(
+        DBG, "  uiState.b_ClientInfosProtoJuin3List.size = ${clientDataBaseSnapList.size}" +
+                if (clientDataBaseSnapList.isEmpty()) " ⚠️ LISTE VIDE → aucun marker ne sera supprimé !" else ""
+    )
 
     val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
     existingMarkers.forEach { it.closeInfoWindow() }
@@ -65,12 +75,17 @@ fun addOuUpdateMapMarkers(
 
     val markersToRemove = markersOnMap
         .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
-    Log.d(DBG, "  markers à supprimer (trouvés dans clientDataBaseSnapList) = ${markersToRemove.size}")
+    Log.d(
+        DBG,
+        "  markers à supprimer (trouvés dans clientDataBaseSnapList) = ${markersToRemove.size}"
+    )
 
     val markersNotRemoved = markersOnMap.size - markersToRemove.size
     if (markersNotRemoved > 0) {
-        Log.w(DBG, "  ⚠️ $markersNotRemoved marker(s) NE SERONT PAS supprimés" +
-                " (IDs absents de uiState.b_ClientInfosProtoJuin3List) :")
+        Log.w(
+            DBG, "  ⚠️ $markersNotRemoved marker(s) NE SERONT PAS supprimés" +
+                    " (IDs absents de uiState.b_ClientInfosProtoJuin3List) :"
+        )
         markersOnMap.filter { m -> markersToRemove.none { it.id == m.id } }
             .forEach { Log.w(DBG, "    marker id=${it.id} title=${it.title}") }
     }
@@ -94,29 +109,35 @@ fun addOuUpdateMapMarkers(
             Triple(client, dist, dist <= PROXIMITY_FILTER_RADIUS_METERS)
         }
 
-        val kept   = withDistances.filter { it.third }
+        val kept = withDistances.filter { it.third }
         val rejected = withDistances.filter { !it.third }
 
         Log.d(DBG, "  filtre 1 km actif → gardés=${kept.size}  rejetés=${rejected.size}")
 
         // Log chaque client rejeté avec sa distance réelle
         rejected.forEach { (client, dist, _) ->
-            Log.d(DBG, "    ❌ REJETÉ  id=${client.id}  nom=${client.nom}" +
-                    "  lat=${client.latitude}  lng=${client.longitude}" +
-                    "  dist=${dist.toInt()} m")
+            Log.d(
+                DBG, "    ❌ REJETÉ  id=${client.id}  nom=${client.nom}" +
+                        "  lat=${client.latitude}  lng=${client.longitude}" +
+                        "  dist=${dist.toInt()} m"
+            )
         }
         // Log les clients gardés aussi (utile pour vérifier les coords)
         kept.forEach { (client, dist, _) ->
-            Log.d(DBG, "    ✅ GARDÉ   id=${client.id}  nom=${client.nom}" +
-                    "  lat=${client.latitude}  lng=${client.longitude}" +
-                    "  dist=${dist.toInt()} m")
+            Log.d(
+                DBG, "    ✅ GARDÉ   id=${client.id}  nom=${client.nom}" +
+                        "  lat=${client.latitude}  lng=${client.longitude}" +
+                        "  dist=${dist.toInt()} m"
+            )
         }
 
         // Cas suspect : coordonnées invalides (0,0) gardées dans le rayon
         val invalidCoords = kept.filter { (c, _, _) -> c.latitude == 0.0 || c.longitude == 0.0 }
         if (invalidCoords.isNotEmpty()) {
-            Log.w(DBG, "  ⚠️ ${invalidCoords.size} client(s) avec lat=0 ou lng=0 gardés " +
-                    "(coordonnées non initialisées ?)")
+            Log.w(
+                DBG, "  ⚠️ ${invalidCoords.size} client(s) avec lat=0 ou lng=0 gardés " +
+                        "(coordonnées non initialisées ?)"
+            )
         }
 
         kept.map { it.first }
@@ -133,6 +154,7 @@ fun addOuUpdateMapMarkers(
         clientsToShow,
         viewModel,
         showMarkerDetails,
+        fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto,
     )
 
     restoreLocationOverlayAtBottom(mapView, locationOverlay)
@@ -143,6 +165,7 @@ fun addMarkersForFilteredClients(
     clientsToShow: List<M2Client>,
     viewModel: MapClientsViewModel,
     showMarkerDetails: Boolean,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
 ) {
     val context = mapView.context
 
@@ -154,6 +177,7 @@ fun addMarkersForFilteredClients(
                 mapView = mapView,
                 context = context,
                 showMarkerDetails = showMarkerDetails,
+                fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto,
             )
         } catch (e: Exception) {
         }
@@ -172,6 +196,7 @@ fun createAndAddMarker(
     context: Context,
     showMarkerDetails: Boolean,
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
 ) {
     val repo = viewModel.getter.repo2Client
 
@@ -219,7 +244,8 @@ fun createAndAddMarker(
                         relative_M2Client = m2Client,
                         etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
                     ) ?: run {
-                        Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT)
+                            .show()
                         return@setOnMarkerClickListener true
                     }
 
@@ -258,21 +284,26 @@ fun createAndAddMarker(
                                 && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
 
-                    if (onCommandBon_ventPeriod != null) {
-                        aCentralFacade.focusedActiveValuesFacade
-                            .focusedValuesSetter
-                            .setIN_M9CurrentApp_onVentM8BonVentKey(
-                                onCommandBon_ventPeriod
-                            )
-                        fragmentNavigationHandler.navigateToCartScreen()
+                    if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
+                        fragmentNavigationHandler_NewProto.navigateTo(
+                            Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
+                        )
                     } else {
-                        Toast.makeText(
-                            context,
-                            "Aucune commande en cours pour ce client",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        if (onCommandBon_ventPeriod != null) {
+                            aCentralFacade.focusedActiveValuesFacade
+                                .focusedValuesSetter
+                                .setIN_M9CurrentApp_onVentM8BonVentKey(
+                                    onCommandBon_ventPeriod
+                                )
+                            fragmentNavigationHandler.navigateToCartScreen()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Aucune commande en cours pour ce client",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-
                     true
                 }
 
@@ -375,7 +406,8 @@ fun createAndAddMarker(
                         relative_M2Client = m2Client,
                         etateActuellementEst = M8BonVent.EtateActuellementEst.FERME,
                     ) ?: run {
-                        Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT)
+                            .show()
                         return@setOnMarkerClickListener true
                     }
 
@@ -473,7 +505,13 @@ private fun Marker.title(
                         "\n${
                             m2Client.nom.split(" ")
                                 .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
-                        } ${if (m2Client.numTelephone.isNotEmpty()) "📞${m2Client.numTelephone.takeLast(2)}" else ""}"
+                        } ${
+                            if (m2Client.numTelephone.isNotEmpty()) "📞${
+                                m2Client.numTelephone.takeLast(
+                                    2
+                                )
+                            }" else ""
+                        }"
             } else {
                 m2Client.nom
             }

@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View.View_MainItem_CreditOuVersemment_Enhanced
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import EntreApps.Shared.Models.M8BonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ fun View_MainList(
     listGBonVentFilteredByClientKeySorted: List<M8BonVent>,
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     modifier: Modifier = Modifier,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
 ) {
     Column(
         modifier = Modifier
@@ -45,6 +47,7 @@ fun View_MainList(
                         View_MainItem(
                             viewModel = viewModel,
                             relative_M8BonVent = transaction,
+                            fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto
                         )
                     }
                 }

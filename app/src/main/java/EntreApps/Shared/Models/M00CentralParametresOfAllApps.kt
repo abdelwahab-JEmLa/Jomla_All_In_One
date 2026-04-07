@@ -76,13 +76,13 @@ data class M00CentralParametresOfAllApps(
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val time_tamp_all_tariffs: Boolean = false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    val itsDevMode: Boolean = false,
+    val itsDevMode: Boolean = true ,
     val force_next_start_DeleteInsertAll: Boolean = false,
     val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
     } else {
         if (itsDevMode) {
-            AppType.AllInOne
+            AppType.JomLaElectroLivreurGrossist_VendeurHost
         } else {
             AppType.JomLaElectroLivreurGrossist_VendeurHost
             //JomLaElectroLivreurGrossist_VendeurHost

@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import EntreApps.Shared.Models.M2Client
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.Filter.MainFilter
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import EntreApps.Shared.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     viewModel: E0AfficheHistoriqueTransactionsViewModel = koinViewModel(),
     repo8BonVent: Repo8BonVent = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent,
     relative_Client: M2Client? = null,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
 ) {
     Column(
         modifier =
@@ -44,6 +46,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
             relative_Client,
             viewModel,
             Modifier,
+            fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto,
         )
     }
 }

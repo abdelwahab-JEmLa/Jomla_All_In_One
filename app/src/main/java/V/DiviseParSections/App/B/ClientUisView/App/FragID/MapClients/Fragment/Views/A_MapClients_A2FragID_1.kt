@@ -36,7 +36,7 @@ fun A_MapClients_A2FragID_1(
             LoadingProgressOverlay(progress = progress)
         } else {
             MapContent(
-                fragmentNavigationHandler=
+                fragmentNavigationHandler_NewProto=
                     fragmentNavigationHandler_NewProto,
                 viewModel = viewModel,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,

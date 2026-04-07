@@ -262,7 +262,7 @@ fun MainFastSearchProduitPourVent_App4(
 
             if (shouldShowMarkerDialog) {
                 MarkerStatusDialog(
-                     fragmentNavigationHandler=fragmentNavigationHandler,
+                     fragmentNavigationHandler_NewProto=fragmentNavigationHandler,
                     relative_M2Client = markerStatusDialogActiveM2Client,
                     markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
                     on_dissmiss_dialog_avec_enleve_focuse_bon = {

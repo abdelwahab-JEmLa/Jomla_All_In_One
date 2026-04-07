@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.Filter
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View_MainList
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -18,6 +19,7 @@ fun MainFilter(
     relative_Client: M2Client?,
     vm: E0AfficheHistoriqueTransactionsViewModel,
     modifier: Modifier,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
 ) {
     val datasValue_repo8BonVent = vm.getter.repo8BonVent.datasValue
     val filtered by remember(
@@ -37,6 +39,6 @@ fun MainFilter(
             .getSemanticsTag(datasValue_repo8BonVent,"datasValue_repo8BonVent")
             .padding(2.dp)
     ) {
-        View_MainList(filtered, vm)
+        View_MainList(filtered, vm,fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto)
     }
 }

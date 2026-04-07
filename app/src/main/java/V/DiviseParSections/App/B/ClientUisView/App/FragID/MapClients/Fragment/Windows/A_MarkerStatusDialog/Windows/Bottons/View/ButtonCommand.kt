@@ -112,12 +112,7 @@ fun CommandButton(
                 viewModel.updateLongAppSetting(relative_M2Client.id)
                 onUpdateLongAppSetting()
             } else {
-                // flow but never invokes the NavController — so the UI state changed but the
-                // screen never actually changed. navigateTo() does both: it updates
-                // _currentFragment AND calls _navController?.navigate(...).
-                Log.d(TAG, "navigateTo Compact_Presentoire_App_Produits_FragID4")
-                fragmentNavigationHandler.navigateTo(                  //<--
-                //TODO(1): pk ca ne marche pas au click pour alle au 
+                fragmentNavigationHandler.navigateTo(
                     Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
                 )
             }

@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment
 
-import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Floating_Separated_Button
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
@@ -371,7 +370,7 @@ fun MainFastSearchProduitPourVent(
 
             if (shouldShowMarkerDialog) {
                 MarkerStatusDialog(
-                    fragmentNavigationHandler=fragmentNavigationHandler,
+                    fragmentNavigationHandler_NewProto=fragmentNavigationHandler,
                     relative_M2Client = markerStatusDialogActiveM2Client,
                     markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
                     on_dissmiss_dialog_avec_enleve_focuse_bon = {
