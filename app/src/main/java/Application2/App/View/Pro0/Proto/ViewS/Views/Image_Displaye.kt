@@ -23,7 +23,7 @@ enum class ImageQualite(
     val override: Int = 0
 ) {
     max_possible,
-    standart(350, 60) ,      // (400,70)
+    standart(400, 70) ,      // (400,70)
     min_possible
 }
 
@@ -32,6 +32,45 @@ private fun resolveQualite(expandState: ProduitExpandState) = when {
     expandState.isAnyExpanded -> ImageQualite.min_possible
     else -> ImageQualite.standart
 }
+
+private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
+    couleur: M3CouleurProduitInfos,
+    qualite: ImageQualite,
+) = this
+    .dontAnimate()
+    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+    .priority(
+        when (qualite) {
+            ImageQualite.max_possible -> Priority.HIGH
+            ImageQualite.standart -> Priority.NORMAL
+            ImageQualite.min_possible -> Priority.LOW
+        }
+    )
+    .dontTransform()
+    .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
+    .override(
+        when (qualite) {
+            ImageQualite.max_possible -> 800
+            ImageQualite.standart -> 350
+            ImageQualite.min_possible -> 150
+        }
+    )
+    .disallowHardwareConfig()
+    .format(
+        when (qualite) {
+            ImageQualite.max_possible -> DecodeFormat.PREFER_ARGB_8888
+            ImageQualite.standart -> DecodeFormat.PREFER_RGB_565
+            ImageQualite.min_possible -> DecodeFormat.PREFER_RGB_565
+        }
+    )
+    .encodeQuality(
+        when (qualite) {
+            ImageQualite.max_possible -> 100
+            ImageQualite.standart -> 50
+            ImageQualite.min_possible -> 20
+        }
+    )
+    .skipMemoryCache(qualite == ImageQualite.min_possible)
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -66,42 +105,3 @@ fun Image_Displaye_app2(
         Box(modifier = modifier.fillMaxSize())
     }
 }
-
-private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
-    couleur: M3CouleurProduitInfos,
-    qualite: ImageQualite,
-) = this
-    .dontAnimate()
-    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-    .priority(
-        when (qualite) {
-            ImageQualite.max_possible -> Priority.HIGH
-            ImageQualite.standart -> Priority.NORMAL
-            ImageQualite.min_possible -> Priority.LOW
-        }
-    )
-    .dontTransform()
-    .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
-    .override(
-        when (qualite) {
-            ImageQualite.max_possible -> 800
-            ImageQualite.standart -> ImageQualite.standart.override
-            ImageQualite.min_possible -> 150
-        }
-    )
-    .disallowHardwareConfig()
-    .format(
-        when (qualite) {
-            ImageQualite.max_possible -> DecodeFormat.PREFER_ARGB_8888
-            ImageQualite.standart -> DecodeFormat.PREFER_RGB_565
-            ImageQualite.min_possible -> DecodeFormat.PREFER_RGB_565
-        }
-    )
-    .encodeQuality(
-        when (qualite) {
-            ImageQualite.max_possible -> 100
-            ImageQualite.standart -> ImageQualite.standart.encodeQuality
-            ImageQualite.min_possible -> 20
-        }
-    )
-    .skipMemoryCache(qualite == ImageQualite.min_possible)

@@ -112,10 +112,8 @@ class MainActivity : ComponentActivity() {
                 ClientJetPackTheme {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
-                         val appDatabase=   koinInject<AppDatabase>()
-                         val fragmentNavigationHandler=   koinInject<FragmentNavigationHandler_NewProto>()
 
-                         val context =  LocalContext.current
+                            val context = LocalContext.current
                             if (permissionsChecked) {
                                 var initDone by rememberSaveable { mutableStateOf(false) }
 
@@ -126,33 +124,54 @@ class MainActivity : ComponentActivity() {
                                         appDatabase = koinInject()
                                     )
                                 } else {
-                                        val viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns = viewModel(
-                                            factory = viewModelFactory {
-                                                initializer {
-                                                    A_ViewModel_NewProtoPatterns(
-                                                        context = context,
-                                                        appDatabase  = appDatabase,
-                                                        fragmentNavigationHandler  = fragmentNavigationHandler,
-                                                    )
-                                                }
-                                            }
-                                        )
                                     when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
                                         AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
                                             Compact_Presentoire_App_Produits_App2()
                                         }
 
                                         AppType.JomLaElectroLivreurGrossist_VendeurHost -> {
+                                            val appDatabase = koinInject<AppDatabase>()
+                                            val fragmentNavigationHandler =
+                                                koinInject<FragmentNavigationHandler_NewProto>()
+
+                                            val viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns =
+                                                viewModel(
+                                                    factory = viewModelFactory {
+                                                        initializer {
+                                                            A_ViewModel_NewProtoPatterns(
+                                                                context = context,
+                                                                appDatabase = appDatabase,
+                                                                fragmentNavigationHandler = fragmentNavigationHandler,
+                                                            )
+                                                        }
+                                                    }
+                                                )
                                             MainScreen_NewProtoPattern(
-                                                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
-                                                fragmentNavigationHandler=fragmentNavigationHandler
+                                                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                                                fragmentNavigationHandler = fragmentNavigationHandler
                                             )
                                         }
 
                                         else -> {
+                                            val appDatabase = koinInject<AppDatabase>()
+                                            val fragmentNavigationHandler =
+                                                koinInject<FragmentNavigationHandler_NewProto>()
+
+                                            val viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns =
+                                                viewModel(
+                                                    factory = viewModelFactory {
+                                                        initializer {
+                                                            A_ViewModel_NewProtoPatterns(
+                                                                context = context,
+                                                                appDatabase = appDatabase,
+                                                                fragmentNavigationHandler = fragmentNavigationHandler,
+                                                            )
+                                                        }
+                                                    }
+                                                )
                                             MainScreen_All(
-                                                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
-                                                fragmentNavigationHandler=fragmentNavigationHandler
+                                                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                                                fragmentNavigationHandler = fragmentNavigationHandler
                                             )
                                         }
                                     }

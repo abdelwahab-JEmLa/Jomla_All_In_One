@@ -67,7 +67,7 @@ data class M00CentralParametresOfAllApps(
 //utilis eles mutable state get depuit fire base 
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
 //────────────────────────────au_Lence_Set_Compt_Ac_KeyId──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    val au_Lence_Set_Compt_Ac_KeyId: String = Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
+    val au_Lence_Set_Compt_Ac_KeyId: String = Compts.Telephone_de_presentation.keyId,
     //  Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
 //──────────────────────────────Dimine Rapid────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val au_Lence_Diminue_DatasFB: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!    //Ca M11AchatOperation.remove_ref() et  cleanupp Vents Operation et cleanupp Bon Vents
@@ -76,7 +76,7 @@ data class M00CentralParametresOfAllApps(
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val time_tamp_all_tariffs: Boolean = false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    val itsDevMode: Boolean = true ,
+    val itsDevMode: Boolean = false ,
     val force_next_start_DeleteInsertAll: Boolean = false,
     val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
