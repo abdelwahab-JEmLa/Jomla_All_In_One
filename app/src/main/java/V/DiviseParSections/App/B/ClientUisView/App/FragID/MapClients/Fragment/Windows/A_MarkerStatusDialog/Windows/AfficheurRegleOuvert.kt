@@ -1,12 +1,13 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
+import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View.Buttons.View.Button_StockOptions_SubtractFromDepot
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,7 +17,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
@@ -47,6 +54,10 @@ fun AfficheurRegleOuvert(
     }
 
     val latestTransaction = relative_Client?.let { getLatestTransactionForClient(it.id) }
+    var showAddToStockDialog by remember { mutableStateOf(false) }
+    var showChangeDispoDialog by remember { mutableStateOf(false) }
+    var showSaveDispoDialog by remember { mutableStateOf(false) }
+    var showStockOptionsDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -91,7 +102,31 @@ fun AfficheurRegleOuvert(
                         clickedClient = clientId,
                     ) { relative_M8BonVent ->
                     }
+                val context = LocalContext.current
+                val datasValue_repo8BonVent = repositorysMainGetter.repo8BonVent.datasValue
+                val filtered by remember(
+                    datasValue_repo8BonVent.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+                    relative_Client?.keyID
+                ) {
+                    derivedStateOf {
+                        datasValue_repo8BonVent.filter {
+                            it.parent_M2Client_KeyID == (relative_Client?.keyID ?: "")
+                        }.sortedByDescending { it.creationTimestamps }
+                    }
+                }
 
+                val relative_M8BonVent =
+                    filtered.find { it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT }
+
+                relative_M8BonVent?.let {
+                    Button_StockOptions_SubtractFromDepot(
+                        onDismiss = { showStockOptionsDialog = false },
+                        repositorysMainGetter = repositorysMainGetter,
+                        repositorysMainSetter = aCentralFacade.repositorysMainSetter,
+                        relative_M8BonVent = it,
+                        context = context,
+                    )
+                }
 
                 val lastCommande_Transaction =
                     repositorysMainGetter.repo8BonVent.datasValue.lastOrNull {
@@ -113,12 +148,12 @@ fun AfficheurRegleOuvert(
                         }
                 }
 
-                    M8BonVent.EtateActuellementEst.Passed_Sans_Livre
-                        .ButtonAutreEtates(
-                            viewModel = viewModel,
-                            clickedClient = clientId,
-                        ) { relative_M8BonVent ->
-                        }
+                M8BonVent.EtateActuellementEst.Passed_Sans_Livre
+                    .ButtonAutreEtates(
+                        viewModel = viewModel,
+                        clickedClient = clientId,
+                    ) { relative_M8BonVent ->
+                    }
 
                 TextButton(
                     onClick = {
