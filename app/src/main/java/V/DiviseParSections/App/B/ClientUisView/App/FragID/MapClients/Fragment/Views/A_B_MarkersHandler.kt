@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
@@ -24,9 +24,12 @@ import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.view.Gravity
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -35,6 +38,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
+import java.io.File
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -168,18 +172,19 @@ fun createAndAddMarker(
                 ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf               -> "Envoyer PDF WhatsApp"
             }
             Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_LONG).show()
+            val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+
+            val onCommandBon_ventPeriod = datasValue.lastOrNull {
+                it.parent_M2Client_KeyID == m2Client.keyID
+                        &&
+                        it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+                    ?.keyID ?: "")
+                        && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            }
 
             when (currentMode) {
                 ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> {
-                    val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
 
-                    val onCommandBon_ventPeriod = datasValue.lastOrNull {
-                        it.parent_M2Client_KeyID == m2Client.keyID
-                                &&
-                                it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
-                            ?.keyID ?: "")
-                                && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                    }
 
                     if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
                         onCommandBon_ventPeriod?.let {
@@ -412,15 +417,22 @@ fun createAndAddMarker(
 
                 ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> {
                     val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-                    val bonVent = datasValue.lastOrNull {
-                        it.parent_M2Client_KeyID == m2Client.keyID &&
-                                it.parent_M14VentPeriod_KeyId ==
-                                (focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?: "")
+                    val activePeriodKeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?: ""
+
+                    // --- PDF diagnostic logs (resolves empty-PDF issue) ---
+                    android.util.Log.d("WhatsAppPdf", "=== Cree_et_envoi_whatsapp_pdf triggered ===")
+                    android.util.Log.d("WhatsAppPdf", "client: id=${m2Client.id}  nom=${m2Client.nom}  phone=${m2Client.numTelephone}")
+                    android.util.Log.d("WhatsAppPdf", "activePeriodKeyId='$activePeriodKeyId'  (null=${focusedValuesGetter.currentActiveFocuced_M14VentPeriode == null})")
+                    android.util.Log.d("WhatsAppPdf", "total bons in period: ${datasValue.count { it.parent_M14VentPeriod_KeyId == activePeriodKeyId }}")
+                    if (onCommandBon_ventPeriod != null) {
+                        val activeOnVent = focusedValuesGetter.activeOnVentM2ClientInfos
+                        android.util.Log.d("WhatsAppPdf", "activeOnVentM2ClientInfos: id=${activeOnVent?.id}  nom=${activeOnVent?.nom}")
+                        android.util.Log.d("WhatsAppPdf", "list_M13TarificationInfos injected to PDF call: will log in onPdfSaved")
                     }
 
                     // No bon found: fall back to the standard marker dialog (same UX as
                     // Affiche_OnCommand_VentPeriod_Transaction) so the user can still see client info.
-                    if (bonVent == null) {
+                    if (onCommandBon_ventPeriod == null) {
                         viewModel.set_M2Client_UiState_In_MarkerStatusDialog(
                             repo.datasValue.find { it.id.toString() == clickedMarker.id }
                         )
@@ -433,14 +445,14 @@ fun createAndAddMarker(
                     // enter the number (same pattern as Button_Click_Send_Stored_Bon_Par_whatsappBuisness).
                     if (phoneNumber.isEmpty() || phoneNumber == "null") {
                         aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
-                            .setIN_M9CurrentApp_onVentM8BonVentKey(bonVent)
+                            .setIN_M9CurrentApp_onVentM8BonVentKey(onCommandBon_ventPeriod)
                         viewModel.set_pendingWhatsAppSend(m2Client)
                         return@setOnMarkerClickListener true
                     }
 
                     // Phone exists: activate the bon then generate + send the PDF.
                     aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
-                        .setIN_M9CurrentApp_onVentM8BonVentKey(bonVent)
+                        .setIN_M9CurrentApp_onVentM8BonVentKey(onCommandBon_ventPeriod)
 
                     MainScope().launch {
                         // Small delay so focused-values propagate before PDF creation reads them,
@@ -452,14 +464,16 @@ fun createAndAddMarker(
                             focusedValuesGetter = focusedValuesGetter,
                             list_M13TarificationInfos = list_M13TarificationInfos,
                             onPdfSaved = { savedPath ->
-                                val pdfFile = java.io.File(savedPath)
+                                val pdfFile = File(savedPath)
+                                android.util.Log.d("WhatsAppPdf", "onPdfSaved: path=$savedPath  exists=${pdfFile.exists()}  size=${pdfFile.length()} bytes")
+                                if (pdfFile.length() == 0L) android.util.Log.e("WhatsAppPdf", "⚠️ PDF is EMPTY — focused values may not have settled before PDF creation. Check activeOnVentM2ClientInfos and lignesBonVentList above.")
                                 var cleaned = phoneNumber.replace(Regex("[^0-9]"), "")
                                 if (!cleaned.startsWith("213")) {
                                     if (cleaned.startsWith("0")) cleaned = cleaned.drop(1)
                                     cleaned = "213$cleaned"
                                 }
                                 try {
-                                    val pdfUri = androidx.core.content.FileProvider.getUriForFile(
+                                    val pdfUri = FileProvider.getUriForFile(
                                         context, "${context.packageName}.fileprovider", pdfFile
                                     )
                                     val intent = Intent(Intent.ACTION_SEND).apply {
@@ -478,7 +492,23 @@ fun createAndAddMarker(
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
-                            }
+                            }                //<--
+                            //TODO(1): le pdf ce cree RE ✅ Product table added, total: 0.0
+                            //15:32:24.032                   ════════════════════════════════════════
+                            //15:32:24.032                   ✅ PDF generation complete
+                            //15:32:24.032                   ════════════════════════════════════════
+                            //15:32:24.095 PdfPrintHandler   PDF saved to downloads: /storage/emulated/0/Android/data/com.example.clientjetpack/files/Download/receipt_3omar_yousef_N1_20260407_153222_vent_2540.pdf
+                            //15:32:24.095                   PDF generation complete, skipping auto-open: /storage/emulated/0/Android/data/com.example.clientjetpack/files/Documents/bonVents_pdf/receipt_3omar_yousef_N1_20260407_153222_vent_2540.pdf
+                            //15:32:24.096 PdfSaverUtility   📁 Saving PDF: NBKaKt_3omar_yousef_N1_3.pdf to BonsWhatsApp
+                            //15:32:24.097                   📂 MediaStore path: Download/BonsWhatsApp/04_07/NBKaKt_3omar_yousef_N1_3.pdf
+                            //15:32:24.357 BpBinder          PerfMonitor binderTransact :  time=232ms interface=android.content.IContentProvider code=1
+                            //15:32:24.427 PdfSaverUtility   📝 MediaStore URI created: content://media/external_primary/downloads/10983
+                            //15:32:24.449                   ✅ PDF saved via MediaStore (909173 bytes): Downloads/BonsWhatsApp/04_07/NBKaKt_3omar_yousef_N1_3.pdf
+                            //15:32:24.451 WhatsAppPdf       onPdfSaved: path=Downloads/BonsWhatsApp/04_07/NBKaKt_3omar_yousef_N1_3.pdf  exists=false  size=0 bytes
+                            //15:32:24.452                   ⚠️ PDF is EMPTY — focused values may not have settled before PDF creation. Check activeOnVentM2ClientInfos and lignesBonVentList above.
+                            //15:32:26.071 DBInit            initialized 
+                            //15:32:30.888 Activit...Wrapper getRecentTasks: taskId=3036   userId=0   baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.example.clientjetpack/.MainActivity } 
+                            //mais send inten ne se lence pas comme autre 
                         )
                     }
                     true
@@ -494,7 +524,7 @@ fun createAndAddMarker(
     }
 }
 
-private fun Marker.title(
+fun Marker.title(
     viewModel: MapClientsViewModel,
     m2Client: M2Client,
 ) {
@@ -590,20 +620,20 @@ fun configureMarkerInfoWindow(
             .find { it.first == "title" }?.second
         titleTextViewId?.let { titleId ->
             val titleTextView =
-                marker.infoWindow.view.findViewById<android.widget.TextView>(titleId)
-            titleTextView?.gravity = android.view.Gravity.CENTER
+                marker.infoWindow.view.findViewById<TextView>(titleId)
+            titleTextView?.gravity = Gravity.CENTER
         }
     }
 }
 
-private fun preserveLocationOverlay(mapView: MapView): Any? {
+fun preserveLocationOverlay(mapView: MapView): Any? {
     return mapView.overlays.find { overlay ->
         overlay.javaClass.simpleName.contains("Location") ||
                 overlay.toString().contains("location", ignoreCase = true)
     }
 }
 
-private fun restoreLocationOverlayAtBottom(mapView: MapView, locationOverlay: Any?) {
+fun restoreLocationOverlayAtBottom(mapView: MapView, locationOverlay: Any?) {
     locationOverlay?.let { overlay ->
         mapView.overlays.remove(overlay)
         mapView.overlays.add(0, overlay as Overlay?)
@@ -611,7 +641,7 @@ private fun restoreLocationOverlayAtBottom(mapView: MapView, locationOverlay: An
 }
 
 /** Haversine distance in metres between two lat/lng points. */
-private fun haversineMeters(
+fun haversineMeters(
     lat1: Double, lng1: Double,
     lat2: Double, lng2: Double,
 ): Double {
