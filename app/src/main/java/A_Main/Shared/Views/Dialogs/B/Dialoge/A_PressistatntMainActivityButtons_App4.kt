@@ -57,13 +57,18 @@ enum class ProductDisplayMode {
 /**
  * A floating search button that expands into a text-field when toggled.
  * [searchText] / [onSearchTextChange] are owned by the caller (ViewModel state).
+ * Only rendered when [currentMode] is [ProductDisplayMode.Echantillons] or
+ * [ProductDisplayMode.Panie] — hidden in AllProducts mode.
  */
 @Composable
 fun But_4_FloatingSearchFAB(
     searchText: String,
     onSearchTextChange: (String) -> Unit,
+    currentMode: ProductDisplayMode,           // ← added parameter
     modifier: Modifier = Modifier,
 ) {
+    if (currentMode == ProductDisplayMode.AllProducts) return
+
     var showField by remember { mutableStateOf(false) }
 
     Row(
@@ -235,9 +240,11 @@ fun PressistatntMainActivityButtons_App4(
                 }
             }
 
+            // Search FAB — only visible in Echantillons / Panie modes (hidden in AllProducts)
             But_4_FloatingSearchFAB(
                 searchText = viewModelNewProtoPatterns.active_Datas.filter_echatilaten,
-                onSearchTextChange = { viewModelNewProtoPatterns.active_Datas.filter_echatilaten = it }
+                onSearchTextChange = { viewModelNewProtoPatterns.active_Datas.filter_echatilaten = it },
+                currentMode = currentMode,
             )
 
             // ── Mode label ───────────────────────────────────────────────────

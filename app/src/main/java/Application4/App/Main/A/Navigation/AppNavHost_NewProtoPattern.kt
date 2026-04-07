@@ -150,6 +150,7 @@ fun AppNavHost_NewProtoPattern(
                         )
                     } else {
                         A_MapClients_A2FragID_1(
+                            viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                             onUpdateLongAppSetting = {
                                 fragmentNavigationHandler.navigateTo(
                                     Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route

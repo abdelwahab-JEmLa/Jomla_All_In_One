@@ -251,6 +251,7 @@ fun AppNavHost(
 
                 // Add client map routes
                 app2(
+                    viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                     viewModelInitApp = viewModelInitApp,
                     clientEnCourDeVent = clientEnCourDeVent,
                     navController = navController,
@@ -383,8 +384,9 @@ fun NavGraphBuilder.app2(
     navController: NavHostController,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
-    fragmentNavigationHandler_nP: FragmentNavigationHandler_NewProto ,
+    fragmentNavigationHandler_nP: FragmentNavigationHandler_NewProto,
     fragmentNavigationHandler: FragmentNavigationHandler,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
 ) {
     composable(
         route = Screen.A_Clients_LocationGps.route,
@@ -399,12 +401,13 @@ fun NavGraphBuilder.app2(
 
         key(screenKey.value) {
             A_MapClients_A2FragID_1(
+                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                 fragmentNavigationHandler_NewProto
                = fragmentNavigationHandler_nP,
                 onUpdateLongAppSetting = {
                     // navigateToMainScreen(navController, fragmentNavigationHandler)
                 },
-                onClear = onClear
+                onClear = onClear,
             )
         }
     }

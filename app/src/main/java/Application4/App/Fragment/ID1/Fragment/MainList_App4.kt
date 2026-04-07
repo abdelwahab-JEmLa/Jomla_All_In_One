@@ -142,7 +142,7 @@ fun Etager_LazyColumn(
                 }
                 // ── Apply search filter across all modes ──────────────────────
                 .filter { (product, _) ->
-                   if(isEchatillantsMode) searchQuery.isEmpty() || product.nom.lowercase().contains(searchQuery) else false
+                   searchQuery.isEmpty() || product.nom.lowercase().contains(searchQuery)
                 }
         }
     }

@@ -58,6 +58,8 @@ data class UiState(
     val error: String? = null,
     val m2Client_In_ShowEditMarkerMode: M2Client? = null,
     val proximityFilterCenter: GeoPoint? = null,
+    // Signals MapContent to show a phone-entry dialog before sending the WhatsApp PDF
+    val pendingWhatsAppSend: M2Client? = null,
 )
 
 class MapClientsViewModel(
@@ -112,6 +114,11 @@ class MapClientsViewModel(
         _uiState.value = _uiState.value.copy(
             m2Client_In_ShowEditMarkerMode = m2Client_In_ShowEditMarkerMode,
         )
+    }
+
+    /** Shows the phone-entry dialog in MapContent before a WhatsApp PDF send. */
+    fun set_pendingWhatsAppSend(client: M2Client?) {
+        _uiState.value = _uiState.value.copy(pendingWhatsAppSend = client)
     }
 
     fun update_active_Compt(compt: M09AppCompt) {

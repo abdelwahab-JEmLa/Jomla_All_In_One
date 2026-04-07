@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -186,6 +187,7 @@ private fun getModeIcon(mode: ActiveCentralValues.Click_On_Marque): ImageVector 
     ActiveCentralValues.Click_On_Marque.Navigate -> Icons.Default.Explore
     ActiveCentralValues.Click_On_Marque.Marck_Ferme -> Icons.Default.Close
     ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> Icons.Default.LocalShipping
+    ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> Icons.Default.Share
 }
 
 private fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
@@ -196,6 +198,7 @@ private fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = wh
     ActiveCentralValues.Click_On_Marque.Navigate -> "Navigation GPS"
     ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer Fermé"
     ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer Livré"
+    ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> "Envoyer PDF WhatsApp"
 }
 
 private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
@@ -206,4 +209,5 @@ private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): Strin
     ActiveCentralValues.Click_On_Marque.Navigate -> "Ouvrir dans Google Maps"
     ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer le client comme fermé"
     ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer la commande comme livrée"
+    ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> "Créer et envoyer le bon PDF via WhatsApp"
 }

@@ -1,19 +1,19 @@
 package EntreApps.Shared.Models.Home
 
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
-import EntreApps.Shared.Models.Utilisateur
 import EntreApps.Shared.Models.Compts
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.M14VentPeriode
-import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M8BonVent
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model.FilterState_Facad_Boutique_FragId5
 import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
+import EntreApps.Shared.Models.Utilisateur
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model.FilterState_Facad_Boutique_FragId5
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -216,6 +216,7 @@ data class ActiveCentralValues(
         Marck_Command_Livret(Color(0xFF2196F3)),
         ADD_Au_Ciblage_Clients(Color(0xFFFF5722)),
         Affiche_OnCommand_VentPeriod_Transaction(Color(0xFF9C27B0)),
+        Cree_et_envoi_whatsapp_pdf(Color(0xFF4CAF50)),
     }
 
     sealed class RoleDefinieParSourceACetteFragment {

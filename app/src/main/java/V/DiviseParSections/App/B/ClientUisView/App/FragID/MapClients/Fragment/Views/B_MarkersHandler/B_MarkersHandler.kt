@@ -5,8 +5,10 @@ import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M2Client
 import EntreApps.Shared.Models.M8BonVent
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.initiateBackgroundPdfCreation_NewP
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
@@ -25,6 +27,9 @@ import android.net.Uri
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -45,7 +50,8 @@ fun addOuUpdateMapMarkers(
     proximityFilterCenter: GeoPoint?,
     proximityFilterRadiusMeters: Double,
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
-) {        //<--
+    list_M13TarificationInfos: List<M13TarificationInfos>,
+) {
     val clientDataBaseSnapList = uiState.b_ClientInfosProtoJuin3List
 
     val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
@@ -77,7 +83,8 @@ fun addOuUpdateMapMarkers(
         clientsToShow,
         viewModel,
         showMarkerDetails,
-        fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto,
+        fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
+        list_M13TarificationInfos = list_M13TarificationInfos,
     )
 
     restoreLocationOverlayAtBottom(mapView, locationOverlay)
@@ -89,6 +96,7 @@ fun addMarkersForFilteredClients(
     viewModel: MapClientsViewModel,
     showMarkerDetails: Boolean,
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
+    list_M13TarificationInfos: List<M13TarificationInfos>,
 ) {
     val context = mapView.context
 
@@ -100,7 +108,8 @@ fun addMarkersForFilteredClients(
                 mapView = mapView,
                 context = context,
                 showMarkerDetails = showMarkerDetails,
-                fragmentNavigationHandler_NewProto=fragmentNavigationHandler_NewProto,
+                fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
+                list_M13TarificationInfos = list_M13TarificationInfos,
             )
         } catch (e: Exception) {
         }
@@ -120,6 +129,7 @@ fun createAndAddMarker(
     showMarkerDetails: Boolean,
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
+    list_M13TarificationInfos: List<M13TarificationInfos>,
 ) {
     val repo = viewModel.getter.repo2Client
 
@@ -148,13 +158,14 @@ fun createAndAddMarker(
             val newPosition = actuelle_Ciblage_MaxPosition + 1
 
             val modeLabel = when (currentMode) {
-                ActiveCentralValues.Click_On_Marque.Standart                              -> "Standard"
-                ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients                -> "Ajouter Ciblage"
-                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Afficher Commande"
-                ActiveCentralValues.Click_On_Marque.Call                                  -> "Appeler Client"
-                ActiveCentralValues.Click_On_Marque.Navigate                              -> "Navigation GPS"
-                ActiveCentralValues.Click_On_Marque.Marck_Ferme                          -> "Marquer Fermé"
-                ActiveCentralValues.Click_On_Marque.Marck_Command_Livret                 -> "Marquer Livré"
+                ActiveCentralValues.Click_On_Marque.Standart                                  -> "Standard"
+                ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients                    -> "Ajouter Ciblage"
+                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction  -> "Afficher Commande"
+                ActiveCentralValues.Click_On_Marque.Call                                      -> "Appeler Client"
+                ActiveCentralValues.Click_On_Marque.Navigate                                  -> "Navigation GPS"
+                ActiveCentralValues.Click_On_Marque.Marck_Ferme                              -> "Marquer Fermé"
+                ActiveCentralValues.Click_On_Marque.Marck_Command_Livret                     -> "Marquer Livré"
+                ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf               -> "Envoyer PDF WhatsApp"
             }
             Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_LONG).show()
 
@@ -174,9 +185,7 @@ fun createAndAddMarker(
                         onCommandBon_ventPeriod?.let {
                             aCentralFacade.focusedActiveValuesFacade
                                 .focusedValuesSetter
-                                .setIN_M9CurrentApp_onVentM8BonVentKey(
-                                    it
-                                )
+                                .setIN_M9CurrentApp_onVentM8BonVentKey(it)
                             fragmentNavigationHandler_NewProto.navigateTo(
                                 Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
                             )
@@ -248,8 +257,6 @@ fun createAndAddMarker(
 
                     true
                 }
-
-                // Show on-command transaction
 
                 // Direct phone call to client
                 ActiveCentralValues.Click_On_Marque.Call -> {
@@ -400,6 +407,80 @@ fun createAndAddMarker(
                         ).show()
                     }
 
+                    true
+                }
+
+                ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> {
+                    val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+                    val bonVent = datasValue.lastOrNull {
+                        it.parent_M2Client_KeyID == m2Client.keyID &&
+                                it.parent_M14VentPeriod_KeyId ==
+                                (focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?: "")
+                    }
+
+                    // No bon found: fall back to the standard marker dialog (same UX as
+                    // Affiche_OnCommand_VentPeriod_Transaction) so the user can still see client info.
+                    if (bonVent == null) {
+                        viewModel.set_M2Client_UiState_In_MarkerStatusDialog(
+                            repo.datasValue.find { it.id.toString() == clickedMarker.id }
+                        )
+                        return@setOnMarkerClickListener true
+                    }
+
+                    val phoneNumber = m2Client.numTelephone.trim()
+
+                    // Phone missing: open phone-entry dialog via ViewModel state so the user can
+                    // enter the number (same pattern as Button_Click_Send_Stored_Bon_Par_whatsappBuisness).
+                    if (phoneNumber.isEmpty() || phoneNumber == "null") {
+                        aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+                            .setIN_M9CurrentApp_onVentM8BonVentKey(bonVent)
+                        viewModel.set_pendingWhatsAppSend(m2Client)
+                        return@setOnMarkerClickListener true
+                    }
+
+                    // Phone exists: activate the bon then generate + send the PDF.
+                    aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+                        .setIN_M9CurrentApp_onVentM8BonVentKey(bonVent)
+
+                    MainScope().launch {
+                        // Small delay so focused-values propagate before PDF creation reads them,
+                        // which was the root cause of the "Aucun client actif" error logs.
+                        delay(300)
+                        initiateBackgroundPdfCreation_NewP(
+                            context = context,
+                            aCentralFacade = aCentralFacade,
+                            focusedValuesGetter = focusedValuesGetter,
+                            list_M13TarificationInfos = list_M13TarificationInfos,
+                            onPdfSaved = { savedPath ->
+                                val pdfFile = java.io.File(savedPath)
+                                var cleaned = phoneNumber.replace(Regex("[^0-9]"), "")
+                                if (!cleaned.startsWith("213")) {
+                                    if (cleaned.startsWith("0")) cleaned = cleaned.drop(1)
+                                    cleaned = "213$cleaned"
+                                }
+                                try {
+                                    val pdfUri = androidx.core.content.FileProvider.getUriForFile(
+                                        context, "${context.packageName}.fileprovider", pdfFile
+                                    )
+                                    val intent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "application/pdf"
+                                        setPackage("com.whatsapp.w4b")
+                                        putExtra(Intent.EXTRA_STREAM, pdfUri)
+                                        putExtra(Intent.EXTRA_TEXT, "Voici votre bon de commande")
+                                        putExtra("jid", "$cleaned@s.whatsapp.net")
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    Toast.makeText(
+                                        context,
+                                        "Erreur WhatsApp: ${e.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        )
+                    }
                     true
                 }
             }
