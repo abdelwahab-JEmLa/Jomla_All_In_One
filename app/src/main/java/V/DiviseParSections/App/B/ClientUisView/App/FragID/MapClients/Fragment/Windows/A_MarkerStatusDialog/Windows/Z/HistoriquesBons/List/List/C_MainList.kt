@@ -29,25 +29,28 @@ fun View_MainList(
             .fillMaxWidth()
             .padding(6.dp)
     ) {
-        listGBonVentFilteredByClientKeySorted.forEach { transaction ->
-            key(transaction.keyID) {
+        listGBonVentFilteredByClientKeySorted.forEach { relativeBonVent ->
+            key(relativeBonVent.keyID) {
                 // Use View_MainItem_CreditOuVersemment for Credit and Versement transactions
-                when (transaction.etateActuellementEst) {
+                when (relativeBonVent.etateActuellementEst) {
                     M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit,
                     M8BonVent.EtateActuellementEst.Credit,
                     M8BonVent.EtateActuellementEst.Versemment,
                     M8BonVent.EtateActuellementEst.Demande_Versemet -> {
                         View_MainItem_CreditOuVersemment_Enhanced(
                             viewModel = viewModel,
-                            relative_M8BonVent = transaction,
+                            relative_M8BonVent = relativeBonVent,
                         )
                     }
-                    // For all other transaction types, use the regular View_MainItem
+                    // For all other relativeBonVent types, use the regular View_MainItem
                     else -> {
                         View_MainItem(
                             viewModel = viewModel,
-                            relative_M8BonVent = transaction,
-                            fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto
+                            relative_M8BonVent = relativeBonVent,
+                            fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
+                            relative_list_Vent = viewModel.getter.repo10OperationVentCouleur.datasValue.filter {
+                                it.parent_M8BonVent_KeyId == relativeBonVent.keyID
+                            }
                         )
                     }
                 }

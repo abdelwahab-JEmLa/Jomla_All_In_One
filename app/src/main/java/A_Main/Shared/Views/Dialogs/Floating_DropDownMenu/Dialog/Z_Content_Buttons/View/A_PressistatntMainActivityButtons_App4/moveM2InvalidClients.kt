@@ -19,12 +19,35 @@ private const val DEFAULT_LAT       = 36.720027701275505
 private const val DEFAULT_LNG       = 3.1436710147865483
 private const val THRESHOLD_METERS  = 200.0
 
-// ─── Shared predicate (also used by Fab_CleanupM8AndM10 for the badge count) ─
+/**
+ * Determines if an M2Client should be considered invalid and moved to non-active storage.
+ *
+ * A client is invalid if:
+ * - Has no phone number (numTelephone is blank)
+ * - Is within 200 meters of the default location
+ * - Is NOT a special system client (excluded from move operations)
+ */
+fun invalidM2ClientPredicate(keyID: String, numTelephone: String, latitude: Double, longitude: Double): Boolean {
+    // Exclude special clients from being moved
+    if (isSpecialClient(keyID)) return false
 
-/** Returns true when a client should be moved: phone blank AND on the default pin. */
-fun invalidM2ClientPredicate(numTelephone: String, latitude: Double, longitude: Double): Boolean {
+    // Valid clients have phone numbers
     if (numTelephone.isNotBlank()) return false
+
+    // Invalid if within threshold distance of default location
     return haversineMeters(latitude, longitude, DEFAULT_LAT, DEFAULT_LNG) <= THRESHOLD_METERS
+}
+
+/**
+ * Checks if a client is a special system client that should never be moved.
+ */
+private fun isSpecialClient(keyID: String): Boolean {
+    return keyID in setOf(
+        "-Oh4W0-igT_bXGOo-LC_",  // AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a
+        "-OoK4WklxDWe_o19oc2F",  // AbdelwahabJomla_Marque_Sel3a_Au_Depot
+        "-OfYtzn5JtD6Ne7gCOLu",  // Jomla_Marque_Sel3a_Ditha_Pour_Vendre
+        "-Op4u9T7KSOL5x5PSYa0"   // AbdelwahabJomla_Promo_Sel3a
+    )
 }
 
 // ─── Internal geometry helper ─────────────────────────────────────────────────
@@ -34,7 +57,7 @@ private fun haversineMeters(lat1: Double, lng1: Double, lat2: Double, lng2: Doub
     val dLat = Math.toRadians(lat2 - lat1)
     val dLng = Math.toRadians(lng2 - lng1)
     val a    = sin(dLat / 2).pow(2) +
-               cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLng / 2).pow(2)
+            cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLng / 2).pow(2)
     return r * 2 * atan2(sqrt(a), sqrt(1 - a))
 }
 fun moveM2InvalidClients(
@@ -42,7 +65,7 @@ fun moveM2InvalidClients(
     onProgress: (Float) -> Unit = {},
 ) {
     val toMove = repositorysMainGetter.repo2Client.datasValue.filter { client ->
-        invalidM2ClientPredicate(client.numTelephone, client.latitude, client.longitude)
+        invalidM2ClientPredicate(client.keyID, client.numTelephone, client.latitude, client.longitude)
     }
     if (toMove.isEmpty()) { onProgress(1f); return }
 

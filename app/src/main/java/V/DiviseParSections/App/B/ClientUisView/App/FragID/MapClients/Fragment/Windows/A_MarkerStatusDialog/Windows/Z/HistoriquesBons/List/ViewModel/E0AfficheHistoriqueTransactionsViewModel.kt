@@ -1,14 +1,15 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
+import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import android.annotation.SuppressLint
 import android.content.Context
@@ -38,7 +39,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
         appDatabase = appDatabase,
         context = context
     ),
-) : ViewModel() {
+    ) : ViewModel() {
     val getter = aCentralFacade.repositorysMainGetter
     val setter =aCentralFacade.repositorysMainSetter
     val audioRecorderAndPlayHandler =aCentralFacade.modulesCentral.audioRecorderAndPlayHandler
@@ -115,5 +116,17 @@ class E0AfficheHistoriqueTransactionsViewModel(
                 )
             }
         }
+    }
+
+    fun deleteListOperationVents(datas: List<M10OperationVentCouleur>) {
+        if (datas.isEmpty()) return
+
+        repositorysMainSetter_NewProtoPatterns.deleteList_M10OperationVentCouleur(
+            datas = datas,
+            onSuccess = {
+                // Refresh the UI after deletion
+                notifyDataChanged()
+            }
+        )
     }
 }

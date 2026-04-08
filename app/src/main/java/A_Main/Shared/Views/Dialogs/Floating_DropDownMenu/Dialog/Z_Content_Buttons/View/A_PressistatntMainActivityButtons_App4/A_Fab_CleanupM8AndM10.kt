@@ -6,6 +6,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,7 @@ import org.koin.compose.koinInject
 
 private const val TAG_CLEANUP = "CleanupM8M10"
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun Fab_CleanupM8AndM10(
     on_vent_key: String,
@@ -70,23 +72,6 @@ fun Fab_CleanupM8AndM10(
             ?.let { categorieById[it.idParentCategorie] }
             ?.let { catalogueById[it.catalogueParentId] }
 
-
-    val size_ac_no_drp  by derivedStateOf {
-        list_m3.filter {
-            it.dropBox_key.isNotEmpty()
-        }.size
-    }
-
-    val size_t3_cate  by derivedStateOf {
-        list_m3.associateBy { catalogueKeyOf(it) }
-    }
-
-    val list_m3_size_after_clean  by derivedStateOf {
-        list_m3.filter {
-            it.dropBox_key.isNotEmpty()   //<--
-            //TODO(1): comme fait on utilison ma logiqe
-        }
-    }
 
     val productIdsWithTariff = datasValue_repo13TarificationInfos
         .filter { !it.typeChoisi.ignore_affiche && it.prixCurrency > 0 }
@@ -136,7 +121,8 @@ fun Fab_CleanupM8AndM10(
     val sizeM13AfterDeduplicate = sizeM13 - duplicateTariffCount
 
     val sizeInvalidM2 = repositorysMainGetter.repo2Client.datasValue.count { client ->
-        invalidM2ClientPredicate(client.numTelephone, client.latitude, client.longitude)
+        invalidM2ClientPredicate(client.keyID, client.numTelephone, client.latitude, client.longitude)
+
     }
 
     var showSubMenu by remember { mutableStateOf(false) }

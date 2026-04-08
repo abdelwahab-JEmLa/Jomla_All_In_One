@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import androidx.compose.animation.core.Spring
@@ -73,20 +72,6 @@ fun TopAppBar_With_DropDownMenu(
 
     TopAppBar(
         modifier = Modifier
-            .semantics(mergeDescendants = true) {
-                set(
-                    value = focusedValuesGetter.active_Central_Values,
-                    key = SemanticsPropertyKey("active_Central_Values")
-                )
-            }
-            .getSemanticsTag(
-                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode,
-                "currentActiveFocuced_M14VentPeriode"
-            )
-            .getSemanticsTag(
-                data.map { it.parent_M14VentPeriod_KeyId },
-                "repo10OperationVentCouleur"
-            )
             .height(30.dp),
         title = {
             Text(
@@ -102,10 +87,23 @@ fun TopAppBar_With_DropDownMenu(
                 )
             }
 
-            val filtered_ListM10Vent_BY_Curr_M14VentPeriod =
+            val focusedValuesGetter =
                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+
+            val filtered_ListM10Vent_BY_Curr_M14VentPeriod =
+                focusedValuesGetter
                     .filtered_ListM10Vent_BY_Curr_M14VentPeriod
 
+
+            val achats_Depuit_M11AchatOperation_List =
+                viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                    .genere_Achats_Depuit_M11AchatOperation_List(
+                        focusedValuesGetter
+                            .currentActiveFocuced_M14VentPeriode,
+                        filtered_ListM10Vent_BY_Curr_M14VentPeriod,
+                        produits = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue,
+                        bonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+                    )
 
             val filteredVents_parent_M2Client_KeyID =
                 filtered_ListM10Vent_BY_Curr_M14VentPeriod.filter { vent ->
@@ -114,94 +112,58 @@ fun TopAppBar_With_DropDownMenu(
                             .find { it.keyID == vent.parent_M8BonVent_KeyId }
                     parentBonVent?.parent_M2Client_KeyID == "-OfY2JJliWTxLVKQ44IY"
                 }
-
-            val achats_Depuit_M11AchatOperation_List =
-                viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
-                    .genere_Achats_Depuit_M11AchatOperation_List(
-                        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                            .currentActiveFocuced_M14VentPeriode,
-                        filtered_ListM10Vent_BY_Curr_M14VentPeriod,
-                        produits = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue,
-                        bonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-                    )
-
             DropdownMenu(
-                modifier = Modifier
-                    .getSemanticsTag(
-                        data = filtered_ListM10Vent_BY_Curr_M14VentPeriod,
-                        nomVal = "vents"
-                    )
-                    .getSemanticsTag(
-                        data = filtered_ListM10Vent_BY_Curr_M14VentPeriod,
-                        nomVal = "vents"
-                    )
-                    .getSemanticsTag(
-                        achats_Depuit_M11AchatOperation_List,
-                        "achats_Depuit_M11AchatOperation_List"
-                    ),
+                modifier = Modifier,
                 expanded = uiState.showMenu,
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
                 DropDownItem_4(viewModel, "Dialog filter Vent Period")
                 DropDownItem_3(viewModel)
                 DropDownItem_2(viewModel)
-
                 ClearFilterButton(viewModel)
-
                 Repo11AchatOperation_deleteMulti_WithExpressiveButton(viewModel)
 
-
-                val datas_repo10OperationVentCouleur = repo10OperationVentCouleur.datasValue
                 val currentActiveFocuced_M14VentPeriode =
                     focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
                 Card(
                     modifier = Modifier
                         .semantics(mergeDescendants = true) {
+
+                            set(
+                                value = filtered_ListM10Vent_BY_Curr_M14VentPeriod,
+                                key = SemanticsPropertyKey("filtered_ListM10Vent_BY_Curr_M14VentPeriod")
+                            )
+
+                            set(
+                                value = focusedValuesGetter.active_Central_Values,
+                                key = SemanticsPropertyKey("active_Central_Values")
+                            )
                             set(
                                 value = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
                                     .find {
                                         it.keyID == "-OfY2JJliWTxLVKQ44IY"
                                     }, key = SemanticsPropertyKey("repo2Client")
                             )
-                        }
-                        .semantics(mergeDescendants = true) {
+                            set(
+                                value = currentActiveFocuced_M14VentPeriode,
+                                key = SemanticsPropertyKey("repo2Client")
+                            )
                             set(
                                 value = filtered_ListM10Vent_BY_Curr_M14VentPeriod.filter { vent ->
                                     vent.parent_M8BonVent_KeyId == "-OfY2JgUgAQEaABafMa4"
                                 },
                                 key = SemanticsPropertyKey("filtered_ListM10Vent_BY_Curr_M14VentPeriod")
                             )
-                        }
-
-                        .semantics(mergeDescendants = true) {
                             set(
                                 value = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
                                     .find { it.parent_M2Client_KeyID == "-OfY2JJliWTxLVKQ44IY" },
                                 key = SemanticsPropertyKey("OfY2JJliWTxLVKQ44IY")
                             )
-                        }
-                        .semantics(mergeDescendants = true) {
                             set(
                                 value = filteredVents_parent_M2Client_KeyID,
                                 key = SemanticsPropertyKey("filteredVents_parent_M2Client_KeyID")
                             )
                         }
-                        .getSemanticsTag(
-                            datas_repo10OperationVentCouleur.map { it.parent_M14VentPeriod_KeyId },
-                            "map_datas_repo10OperationVentCouleu"
-                        )
-                        .getSemanticsTag(
-                            datas_repo10OperationVentCouleur,
-                            "datas_repo10OperationVentCouleur"
-                        )
-                        .getSemanticsTag(
-                            currentActiveFocuced_M14VentPeriode,
-                            "currentActiveFocuced_M14VentPeriode"
-                        )
-                        .getSemanticsTag(
-                            filtered_ListM10Vent_BY_Curr_M14VentPeriod,
-                            "filtered_ListM10Vent_BY_Curr_M14VentPeriod"
-                        )
                         .semantics(mergeDescendants = true) {
                             set(
                                 value = achats_Depuit_M11AchatOperation_List,
@@ -215,7 +177,13 @@ fun TopAppBar_With_DropDownMenu(
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     DropdownMenuItem(
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .semantics(mergeDescendants = true) {
+                                set(
+                                    value = focusedValuesGetter,
+                                    key = SemanticsPropertyKey("focusedValuesGetter")
+                                )
+                            },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Add,

@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.AddToStockDialog
@@ -88,9 +89,10 @@ fun View_MainItem(
     repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter,
     repositorysMainSetter: RepositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter,
     fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
-    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto ,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
     printReceiptHandler: PrintReceiptHandler_Juil = aCentralFacade.modulesCentral.printReceiptHandler,
     relative_M8BonVent: M8BonVent,
+    relative_list_Vent: List<M10OperationVentCouleur>,
 ) {
     // State for delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -931,10 +933,15 @@ fun View_MainItem(
             confirmButton = {
                 Button(
                     onClick = {
-                        // Perform the secure deletion
                         viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(
                             relative_M8BonVent
                         )
+
+                        viewModel.deleteListOperationVents(
+                            relative_list_Vent
+                        )
+
+
 
                         val audioKeyToDelete = if (hasVoiceMessage) {
                             relative_M17Message?.nomDeSonOriginaleFichie ?: ""

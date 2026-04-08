@@ -1,9 +1,9 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
@@ -44,8 +44,6 @@ class RepositorysMainSetter_NewProtoPatterns(
             if (datas.isNotEmpty()) {
                 datas.forEach { appDatabase.dao_M03CouleurProduitInfos().update(it) }
                 val updates: Map<String, Any> = datas.associate { it.keyID to it.toFirebaseMap() }
-                // updateChildren().await() suspends until Firebase confirms the write.
-                // onSuccess() is then dispatched on Main so callers can safely update UI state.
                 M3CouleurProduitInfos.ref.updateChildren(updates).await()
             }
             withContext(Dispatchers.Main) { onSuccess() }
@@ -204,7 +202,39 @@ class RepositorysMainSetter_NewProtoPatterns(
     // -------------------------------------------------------------------------
     // M10OperationVentCouleur
     // -------------------------------------------------------------------------
+// Add this function after the updateTariffForProductOperations function
+    fun deleteList_M10OperationVentCouleur(
+        datas: List<M10OperationVentCouleur>,
+        onSuccess: () -> Unit = {}
+    ) {
+        if (datas.isEmpty()) {
+            onSuccess()
+            return
+        }
 
+        composScope.launch {
+            try {
+                // Delete from local database
+                datas.forEach { operation ->
+                    appDatabase.dao_M10OperationVentCouleur().delete(operation)
+                }
+
+                // Delete from Firebase
+                val updates: Map<String, Any?> = datas.associate { it.keyID to null }
+                M10OperationVentCouleur.Companion.ref.updateChildren(updates).await()
+
+                withContext(Dispatchers.Main) { onSuccess() }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Erreur lors de la suppression : ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
     fun upsert_M10OperationVentCouleur(
         operation: M10OperationVentCouleur,
         selectedTariff: M13TarificationInfos

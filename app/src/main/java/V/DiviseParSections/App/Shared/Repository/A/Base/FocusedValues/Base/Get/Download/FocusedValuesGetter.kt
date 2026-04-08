@@ -2,25 +2,25 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
 import EntreApps.Shared.Models.M14VentPeriode
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M8BonVent
-import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
-import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
+import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -96,7 +96,17 @@ class FocusedValuesGetter(
     val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
         val currentPeriod = currentActiveFocuced_M14VentPeriode
             ?: return@derivedStateOf emptyList<M10OperationVentCouleur>()
-        repo10OperationVentCouleur.datasValue.filter { it.parent_M14VentPeriod_KeyId == currentPeriod.keyID }
+
+        val bonVentsForPeriod = repo8BonVent.datasValue.filter {
+            it.parent_M14VentPeriod_KeyId == currentPeriod.keyID
+        }
+
+        // Get all M10OperationVentCouleur that belong to these M8BonVent
+        repo10OperationVentCouleur.datasValue.filter { operation ->
+            bonVentsForPeriod.any { bonVent ->
+                bonVent.keyID == operation.parent_M8BonVent_KeyId
+            }
+        }
     }
 
     fun getDefaultM8BonVent() = M8BonVent(

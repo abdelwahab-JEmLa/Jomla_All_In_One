@@ -2,6 +2,7 @@ package EntreApps.Shared.Models
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+//noinspection SuspiciousImport
 import android.R
 import androidx.room.Entity
 import androidx.room.PrimaryKey
