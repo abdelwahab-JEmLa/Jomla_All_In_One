@@ -92,7 +92,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
     onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns ,
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
     onClickAnulationButton: () -> Unit = {},
 ) {
     var searchTextForFastPanier by remember { mutableStateOf("") }
@@ -102,7 +102,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
     val showButtons by remember { mutableStateOf(true) }
     val showLabels by remember { mutableStateOf(true) }
-    var sharedPdfPath  by remember { mutableStateOf("") }
+    var sharedPdfPath by remember { mutableStateOf("") }
     var sharedPdfCount by remember { mutableStateOf(0) }
     var showAlertDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
@@ -392,46 +392,51 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                     }
 
-
+                    val list_M13TarificationInfos =
+                        if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst) repositorysMainGetter.repo13TarificationInfos.datasValue
+                        else uiState_viewModelNewProtoPatterns.list_M13TarificationInfos
 
                     if (focusedValuesGetter.activeOnVent_M8BonVent != null) {
                         PdfBonVentFAB(
-                            listm13=uiState_viewModelNewProtoPatterns.list_M13TarificationInfos,
+                            listm13 = list_M13TarificationInfos,
                             showLabels = showLabels,
                             onPdfSaved = { path, count ->
-                                sharedPdfPath  = path
+                                sharedPdfPath = path
                                 sharedPdfCount = count
                             }
                         )
                         Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
-                            showLabels    = showLabels,
-                            overridePath  = sharedPdfPath,
+                            showLabels = showLabels,
+                            overridePath = sharedPdfPath,
                             overrideCount = sharedPdfCount,
-                            viewModelNewProtoPatterns=viewModelNewProtoPatterns
+                            viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                            list_M13TarificationInfos = list_M13TarificationInfos
                         )
                     }
 
-                        ID4ClientSearchButton(
-                            list_m13_uiState_viewModelNewProtoPatterns=uiState_viewModelNewProtoPatterns.list_M13TarificationInfos,
-                            uiState = uiState,
-                            hClientRepository = uiState.hClientRepository,
-                            showLabels = showLabels,
-                            onClientSelectedToToast = { selectedClient ->
-                                currentToast = ToastData(
-                                    message = "Client sélectionné: ${selectedClient.nom}",
-                                    type = ToastType.SUCCESS,
-                                    duration = 2000L
-                                )
-                            },
-                            viewModel = viewModel
-                        )
+                    ID4ClientSearchButton(
+                        list_m13_uiState_viewModelNewProtoPatterns = list_M13TarificationInfos,
+                        uiState = uiState,
+                        hClientRepository = uiState.hClientRepository,
+                        showLabels = showLabels,
+                        onClientSelectedToToast = { selectedClient ->
+                            currentToast = ToastData(
+                                message = "Client sélectionné: ${selectedClient.nom}",
+                                type = ToastType.SUCCESS,
+                                duration = 2000L
+                            )
+                        },
+                        viewModel = viewModel
+                    )
                 }
 
                 itsFragmentProduitFastSearchDialog.ifTrue {
 
-                    false.ifTrue {     FloatingBonVentToggleFAB(
-                        showLabels = showLabels
-                    )  }
+                    false.ifTrue {
+                        FloatingBonVentToggleFAB(
+                            showLabels = showLabels
+                        )
+                    }
 
                     if (shouldShowFloatingSearcher) {
                         FloatingSecureClickToggleFAB(
@@ -454,7 +459,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         FloatingFilterToggleFAB(
                             activeFilters = activeCentralValues.activeFilters,
                             onToggleFilter = {
-                                val currentFilters = focusedValuesGetter.active_Central_Values.activeFilters
+                                val currentFilters =
+                                    focusedValuesGetter.active_Central_Values.activeFilters
                                 val newFilters = when {
                                     currentFilters.contains(ActiveCentralValues.ActiveFilter.premier_Check_Donne) -> {
                                         (currentFilters - ActiveCentralValues.ActiveFilter.premier_Check_Donne) +

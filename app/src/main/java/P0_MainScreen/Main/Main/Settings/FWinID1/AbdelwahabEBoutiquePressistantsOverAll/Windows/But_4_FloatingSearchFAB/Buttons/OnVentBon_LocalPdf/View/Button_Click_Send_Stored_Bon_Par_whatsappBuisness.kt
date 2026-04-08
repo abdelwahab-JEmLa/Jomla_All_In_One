@@ -1,9 +1,8 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Modules.Base.AppDatabase
+import EntreApps.Shared.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import android.content.Context
@@ -54,9 +53,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -70,8 +66,9 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     overrideCount: Int = 0,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns ,
-) {
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    list_M13TarificationInfos: List<M13TarificationInfos>,
+    ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -86,12 +83,10 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
             it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve
                     && it.quantity > 0
         }
-    val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
 
-    // Detect products whose tariff price is 0 — sending a PDF with zero-priced items risks financial loss
     val zeroOrNullPriceProducts = remember(activeVents) {
         activeVents.mapNotNull { vent ->
-            val tariff = uiState.list_M13TarificationInfos
+            val tariff = list_M13TarificationInfos
                 .find {
                     it.keyID == vent.parentM13TarificationKeyID
                 }

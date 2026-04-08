@@ -37,13 +37,13 @@ data class M00CentralParametresOfAllApps(
     val amine_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s8",
 
     //faitque les prix soit a droit a gauch
-              //<--
-              //TODO(1): rebase test
-              //<--
-              //TODO(1): assune command  demend avant enlve
+    //<--
+    //TODO(1): rebase test
+    //<--
+    //TODO(1): assune command  demend avant enlve
     //<--
     //TODO(1): benifice sure le prix 
-    
+
     //<--
     //TODO(1):     //<--
     //    //TODO(1): fait que le valer start c
@@ -56,7 +56,7 @@ data class M00CentralParametresOfAllApps(
     //    //when
     //    // les 2 non dispo || 0.0 -> 0.0 
     //    //ne des 2 dispo -> it prix 
-    
+
     //<--
     //TODO(1): 
 //<--
@@ -76,7 +76,7 @@ data class M00CentralParametresOfAllApps(
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val time_tamp_all_tariffs: Boolean = false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    val itsDevMode: Boolean = false ,
+    val itsDevMode: Boolean = false,
     val force_next_start_DeleteInsertAll: Boolean = false,
     val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
@@ -84,7 +84,7 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.JomLaElectroLivreurGrossist_VendeurHost
         } else {
-            AppType.JomLaElectroLivreurGrossist_VendeurHost
+            AppType.AllInOne
             //JomLaElectroLivreurGrossist_VendeurHost
         }
     },
@@ -118,7 +118,6 @@ data class M00CentralParametresOfAllApps(
         val central_Local_storageLink = buildString {
             append("/storage/emulated/0/Abdelwahab_jeMla.com")
         }
-
 
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
@@ -160,6 +159,7 @@ data class M00CentralParametresOfAllApps(
                 else -> Utilisateur.Admin
             }
         }
+
         val images_central_Local_storageLink =
             M3CouleurProduitInfos.images_central_Local_storageLink
 
