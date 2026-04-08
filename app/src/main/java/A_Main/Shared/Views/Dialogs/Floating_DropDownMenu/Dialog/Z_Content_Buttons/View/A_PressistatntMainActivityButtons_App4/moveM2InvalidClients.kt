@@ -50,7 +50,6 @@ private fun isSpecialClient(keyID: String): Boolean {
     )
 }
 
-// ─── Internal geometry helper ─────────────────────────────────────────────────
 
 private fun haversineMeters(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
     val r    = 6_371_000.0
