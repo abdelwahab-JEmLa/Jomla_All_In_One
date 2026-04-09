@@ -31,6 +31,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
+import V.DiviseParSections.App._0.Navigation.Main_DropDown.Panie.FabDropdownMenu_WhenIts_Frag_Panie
 import V.DiviseParSections.App._0.Navigation.Screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -47,6 +48,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -106,6 +108,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     var sharedPdfCount by remember { mutableStateOf(0) }
     var showAlertDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
+    var showPanieDropdown by remember { mutableStateOf(false) }
 
     var offsetX by remember {
         mutableFloatStateOf(focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs.x.toFloat())
@@ -390,6 +393,48 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
                         )
+                    }
+
+                    Box {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            FloatingActionButton(
+                                modifier = Modifier.size(40.dp),
+                                onClick = { showPanieDropdown = true },
+                                containerColor = MaterialTheme.colorScheme.secondary
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "Ouvrir menu Panier",
+                                    tint = Color.White
+                                )
+                            }
+                            if (showLabels) {
+                                Text(
+                                    text = "Menu Panier",
+                                    modifier = Modifier
+                                        .background(
+                                            MaterialTheme.colorScheme.secondary,
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+
+                        if (showPanieDropdown) {
+                            FabDropdownMenu_WhenIts_Frag_Panie(
+                                onDismissDropdown = { showPanieDropdown = false },
+                                onClick_to_initiateBackgroundPdfCreation = {},
+                                onClickImageToShowControles = {
+
+                                }
+                            )
+                        }
                     }
 
                     val list_M13TarificationInfos =
