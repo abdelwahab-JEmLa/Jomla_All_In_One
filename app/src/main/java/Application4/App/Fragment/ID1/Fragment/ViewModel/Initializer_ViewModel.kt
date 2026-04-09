@@ -24,7 +24,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     fun run() {
         collect_ListDatas()
         load_then_Collect_Active_DatasMutableStates()
-        startPeriodicComptKeyCheck()   // TODO(1) fixed
+        startPeriodicComptKeyCheck()
     }
 
     // ─────────────────────────────────────────────────────────────────────────

@@ -225,7 +225,9 @@ enum class AbdelwahabJomla_Client_Speciale(
         "-Oh4W0-igT_bXGOo-LC_",
         autre_nom = "AbdelwahabJomla Marke Wach Dina Échantillon"
     ),
-    AbdelwahabJomla_Marque_Sel3a_Au_Depot("-OoK4WklxDWe_o19oc2F"),
+    AbdelwahabJomla_Marque_Sel3a_Au_Depot(
+        "-OoK4WklxDWe_o19oc2F"
+    ),
     Jomla_Marque_Sel3a_Ditha_Pour_Vendre(
         "-OfYtzn5JtD6Ne7gCOLu",
         autre_nom = " Abdelwahab mark sel3a ta3 Commande ",
