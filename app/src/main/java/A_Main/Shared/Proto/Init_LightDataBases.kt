@@ -56,9 +56,8 @@ object Init_LightDataBases {
             val raw = M13TarificationInfos.ref.get().await()
                 .children.mapNotNull { it.getValue(M13TarificationInfos::class.java) }
             m13List = if (applyFilters) {
-                raw.filter { tarif ->
-                    tarif.parent_M1Produit_KeyId in filteredProductKeys!! &&
-                            !tarif.typeChoisi.its_gro_app
+                raw.filter { tariff ->
+                    tariff.parent_M1Produit_KeyId in filteredProductKeys!!
                 }
             } else raw
         } catch (_: Exception) {}

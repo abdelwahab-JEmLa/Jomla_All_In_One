@@ -213,7 +213,7 @@ data class M8BonVent(
             return Sums_Bons(totale_vents = totale, benifices_vents = benifices)
         }
 
-        fun M8BonVent.sum_benifice(
+        fun M8BonVent.benifice(
             vents: List<M10OperationVentCouleur>,
             tariffs: List<M13TarificationInfos>,
         ): Double = sum_totale_et_benifice(vents, tariffs).benifices_vents

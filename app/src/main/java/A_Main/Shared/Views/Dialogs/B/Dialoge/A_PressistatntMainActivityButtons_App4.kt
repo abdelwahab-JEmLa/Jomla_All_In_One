@@ -3,9 +3,8 @@ package A_Main.Shared.Views.Dialogs.B.Dialoge
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode.Companion.sum_vent_et_benifice
-import EntreApps.Shared.Models.M8BonVent.Companion.sum_benifice
+import EntreApps.Shared.Models.M8BonVent.Companion.benifice
 import EntreApps.Shared.Models.M8BonVent.Companion.sum_totale_vents
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +27,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,13 +47,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
-
-private const val TAG = "PressistatntMainActivity"
 
 enum class ProductDisplayMode {
     AllProducts,
@@ -61,16 +57,6 @@ enum class ProductDisplayMode {
     Panie,
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Search FAB
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * A floating search button that expands into a text-field when toggled.
- * [searchText] / [onSearchTextChange] are owned by the caller (ViewModel state).
- * Only rendered when [currentMode] is [ProductDisplayMode.Echantillons] or
- * [ProductDisplayMode.Panie] — hidden in AllProducts mode.
- */
 @Composable
 fun But_4_FloatingSearchFAB(
     searchText: String,
@@ -142,10 +128,6 @@ fun But_4_FloatingSearchFAB(
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main floating button cluster
-// ─────────────────────────────────────────────────────────────────────────────
-
 @Composable
 fun PressistatntMainActivityButtons_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
@@ -190,65 +172,40 @@ fun PressistatntMainActivityButtons_App4(
         ProductDisplayMode.Echantillons -> Icons.Default.Check
         ProductDisplayMode.Panie -> Icons.Default.ShoppingCart
     }
+
     val fabTint = when (currentMode) {
         ProductDisplayMode.AllProducts -> MaterialTheme.colorScheme.onSurfaceVariant
         else -> Color.White
     }
+
     val labelText = when (currentMode) {
         ProductDisplayMode.AllProducts -> "Tous les produits"
         ProductDisplayMode.Echantillons -> "Échantillons"
         ProductDisplayMode.Panie -> "Panier"
     }
+
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val activeDatas = viewModelNewProtoPatterns.active_Datas
-
     val listm10operationventcouleurFilteredbyActivem8bonventState =
         activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-
     val tariffs = uiState.list_M13TarificationInfos
-    val sumBenefice by remember {
+
+    val bonVent_benefice by remember {
         derivedStateOf {
             listm10operationventcouleurFilteredbyActivem8bonventState?.let { ops ->
-                val bonVent = activeDatas.activeOnVent_M8BonVent
-
-                val result = bonVent?.sum_benifice(ops, tariffs)
-                // Log moved here where bonVent / ops / tarifs / result are all in scope
-                Log.d(TAG, buildString {
-                    appendLine("=== sum_benifice DEBUG ===")
-                    appendLine("bonVent       : ${bonVent?.keyID} (null=${bonVent == null})")
-                    appendLine("ops.size      : ${ops.size}")
-                    appendLine("tarifs.size   : ${tariffs.size}")
-                    ops.forEach { op ->
-                        val matchingTarif =
-                            tariffs.find { it.keyID == op.parentM13TarificationKeyID }
-                        appendLine(
-                            "  op ${op.keyID.takeLast(6)} | qty=${op.quantity}" +
-                                    " | prixVent=${op.prix_de_Vent_entre_directement_NewProto}" +
-                                    " | type=${op.typeTarificationEnumT2}" +
-                                    " | tarifFound=${matchingTarif != null}" +
-                                    " | tarifPrix=${matchingTarif?.prixCurrency}"
-                        )
-                    }
-                    appendLine("sum_benifice  → $result")
-                })
-                result
+                activeDatas.activeOnVent_M8BonVent?.benifice(ops, tariffs)
             }
         }
     }
 
-    // ── Total ventes ─────────────────────────────────────────────────────────
-    // Same fix: plain remember { derivedStateOf { } } so derivedStateOf tracks its own
-    // state reads without a new-List key breaking the observer each frame.
     val sumTotaleVents by remember {
         derivedStateOf {
             listm10operationventcouleurFilteredbyActivem8bonventState?.let { ops ->
-                activeDatas.activeOnVent_M8BonVent?.sum_totale_vents(
-                    ops,
-                    uiState.list_M13TarificationInfos
-                )
+                activeDatas.activeOnVent_M8BonVent?.sum_totale_vents(ops, tariffs)
             }
         }
     }
+
     val periodSums by remember(
         activeDatas.active_M9Compt?.current_OnVent_M14VentPeriode_KeyID,
         activeDatas.list_M8BonVent,
@@ -264,26 +221,15 @@ fun PressistatntMainActivityButtons_App4(
             val allOperations = activeDatas.list_M10OperationVentCouleur ?: emptyList()
             val allTariffs = uiState.list_Datas?.m13TarificationInfos ?: emptyList()
 
-            val sums = period.sum_vent_et_benifice(
+            period.sum_vent_et_benifice(
                 bonsList = allBons,
                 ventsList = allOperations,
                 tariffsList = allTariffs,
             )
-            Log.d(TAG, buildString {
-                appendLine("=== sum_vent_et_benifice (période) ===")
-                appendLine("période         : ${period.keyID.takeLast(4)}")
-                appendLine("bons commande   : ${sums.on_command_bons}")
-                appendLine("totale ventes   : ${sums.totale_vents}")
-                appendLine("bénéfices       : ${sums.totale_benifices}")
-                appendLine("nb crédit bons  : ${sums.credits_bons}")
-                appendLine("crédit sum      : ${sums.credit_sum}")
-                appendLine("cash            : ${sums.totale_cash}")
-            })
-            sums
         }
     }
-     val second_vent = listm10operationventcouleurFilteredbyActivem8bonventState?.last()
 
+    val second_vent = listm10operationventcouleurFilteredbyActivem8bonventState?.last()
     val prixAchat = tariffs
         .filter {
             it.parent_M1Produit_KeyId == second_vent?.parent_M1Produit_KeyId &&
@@ -298,17 +244,6 @@ fun PressistatntMainActivityButtons_App4(
 
     Box(
         modifier = Modifier
-            .semantics(mergeDescendants = true) {
-                set(
-                    value = listm10operationventcouleurFilteredbyActivem8bonventState,
-                    key = SemanticsPropertyKey("listm10operationventcouleurFilteredbyActivem8bonventState")
-                )
-                set(
-                    value = prixAchat,
-                    key = SemanticsPropertyKey("prixAchat")
-                )
-                set(value = tariffs_produit, key = SemanticsPropertyKey("tariffs_produit"))
-            }
             .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
@@ -320,69 +255,72 @@ fun PressistatntMainActivityButtons_App4(
     ) {
 
         Column {
-            Box {
-                periodSums?.let { sums ->
-                    Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)) {
-                        if (sums.totale_vents > 0.0) {
-                            FloatingActionButton(
-                                onClick = { /* lecture seule */ },
-                                modifier = Modifier
-                                    .widthIn(min = 56.dp)
-                                    .height(40.dp),
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                shape = RoundedCornerShape(12.dp),
-                            ) {
-                                Text(
-                                    text = "pér: %.0f DA  (${sums.on_command_bons} bons)".format(sums.totale_vents),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(horizontal = 10.dp)
-                                )
-                            }
+            Text("Period")
+            Row {
+                periodSums?.let { periodSums ->
+                    if (periodSums.totale_vents > 0.0) {
+                        FloatingActionButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .widthIn(min = 56.dp)
+                                .height(40.dp),
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text(
+                                text = "pér: %.0f DA  (${periodSums.on_command_bons} bons)".format(
+                                    periodSums.totale_vents
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
                         }
-                        if (sums.totale_benifices > 0.0) {
-                            FloatingActionButton(
-                                onClick = { /* lecture seule */ },
-                                modifier = Modifier
-                                    .widthIn(min = 56.dp)
-                                    .height(40.dp),
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                shape = RoundedCornerShape(12.dp),
-                            ) {
-                                Text(
-                                    text = "bén. pér: %.0f DA".format(sums.totale_benifices),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(horizontal = 10.dp)
-                                )
-                            }
+                    }
+                    if (periodSums.totale_benifices > 0.0) {
+                        FloatingActionButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .widthIn(min = 56.dp)
+                                .height(40.dp),
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text(
+                                text = "bén. pér: %.0f DA".format(periodSums.totale_benifices),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
                         }
-                        if (sums.totale_cash > 0.0) {
-                            FloatingActionButton(
-                                onClick = { /* lecture seule */ },
-                                modifier = Modifier
-                                    .widthIn(min = 56.dp)
-                                    .height(40.dp),
-                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                                shape = RoundedCornerShape(12.dp),
-                            ) {
-                                Text(
-                                    text = "cash: %.0f DA".format(sums.totale_cash),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(horizontal = 10.dp)
-                                )
-                            }
+                    }
+                    if (periodSums.totale_cash > 0.0) {
+                        FloatingActionButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .widthIn(min = 56.dp)
+                                .height(40.dp),
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text(
+                                text = "cash: %.0f DA".format(periodSums.totale_cash),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
                         }
                     }
                 }
             }
 
+            HorizontalDivider()
+            Text("Bon Vent")
             Row {
-                sumBenefice?.let { benef ->
+                bonVent_benefice?.let { benef ->
                     if (benef > 0.0) {
                         FloatingActionButton(
-                            onClick = { /* lecture seule */ },
+                            onClick = { },
                             modifier = Modifier
                                 .widthIn(min = 56.dp)
                                 .height(40.dp),
@@ -400,10 +338,10 @@ fun PressistatntMainActivityButtons_App4(
                     }
                 }
 
-                sumTotaleVents?.let { total ->
-                    if (total > 0.0) {
+                sumTotaleVents?.let { it ->
+                    if (it > 0.0) {
                         FloatingActionButton(
-                            onClick = { /* lecture seule */ },
+                            onClick = { },
                             modifier = Modifier
                                 .widthIn(min = 56.dp)
                                 .height(40.dp),
@@ -412,7 +350,7 @@ fun PressistatntMainActivityButtons_App4(
                             shape = RoundedCornerShape(12.dp),
                         ) {
                             Text(
-                                text = "tot: %.0f DA".format(total),
+                                text = "tot: %.0f DA".format(it),
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(horizontal = 10.dp)
@@ -474,7 +412,6 @@ fun PressistatntMainActivityButtons_App4(
                     currentMode = currentMode,
                 )
 
-                // ── Mode label ───────────────────────────────────────────────────
                 Text(
                     text = labelText,
                     modifier = Modifier
