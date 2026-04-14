@@ -1,7 +1,8 @@
 package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,37 +29,44 @@ fun TariffItem(
     tariffsList: List<M13TarificationInfos>,
     modifier: Modifier = Modifier.Companion
 ) {
-    val effectivePrix = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
-        val detailleTariff = tariffsList.find {
-            it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
-                    it.parent_M1Produit_KeyId == relative_M1produit.keyID && it.prixCurrency != 0.0
+    val effectivePrix =
+        if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
+            val detailleTariff = tariffsList.find {
+                it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_Detaille &&
+                        it.parent_M1Produit_KeyId == relative_M1produit.keyID && it.prixCurrency != 0.0
+            }
+            val supperGroTariff = tariffsList.find {
+                it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
+                        it.parent_M1Produit_KeyId == relative_M1produit.keyID && it.prixCurrency != 0.0
+            }
+            M13TarificationInfos.Companion.remembered_calculated_progressive_changement_tariff(
+                relative_Prix_Detaille = detailleTariff?.prixCurrency,
+                relative_Prix_SupperGro_Et_PresentationService = supperGroTariff?.prixCurrency,
+                relative_produit = relative_M1produit
+            )?.prixCurrency ?: prix
+        } else {
+            prix
         }
-        val supperGroTariff = tariffsList.find {
-            it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
-                    it.parent_M1Produit_KeyId == relative_M1produit.keyID && it.prixCurrency != 0.0
-        }
-        M13TarificationInfos.Companion.remembered_calculated_progressive_changement_tariff(
-            relative_Prix_Detaille = detailleTariff?.prixCurrency,
-            relative_Prix_SupperGro_Et_PresentationService = supperGroTariff?.prixCurrency,
-            relative_produit = relative_M1produit
-        )?.prixCurrency ?: prix
-    } else {
-        prix
-    }
 
     if (effectivePrix == 0.0) return
 
-    val horizontalPadding = if (compactMode) TariffTextSizes.COMPACT_HORIZONTAL_PADDING else TariffTextSizes.NORMAL_HORIZONTAL_PADDING
-    val verticalPadding = if (compactMode) TariffTextSizes.COMPACT_VERTICAL_PADDING else TariffTextSizes.NORMAL_VERTICAL_PADDING
-    val fontSize = if (compactMode) TariffTextSizes.COMPACT_MAIN_TEXT else TariffTextSizes.NORMAL_MAIN_TEXT
-    val secondaryFontSize = if (compactMode) TariffTextSizes.COMPACT_SECONDARY_TEXT else TariffTextSizes.NORMAL_SECONDARY_TEXT
-    val borderWidth = if (isSelected) TariffTextSizes.SELECTED_BORDER_WIDTH else TariffTextSizes.UNSELECTED_BORDER_WIDTH
+    val horizontalPadding =
+        if (compactMode) TariffTextSizes.COMPACT_HORIZONTAL_PADDING else TariffTextSizes.NORMAL_HORIZONTAL_PADDING
+    val verticalPadding =
+        if (compactMode) TariffTextSizes.COMPACT_VERTICAL_PADDING else TariffTextSizes.NORMAL_VERTICAL_PADDING
+    val fontSize =
+        if (compactMode) TariffTextSizes.COMPACT_MAIN_TEXT else TariffTextSizes.NORMAL_MAIN_TEXT
+    val secondaryFontSize =
+        if (compactMode) TariffTextSizes.COMPACT_SECONDARY_TEXT else TariffTextSizes.NORMAL_SECONDARY_TEXT
+    val borderWidth =
+        if (isSelected) TariffTextSizes.SELECTED_BORDER_WIDTH else TariffTextSizes.UNSELECTED_BORDER_WIDTH
     val borderColor = if (isSelected) Color.Companion.Red else Color.Companion.Transparent
-    val backgroundColor = if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
-        Color.Companion.Black.copy(alpha = if (isSelected) 1f else 0.9f)
-    } else {
-        tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
-    }
+    val backgroundColor =
+        if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
+            Color.Companion.Black.copy(alpha = if (isSelected) 1f else 0.9f)
+        } else {
+            tariff.typeChoisi.couleur.copy(alpha = if (isSelected) 1f else 0.9f)
+        }
     val prixUnitaire = if (nombreUnite > 1) effectivePrix / nombreUnite else effectivePrix
     val clientPrixVentUnite = relative_M1produit.clientPrixVentUnite
     val beneficeClient = clientPrixVentUnite * nombreUnite - effectivePrix
@@ -81,6 +89,7 @@ fun TariffItem(
                 modifier = Modifier.Companion.align(Alignment.Companion.CenterHorizontally)
             )
 
+
             if (nombreUnite > 1) {
                 Text(
                     text = "(${formatPriceWithDecimals(prixUnitaire)}/u)",
@@ -93,8 +102,8 @@ fun TariffItem(
 
             if (clientPrixVentUnite > 0) {
                 Text(
-                    text = "bén: ${formatPrice(beneficeClient)} DA",
-                    color = if (beneficeClient >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Companion.Red.copy(
+                    text = "b.cli: ${formatPrice(beneficeClient)} DA",
+                    color = if (beneficeClient >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Blue.copy(
                         alpha = 0.85f
                     ),
                     fontSize = secondaryFontSize,
@@ -102,6 +111,16 @@ fun TariffItem(
                     modifier = Modifier.Companion.align(Alignment.Companion.CenterHorizontally)
                 )
             }
+
+            Text(
+                text = "m.b: ${formatPrice(tariff.prixCurrency - tariffsList.last { it.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros }.prixCurrency)} DA",
+                color = if (beneficeClient >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Red.copy(
+                    alpha = 0.85f
+                ),
+                fontSize = secondaryFontSize,
+                lineHeight = secondaryFontSize,
+                modifier = Modifier.Companion.align(Alignment.Companion.CenterHorizontally)
+            )
         }
     } else {
         Column(

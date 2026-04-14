@@ -1,7 +1,6 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import EntreApps.Shared.Models.M13TarificationInfos
 import EntreApps.Shared.Models.M14VentPeriode.Companion.sum_vent_et_benifice
 import EntreApps.Shared.Models.M8BonVent.Companion.benifice
 import EntreApps.Shared.Models.M8BonVent.Companion.sum_totale_vents
@@ -47,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
@@ -234,19 +234,6 @@ fun PressistatntMainActivityButtons_App4(
         }
     }
 
-    val second_vent = listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.last()
-    val prixAchat = tariffs
-        .filter {
-            it.parent_M1Produit_KeyId == second_vent?.parent_M1Produit_KeyId &&
-                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
-        }
-        .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
-
-    val tariffs_produit = tariffs
-        .filter {
-            it.parent_M1Produit_KeyId == second_vent?.parent_M1Produit_KeyId
-        }
-
     Box(
         modifier = Modifier
             .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
@@ -302,6 +289,7 @@ fun PressistatntMainActivityButtons_App4(
                     if (periodSums.totale_cash > 0.0) {
                         FloatingActionButton(
                             onClick = { },
+
                             modifier = Modifier
                                 .widthIn(min = 56.dp)
                                 .height(40.dp),
@@ -327,6 +315,9 @@ fun PressistatntMainActivityButtons_App4(
                         FloatingActionButton(
                             onClick = { },
                             modifier = Modifier
+                                .semantics(mergeDescendants = true) {
+
+                                }
                                 .widthIn(min = 56.dp)
                                 .height(40.dp),
                             containerColor = MaterialTheme.colorScheme.secondary,

@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.Outbox
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.Card
@@ -59,6 +60,7 @@ fun A_Compact_Header_App4(
     catalogueName: String? = null,
     categoryName: String? = null,
     onCategoryClick: (() -> Unit)? = null,
+    prix_achat: Double?,
 ) {
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
     val arabicTextSize = if (isExpanded) 12.sp else 9.sp
@@ -286,7 +288,24 @@ fun A_Compact_Header_App4(
                     }
                 )
 
-                val totalClient = relative_M1produit.clientPrixVentUnite * relative_M1produit.nombreUniteInt
+                InfoCard(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Outbox,
+                            contentDescription = "Prix Achat",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(iconSize)
+                        )
+                    },
+                    value = "%.2f".format(prix_achat),
+                    label = "شراء",
+                    labelTextSize = labelTextSize,
+                    valueTextSize = valueTextSize,
+                    itemPadding = itemPadding
+                )
+
+                val totalClient =
+                    relative_M1produit.clientPrixVentUnite * relative_M1produit.nombreUniteInt
                 if (totalClient > 0.0) {
                     InfoCard(
                         icon = {
