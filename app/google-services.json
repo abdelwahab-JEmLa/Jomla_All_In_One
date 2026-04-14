@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "942491634523",
+    "firebase_url": "https://abdelwahab-jemla-com-93f88-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "abdelwahab-jemla-com-93f88",
+    "storage_bucket": "abdelwahab-jemla-com-93f88.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:942491634523:android:bec3759185240af9fbe87e",
+        "android_client_info": {
+          "package_name": "com.example.clientjetpack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIdGHNofzJraGDYTD_yTAvCiXRXHQqcAQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
