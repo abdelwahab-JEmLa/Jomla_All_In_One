@@ -27,7 +27,10 @@ enum class pourcentage {
     standart,
     min_possible
 }
-
+                                         //<--
+                                         //TODO(1): nomImageFichieSansEtansion	parentBProduitOldID	4117    
+                                         // 
+                                         // indexCouleurDansAncienProto	1
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye(
