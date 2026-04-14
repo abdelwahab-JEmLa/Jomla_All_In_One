@@ -186,27 +186,32 @@ fun PressistatntMainActivityButtons_App4(
 
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val activeDatas = viewModelNewProtoPatterns.active_Datas
-    val listm10operationventcouleurFilteredbyActivem8bonventState =
+    val listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
         activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
     val tariffs = uiState.list_M13TarificationInfos
 
-    val bonVent_benefice by remember {
+    val activeOnVent_M8BonVent_benefice by remember(
+        activeDatas.active_M9Compt?.current_OnVent_M14VentPeriode_KeyID,
+        activeDatas.list_M8BonVent,
+        activeDatas.list_M10OperationVentCouleur,
+        uiState.list_Datas?.m13TarificationInfos,
+    ) {
         derivedStateOf {
-            listm10operationventcouleurFilteredbyActivem8bonventState?.let { ops ->
+            listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.let { ops ->
                 activeDatas.activeOnVent_M8BonVent?.benifice(ops, tariffs)
             }
         }
     }
 
-    val sumTotaleVents by remember {
+    val activeOnVent_M8BonVent_sum_totale_vents by remember {
         derivedStateOf {
-            listm10operationventcouleurFilteredbyActivem8bonventState?.let { ops ->
+            listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.let { ops ->
                 activeDatas.activeOnVent_M8BonVent?.sum_totale_vents(ops, tariffs)
             }
         }
     }
 
-    val periodSums by remember(
+    val m14VentPeriode_sums by remember(
         activeDatas.active_M9Compt?.current_OnVent_M14VentPeriode_KeyID,
         activeDatas.list_M8BonVent,
         activeDatas.list_M10OperationVentCouleur,
@@ -229,7 +234,7 @@ fun PressistatntMainActivityButtons_App4(
         }
     }
 
-    val second_vent = listm10operationventcouleurFilteredbyActivem8bonventState?.last()
+    val second_vent = listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.last()
     val prixAchat = tariffs
         .filter {
             it.parent_M1Produit_KeyId == second_vent?.parent_M1Produit_KeyId &&
@@ -257,7 +262,7 @@ fun PressistatntMainActivityButtons_App4(
         Column {
             Text("Period")
             Row {
-                periodSums?.let { periodSums ->
+                m14VentPeriode_sums?.let { periodSums ->
                     if (periodSums.totale_vents > 0.0) {
                         FloatingActionButton(
                             onClick = { },
@@ -317,7 +322,7 @@ fun PressistatntMainActivityButtons_App4(
             HorizontalDivider()
             Text("Bon Vent")
             Row {
-                bonVent_benefice?.let { benef ->
+                activeOnVent_M8BonVent_benefice?.let { benef ->
                     if (benef > 0.0) {
                         FloatingActionButton(
                             onClick = { },
@@ -338,7 +343,7 @@ fun PressistatntMainActivityButtons_App4(
                     }
                 }
 
-                sumTotaleVents?.let { it ->
+                activeOnVent_M8BonVent_sum_totale_vents?.let { it ->
                     if (it > 0.0) {
                         FloatingActionButton(
                             onClick = { },
