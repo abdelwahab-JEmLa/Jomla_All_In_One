@@ -5,6 +5,8 @@ import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.Dro
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.Local_Organizer
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.SyncReport
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.A_PressistatntMainActivityButtons_App4.Fab_CleanupM8AndM10
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_ExportToCSV
+import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_ImportFromCSV
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_OrganiserLocaleParCatalogue
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_OrganiserParCatalogue
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.DropDownItemWBaseDonne_SyncDepuisImages2
@@ -14,6 +16,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
@@ -25,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,7 +54,8 @@ import java.util.Locale
 private enum class PendingAction { DropBox, Local, SyncFromImages2, UpdateLocalTimestamps }
 
 @Composable
-fun FragMap_DropdownMenu(
+fun B_FragMap_DropdownMenu(
+    appDatabase: AppDatabase,
     expanded: Boolean,
     onDismiss: () -> Unit,
     list_m16: List<M16CategorieProduit>?,
@@ -191,7 +196,16 @@ fun FragMap_DropdownMenu(
             enabled = organizeDropBoxProgress == null && pendingAction == null && !anyRunning,
             onClick = { pendingAction = PendingAction.DropBox }
         )
-
+        HorizontalDivider()
+        DropDownItemWBaseDonne_ExportToCSV(
+            appDatabase = appDatabase,
+            enabled     = true,
+        )
+        DropDownItemWBaseDonne_ImportFromCSV(
+            appDatabase = appDatabase,
+            enabled     = true,
+        )
+        HorizontalDivider()
         DropDownItemWBaseDonne_OrganiserLocaleParCatalogue(
             progress = organizeLocalProgress,
             enabled = organizeLocalProgress == null && pendingAction == null && !anyRunning,

@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 data class Button_State(
@@ -114,13 +115,14 @@ fun Floating_Separated_Button(
                     )
                 }
 
-                FragMap_DropdownMenu(
+                B_FragMap_DropdownMenu(
                     expanded = showDropdown,
                     onDismiss = { showDropdown = false },
                     list_m16 = list_m16,
                     list_m1 = list_m1,
                     list_m3 = list_m3,
                     on_vent_key = on_vent_key,
+                    appDatabase = koinInject()
                 )
             }
         }

@@ -15,7 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DropDownItemWBaseDonne_OrganiserLocaleParCatalogue(
+fun
+        DropDownItemWBaseDonne_OrganiserLocaleParCatalogue(
     progress: Float?,
     enabled:  Boolean,
     onClick:  () -> Unit,
