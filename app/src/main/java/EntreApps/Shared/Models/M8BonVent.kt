@@ -1,8 +1,7 @@
 package EntreApps.Shared.Models
 
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 //noinspection SuspiciousImport
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import android.R
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -117,7 +116,7 @@ data class M8BonVent(
         PASSE(com.example.clientjetpack.R.color.c6, "اقترح ان يؤجل الى مدة قادمة"),
         CommantaireSpeciale(com.example.clientjetpack.R.color.c7, "ملاحظة خاصة بالطلبية"),
         Passed_Sans_Livre(R.color.darker_gray, "Passed_Sans_Livre"),
-        Credit(R.color.holo_red_dark, " "),;
+        Credit(R.color.holo_red_dark, " "), ;
 
         companion object {
             const val keyModel = "ID8C2"
@@ -185,5 +184,48 @@ data class M8BonVent(
                             && data.etateActuellementEst == relative_Etate
                 match_MainValuesKeys
             }
+
+
+        fun M8BonVent.sum_totale_et_benifice(
+            vents: List<M10OperationVentCouleur>,
+            tariffs: List<M13TarificationInfos>,
+        ): Sums_Bons {
+            var totale = 0.0
+            var benifices = 0.0
+
+            vents
+                .filter { it.parent_M8BonVent_KeyId == this.keyID }
+                .forEach { op ->
+                    val prixAchat: Double? = tariffs
+                        .filter {
+                            it.parent_M1Produit_KeyId == op.parent_M1Produit_KeyId &&
+                                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+                        }
+                        .maxByOrNull { it.dernierTimeTampsSynchronisationAvecFireBase }
+                        ?.prixCurrency
+
+                    totale += op.prix_de_Vent_entre_directement_NewProto * op.quantity
+                    if (prixAchat != null) {
+                        benifices += (op.prix_de_Vent_entre_directement_NewProto - prixAchat) * op.quantity
+                    }
+                }
+
+            return Sums_Bons(totale_vents = totale, benifices_vents = benifices)
+        }
+
+        fun M8BonVent.sum_benifice(
+            vents: List<M10OperationVentCouleur>,
+            tariffs: List<M13TarificationInfos>,
+        ): Double = sum_totale_et_benifice(vents, tariffs).benifices_vents
+
+        fun M8BonVent.sum_totale_vents(
+            vents: List<M10OperationVentCouleur>,
+            tariffs: List<M13TarificationInfos>,
+        ): Double = sum_totale_et_benifice(vents, tariffs).totale_vents
     }
 }
+
+data class Sums_Bons(
+    val totale_vents: Double,
+    val benifices_vents: Double,
+)

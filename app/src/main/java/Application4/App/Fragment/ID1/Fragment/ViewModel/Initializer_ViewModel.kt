@@ -27,11 +27,11 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         startPeriodicComptKeyCheck()
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // TODO(1) fix — every 5 s verify that active_M9Compt.keyID matches the
-    // expected au_Lence_Set_Compt_Ac_KeyId.  When they differ (or the compt is
-    // null) fetch from Firebase, upsert to the local DAO and refresh active_Datas.
-    // ─────────────────────────────────────────────────────────────────────────
+    /**
+     * Periodically verifies that active_M9Compt.keyID matches the expected
+     * au_Lence_Set_Compt_Ac_KeyId. When they differ (or the compt is null),
+     * fetches from Firebase, upserts to the local DAO and refreshes active_Datas.
+     */
     private fun startPeriodicComptKeyCheck() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
             val expectedKey =

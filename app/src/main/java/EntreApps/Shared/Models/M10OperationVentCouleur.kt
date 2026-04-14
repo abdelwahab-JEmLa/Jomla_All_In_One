@@ -174,5 +174,7 @@ data class M10OperationVentCouleur(
             return ancien.keyID == newData.keyID
         }
 
+        fun M10OperationVentCouleur.benifice_vent(tariff_achat: M13TarificationInfos): Double =
+            (this.prix_de_Vent_entre_directement_NewProto - tariff_achat.prixCurrency) * this.quantity
     }
 }

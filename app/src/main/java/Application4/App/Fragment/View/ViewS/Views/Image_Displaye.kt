@@ -28,9 +28,9 @@ enum class pourcentage {
     min_possible
 }
                                          //<--
-                                         //TODO(1): nomImageFichieSansEtansion	parentBProduitOldID	4117    
-                                         // 
-                                         // indexCouleurDansAncienProto	1
+                                         // nomImageFichieSansEtansion is preferred.
+                                         // Fallback: parentBProduitOldID + indexCouleurDansAncienProto
+                                         //   e.g. parentBProduitOldID=4117, indexCouleurDansAncienProto=1 → "4117_1"
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye(
@@ -58,14 +58,28 @@ fun Image_Displaye(
 
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
-        relative_M3CouleurProduitInfos.extensionDisponible
+        relative_M3CouleurProduitInfos.extensionDisponible,
+        relative_M3CouleurProduitInfos.parentBProduitOldID,
+        relative_M3CouleurProduitInfos.indexCouleurDansAncienProto,
     ) {
+        val baseDir = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+
         if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo") {
+            // Preferred path: new-proto explicit file name
             val fileName =
                 "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
-            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
+            File(baseDir, fileName)
         } else {
-            null
+            // Fallback: old-proto naming → "<parentBProduitOldID>_<indexCouleurDansAncienProto>.<ext>"
+            val oldId    = relative_M3CouleurProduitInfos.parentBProduitOldID
+            val colorIdx = relative_M3CouleurProduitInfos.indexCouleurDansAncienProto
+            if (oldId > 0) {
+                listOf("jpg", "png", "webp").map { ext ->
+                    File(baseDir, "${oldId}_${colorIdx}.$ext")
+                }.firstOrNull { it.exists() }
+            } else {
+                null
+            }
         }
     }
 
