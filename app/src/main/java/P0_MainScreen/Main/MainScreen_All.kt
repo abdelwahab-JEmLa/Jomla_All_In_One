@@ -6,7 +6,6 @@ import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_Ne
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M14VentPeriode
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.BlinkingWarningCard
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
@@ -30,7 +29,6 @@ import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.androidx.compose.koinViewModel
@@ -83,9 +82,10 @@ fun MainScreen_All(
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
+    var lence_hor_conxion = true
+
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
     val navigationHandler = koinInject<FragmentNavigationHandler>()
-    val repositoryProgress by a_ProduitModelRepository.progressRepo.collectAsState()
     var shouldShowContent by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val headViewModel: HeadViewModel = koinViewModel(parameters = { parametersOf(context) })
@@ -114,36 +114,38 @@ fun MainScreen_All(
                         ?: "") == M00CentralParametresOfAllApps().abdelmomen_Compt_KeyId
         }
 
-    LaunchedEffect(repositoryProgress) {
-        headViewModel.updateLoadingProgress((repositoryProgress * 100))
+    LaunchedEffect(lence_hor_conxion) {
+        a_ProduitModelRepository.progressRepo.value = 0.2f
+        delay(200)
+        a_ProduitModelRepository.progressRepo.value = 1f
+    }
 
-        if (repositoryProgress >= 0.995f) {
-            isCheckingFirebase = true
-            try {
-                val snapshot = M14VentPeriode.ref.get().await()
+    LaunchedEffect(Unit) {
+        headViewModel.updateLoadingProgress((1f))
 
-                snapshot.children.forEach { childSnapshot ->
-                    val period = childSnapshot.getValue(M14VentPeriode::class.java)
+        isCheckingFirebase = true
+        try {
+            val snapshot = M14VentPeriode.ref.get().await()
 
-                    if (period?.abdelmounen_Doit_Etre_Ici == true) {
-                        val localPeriod = repo14VentPeriode.datasValue.find {
-                            it.keyID == period.keyID
-                        }
+            snapshot.children.forEach { childSnapshot ->
+                val period = childSnapshot.getValue(M14VentPeriode::class.java)
 
-                        if (localPeriod == null || !localPeriod.abdelmounen_Doit_Etre_Ici) {
-                            repo14VentPeriode.refresh_Datas()
-                        }
+                if (period?.abdelmounen_Doit_Etre_Ici == true) {
+                    val localPeriod = repo14VentPeriode.datasValue.find {
+                        it.keyID == period.keyID
+                    }
+
+                    if (localPeriod == null || !localPeriod.abdelmounen_Doit_Etre_Ici) {
+                        repo14VentPeriode.refresh_Datas()
                     }
                 }
-            } catch (e: Exception) {
-            } finally {
-                isCheckingFirebase = false
             }
-
-            shouldShowContent = true
-        } else {
-            shouldShowContent = false
+        } catch (e: Exception) {
+        } finally {
+            isCheckingFirebase = false
         }
+
+        shouldShowContent = true
     }
 
     LaunchedEffect(shouldShowContent) {
@@ -229,161 +231,98 @@ fun MainScreen_All(
             val currentAppCompt = viewModel.getter.repo9AppCompt.currentAppCompt
             val hideAppScreen = currentAppCompt?.hideAppScreen ?: false
 
-            if (!shouldShowContent || shouldWarningChangePeriodVent) {
+            val isHostPhone = productDisplayController.isHostPhone
+
+            if (hideAppScreen) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (shouldWarningChangePeriodVent) {
-                        Box(
-                            modifier = Modifier
-                                .semantics(mergeDescendants = true) {
-                                    set(
-                                        value = focusedValuesGetter.currentActive_M9AppCompt,
-                                        key = SemanticsPropertyKey("currentActive_M9AppCompt")
-                                    )
-                                }
-                                .fillMaxSize()
-                                .clickable {
-                                    if (!isUpdating) {
-                                        showConfirmationDialog = true
-                                    }
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (isUpdating) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(64.dp),
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        text = "جاري التحديث... ($updateCountdown)",
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(top = 16.dp)
-                                    )
-                                    Text(
-                                        text = "Updating... ($updateCountdown)",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(top = 8.dp)
-                                    )
-                                }
-                            } else {
-                                BlinkingWarningCard(
-                                    "التطبيق ليس في الفترة المحددة للبيع اضغط للتحديث ${
-                                        targetedPeriodDoitEtreDon?.keyID?.takeLast(3)
-                                    }"
-                                )
-                            }
-                        }
-                    } else {
-                        CircularProgressIndicator(
-                            progress = { repositoryProgress },
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Build,
+                            contentDescription = "Maintenance",
                             modifier = Modifier.size(64.dp),
-                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                            color = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "التطبيق في طور الاصلاحات",
+                            style = MaterialTheme.typography.headlineMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                        Text(
+                            text = "The application is under maintenance",
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top = 8.dp)
                         )
                     }
                 }
             } else {
-                val isHostPhone = productDisplayController.isHostPhone
-
-                if (hideAppScreen) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                Column(modifier = Modifier.fillMaxSize()) {
+                    AnimatedVisibility(
+                        visible = isDisplayedConnexionWifiVisible || (!productDisplayController.isConnected && !lockHost
+                                && !focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Build,
-                                contentDescription = "Maintenance",
-                                modifier = Modifier.size(64.dp),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = "التطبيق في طور الاصلاحات",
-                                style = MaterialTheme.typography.headlineMedium,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(top = 16.dp)
-                            )
-                            Text(
-                                text = "The application is under maintenance",
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
-                        }
+                        ConnexionCard(
+                            headViewModel = headViewModel,
+                            productDisplayController = productDisplayController,
+                            onClickToStartAsClient = {
+                                isNavBarVisible = false
+                                isFabVisible = false
+                            },
+                            lockHost = lockHost
+                        )
                     }
-                } else {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        AnimatedVisibility(
-                            visible = isDisplayedConnexionWifiVisible || (!productDisplayController.isConnected && !lockHost
-                                    && !focusedActiveValuesFacade.focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
-                        ) {
-                            ConnexionCard(
-                                headViewModel = headViewModel,
-                                productDisplayController = productDisplayController,
-                                onClickToStartAsClient = {
-                                    isNavBarVisible = false
-                                    isFabVisible = false
-                                },
-                                lockHost = lockHost
-                            )
-                        }
 
-                        LaunchedEffect(Unit) {
-                            navigationHandler.setNavController(navController)
-                        }
+                    LaunchedEffect(Unit) {
+                        navigationHandler.setNavController(navController)
+                    }
 
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .semantics(mergeDescendants = true) {
-                                    set(
-                                        value = isWifiClientConnected_1,
-                                        key = SemanticsPropertyKey("isWifiClientConnected_1")
-                                    )
-                                }) {
-                            if (M00CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
-                                Column(modifier = Modifier.fillMaxSize()) {
-                                    MainFastSearchProduitPourVent()
-                                }
-                            } else {
-                                AppNavHost(
-                                    viewModelNewProtoPatterns=viewModelNewProtoPatterns,
-                                    isWifiClientConnected_1 = isWifiClientConnected_1,
-                                    modifier = Modifier.fillMaxSize(),
-                                    viewModel = headViewModel,
-                                    viewModelInitApp = viewModelViewModelInitApp,
-                                    navController = navController,
-                                    onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                                    isFabVisible = isFabVisible,
-                                    onClickToDisplayeConexionWifi = {
-                                        isDisplayedConnexionWifiVisible =
-                                            !isDisplayedConnexionWifiVisible
-                                    },
-                                    onToggleLockHost = { lockHost = !lockHost },
-                                    targetCategoryId = targetCategoryId,
-                                    lockHost = isHostPhone,
-                                    onClickImageToShowControles = {
-                                        isControleFabVisible = !isControleFabVisible
-                                    },
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics(mergeDescendants = true) {
+                                set(
+                                    value = isWifiClientConnected_1,
+                                    key = SemanticsPropertyKey("isWifiClientConnected_1")
                                 )
+                            }) {
+                        if (M00CentralParametresOfAllApps.get_Default().its_AppType == AppType.GrossistRealSeller) {
+                            Column(modifier = Modifier.fillMaxSize()) {
+                                MainFastSearchProduitPourVent()
                             }
+                        } else {
+                            AppNavHost(
+                                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                                isWifiClientConnected_1 = isWifiClientConnected_1,
+                                modifier = Modifier.fillMaxSize(),
+                                viewModel = headViewModel,
+                                viewModelInitApp = viewModelViewModelInitApp,
+                                navController = navController,
+                                onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                                isFabVisible = isFabVisible,
+                                onClickToDisplayeConexionWifi = {
+                                    isDisplayedConnexionWifiVisible =
+                                        !isDisplayedConnexionWifiVisible
+                                },
+                                onToggleLockHost = { lockHost = !lockHost },
+                                targetCategoryId = targetCategoryId,
+                                lockHost = isHostPhone,
+                                onClickImageToShowControles = {
+                                    isControleFabVisible = !isControleFabVisible
+                                },
+                            )
                         }
                     }
                 }
 
                 AnimatedVisibility(
-                    visible = !ne_affiche_que_fragment && (isHostPhone || !productDisplayController.isConnected) && shouldShowContent && !hideAppScreen,
+                    visible = true,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     NavigationBarWithFab(
@@ -467,115 +406,109 @@ fun MainScreen_All(
 
                 if (isHostPhone && shouldShowContent && !hideAppScreen) {
                     PressistatntMainActivityButtons_Sec8FWinID1(
-                        viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                        viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                     )
                     val getter = aCentralFacade.repositorysMainGetter
                     Floating_Separated_Button(
-                        fragmentNavigationHandler=fragmentNavigationHandler,
+                        fragmentNavigationHandler = fragmentNavigationHandler,
                         list_m16 = getter.repoM16CategorieProduit.datasValue,
                         list_m1 = getter.repoM1Produit.datasValue,
                         list_m3 = getter.repo3CouleurProduit.datasValue,
                     )
                 }
-
-
-                focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt?.let {
-                    /*  isWifiClientConnected_1.ifTrue {
-                          App_PresenterEcran_Au_Client(isWifiClientConnected = isWifiClientConnected)
-                      }      */
-                }
             }
+        }
 
-            if (showConfirmationDialog) {
-                AlertDialog(
-                    onDismissRequest = { showConfirmationDialog = false },
-                    title = {
+
+        if (showConfirmationDialog) {
+            AlertDialog(
+                onDismissRequest = { showConfirmationDialog = false },
+                title = {
+                    Text(
+                        text = "تأكيد التحديث - Confirm Update",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                text = {
+                    Column {
                         Text(
-                            text = "تأكيد التحديث - Confirm Update",
-                            style = MaterialTheme.typography.headlineSmall
+                            text = "هل قمت بمحو وتحديث التطبيق؟",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
-                    },
-                    text = {
-                        Column {
-                            Text(
-                                text = "هل قمت بمحو وتحديث التطبيق؟",
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            Text(
-                                text = "Did you clear and update the application?",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                            Text(
-                                text = "سيتم تحديث البيانات وإعادة تحميلها بعد 5 ثواني",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                            Text(
-                                text = "Data will be updated and reloaded after 5 seconds",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                    },
-                    confirmButton = {
-                        androidx.compose.material3.Button(
-                            onClick = {
-                                targetedPeriodDoitEtreDon?.let { period ->
-                                    focusedValuesGetter.currentActive_M9AppCompt?.let { appCompt ->
-                                        isProcessingUpdate = true
+                        Text(
+                            text = "Did you clear and update the application?",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        Text(
+                            text = "سيتم تحديث البيانات وإعادة تحميلها بعد 5 ثواني",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            text = "Data will be updated and reloaded after 5 seconds",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                },
+                confirmButton = {
+                    androidx.compose.material3.Button(
+                        onClick = {
+                            targetedPeriodDoitEtreDon?.let { period ->
+                                focusedValuesGetter.currentActive_M9AppCompt?.let { appCompt ->
+                                    isProcessingUpdate = true
 
-                                        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main)
-                                            .launch {
-                                                try {
-                                                    aCentralFacade.repositorysMainSetter.update_M9AppCompt(
-                                                        appCompt.copy(
-                                                            current_OnVent_M14VentPeriode_KeyID = period.keyID,
+                                    kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main)
+                                        .launch {
+                                            try {
+                                                aCentralFacade.repositorysMainSetter.update_M9AppCompt(
+                                                    appCompt.copy(
+                                                        current_OnVent_M14VentPeriode_KeyID = period.keyID,
+                                                    )
+                                                )
+
+                                                repo14VentPeriode.datasValue.forEach { ventPeriode ->
+                                                    repositorysMainSetter.update_M14VentPeriode(
+                                                        ventPeriode.copy(
+                                                            abdelmounen_Doit_Etre_Ici = false
                                                         )
                                                     )
-
-                                                    repo14VentPeriode.datasValue.forEach { ventPeriode ->
-                                                        repositorysMainSetter.update_M14VentPeriode(
-                                                            ventPeriode.copy(
-                                                                abdelmounen_Doit_Etre_Ici = false
-                                                            )
-                                                        )
-                                                    }
-
-                                                    kotlinx.coroutines.delay(5000)
-                                                } finally {
-                                                    isProcessingUpdate = false
-                                                    showConfirmationDialog = false
-                                                    isUpdating = true
                                                 }
+
+                                                kotlinx.coroutines.delay(5000)
+                                            } finally {
+                                                isProcessingUpdate = false
+                                                showConfirmationDialog = false
+                                                isUpdating = true
                                             }
-                                    }
+                                        }
                                 }
-                            },
-                            enabled = !isProcessingUpdate
-                        ) {
-                            if (isProcessingUpdate) {
-                                androidx.compose.material3.CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp
-                                )
-                            } else {
-                                Text("نعم - Yes")
                             }
-                        }
-                    },
-                    dismissButton = {
-                        androidx.compose.material3.TextButton(
-                            onClick = { showConfirmationDialog = false },
-                            enabled = !isProcessingUpdate
-                        ) {
-                            Text("لا - No")
+                        },
+                        enabled = !isProcessingUpdate
+                    ) {
+                        if (isProcessingUpdate) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("نعم - Yes")
                         }
                     }
-                )
-            }
+                },
+                dismissButton = {
+                    androidx.compose.material3.TextButton(
+                        onClick = { showConfirmationDialog = false },
+                        enabled = !isProcessingUpdate
+                    ) {
+                        Text("لا - No")
+                    }
+                }
+            )
         }
     }
 }

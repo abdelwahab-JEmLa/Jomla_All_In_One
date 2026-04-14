@@ -62,7 +62,8 @@ fun Floating_Separated_Button(
         icons = Pair(Icons.Default.FilterList, Icons.Default.AllInbox),
         colors = Pair(Color.Red, Color.Blue)
     ),
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto
+
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
 ) {
     val isShowingAll = true
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
@@ -117,7 +118,8 @@ fun Floating_Separated_Button(
 
                 B_FragMap_DropdownMenu(
                     expanded = showDropdown,
-                    onDismiss = { showDropdown = false },
+                    onDismiss = { showDropdown = false
+                                },
                     list_m16 = list_m16,
                     list_m1 = list_m1,
                     list_m3 = list_m3,

@@ -2,10 +2,9 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -63,15 +62,6 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
             it.keyID == relative_M10OperationVentCouleur?.parentM13TarificationKeyID
         }
 
-    Log.d(
-        "TariffDebug",
-        "[Pricipale_Tariffs] produit=${relative_M1produit.keyID} " +
-                "couleur=${une_des_selectedCouleur.keyID} " +
-                "m10Found=${relative_M10OperationVentCouleur?.keyID} " +
-                "m10TariffKey=${relative_M10OperationVentCouleur?.parentM13TarificationKeyID} " +
-                "tariff_Stocked=${tariff_Stocked_Au_OperationVent?.keyID} " +
-                "tariff_StockedType=${tariff_Stocked_Au_OperationVent?.typeChoisi}"
-    )
 
     val isGrossistMode = false
     val filteredTariffs = tariffsList.filter { tariff ->

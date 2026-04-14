@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.Model.A_Produit.Z.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import EntreApps.Shared.Modules.Base.AppDatabase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
+import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.android.gms.tasks.Tasks
@@ -24,7 +24,7 @@ class A_ProduitRepositoryImpl(
     private val TAG = "A_Produit"
 
     override var modelDatas: SnapshotStateList<A_Produit> = mutableStateListOf()
-    override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
+    override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(1f)
 
     // Use AtomicBoolean for thread safety
     private val isUpdating = AtomicBoolean(false)

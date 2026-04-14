@@ -1,5 +1,6 @@
 package EntreApps.Shared.Modules.Base
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
@@ -122,7 +123,13 @@ import java.util.Date
     version = 4, // Bumped from 3 → 4 to register the new AppTypeConverter
     exportSchema = false
 )
-@TypeConverters(DateConverter::class, ListLongConverter::class, AppTypeConverter::class)
+@TypeConverters(
+    DateConverter::class,
+    ListLongConverter::class,
+    AppTypeConverter::class,
+    PrioritierConverter::class,
+    TypeChoisiConverter::class
+)
 abstract class AppDatabase : RoomDatabase() {
 
     // All DAOs
@@ -195,6 +202,35 @@ abstract class AppDatabase : RoomDatabase() {
  * Uses name-based lookup so any future enum values are handled automatically
  * without requiring a database version bump.
  */
+class PrioritierConverter {
+    @TypeConverter
+    fun fromPrioritier(value: Prioriter?): String? = value?.name
+
+    @TypeConverter
+    fun toPrioritier(value: String?): Prioriter? {
+        if (value.isNullOrBlank()) return null
+        return try {
+            Prioriter.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            null // Unknown / stale enum value — treat as null instead of crashing
+        }
+    }
+}
+// Add this converter class anywhere in the file
+class TypeChoisiConverter {
+    @TypeConverter
+    fun fromTypeChoisi(value: M13TarificationInfos.TypeChoisi?): String? = value?.name
+
+    @TypeConverter
+    fun toTypeChoisi(value: String?): M13TarificationInfos.TypeChoisi {
+        if (value.isNullOrBlank()) return M13TarificationInfos.TypeChoisi.Historique
+        return try {
+            M13TarificationInfos.TypeChoisi.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            M13TarificationInfos.TypeChoisi.Historique // stale / unknown value → safe default
+        }
+    }
+}
 class AppTypeConverter {
     @TypeConverter
     fun fromAppType(value: AppType?): String? = value?.name
