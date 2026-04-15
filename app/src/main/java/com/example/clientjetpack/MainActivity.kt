@@ -1,6 +1,6 @@
 package com.example.clientjetpack
 
-import A_Main.Shared.Proto.A_LoadingApp4_Init_Screen
+import A_Main.Shared.Init.A_LoadingApp4_Init_Screen
 import Application2.App.App.appModule_App2_ac_app1
 import Application2.App.Fragment.Compact_Presentoire_App_Produits_App2
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns

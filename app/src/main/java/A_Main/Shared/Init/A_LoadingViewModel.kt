@@ -1,4 +1,4 @@
-package A_Main.Shared.Proto
+package A_Main.Shared.Init
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.AppType

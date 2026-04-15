@@ -1,4 +1,4 @@
-package A_Main.Shared.Proto
+package A_Main.Shared.Init
 
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -8,6 +8,7 @@ import EntreApps.Shared.Models.M8BonVent
 import kotlinx.coroutines.tasks.await
 
 object Init_LightDataBases {
+    const val nombre_periods_a_prendre = 10
 
     data class LightDataBasesResult(
         val m13TarificationInfos: List<M13TarificationInfos> = emptyList(),
@@ -26,7 +27,9 @@ object Init_LightDataBases {
         try {
             val raw = M14VentPeriode.ref.get().await()
                 .children.mapNotNull { it.getValue(M14VentPeriode::class.java) }
-            m14List = if (applyFilters) raw.sortedByDescending { it.creationTimestamp }.take(5) else raw
+            m14List = if (applyFilters) {
+                raw.sortedByDescending { it.creationTimestamp }.take(nombre_periods_a_prendre)
+            } else raw
         } catch (_: Exception) {}
 
         val m14Keys = m14List.map { it.keyID }.toSet()

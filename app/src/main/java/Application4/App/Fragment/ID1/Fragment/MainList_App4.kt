@@ -1,7 +1,7 @@
 package Application4.App.Fragment.ID1.Fragment
 
-import A_Main.Shared.Proto.DBG_M3_KEY
-import A_Main.Shared.Proto.DBG_PROD_KEY
+import A_Main.Shared.Init.DBG_M3_KEY
+import A_Main.Shared.Init.DBG_PROD_KEY
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4

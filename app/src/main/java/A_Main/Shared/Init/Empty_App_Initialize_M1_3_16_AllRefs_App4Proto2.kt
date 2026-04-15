@@ -1,4 +1,4 @@
-package A_Main.Shared.Proto
+package A_Main.Shared.Init
 
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit

@@ -1,4 +1,4 @@
-package A_Main.Shared.Proto
+package A_Main.Shared.Init
 
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps

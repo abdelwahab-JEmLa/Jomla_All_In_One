@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -190,8 +191,11 @@ fun PressistatntMainActivityButtons_App4(
         activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
     val tariffs = uiState.list_M13TarificationInfos
 
+    val current_OnVent_M14VentPeriode_KeyID =
+        activeDatas.active_M9Compt?.current_OnVent_M14VentPeriode_KeyID
+
     val activeOnVent_M8BonVent_benefice by remember(
-        activeDatas.active_M9Compt?.current_OnVent_M14VentPeriode_KeyID,
+        current_OnVent_M14VentPeriode_KeyID,
         activeDatas.list_M8BonVent,
         activeDatas.list_M10OperationVentCouleur,
         uiState.list_Datas?.m13TarificationInfos,
@@ -212,13 +216,13 @@ fun PressistatntMainActivityButtons_App4(
     }
 
     val m14VentPeriode_sums by remember(
-        activeDatas.active_M9Compt?.current_OnVent_M14VentPeriode_KeyID,
+        current_OnVent_M14VentPeriode_KeyID,
         activeDatas.list_M8BonVent,
         activeDatas.list_M10OperationVentCouleur,
         uiState.list_Datas?.m13TarificationInfos,
     ) {
         derivedStateOf {
-            val periodKey = activeDatas.active_M9Compt?.current_OnVent_M14VentPeriode_KeyID
+            val periodKey = current_OnVent_M14VentPeriode_KeyID
                 ?.takeIf { it.isNotBlank() && it != "null" } ?: return@derivedStateOf null
             val period = uiState.list_Datas?.m14VentPeriode
                 ?.find { it.keyID == periodKey } ?: return@derivedStateOf null
@@ -236,6 +240,12 @@ fun PressistatntMainActivityButtons_App4(
 
     Box(
         modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(
+                    value = current_OnVent_M14VentPeriode_KeyID,
+                    key = SemanticsPropertyKey("current_OnVent_M14VentPeriode_KeyID")
+                )
+            }
             .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->

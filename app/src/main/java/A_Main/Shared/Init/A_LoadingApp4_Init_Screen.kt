@@ -1,4 +1,4 @@
-package A_Main.Shared.Proto
+package A_Main.Shared.Init
 
 import EntreApps.Shared.Modules.Base.AppDatabase
 import androidx.compose.foundation.Image
