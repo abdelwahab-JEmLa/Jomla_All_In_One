@@ -82,7 +82,7 @@ fun MainScreen_All(
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
-    var lence_hor_conxion = true
+    var lence_hor_conxion = false
 
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
     val navigationHandler = koinInject<FragmentNavigationHandler>()

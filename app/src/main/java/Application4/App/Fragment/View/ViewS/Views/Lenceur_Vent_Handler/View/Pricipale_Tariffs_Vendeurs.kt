@@ -92,9 +92,13 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
 
     val tariff_achat_prix by remember {
         derivedStateOf {
-            tariffsList.last { it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros }.prixCurrency
+            tariffsList
+                .lastOrNull { it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros }
+                ?.prixCurrency
+                ?: 0.0
         }
     }
+
     Tariffs_MainList(
         modifier = modifier,
         sortedTariffs = sortedTariffs,
