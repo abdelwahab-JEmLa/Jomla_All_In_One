@@ -90,6 +90,11 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         }
     }
 
+    val tariff_achat_prix by remember {
+        derivedStateOf {
+            tariffsList.last { it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros }.prixCurrency
+        }
+    }
     Tariffs_MainList(
         modifier = modifier,
         sortedTariffs = sortedTariffs,
@@ -98,7 +103,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         selectedTariff_Par_AncienProto = selectedTariff_Par_AncienProto,
         compactMode = compactMode,
         onTariffSelected = onTariffSelected,
-        tariffsList = tariffsList,
+        tariffsList = tariffsList,tariff_achat_prix=tariff_achat_prix,
     )
 }
 
@@ -110,6 +115,7 @@ fun TariffItemSelector(
     compactMode: Boolean,
     onClick: () -> Unit,
     tariffsList: List<M13TarificationInfos>,
+    tariff_achat_prix: Double,
 ) {       //<--
     val prix = tariff.prixCurrency
     val nombreUnite = relative_M1produit.nombreUniteInt
@@ -121,7 +127,8 @@ fun TariffItemSelector(
         compactMode = compactMode,
         onClick = onClick,
         relative_M1produit = relative_M1produit,
-        tariffsList = tariffsList
+        tariffsList = tariffsList,
+        tariff_achat_prix = tariff_achat_prix
     )
 }
 

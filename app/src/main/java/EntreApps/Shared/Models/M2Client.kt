@@ -221,6 +221,9 @@ enum class AbdelwahabJomla_Client_Speciale(
     val autre_nom: String = "",
     val moulahada: String = "",
 ) {
+    Abdelwahab_Depo_Echant(
+        "-OV9dYujH9cA3yEx8AY2",
+    ),
     AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a(
         "-Oh4W0-igT_bXGOo-LC_",
         autre_nom = "AbdelwahabJomla Marke Wach Dina Échantillon"

@@ -1,7 +1,6 @@
 package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,7 +26,8 @@ fun TariffItem(
     onClick: () -> Unit,
     relative_M1produit: M01Produit,
     tariffsList: List<M13TarificationInfos>,
-    modifier: Modifier = Modifier.Companion
+    modifier: Modifier = Modifier.Companion,
+    tariff_achat_prix: Double
 ) {
     val effectivePrix =
         if (tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client) {
@@ -113,7 +113,7 @@ fun TariffItem(
             }
 
             Text(
-                text = "m.b: ${formatPrice(tariff.prixCurrency - tariffsList.last { it.typeChoisi == TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros }.prixCurrency)} DA",
+                text = "m.b: ${formatPrice(tariff.prixCurrency - tariff_achat_prix)} DA",
                 color = if (beneficeClient >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Red.copy(
                     alpha = 0.85f
                 ),

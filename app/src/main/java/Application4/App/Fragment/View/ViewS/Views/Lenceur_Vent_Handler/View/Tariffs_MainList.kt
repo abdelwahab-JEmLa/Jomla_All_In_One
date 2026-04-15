@@ -2,8 +2,8 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,6 +23,7 @@ fun Tariffs_MainList(
     compactMode: Boolean,
     onTariffSelected: (M13TarificationInfos) -> Unit,
     tariffsList: List<M13TarificationInfos>,
+    tariff_achat_prix: Double,
 ) {
     val isEchatillantsMode = uiState_NewProtoPatterns_viewModel.second.active_Datas.isEchatillantsMode
 
@@ -46,6 +47,7 @@ fun Tariffs_MainList(
                 compactMode = compactMode,
                 onClick = { onTariffSelected(tariff) },
                 tariffsList = tariffsList,
+                tariff_achat_prix = tariff_achat_prix,
             )
         }
         item(key = "__entre_par_ecriture__") {

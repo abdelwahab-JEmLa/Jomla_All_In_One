@@ -107,9 +107,13 @@ fun A_Item_Produit_App4(
 
     val activeM9compt = centralValues.active_M9Compt
 
-    val tariff_ItsWorkInGrossist_SuperGros = datasValue_distinct_type.find {
-        it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
-                it.prixCurrency != 0.0
+    val tariff_ItsWorkInGrossist_SuperGros by remember {
+        derivedStateOf {
+            datasValue_distinct_type.find {
+                it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                        it.prixCurrency != 0.0
+            }
+        }
     }
 
     val supperGro = datasValue_distinct_type.find {
@@ -181,6 +185,8 @@ fun A_Item_Produit_App4(
     val isAdmin = centralValues.currentApp_Est_Admin
             && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true
     val categoryClickForHeader: (() -> Unit)? = if (isAdmin) onCategoryClick else null
+
+
 
     Column(
         modifier = modifier
