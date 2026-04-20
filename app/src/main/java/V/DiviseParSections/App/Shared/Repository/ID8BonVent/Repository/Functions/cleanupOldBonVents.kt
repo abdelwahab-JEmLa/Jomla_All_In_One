@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import EntreApps.Shared.Models.AbdelwahabJomla_Client_Speciale
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.AbdelwahabJomla_Client_Speciale
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import kotlinx.coroutines.launch
 

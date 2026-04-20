@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Archive.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode

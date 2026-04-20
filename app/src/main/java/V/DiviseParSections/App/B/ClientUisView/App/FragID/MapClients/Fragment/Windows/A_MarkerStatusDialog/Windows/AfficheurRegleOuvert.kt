@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates

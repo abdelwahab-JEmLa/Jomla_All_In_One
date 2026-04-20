@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.Home.SortVentMode
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

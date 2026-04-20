@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View
 
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData

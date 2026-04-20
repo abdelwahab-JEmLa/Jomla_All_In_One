@@ -3,11 +3,12 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -190,7 +191,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         categories: List<M16CategorieProduit>,
         products: List<M01Produit>,
         colours: List<M3CouleurProduitInfos>,
-        allOperations: List<EntreApps.Shared.Models.M10OperationVentCouleur>,
+        allOperations: List<M10OperationVentCouleur>,
     ) {
         AViewModel_NewProtoPatterns.active_Datas.active_M9Compt               = appCompt
         AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent               = bonVent

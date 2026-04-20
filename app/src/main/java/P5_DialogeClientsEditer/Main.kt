@@ -1,6 +1,6 @@
 package P5_DialogeClientsEditer
 
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement

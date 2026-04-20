@@ -1,6 +1,6 @@
     package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Update
 
-    import EntreApps.Shared.Models.M2Client
+    import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
     import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.dataBaseCreationFactoryMID2ClientRepository
     import kotlinx.coroutines.CoroutineScope
     import kotlinx.coroutines.Dispatchers

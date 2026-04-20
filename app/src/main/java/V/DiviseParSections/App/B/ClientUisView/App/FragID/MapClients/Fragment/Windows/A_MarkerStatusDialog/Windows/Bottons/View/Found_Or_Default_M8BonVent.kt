@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View
 
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 
 
 data class Found_Or_Default_M8BonVent(

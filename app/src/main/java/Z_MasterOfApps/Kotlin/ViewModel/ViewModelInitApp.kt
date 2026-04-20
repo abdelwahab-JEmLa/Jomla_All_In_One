@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Test.UiState

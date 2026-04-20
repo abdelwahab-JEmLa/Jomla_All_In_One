@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model.Z.Archive
 
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos

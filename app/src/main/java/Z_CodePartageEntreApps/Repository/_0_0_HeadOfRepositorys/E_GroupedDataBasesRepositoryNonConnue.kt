@@ -4,7 +4,7 @@ import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.Model.A0_DataBasesGroup
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Data.testD_TarificationInfosT2
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.F0_FireBaseOperationsHandler
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.deleteRef
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.SQL.G_RoomOperationsHandler

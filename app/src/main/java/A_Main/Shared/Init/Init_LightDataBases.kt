@@ -1,10 +1,10 @@
 package A_Main.Shared.Init
 
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M14VentPeriode
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import kotlinx.coroutines.tasks.await
 
 object Init_LightDataBases {

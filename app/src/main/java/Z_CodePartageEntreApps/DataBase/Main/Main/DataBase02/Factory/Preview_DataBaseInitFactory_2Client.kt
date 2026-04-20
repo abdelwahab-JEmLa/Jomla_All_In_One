@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import Z_CodePartageEntreApps.Ui.LoadingScreen
 import android.util.Log

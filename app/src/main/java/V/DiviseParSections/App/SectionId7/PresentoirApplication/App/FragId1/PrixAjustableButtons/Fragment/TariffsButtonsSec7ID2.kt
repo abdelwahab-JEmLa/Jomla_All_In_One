@@ -8,9 +8,9 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifFalse
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.M13TarificationInfos
-import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos.TypeChoisi
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

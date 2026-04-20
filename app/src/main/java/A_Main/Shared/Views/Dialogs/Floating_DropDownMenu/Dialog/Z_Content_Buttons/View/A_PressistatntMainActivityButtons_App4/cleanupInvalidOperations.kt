@@ -1,7 +1,7 @@
 package A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Z_Content_Buttons.View.A_PressistatntMainActivityButtons_App4
 
-import EntreApps.Shared.Models.AbdelwahabJomla_Client_Speciale
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.AbdelwahabJomla_Client_Speciale
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import android.util.Log
 import android.widget.Toast

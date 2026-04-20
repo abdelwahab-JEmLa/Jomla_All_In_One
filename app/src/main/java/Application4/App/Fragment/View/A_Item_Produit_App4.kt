@@ -6,7 +6,7 @@ import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex

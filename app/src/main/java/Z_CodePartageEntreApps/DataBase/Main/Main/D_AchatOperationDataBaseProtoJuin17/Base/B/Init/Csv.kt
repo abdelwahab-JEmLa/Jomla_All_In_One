@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init
 
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import org.mongodb.kbson.BsonObjectId
 import java.io.File
 

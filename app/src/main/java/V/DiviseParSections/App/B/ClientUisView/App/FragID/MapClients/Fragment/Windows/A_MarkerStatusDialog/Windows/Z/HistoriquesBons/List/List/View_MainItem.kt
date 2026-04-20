@@ -3,8 +3,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.AddToStockDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.ChangeDispoDialog

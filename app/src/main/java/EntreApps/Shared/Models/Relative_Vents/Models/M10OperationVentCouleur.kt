@@ -1,4 +1,4 @@
-package EntreApps.Shared.Models
+package EntreApps.Shared.Models.Relative_Vents.Models
 
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter

@@ -2,8 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates

@@ -3,9 +3,9 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import android.widget.Toast
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons

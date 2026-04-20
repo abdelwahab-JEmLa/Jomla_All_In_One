@@ -2,12 +2,12 @@ package Application2.App.Base.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import EntreApps.Shared.Models.Home.SortVentMode
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps

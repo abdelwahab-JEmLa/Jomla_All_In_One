@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

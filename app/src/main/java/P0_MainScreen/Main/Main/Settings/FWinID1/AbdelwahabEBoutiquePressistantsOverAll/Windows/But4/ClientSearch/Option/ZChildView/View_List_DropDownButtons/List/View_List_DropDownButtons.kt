@@ -4,7 +4,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ZChildView.View_List_DropDownButtons.List.Z.ClientSearchItem.View.ClientSearchItem
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.sortClientsByLastVentOperation
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width

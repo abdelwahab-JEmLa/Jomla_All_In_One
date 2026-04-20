@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.lifecycle.ViewModel

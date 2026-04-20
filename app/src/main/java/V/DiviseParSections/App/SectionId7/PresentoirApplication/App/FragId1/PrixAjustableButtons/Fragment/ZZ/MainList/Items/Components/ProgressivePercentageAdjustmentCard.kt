@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixsVents_Handler.BenefitDisplayRow
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

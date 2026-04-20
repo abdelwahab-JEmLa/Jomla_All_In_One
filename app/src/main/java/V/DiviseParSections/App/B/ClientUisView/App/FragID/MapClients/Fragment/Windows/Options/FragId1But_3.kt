@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import androidx.compose.runtime.Composable

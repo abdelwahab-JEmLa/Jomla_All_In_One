@@ -5,7 +5,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App._0.Navigation.Buttons_Gps.DropDownItem_3.View
 
-import EntreApps.Shared.Models.M8BonVent.EtateActuellementEst
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.EtateActuellementEst
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import android.content.Context

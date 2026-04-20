@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

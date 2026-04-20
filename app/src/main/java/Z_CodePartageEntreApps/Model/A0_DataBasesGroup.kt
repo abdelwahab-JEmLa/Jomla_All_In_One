@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model
 
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 
 data class A0_DataBasesGroup(
     val d_TarificationInfos: MutableList<M13TarificationInfos> = mutableListOf(),

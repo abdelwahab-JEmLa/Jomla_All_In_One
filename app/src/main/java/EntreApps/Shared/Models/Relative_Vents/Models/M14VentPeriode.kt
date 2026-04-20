@@ -1,6 +1,6 @@
-package EntreApps.Shared.Models
+package EntreApps.Shared.Models.Relative_Vents.Models
 
-import EntreApps.Shared.Models.M8BonVent.Companion.sum_totale_et_benifice
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_et_benifice
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import androidx.room.Entity
 import androidx.room.PrimaryKey

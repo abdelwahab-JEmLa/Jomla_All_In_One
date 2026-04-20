@@ -1,6 +1,6 @@
 package EntreApps.Shared.Models.Relative_Produits.Models
 
-import EntreApps.Shared.Models.AbdelwahabJomla_Client_Speciale
+import EntreApps.Shared.Models.Relative_Vents.Models.AbdelwahabJomla_Client_Speciale
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction

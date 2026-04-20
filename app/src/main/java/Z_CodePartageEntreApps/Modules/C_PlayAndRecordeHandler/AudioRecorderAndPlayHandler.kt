@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler
 
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import Z_CodePartageEntreApps.Modules.A_FirebaseAudioStorageHelper
 import android.annotation.SuppressLint
 import android.content.Context

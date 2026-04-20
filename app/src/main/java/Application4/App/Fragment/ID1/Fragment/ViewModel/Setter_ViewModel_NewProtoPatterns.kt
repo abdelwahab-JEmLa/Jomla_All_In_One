@@ -3,8 +3,8 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import kotlinx.coroutines.flow.update

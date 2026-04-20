@@ -1,8 +1,8 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.DropDownMenu.View.DropDownItems.View
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlaylistAdd

@@ -9,11 +9,11 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.toggleEtateDeliveryNonTrouveVentOu
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.updateListRelativeVentCouleurPrixVent
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import EntreApps.Shared.Models.M09AppCompt
@@ -21,9 +21,9 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist

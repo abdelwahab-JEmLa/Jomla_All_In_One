@@ -5,7 +5,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.MainList
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.FloatingActionButtonGroup
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log

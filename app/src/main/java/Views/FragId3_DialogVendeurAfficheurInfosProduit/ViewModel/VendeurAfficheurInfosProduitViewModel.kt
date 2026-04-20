@@ -1,7 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel
 
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.lifecycle.ViewModel
 

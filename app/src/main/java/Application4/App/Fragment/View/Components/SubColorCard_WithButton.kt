@@ -5,7 +5,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewPro
 import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_FragID3
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import androidx.compose.foundation.layout.Column

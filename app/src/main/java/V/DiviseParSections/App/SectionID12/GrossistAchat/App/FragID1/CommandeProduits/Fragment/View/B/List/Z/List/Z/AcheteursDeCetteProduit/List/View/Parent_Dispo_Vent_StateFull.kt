@@ -2,8 +2,8 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import androidx.compose.runtime.Composable
 import org.koin.compose.koinInject
 

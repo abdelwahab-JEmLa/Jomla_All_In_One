@@ -2,8 +2,8 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

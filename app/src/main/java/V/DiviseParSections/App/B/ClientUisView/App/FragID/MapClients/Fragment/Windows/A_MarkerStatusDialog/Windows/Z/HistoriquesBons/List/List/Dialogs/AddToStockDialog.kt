@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column

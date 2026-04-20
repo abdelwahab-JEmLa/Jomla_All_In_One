@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository
 
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps

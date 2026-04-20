@@ -3,7 +3,7 @@ package A_Main.Shared.Init
 import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Do
-import EntreApps.Shared.Models.Jomla_Clients
+import EntreApps.Shared.Models.Relative_Vents.Models.Jomla_Clients
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit

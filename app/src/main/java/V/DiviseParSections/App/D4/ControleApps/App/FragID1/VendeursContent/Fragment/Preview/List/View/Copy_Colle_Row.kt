@@ -2,7 +2,7 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Frag
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

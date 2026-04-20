@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository
 
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import android.content.Context
 import android.widget.Toast

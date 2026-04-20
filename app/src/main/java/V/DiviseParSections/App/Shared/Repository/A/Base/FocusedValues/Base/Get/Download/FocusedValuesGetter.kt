@@ -3,11 +3,11 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M13TarificationInfos.TypeChoisi
-import EntreApps.Shared.Models.M14VentPeriode
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos.TypeChoisi
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist

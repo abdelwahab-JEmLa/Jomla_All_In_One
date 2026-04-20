@@ -2,7 +2,7 @@ package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.Shared.ViewModel.HeadViewModel
@@ -13,7 +13,6 @@ import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSe
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

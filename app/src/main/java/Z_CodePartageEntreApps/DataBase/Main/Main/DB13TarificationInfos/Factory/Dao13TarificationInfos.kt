@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory
 
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

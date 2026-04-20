@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.widget.Toast
 import androidx.compose.foundation.clickable

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory
 
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager
 import com.google.firebase.database.DataSnapshot

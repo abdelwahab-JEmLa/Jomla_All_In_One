@@ -6,7 +6,7 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue

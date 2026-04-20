@@ -6,7 +6,7 @@ import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_Fr
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Pricipale_Tariffs_Vendeurs_FragID3
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.compose.animation.core.animateDpAsState

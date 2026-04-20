@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory
 
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

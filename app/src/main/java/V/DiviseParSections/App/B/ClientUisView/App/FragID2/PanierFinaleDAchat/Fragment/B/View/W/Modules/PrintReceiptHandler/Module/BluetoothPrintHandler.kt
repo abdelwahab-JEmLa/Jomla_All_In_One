@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.bluetooth.BluetoothAdapter

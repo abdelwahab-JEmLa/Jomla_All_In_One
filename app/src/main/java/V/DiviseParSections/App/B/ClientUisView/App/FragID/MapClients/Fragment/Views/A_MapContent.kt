@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_OnClickMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But2_GPSFollowMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State

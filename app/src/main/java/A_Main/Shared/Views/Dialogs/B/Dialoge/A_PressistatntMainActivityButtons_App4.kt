@@ -1,9 +1,9 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import EntreApps.Shared.Models.M14VentPeriode.Companion.sum_vent_et_benifice
-import EntreApps.Shared.Models.M8BonVent.Companion.benifice
-import EntreApps.Shared.Models.M8BonVent.Companion.sum_totale_vents
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode.Companion.sum_vent_et_benifice
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.benifice
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_vents
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement

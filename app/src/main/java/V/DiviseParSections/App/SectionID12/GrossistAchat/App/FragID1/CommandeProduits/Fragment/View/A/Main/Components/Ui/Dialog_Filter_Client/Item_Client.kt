@@ -2,9 +2,9 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.M2Client
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background

@@ -1,6 +1,8 @@
-package EntreApps.Shared.Models
+package EntreApps.Shared.Models.Relative_Vents.Models
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import androidx.compose.material.icons.Icons
@@ -257,7 +259,7 @@ data class M13TarificationInfos(
           )                   */
 
         val ref_NonActiveDatas =
-            M00CentralParametresOfAllApps.centralRef_Non_Active_Datas_PourLightApp
+            M00CentralParametresOfAllApps.Companion.centralRef_Non_Active_Datas_PourLightApp
                 .child("M13Tariffication")
 
 

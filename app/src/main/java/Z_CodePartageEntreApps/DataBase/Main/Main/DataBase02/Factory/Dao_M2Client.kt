@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory
 
-import EntreApps.Shared.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

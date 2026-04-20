@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions
 
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 
 fun updateListRelativeVentCouleurPrixVent(

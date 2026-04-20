@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler
 
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder

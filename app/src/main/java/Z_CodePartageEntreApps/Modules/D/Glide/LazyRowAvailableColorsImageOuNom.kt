@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
-import EntreApps.Shared.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable

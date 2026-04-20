@@ -5,9 +5,9 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.M8BonVent
-import EntreApps.Shared.Models.M8BonVent.Companion.generePushKey
-import EntreApps.Shared.Models.M8BonVent.EtateActuellementEst
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.generePushKey
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.EtateActuellementEst
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

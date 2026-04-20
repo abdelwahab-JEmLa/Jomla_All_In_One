@@ -5,7 +5,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatt
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard

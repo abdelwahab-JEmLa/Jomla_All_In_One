@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.SQL
 
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import kotlinx.coroutines.Dispatchers

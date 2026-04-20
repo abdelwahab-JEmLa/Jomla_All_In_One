@@ -7,7 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.filtersAndSorts_Central.calculateClientSalesSummary
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

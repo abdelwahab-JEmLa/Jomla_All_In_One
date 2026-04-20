@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository
 
-import EntreApps.Shared.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import kotlinx.coroutines.launch
 
 fun cleanupDuplicateTariffs(repo13TarificationInfos: Repo13TarificationInfos, tariffs: List<M13TarificationInfos>) {

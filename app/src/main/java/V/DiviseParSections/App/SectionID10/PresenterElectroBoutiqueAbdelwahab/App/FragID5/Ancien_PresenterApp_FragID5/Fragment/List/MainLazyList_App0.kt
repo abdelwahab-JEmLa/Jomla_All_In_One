@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List
 
-import EntreApps.Shared.Models.Jomla_Clients
+import EntreApps.Shared.Models.Relative_Vents.Models.Jomla_Clients
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie

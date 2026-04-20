@@ -5,7 +5,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -4,7 +4,7 @@ import P0_MainScreen.Main.Main.Settings.Windows.g.ClientInfo
 import P0_MainScreen.Main.Main.Settings.Windows.g.FinancialDetailsSection
 import P0_MainScreen.Main.Main.Settings.Windows.g.StatusIndicator
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

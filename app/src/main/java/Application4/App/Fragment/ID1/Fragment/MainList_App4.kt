@@ -7,6 +7,8 @@ import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.AbdelwahabJomla_Client_Speciale
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -42,13 +44,31 @@ fun Etager_LazyColumn(
     modifier: Modifier = Modifier,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val activeDatas = viewModel.active_Datas
     val wifiState by viewModel.wifiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+
+    // Ordered list of colour keys from the échantillon bon, sorted by most-recent operation first.
+    // Used to rank products when isEchatillantsMode is active.
+    val set_couleursKey_echantilliants_achat by remember {
+        derivedStateOf {
+            val bon_abdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a =
+                activeDatas.list_M8BonVent?.lastOrNull {
+                    it.parent_M2Client_KeyID == AbdelwahabJomla_Client_Speciale.AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a.keyID
+                            && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                }
+
+            uiState_NewProtoPatterns_viewModel.first.list_Datas?.m10OperationVentCouleur
+                ?.filter { it.parent_M8BonVent_KeyId == bon_abdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a?.keyID }
+                ?.sortedByDescending { it.creationTimestamps }
+                ?.map { it.parent_M3CouleurProduit_KeyID }
+                ?: emptyList()
+        }
+    }
 
     val isHostPhone = wifiState.isHostPhone
     val isConnected = wifiState.isConnected
@@ -79,9 +99,9 @@ fun Etager_LazyColumn(
                 }
                 .mapNotNull { (product, colors) ->
                     val filtered = when {
-                        isPanieMode        -> colors.filter { it.keyID in ventColourKeys }
+                        isPanieMode -> colors.filter { it.keyID in ventColourKeys }
                         isEchatillantsMode -> colors.filter { it.keyID in echaKeys }
-                        else               -> colors.filter { it.keyID !in echaKeys }
+                        else -> colors.filter { it.keyID !in echaKeys }
                     }
                     if (filtered.isEmpty()) null else product to filtered
                 }
@@ -89,11 +109,30 @@ fun Etager_LazyColumn(
                     searchQuery.isEmpty() || product.nom.lowercase().contains(searchQuery)
                 }
                 .let { list ->
-                    if (!isPanieMode) return@let list
-                    val ventOps = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state ?: emptyList()
-                    list.sortedByDescending { (product, _) ->
-                        ventOps.filter { it.parent_M1Produit_KeyId == product.keyID }
-                            .maxOfOrNull { it.creationTimestamps } ?: 0L
+                    when {
+                        isEchatillantsMode -> {
+                            // Sort products so those with the most-recent échantillon operation appear first.
+                            // set_couleursKey_echantilliants_achat is already ordered newest-first;
+                            // a product's rank = the earliest index any of its colours occupies in that list.
+                            val echaOrder = set_couleursKey_echantilliants_achat
+                            if (echaOrder.isEmpty()) list
+                            else list.sortedBy { (_, colors) ->
+                                colors.minOfOrNull { c ->
+                                    val idx = echaOrder.indexOf(c.keyID)
+                                    if (idx < 0) Int.MAX_VALUE else idx
+                                } ?: Int.MAX_VALUE
+                            }
+                        }
+                        isPanieMode -> {
+                            val ventOps =
+                                activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                                    ?: emptyList()
+                            list.sortedByDescending { (product, _) ->
+                                ventOps.filter { it.parent_M1Produit_KeyId == product.keyID }
+                                    .maxOfOrNull { it.creationTimestamps } ?: 0L
+                            }
+                        }
+                        else -> list
                     }
                 }
         }
@@ -139,7 +178,9 @@ fun Etager_LazyColumn(
         columns = StaggeredGridCells.Fixed(gridColumns),
         state = gridState,
         contentPadding = PaddingValues(8.dp),
-        modifier = modifier.fillMaxWidth().background(Color(0xFFFFF0F5)),
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp,
         userScrollEnabled = isScrollEnabled
@@ -178,7 +219,10 @@ fun LazyStigerList_Produits_FragID4(
     )
     val scale by animateFloatAsState(
         targetValue = if (justMoved) 1.05f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
         label = "scaleAnimation"
     )
     Box(
