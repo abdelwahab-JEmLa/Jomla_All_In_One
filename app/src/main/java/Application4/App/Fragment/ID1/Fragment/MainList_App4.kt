@@ -5,10 +5,10 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewPro
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
+import EntreApps.Shared.Models.Relative_Vents.Models.AbdelwahabJomla_Client_Speciale
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.EtateActuellementEst
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.Relative_Vents.Models.AbdelwahabJomla_Client_Speciale
-import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -52,21 +52,23 @@ fun Etager_LazyColumn(
     val wifiState by viewModel.wifiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Ordered list of colour keys from the échantillon bon, sorted by most-recent operation first.
-    // Used to rank products when isEchatillantsMode is active.
-    val set_couleursKey_echantilliants_achat by remember {
+    val set_couleursKey_echantilliants_achat by remember {       //<--
+    //TODO(1): fait que si echant mode de tirie les produits par vents de echant
         derivedStateOf {
             val bon_abdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a =
                 activeDatas.list_M8BonVent?.lastOrNull {
                     it.parent_M2Client_KeyID == AbdelwahabJomla_Client_Speciale.AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a.keyID
-                            && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                            && it.etateActuellementEst == EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 }
 
-            uiState_NewProtoPatterns_viewModel.first.list_Datas?.m10OperationVentCouleur
-                ?.filter { it.parent_M8BonVent_KeyId == bon_abdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a?.keyID }
-                ?.sortedByDescending { it.creationTimestamps }
-                ?.map { it.parent_M3CouleurProduit_KeyID }
-                ?: emptyList()
+            uiState_NewProtoPatterns_viewModel.first.list_Datas?.m10OperationVentCouleur?.find {
+                it.parent_M8BonVent_KeyId == bon_abdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a?.keyID
+            }
+                //<--
+                //TODO(1): sort par creation time tamp
+                ?.parent_M3CouleurProduit_KeyID
+                ?.toSet()
+                ?: emptySet()
         }
     }
 
@@ -109,30 +111,13 @@ fun Etager_LazyColumn(
                     searchQuery.isEmpty() || product.nom.lowercase().contains(searchQuery)
                 }
                 .let { list ->
-                    when {
-                        isEchatillantsMode -> {
-                            // Sort products so those with the most-recent échantillon operation appear first.
-                            // set_couleursKey_echantilliants_achat is already ordered newest-first;
-                            // a product's rank = the earliest index any of its colours occupies in that list.
-                            val echaOrder = set_couleursKey_echantilliants_achat
-                            if (echaOrder.isEmpty()) list
-                            else list.sortedBy { (_, colors) ->
-                                colors.minOfOrNull { c ->
-                                    val idx = echaOrder.indexOf(c.keyID)
-                                    if (idx < 0) Int.MAX_VALUE else idx
-                                } ?: Int.MAX_VALUE
-                            }
-                        }
-                        isPanieMode -> {
-                            val ventOps =
-                                activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-                                    ?: emptyList()
-                            list.sortedByDescending { (product, _) ->
-                                ventOps.filter { it.parent_M1Produit_KeyId == product.keyID }
-                                    .maxOfOrNull { it.creationTimestamps } ?: 0L
-                            }
-                        }
-                        else -> list
+                    if (!isPanieMode) return@let list
+                    val ventOps =
+                        activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                            ?: emptyList()
+                    list.sortedByDescending { (product, _) ->
+                        ventOps.filter { it.parent_M1Produit_KeyId == product.keyID }
+                            .maxOfOrNull { it.creationTimestamps } ?: 0L
                     }
                 }
         }
