@@ -90,6 +90,10 @@ data class M00CentralParametresOfAllApps(
         }
 
 
+        fun genereUnPushKeyFireBase(ref: DatabaseReference): String {
+            return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
+        }
+
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
         inline fun Long?.ifNotNullOrZero(block: () -> Unit) {
@@ -226,6 +230,7 @@ enum class Utilisateur(
         fun fromCompId(compId: String): Utilisateur? {
             return values().find { it.comp == compId }
         }
+
     }
 }
 

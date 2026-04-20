@@ -1,8 +1,6 @@
 import com.android.build.gradle.ProguardFiles.getDefaultProguardFile
 import java.util.Properties
 
-//<--
-          //(1): searche au files les nessaissers lib et enleve tout les autres deplace tou ici no use ob tomel
 val localProps = Properties().apply {
     val f = rootProject.file("local.properties")
     if (f.exists()) load(f.inputStream())
@@ -31,7 +29,7 @@ android {
         // JomLaElectroLivreurGrossist_VendeurHost
         // JomLaElectroLivreurGrossist_PresenterScreen
 
-        versionName = "1.13.6.5.AllInOne"
+        versionName = "1.13.6.7.AllInOne"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
