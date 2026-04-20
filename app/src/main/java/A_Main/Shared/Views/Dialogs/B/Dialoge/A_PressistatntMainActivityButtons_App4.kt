@@ -220,7 +220,7 @@ fun PressistatntMainActivityButtons_App4(
         activeDatas.list_M8BonVent,
         activeDatas.list_M10OperationVentCouleur,
         uiState.list_Datas?.m13TarificationInfos,
-    ) {
+    ) {              // prixAchat null/zero guard applied in M8BonVent.sum_totale_et_benifice
         derivedStateOf {
             val periodKey = current_OnVent_M14VentPeriode_KeyID
                 ?.takeIf { it.isNotBlank() && it != "null" } ?: return@derivedStateOf null

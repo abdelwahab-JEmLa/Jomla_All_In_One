@@ -30,7 +30,7 @@ data class M13TarificationInfos(
 
     var laisse_Au_Gerant: Boolean = false,
 
-    val typeChoisi: TypeChoisi = TypeChoisi.Historique,
+    val typeChoisi: TypeChoisi = TypeChoisi.Prix_SupperGro_Et_PresentationService,
     val prixCurrency: Double = 0.0,
 
     val profitMargin: Double = 0.0,
@@ -288,23 +288,21 @@ data class M13TarificationInfos(
             relative_Prix_SupperGro_Et_PresentationService: Double?,
             relative_produit: M01Produit,
         ): M13TarificationInfos? {
-            // Need at least one price to produce anything
-            if (relative_Prix_SupperGro_Et_PresentationService == null && relative_Prix_Detaille == null) {
-                return null
-            }
+            val supperGro = relative_Prix_SupperGro_Et_PresentationService
+                ?.takeIf { it != 0.0 }
+            val detaille = relative_Prix_Detaille
+                ?.takeIf { it != 0.0 }
+
+            // Both missing or zero → no progressive price
+            if (supperGro == null && detaille == null) return null
 
             val calculatedPrice = when {
-                // Both available → interpolate with pourcentage_Prix_Progressive
-                relative_Prix_SupperGro_Et_PresentationService != null && relative_Prix_Detaille != null -> {
-                    val weight =
-                        relative_produit.pourcentage_Prix_Progressive.coerceIn(0, 100) / 100.0
-                    relative_Prix_SupperGro_Et_PresentationService +
-                            (relative_Prix_Detaille - relative_Prix_SupperGro_Et_PresentationService) * weight
-                }
-                // Only SupperGro → use it directly
-                relative_Prix_SupperGro_Et_PresentationService != null -> relative_Prix_SupperGro_Et_PresentationService
-                // Only Detaille → use it directly
-                else -> relative_Prix_Detaille!!
+                // Both available → average
+                supperGro != null && detaille != null ->
+                    (supperGro + detaille) / 2.0
+                // Only one available → use it directly
+                supperGro != null -> supperGro
+                else              -> detaille!!
             }
 
             return M13TarificationInfos(

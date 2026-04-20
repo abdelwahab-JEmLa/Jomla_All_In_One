@@ -205,7 +205,8 @@ data class M8BonVent(
                         ?.prixCurrency
 
                     totale += op.prix_de_Vent_entre_directement_NewProto * op.quantity
-                    if (prixAchat != null) {
+                    // Skip benefit calculation if purchase price is null or zero
+                    if (prixAchat != null && prixAchat != 0.0) {
                         benifices += (op.prix_de_Vent_entre_directement_NewProto - prixAchat) * op.quantity
                     }
                 }
