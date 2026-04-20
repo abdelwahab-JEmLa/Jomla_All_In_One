@@ -383,11 +383,15 @@ private fun sendImgsViaWhatsAppBusiness(
             onResult(); return
         }
 
-        val intent = if (imageUris.size == 1) {
+        // Append the "مرحبا بك" welcome card as the last image in the batch.
+        val welcomeUri = createAndSaveWelcomeImage(context)
+        val allUris    = if (welcomeUri != null) imageUris + welcomeUri else imageUris
+
+        val intent = if (allUris.size == 1) {
             Intent(Intent.ACTION_SEND).apply {
                 type = "image/jpeg"
                 setPackage("com.whatsapp.w4b")
-                putExtra(Intent.EXTRA_STREAM, imageUris.first())
+                putExtra(Intent.EXTRA_STREAM, allUris.first())
                 putExtra("jid", "${formatPhoneForWhatsApp(phoneNumber)}@s.whatsapp.net")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
@@ -395,7 +399,7 @@ private fun sendImgsViaWhatsAppBusiness(
             Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                 type = "image/jpeg"
                 setPackage("com.whatsapp.w4b")
-                putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(imageUris))
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(allUris))
                 putExtra("jid", "${formatPhoneForWhatsApp(phoneNumber)}@s.whatsapp.net")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
@@ -404,7 +408,7 @@ private fun sendImgsViaWhatsAppBusiness(
         context.startActivity(intent)
         Toast.makeText(
             context,
-            "Ouverture WhatsApp Business pour $clientName (${imageUris.size} image${if (imageUris.size > 1) "s" else ""})",
+            "Ouverture WhatsApp Business pour $clientName (${allUris.size} image${if (allUris.size > 1) "s" else ""})",
             Toast.LENGTH_SHORT
         ).show()
     } catch (e: Exception) {
@@ -416,6 +420,125 @@ private fun sendImgsViaWhatsAppBusiness(
     } finally {
         onResult()
     }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Welcome image — "مرحبا بك" card appended at the end of every batch
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Creates (or reuses if already saved) a JPEG containing a centred "مرحبا بك"
+ * greeting on a warm gradient-like background and returns its MediaStore URI.
+ *
+ * The file is stored at `Downloads/BonsWhatsApp/welcome_marhaba.jpg`.
+ * A stale copy with the same name is deleted first so the image is always fresh.
+ */
+private fun createAndSaveWelcomeImage(context: Context): Uri? {
+    val fileName     = "welcome_marhaba.jpg"
+    val relativePath = "${android.os.Environment.DIRECTORY_DOWNLOADS}/BonsWhatsApp/"
+
+    return try {
+        val bmp = buildWelcomeBitmap()
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            val resolver   = context.contentResolver
+            val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+
+            // Remove any previous version.
+            resolver.delete(
+                collection,
+                "${MediaStore.Downloads.RELATIVE_PATH} = ? AND ${MediaStore.Downloads.DISPLAY_NAME} = ?",
+                arrayOf(relativePath, fileName)
+            )
+
+            val values = android.content.ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME,  fileName)
+                put(MediaStore.Downloads.MIME_TYPE,     "image/jpeg")
+                put(MediaStore.Downloads.RELATIVE_PATH, relativePath)
+                put(MediaStore.Downloads.IS_PENDING,    1)
+            }
+            val uri = resolver.insert(collection, values) ?: return null
+            resolver.openOutputStream(uri)?.use { bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 95, it) }
+            values.clear()
+            values.put(MediaStore.Downloads.IS_PENDING, 0)
+            resolver.update(uri, values, null, null)
+            bmp.recycle()
+            uri
+        } else {
+            @Suppress("DEPRECATION")
+            val dir = java.io.File(
+                android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS),
+                "BonsWhatsApp"
+            ).also { it.mkdirs() }
+            val outFile = java.io.File(dir, fileName)
+            java.io.FileOutputStream(outFile).use { bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 95, it) }
+            bmp.recycle()
+            androidx.core.content.FileProvider.getUriForFile(
+                context, "${context.packageName}.fileprovider", outFile
+            )
+        }
+    } catch (e: Exception) {
+        android.util.Log.e("WelcomeImg", "❌ Failed to create welcome image: ${e.message}", e)
+        null
+    }
+}
+
+/**
+ * Draws a 900×400 welcome card:
+ *  - Deep-green background with a subtle golden border
+ *  - Large Arabic greeting "مرحبا بك" centred vertically and horizontally
+ *  - Smaller decorative line below
+ */
+private fun buildWelcomeBitmap(): android.graphics.Bitmap {
+    val W = 900; val H = 400
+    val bmp    = android.graphics.Bitmap.createBitmap(W, H, android.graphics.Bitmap.Config.ARGB_8888)
+    val canvas = android.graphics.Canvas(bmp)
+
+    // Background — deep green
+    val bgPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+        color = android.graphics.Color.parseColor("#1B5E20")
+    }
+    canvas.drawRect(0f, 0f, W.toFloat(), H.toFloat(), bgPaint)
+
+    // Golden border
+    val borderPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+        color  = android.graphics.Color.parseColor("#FFD700")
+        style  = android.graphics.Paint.Style.STROKE
+        strokeWidth = 12f
+    }
+    canvas.drawRect(16f, 16f, W - 16f, H - 16f, borderPaint)
+
+    // Inner thin border
+    val innerBorder = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+        color  = android.graphics.Color.parseColor("#A5D6A7")
+        style  = android.graphics.Paint.Style.STROKE
+        strokeWidth = 3f
+    }
+    canvas.drawRect(30f, 30f, W - 30f, H - 30f, innerBorder)
+
+    // Main Arabic greeting
+    val mainPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+        color     = android.graphics.Color.parseColor("#FFD700")
+        textSize  = 140f
+        textAlign = android.graphics.Paint.Align.CENTER
+        isFakeBoldText = true
+    }
+    // Centre vertically: baseline = midHeight - (ascent+descent)/2
+    val mainMetrics = mainPaint.fontMetrics
+    val mainY = H / 2f - (mainMetrics.ascent + mainMetrics.descent) / 2f - 30f
+    canvas.drawText("مرحبا بك", W / 2f, mainY, mainPaint)
+
+    // Decorative subtitle
+    val subPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+        color     = android.graphics.Color.parseColor("#C8E6C9")
+        textSize  = 44f
+        textAlign = android.graphics.Paint.Align.CENTER
+    }
+    val subMetrics = subPaint.fontMetrics
+    val subY = mainY + mainMetrics.descent - mainMetrics.ascent + 10f - (subMetrics.ascent + subMetrics.descent) / 2f
+    canvas.drawText("✦  شكراً لثقتكم  ✦", W / 2f, subY, subPaint)
+
+    return bmp
 }
 
 private fun formatPhoneForWhatsApp(raw: String): String {
