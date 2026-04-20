@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader.View
 
+import EntreApps.Shared.Models.Utilisateur
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader.View.Functions.calculateTotalWeekWorkTimePerVendor
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader.View.Functions.calculateWeekSalesData
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader.View.Functions.markAllDaysAsPaid
@@ -9,7 +10,6 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
-import EntreApps.Shared.Models.Utilisateur
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,7 +51,14 @@ fun WeekHeader(
     )
     val totalWeekMinutes = totalMinutesAbdelmoumen + totalMinutesWalid
 
-    val hourlyRate = 1200.0 / 8.0 / 60.0
+
+    val day_earning =
+        if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
+            Utilisateur.Abdelwahab_Osstad.hour_earn
+        else
+            1200.00
+
+    val hourlyRate = day_earning / 8.0 / 60.0
     val earningsAbdelmoumen = hourlyRate * totalMinutesAbdelmoumen
     val earningsWalid = hourlyRate * totalMinutesWalid
     val totalWeekEarnings = earningsAbdelmoumen + earningsWalid
@@ -147,6 +154,7 @@ fun WeekHeader(
                                 color = Color.Blue
                             )
                         }
+
                         currentUser == Utilisateur.Abdelmoumen -> {
                             Text(
                                 text = "مدة عملك: $daysAbdelmoumenFormatted",
@@ -154,6 +162,7 @@ fun WeekHeader(
                                 color = Color.Blue
                             )
                         }
+
                         currentUser == Utilisateur.Walid -> {
                             Text(
                                 text = "مدة عملك: $daysWalidFormatted",
@@ -181,7 +190,9 @@ fun WeekHeader(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "عبدالمؤمن:",
+                                    text = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
+                                        Utilisateur.Abdelwahab_Osstad.nom_arab
+                                    else "عبدالمؤمن:",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = Color.Blue,
                                     fontWeight = FontWeight.Bold
@@ -193,7 +204,12 @@ fun WeekHeader(
                                         color = Color.Gray
                                     )
                                     Text(
-                                        text = "${String.format("%.2f", earningsAbdelmoumen)} دينار",
+                                        text = "${
+                                            String.format(
+                                                "%.2f",
+                                                earningsAbdelmoumen
+                                            )
+                                        } دينار",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = Color.Red
                                     )
@@ -246,8 +262,12 @@ fun WeekHeader(
                                 )
                             }
 
+                            val i = if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
+                                Utilisateur.Abdelwahab_Osstad.hour_earn
+                            else Utilisateur.Abdelmoumen.hour_earn
+
                             Text(
-                                text = "اليوم/1200 دينار",
+                                text = " اليوم/$i دينار ",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.Gray
                             )
@@ -271,7 +291,12 @@ fun WeekHeader(
                                         color = Color.Gray
                                     )
                                     Text(
-                                        text = "${String.format("%.2f", earningsAbdelmoumen)} دينار",
+                                        text = "${
+                                            String.format(
+                                                "%.2f",
+                                                earningsAbdelmoumen
+                                            )
+                                        } دينار",
                                         style = MaterialTheme.typography.titleMedium,
                                         color = Color.Red,
                                         fontWeight = FontWeight.Bold
@@ -359,12 +384,22 @@ fun WeekHeader(
                             Spacer(modifier = Modifier.padding(2.dp))
 
                             Text(
-                                text = "نقدي: ${String.format("%.0f", weekSalesData.totalCashSales)} دج",
+                                text = "نقدي: ${
+                                    String.format(
+                                        "%.0f",
+                                        weekSalesData.totalCashSales
+                                    )
+                                } دج",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = Color(0xFF388E3C)
                             )
                             Text(
-                                text = "آجل: ${String.format("%.0f", weekSalesData.totalCreditSales)} دج",
+                                text = "آجل: ${
+                                    String.format(
+                                        "%.0f",
+                                        weekSalesData.totalCreditSales
+                                    )
+                                } دج",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = Color(0xFF388E3C)
                             )
@@ -372,7 +407,12 @@ fun WeekHeader(
                             if (weekSalesData.totalSales > 0) {
                                 Spacer(modifier = Modifier.padding(2.dp))
                                 Text(
-                                    text = "ربح ${String.format("%.1f", weekSalesData.profitPercentage)}%",
+                                    text = "ربح ${
+                                        String.format(
+                                            "%.1f",
+                                            weekSalesData.profitPercentage
+                                        )
+                                    }%",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = Color(0xFF66BB6A)
                                 )
@@ -399,7 +439,12 @@ fun WeekHeader(
                             Spacer(modifier = Modifier.padding(4.dp))
 
                             Text(
-                                text = "${String.format("%.0f", weekSalesData.totalSavedBalance)} دج",
+                                text = "${
+                                    String.format(
+                                        "%.0f",
+                                        weekSalesData.totalSavedBalance
+                                    )
+                                } دج",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF0D47A1)

@@ -58,7 +58,10 @@ fun MainList_Windows(
                 }
             }
 
-            val groupedByWeek = groupItemsByWeek(filteredDateList)
+            val groupedByWeek = groupItemsByWeek(
+                filteredDateList,
+                    Calendar.MONDAY
+            )
             val sortedWeekGroups = groupedByWeek.entries
                 .sortedWith(compareByDescending<Map.Entry<WeekInfo, List<K_TempTravaille>>> { it.key.year }
                     .thenByDescending { it.key.weekNumber })
@@ -139,14 +142,16 @@ data class WeekInfo(
     val isCurrentWeek: Boolean
 )
 
-private fun groupItemsByWeek(dateList: List<K_TempTravaille>): Map<WeekInfo, List<K_TempTravaille>> {
+private fun groupItemsByWeek(
+    dateList: List<K_TempTravaille>, first_daye: Int
+): Map<WeekInfo, List<K_TempTravaille>> {
     val calendar = Calendar.getInstance().apply {
-        firstDayOfWeek = Calendar.SATURDAY
+        firstDayOfWeek = first_daye
         minimalDaysInFirstWeek = 1
     }
 
     val currentCalendar = Calendar.getInstance().apply {
-        firstDayOfWeek = Calendar.SATURDAY
+        firstDayOfWeek = first_daye
         minimalDaysInFirstWeek = 1
     }
 

@@ -1,6 +1,5 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.M13TarificationInfos
@@ -48,20 +47,18 @@ fun PdfBonVentFAB(
     context: Context = LocalContext.current,
     listm13: List<M13TarificationInfos>
 ) {
-
     val context = LocalContext.current
     val focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 
     val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val activeVents = focusedValuesGetter
+    val activeVents   = focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
 
-    // Compute the live total value of the current bon so we can detect price-change staleness
+    // Compute the live total value of the current bon so we can detect price-change staleness.
     val activeTotal = remember(activeVents) {
         activeVents.sumOf { vent ->
-            val tariff =
-                listm13.find { it.keyID == vent.parentM13TarificationKeyID }
+            val tariff = listm13.find { it.keyID == vent.parentM13TarificationKeyID }
             (tariff?.prixCurrency ?: 0.0) * vent.quantity
         }
     }
@@ -71,12 +68,12 @@ fun PdfBonVentFAB(
 
     var localSavedPath  by remember(activeBonVent?.keyID) { mutableStateOf(activeBonVent?.path_pdf_bon_file ?: "") }
     var localSavedCount by remember(activeBonVent?.keyID) { mutableStateOf(activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0) }
-    // Tracks the total value at the time the last PDF was generated so price changes invalidate it
+    // Tracks the total value at the time the last PDF was generated so price changes invalidate it.
     var localSavedTotal by remember(activeBonVent?.keyID) { mutableStateOf(activeBonVent?.last_sort_pdf_locale_totale_a_paye ?: 0.0) }
 
-    val storedPath  = localSavedPath.takeIf { it.isNotBlank() && !it.endsWith(defaultPathSuffix) } ?: (activeBonVent?.path_pdf_bon_file ?: "")
-    val storedCount = localSavedCount.takeIf { it > 0 } ?: (activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0)
-    val storedTotal = localSavedTotal.takeIf { it > 0.0 } ?: (activeBonVent?.last_sort_pdf_locale_totale_a_paye ?: 0.0)
+    val storedPath  = localSavedPath.takeIf  { it.isNotBlank() && !it.endsWith(defaultPathSuffix) } ?: (activeBonVent?.path_pdf_bon_file ?: "")
+    val storedCount = localSavedCount.takeIf { it > 0 }    ?: (activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0)
+    val storedTotal = localSavedTotal.takeIf { it > 0.0 }  ?: (activeBonVent?.last_sort_pdf_locale_totale_a_paye ?: 0.0)
 
     val fileExistsOnDisk = if (storedPath.startsWith("/")) {
         val f = java.io.File(storedPath)
@@ -97,26 +94,25 @@ fun PdfBonVentFAB(
     val scope = rememberCoroutineScope()
 
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment   = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
     ) {
         FloatingActionButton(
-            modifier = Modifier.size(40.dp)
-                .semantics(mergeDescendants = true) {
-            },
+            modifier = Modifier
+                .size(40.dp)
+                .semantics(mergeDescendants = true) {},
             onClick = {
-
                 if (isGenerating) return@FloatingActionButton
                 isGenerating = true
                 scope.launch {
                     try {
                         initiateBackgroundPdfCreation_NewP(
-                            list_M13TarificationInfos=listm13,
-                            context = context,
-                            aCentralFacade = aCentralFacade,
-                            focusedValuesGetter = focusedValuesGetter,
-                            onPdfSaved = { savedPath ->
+                            list_M13TarificationInfos = listm13,
+                            context                   = context,
+                            aCentralFacade            = aCentralFacade,
+                            focusedValuesGetter       = focusedValuesGetter,
+                            onPdfSaved                = { savedPath ->
                                 localSavedPath  = savedPath
                                 localSavedCount = activeCount
                                 localSavedTotal = activeTotal
@@ -124,9 +120,9 @@ fun PdfBonVentFAB(
                                 activeBonVent?.let { bon ->
                                     aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(
                                         bon.copy(
-                                            path_pdf_bon_file = savedPath,
+                                            path_pdf_bon_file                      = savedPath,
                                             nombre_produits_don_dernier_pdf_stoked = activeCount,
-                                            last_sort_pdf_locale_totale_a_paye = activeTotal
+                                            last_sort_pdf_locale_totale_a_paye     = activeTotal
                                         )
                                     )
                                 }
@@ -145,8 +141,8 @@ fun PdfBonVentFAB(
         ) {
             when {
                 isGenerating  -> CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)
-                isPdfUpToDate -> Icon(imageVector = Icons.Default.Check, contentDescription = "PDF à jour", tint = Color.White)
-                else          -> Icon(imageVector = Icons.Default.PictureAsPdf, contentDescription = "Créer PDF", tint = Color.White)
+                isPdfUpToDate -> Icon(imageVector = Icons.Default.Check,        contentDescription = "PDF à jour",  tint = Color.White)
+                else          -> Icon(imageVector = Icons.Default.PictureAsPdf, contentDescription = "Créer PDF",   tint = Color.White)
             }
         }
 
@@ -160,9 +156,9 @@ fun PdfBonVentFAB(
                 modifier = Modifier
                     .background(
                         color = when {
-                            isGenerating -> MaterialTheme.colorScheme.surfaceVariant
+                            isGenerating  -> MaterialTheme.colorScheme.surfaceVariant
                             isPdfUpToDate -> Color(0xFF4CAF50)
-                            else -> Color(0xFFFF9800)
+                            else          -> Color(0xFFFF9800)
                         },
                         shape = RoundedCornerShape(4.dp)
                     )

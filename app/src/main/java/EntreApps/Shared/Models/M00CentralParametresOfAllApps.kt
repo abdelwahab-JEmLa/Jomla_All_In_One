@@ -178,13 +178,15 @@ enum class Utilisateur(
     val ayam_tadriss: String = "dimanch/jeudi",
     val nom_arab: String = "",
     val num_telephone: String = "",
+    val hour_earn: Double = 1200.00,
 ) {
     Admin("", "", "المسؤول"),
     Abdelwahab_Osstad(
         Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
         "dimanch/jeudi",
         "عبدالوهاب حمنيش",
-        "+213 553 88 50 37"
+        "+213 553 88 50 37",
+        1530.00
     ),
     kissm_intikali_madrasa_Compt_Osstad(
         M00CentralParametresOfAllApps().kissm_intikali_madrasa_Compt_KeyId,

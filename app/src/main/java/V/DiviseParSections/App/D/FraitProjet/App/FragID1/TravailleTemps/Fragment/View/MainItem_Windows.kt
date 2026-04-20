@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View
 
+import EntreApps.Shared.Models.Utilisateur
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Column
@@ -33,6 +35,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun MainItem_Windows(
@@ -40,6 +43,8 @@ fun MainItem_Windows(
     intervale: K_TempTravaille.IntervalesDeTravaille,
     viewModel: RecordingViewModel,
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
+    focusedValuesGetter: FocusedValuesGetter = koinInject()
+
 ) {
     val clientDataBaseSnapList = viewModelInitApp.clientDataBaseSnapList.find {
         it.id == intervale.idClientSiAchat
@@ -88,7 +93,11 @@ fun MainItem_Windows(
                         ) {
                             // Display vendor name
                             Text(
-                                text = intervale.utilisateur.name,
+                                text =
+                                    if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst)
+                                        Utilisateur.Abdelwahab_Osstad.nom_arab
+                                    else
+                                        intervale.utilisateur.name,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.secondary
