@@ -12,6 +12,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingSecureClickToggleFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingUpdateAllChecksFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.Button_Click_Send_Stored_Bon_Par_whatsappBuisness
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.Imgs_Send_whatsappBuisness_Stored_Bon_
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.PdfBonVentFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.Button_ID2_Menagerie_Telegram
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.CatalogueSelectionDialog
@@ -451,6 +452,13 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             }
                         )
                         Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
+                            showLabels = showLabels,
+                            overridePath = sharedPdfPath,
+                            overrideCount = sharedPdfCount,
+                            viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                            list_M13TarificationInfos = list_M13TarificationInfos
+                        )
+                        Imgs_Send_whatsappBuisness_Stored_Bon_(
                             showLabels = showLabels,
                             overridePath = sharedPdfPath,
                             overrideCount = sharedPdfCount,
