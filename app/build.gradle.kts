@@ -29,7 +29,7 @@ android {
         // JomLaElectroLivreurGrossist_VendeurHost
         // JomLaElectroLivreurGrossist_PresenterScreen
 
-        versionName = "1.13.6.7.JomLaElectroLivreurGrossist_VendeurHost"
+        versionName = "1.13.6.7.Dev"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"

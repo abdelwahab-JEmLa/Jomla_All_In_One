@@ -113,9 +113,9 @@ private fun CustomStatusDropdownMenu(
 
 
                     val relative_M8BonVent =
-                        foundOrDefaultResult?.found ?: foundOrDefaultResult?.default_If_No_Found
+                        foundOrDefaultResult.found ?: foundOrDefaultResult.default_If_No_Found
 
-                    val new_M17MessageVocale = relative_M8BonVent?.let {
+                    val new_M17MessageVocale = relative_M8BonVent.let {
                         M17MessageVocale
                             .get_default()
                             .copy(
@@ -133,9 +133,7 @@ private fun CustomStatusDropdownMenu(
                             )
                     }
 
-                    if (updatedBonVent != null) {
-                        aCentralFacade.repositorysMainSetter.update_M8BonVent(updatedBonVent)
-                    }
+                    aCentralFacade.repositorysMainSetter.update_M8BonVent(updatedBonVent)
 
                     val updated_active_Central_Values =
                         focusedValuesGetter.active_Central_Values.copy(
@@ -200,6 +198,11 @@ private fun CustomStatusDropdownMenu(
             StatusDropdownItem(
                 status = M8BonVent.EtateActuellementEst.Versemment,
                 text = M8BonVent.EtateActuellementEst.Versemment.name
+            )
+
+            StatusDropdownItem(
+                status = M8BonVent.EtateActuellementEst.New_Situation_Credit,
+                text = "مغلق"
             )
 
             StatusDropdownItem(

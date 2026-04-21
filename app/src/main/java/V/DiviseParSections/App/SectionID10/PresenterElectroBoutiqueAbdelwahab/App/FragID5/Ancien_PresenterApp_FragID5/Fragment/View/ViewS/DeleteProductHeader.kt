@@ -37,8 +37,9 @@ fun DeleteProductHeader(
     productName: String,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
-    cont_t: Int = 6
-) {
+    cont_t: Int = 15
+) {   //<--
+//TODO(1): fait que le 2 eme click ne marche pas just le premier active le couter quand temine ca delete
     var isCountdownActive by remember { mutableStateOf(false) }
     var countdownSeconds by remember { mutableIntStateOf(cont_t) }
     var progress by remember { mutableFloatStateOf(1f) }

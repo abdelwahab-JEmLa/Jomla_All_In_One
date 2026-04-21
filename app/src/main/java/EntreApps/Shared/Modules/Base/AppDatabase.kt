@@ -41,7 +41,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.D
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Dao15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory.Dao19Etudiant
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.Dao20ObsarvationEtudion
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL.Dao_M8BonVent
+import EntreApps.Shared.Modules.Base.SQL.Dao_M8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao

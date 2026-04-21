@@ -2,7 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View.View_MainItem_CreditOuVersemment_Enhanced
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View.Z.Component.Situation_Card.View.Situation_Card_ItemView
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View.Z.Component.View_MainItem_CreditOuVersemment_Enhanced
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import androidx.compose.foundation.layout.Column
@@ -36,10 +37,21 @@ fun View_MainList(
                     M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit,
                     M8BonVent.EtateActuellementEst.Credit,
                     M8BonVent.EtateActuellementEst.Versemment,
-                    M8BonVent.EtateActuellementEst.Demande_Versemet -> {
+                    M8BonVent.EtateActuellementEst.Demande_Versemet
+                        -> {
                         View_MainItem_CreditOuVersemment_Enhanced(
                             viewModel = viewModel,
                             relative_M8BonVent = relativeBonVent,
+                        )
+                    }
+
+                    M8BonVent.EtateActuellementEst.New_Situation_Credit
+                        -> {
+                        Situation_Card_ItemView(
+                            relative_M8BonVent = relativeBonVent,
+                            allBonVentList = viewModel.getter.repo8BonVent.datasValue,
+                            onUpdate = { viewModel.setter.update_M8BonVent(it) },
+                            onDelete = { viewModel.setter.delete_M8BonVent(it) },
                         )
                     }
                     // For all other relativeBonVent types, use the regular View_MainItem

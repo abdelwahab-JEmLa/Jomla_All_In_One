@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.SQL
+package EntreApps.Shared.Modules.Base.SQL
 
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import androidx.room.Dao
@@ -18,7 +18,7 @@ interface Dao_M8BonVent {
     @Upsert
     suspend fun upsert(data: M8BonVent)
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.Companion.ABORT)
     suspend fun insertAll(datas: List<M8BonVent>)
 
     @Delete
@@ -27,7 +27,7 @@ interface Dao_M8BonVent {
     @Update
     suspend fun update(data: M8BonVent)
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.Companion.ABORT)
     suspend fun insert(data: M8BonVent): Long
 
     @Query("SELECT COUNT(*) FROM M8BonVent")

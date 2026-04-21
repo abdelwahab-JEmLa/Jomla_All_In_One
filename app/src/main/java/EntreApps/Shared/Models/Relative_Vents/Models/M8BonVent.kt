@@ -102,6 +102,9 @@ data class M8BonVent(
         Demande_Versemet(R.color.holo_red_dark, "طلب تحظير الدين القديم عند احظار الطلبية"),
         ACHETEUR_NON_DISPO(com.example.clientjetpack.R.color.c2, "الشاري غائب"),
         AVEC_MARCHANDISE(com.example.clientjetpack.R.color.c5, "عندو سلعة"),
+
+        New_Situation_Credit(R.color.holo_red_dark, "الحالة الجديدة للدين"),
+
         FERME(R.color.darker_gray, "مغلق"),
         Cible(R.color.holo_orange_dark, "معين من المسير"),
         CIBLE_PRIORITE_2(R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),

@@ -152,7 +152,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val shouldShowFloatingSearcher = activeCentralValues.affiche_Dialog_Fast_Affiche_Panie &&
             itsFragmentProduitFastSearchDialog
 
+    val m17Message_avec_BonVen =
+        focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
+    val nonActived_activeFocuce_TariffPrixDifineur_M1ProduitKeyID =
+        focusedValuesGetter.currentActive_M9AppCompt?.activeFocuce_TariffPrixDifineur_M1ProduitKeyID != ""
 
     DisposableEffect(isRecording) {
         var job: Job? = null
@@ -228,8 +232,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
 
-    val m17Message_avec_BonVen =
-        focusedValuesGetter.active_Central_Values.active_OpnerDialog_M17MessageVocale
 
     if (m17Message_avec_BonVen != null) {
         A_MessageurTelegram_MainScreen(
@@ -362,7 +364,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     if (focusedValuesGetter.activeOnVent_M8BonVent == null ||
                         focusedValuesGetter.currentApp_Est_Admin
-                        && !itsFragmentProduitFastSearchDialog
+                        && !itsFragmentProduitFastSearchDialog   && nonActived_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
                     ) {
                         ID3RecordingButton(
                             viewModel,
@@ -390,7 +392,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 //                        }
 //                    }
 
-                    if (!itsFragmentProduitFastSearchDialog) {
+                    if (!itsFragmentProduitFastSearchDialog
+                        && nonActived_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
+                    ) {
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
                         )
