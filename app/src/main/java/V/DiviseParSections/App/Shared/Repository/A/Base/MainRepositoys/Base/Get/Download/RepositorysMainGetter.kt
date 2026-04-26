@@ -23,8 +23,8 @@ import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo1
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repo19Etudiant
+import Application5.App.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository

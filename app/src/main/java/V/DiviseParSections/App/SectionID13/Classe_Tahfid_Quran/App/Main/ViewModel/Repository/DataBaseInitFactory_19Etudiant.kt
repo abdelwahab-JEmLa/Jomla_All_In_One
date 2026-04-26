@@ -1,10 +1,10 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase19.Factory
+package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager.Repository
+import Application5.App.Repository.M19Etudiant
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener

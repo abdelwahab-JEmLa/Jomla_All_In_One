@@ -6,8 +6,8 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
+import Application5.App.Repository.M19Etudiant
+import Application5.App.Repository.M20ObsarvationEtudion
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.DropDownItem_Imprime_pdf_communication_ac_parent
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.DropDownItem_Imprime_pdf_collecte_numeros_whatsapp
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2.DropDownItem_Send_Cards_WhatsApp_Parent

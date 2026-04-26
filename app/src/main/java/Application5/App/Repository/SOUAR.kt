@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository
+package Application5.App.Repository
 
 enum class SOUAR(
     val arabicName: String,

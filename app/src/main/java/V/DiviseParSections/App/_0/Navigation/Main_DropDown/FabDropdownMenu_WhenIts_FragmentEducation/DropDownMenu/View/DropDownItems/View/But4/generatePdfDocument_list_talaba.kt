@@ -1,6 +1,6 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But4
 
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import Application5.App.Repository.M19Etudiant
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint

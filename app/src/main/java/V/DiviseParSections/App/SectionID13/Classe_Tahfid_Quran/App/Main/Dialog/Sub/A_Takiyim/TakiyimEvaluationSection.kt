@@ -2,9 +2,9 @@ package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.
 
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.ClickableFieldWithIcon
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
+import Application5.App.Repository.M19Etudiant
+import Application5.App.Repository.SOUAR
+import Application5.App.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

@@ -1,8 +1,8 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID6.Pdf_Generateur
 
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.getSessionDatesForMonth
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
+import Application5.App.Repository.M19Etudiant
+import Application5.App.Repository.getSessionDatesForMonth
+import Application5.App.Repository.M20ObsarvationEtudion
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar

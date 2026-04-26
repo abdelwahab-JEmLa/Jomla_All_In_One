@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils
 
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SOUAR
+import Application5.App.Repository.SOUAR
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

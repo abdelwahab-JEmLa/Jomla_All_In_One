@@ -3,10 +3,10 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_When
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.Components.Ousstad_Tahfid
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SessionDate
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repo19Etudiant
+import Application5.App.Repository.SessionDate
+import Application5.App.Repository.M20ObsarvationEtudion
+import Application5.App.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID6.createAndOpenPdfDocument
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

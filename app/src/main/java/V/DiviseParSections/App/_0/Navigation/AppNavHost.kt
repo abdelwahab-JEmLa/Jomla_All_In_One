@@ -3,6 +3,7 @@ package V.DiviseParSections.App._0.Navigation
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application5.App.A_EducationFragment_SeparatedAppsCodingPattern
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
@@ -11,7 +12,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Ancien_PresenterApp_FragID5
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.EducationFragment
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.A_EducationFragment
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -231,7 +232,8 @@ fun AppNavHost(
                 }
 
                 composable(Screen.EducationFragment.route) {
-                    EducationFragment()
+                    A_EducationFragment()
+         //           A_EducationFragment_SeparatedAppsCodingPattern()
                 }
 
                 composable(Screen.FragmentProduitFastSearchDialog.route) {

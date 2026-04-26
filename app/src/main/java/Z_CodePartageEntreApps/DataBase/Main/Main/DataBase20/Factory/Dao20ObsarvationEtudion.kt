@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory
 
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
+import Application5.App.Repository.M20ObsarvationEtudion
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

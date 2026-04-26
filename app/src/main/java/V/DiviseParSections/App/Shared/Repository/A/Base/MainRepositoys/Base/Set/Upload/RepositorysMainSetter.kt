@@ -31,10 +31,10 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
+import Application5.App.Repository.M19Etudiant
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repo19Etudiant
+import Application5.App.Repository.M20ObsarvationEtudion
+import Application5.App.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
 import com.google.firebase.database.DatabaseReference

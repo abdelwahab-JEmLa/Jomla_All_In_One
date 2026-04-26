@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository
+package Application5.App.Repository
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

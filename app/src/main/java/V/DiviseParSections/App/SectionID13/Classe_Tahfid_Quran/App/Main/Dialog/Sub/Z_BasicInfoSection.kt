@@ -2,8 +2,8 @@ package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Section
 
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Utils.EditableField
 import V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.FastEdite_OutlinedTextField
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
+import Application5.App.Repository.M19Etudiant
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repo19Etudiant
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme

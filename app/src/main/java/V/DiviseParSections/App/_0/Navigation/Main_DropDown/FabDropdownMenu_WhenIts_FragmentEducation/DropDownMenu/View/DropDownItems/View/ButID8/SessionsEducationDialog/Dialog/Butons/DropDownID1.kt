@@ -1,9 +1,9 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog.Dialog.Butons
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.SessionDate
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.M20ObsarvationEtudion
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repo19Etudiant
+import Application5.App.Repository.SessionDate
+import Application5.App.Repository.M20ObsarvationEtudion
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button

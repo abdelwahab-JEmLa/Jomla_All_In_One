@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository
+package Application5.App.Repository
 
 /**
  * Enum class for absence justification shortcuts

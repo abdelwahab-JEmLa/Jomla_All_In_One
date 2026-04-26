@@ -1,6 +1,6 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.But2
 
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
+import Application5.App.Repository.M19Etudiant
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent

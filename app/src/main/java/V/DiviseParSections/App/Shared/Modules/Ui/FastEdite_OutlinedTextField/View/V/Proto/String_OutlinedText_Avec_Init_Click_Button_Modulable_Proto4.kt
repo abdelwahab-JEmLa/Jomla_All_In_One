@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto
 
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.AbsenceJustificationShortcuts
+import Application5.App.Repository.AbsenceJustificationShortcuts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

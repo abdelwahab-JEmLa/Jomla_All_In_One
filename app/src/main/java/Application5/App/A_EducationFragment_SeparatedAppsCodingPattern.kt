@@ -1,11 +1,9 @@
-package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main
+package Application5.App
 
+import Application5.App.Repository.M19Etudiant
+import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.MonthSelectionDialog
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID8.SessionsEducationDialog.Dialog.SessionsEducationDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,12 +45,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.clientjetpack.R
 import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
@@ -61,18 +63,42 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Prototype de séparation d'un Fragment vers une application autonome (Separated App).
+ *
+ * Ce composable illustre le pattern de migration progressive :
+ * au lieu de lancer un Fragment classique depuis l'app principale, on instancie
+ * un ViewModel dédié ([A_ViewModel_SeparatedAppsCodingPattern]) qui possède ses propres
+ * repositories et sa propre base de données — indépendants de l'ACentralFacade partagée.
+ *
+ * L'objectif est de pouvoir extraire ce fragment dans un module/app séparé
+ * sans toucher au reste de l'application.
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EducationFragment(
+fun A_EducationFragment_SeparatedAppsCodingPattern(
     modifier: Modifier = Modifier,
     aCentralFacade: ACentralFacade = koinInject(),
-    repo19Etudiant: Repo19Etudiant = aCentralFacade.repositorysMainGetter.repo19Etudiant,
-    onNavigateBack: (() -> Unit)? = null,
     focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
-    val params = aCentralFacade.repositorysMainGetter.repo18CentralParametresOfAllApps.dataValue
-    val currentComptKeyId = params?.au_Lence_Set_Compt_Ac_KeyId ?: ""
-    val currentUtilisateur = M00CentralParametresOfAllApps.get_utilisateur(currentComptKeyId)
+    val context = LocalContext.current
+    val appDatabase = koinInject<AppDatabase>()
+
+    val viewModel: A_ViewModel_SeparatedAppsCodingPattern =
+        viewModel(
+            factory = viewModelFactory {
+                initializer {
+                    A_ViewModel_SeparatedAppsCodingPattern(
+                        context = context,
+                        appDatabase = appDatabase,
+                    )
+                }
+            }
+        )
+
+    // Repo provient du ViewModel séparé, pas de l'ACentralFacade partagée
+    val repo19Etudiant = viewModel.repo19Etudiant
 
     val activeCentralValues = focusedValuesGetter.active_Central_Values
     val searchQuery = activeCentralValues.outlined_filter_searcher_floating_abouve_all
@@ -84,7 +110,7 @@ fun EducationFragment(
     val ousstadTitle = activeOusstad?.nom_arab ?: "قسم حفظة القرآن منظم"
 
     if (activeCentralValues.displaye_dialog_mois_moinAcPlus_6_du_current) {
-        MonthSelectionDialog(
+        MonthSelectionDialog_SeparatedAppsCodingPattern(
             onDismiss = {
                 focusedValuesGetter.update_activeCentralValues(
                     activeCentralValues.copy(
@@ -183,7 +209,7 @@ fun EducationFragment(
                 items(
                     items = etudiants,
                 ) { etudiant ->
-                    EtudiantCard(
+                    EtudiantCard_SeparatedAppsCodingPattern(
                         etudiant = etudiant,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -277,21 +303,21 @@ fun ScrollableInformationBanner(
                     contentScale = ContentScale.Fit
                 )
 
-             /*   Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "وفقنا الله وإياكم لما يحب ويرضى",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }           */
+                /*   Column(
+                       modifier = Modifier.weight(1f),
+                       verticalArrangement = Arrangement.Center
+                   ) {
+                       Text(
+                           text = "وفقنا الله وإياكم لما يحب ويرضى",
+                           style = MaterialTheme.typography.titleMedium.copy(
+                               fontWeight = FontWeight.Bold,
+                               fontSize = 15.sp
+                           ),
+                           color = MaterialTheme.colorScheme.onPrimaryContainer,
+                           textAlign = TextAlign.Center,
+                           modifier = Modifier.fillMaxWidth()
+                       )
+                   }           */
             }
         }
 
@@ -325,7 +351,7 @@ fun ScrollableInformationBanner(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = ousstadName.ifEmpty { "قسم حفظة القرآن" },
+                        text =  "قسم حفظة القرآن",
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 24.sp

@@ -1,8 +1,9 @@
 package V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository
 
-import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
+import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Stable
@@ -20,6 +21,8 @@ class Repo9AppCompt(
     private val ancienRepo: DataBaseInit_Z_AppCompt,
     private val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
 ) {
+    val au_Lence_Set_Compt_Ac_KeyId = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 

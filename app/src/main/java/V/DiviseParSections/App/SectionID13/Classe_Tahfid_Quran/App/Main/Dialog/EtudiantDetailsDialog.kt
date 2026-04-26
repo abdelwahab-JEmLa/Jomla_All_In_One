@@ -1,15 +1,15 @@
 package V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog
 
+import Application5.App.Repository.M19Etudiant
+import Application5.App.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.IstedrakSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.Moukarar
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Dialog.Sub.TakiyimEvaluationSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.AttendanceAndBehaviorSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.BasicInfoSection
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.Sections.Moulahadat_Kadima
+import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repo19Etudiant
 import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.formatDate
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.M19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo19Etudion.Repository.Repo19Etudiant
-import V.DiviseParSections.App.Shared.Repository.Repo20OrderEducative.Repository.Repo20ObsarvationEtudion
 import android.text.format.DateUtils.isToday
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
