@@ -1,9 +1,9 @@
 package V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.DropDownItems.View.ButID6.Pdf_Generateur
 
-import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import Application5.App.Repository.M19Etudiant
-import Application5.App.Repository.getSessionDatesForMonth
 import Application5.App.Repository.M20ObsarvationEtudion
+import Application5.App.Repository.getSessionDatesForMonth
+import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -30,6 +30,9 @@ private const val NOMB_ETUDION_PAR_PAGE_FIRST = 5
 private const val NOMB_ETUDION_PAR_PAGE = 8
 private const val COLUMN_HEIGHT_ETUDION = 60f
 private const val FIRST_HEADER_HEIGHT = 20f
+// If true: show ONLY students with zero absences, sorted by most-recently-created first.
+// If false: show all students, sorted by unjustified-absence count (most absent first).
+private const val affiche_que_aucune_n_ai_absent = true
 
 fun generatePdfDocument_6(
     context: Context,
@@ -77,20 +80,33 @@ fun generatePdfDocument_6(
             null
         }
 
-        // Sort students by calculated absences from observations
-        val sortedIndices = etudiants.indices.sortedWith(
-            compareByDescending<Int> {
-                AbsenceStatistics.calculate(etudiants[it], observations, selectedMonth).unjustifiedAbsences
-            }.thenBy { "${etudiants[it].nom} ${etudiants[it].prenom}" }
-        )
+        // TODO(1) + TODO(3): when affiche_que_aucune_n_ai_absent = true, show ONLY
+        // students with zero absences (so no red cells appear) and sort by most-recently
+        // created first. Otherwise sort by unjustified-absence count descending.
+        val sortedIndices = if (affiche_que_aucune_n_ai_absent) {
+            etudiants.indices
+                .filter { i ->
+                    AbsenceStatistics.calculate(etudiants[i], observations, selectedMonth)
+                        .totalAbsences == 0
+                }
+                .sortedByDescending { i -> etudiants[i].creationTimestamps }
+        } else {
+            etudiants.indices.sortedWith(
+                compareByDescending<Int> {
+                    AbsenceStatistics.calculate(etudiants[it], observations, selectedMonth).unjustifiedAbsences
+                }.thenBy { "${etudiants[it].nom} ${etudiants[it].prenom}" }
+            )
+        }
 
         val studentsFirstPage = NOMB_ETUDION_PAR_PAGE_FIRST
         val studentsPerPage = NOMB_ETUDION_PAR_PAGE
 
-        val totalPages = if (cardsData.size <= studentsFirstPage) {
+        // Pagination is based on the effective (possibly filtered) student list
+        val effectiveCount = sortedIndices.size
+        val totalPages = if (effectiveCount <= studentsFirstPage) {
             1
         } else {
-            1 + ((cardsData.size - studentsFirstPage + studentsPerPage - 1) / studentsPerPage)
+            1 + ((effectiveCount - studentsFirstPage + studentsPerPage - 1) / studentsPerPage)
         }
 
         for (pageIndex in 0 until totalPages) {
@@ -239,9 +255,11 @@ fun generatePdfDocument_6(
                 )
                 yPosition += 28f
 
+                // TODO(1): teacher name with student count beside it
+                val studentCountLabel = "(${sortedIndices.size} طالب)"
                 drawRTLText(
                     canvas,
-                    teacherNameArabic,
+                    "$teacherNameArabic  $studentCountLabel",
                     marginLeft, yPosition, contentWidth.toInt(), paintTitleRed,
                     Layout.Alignment.ALIGN_CENTER
                 )
@@ -350,10 +368,10 @@ fun generatePdfDocument_6(
 
             // Calculate student indices for this page
             val (startIndex, endIndex) = if (pageIndex == 0) {
-                Pair(0, minOf(studentsFirstPage, cardsData.size))
+                Pair(0, minOf(studentsFirstPage, effectiveCount))
             } else {
                 val previousStudents = studentsFirstPage + (pageIndex - 1) * studentsPerPage
-                Pair(previousStudents, minOf(previousStudents + studentsPerPage, cardsData.size))
+                Pair(previousStudents, minOf(previousStudents + studentsPerPage, effectiveCount))
             }
 
             // Draw student rows
@@ -483,12 +501,14 @@ fun generatePdfDocument_6(
                     xPosition += sessionColWidth
                 }
 
-                // Column: Name with age
+                // Column: Name with age and Arabic creation date (TODO 2)
                 canvas.drawRect(xPosition, yPosition, xPosition + colWidths[colWidths.size - 2],
                     yPosition + rowHeight, paintBorder)
+                val creationDateAr = formatArabicDate(etudiant.creationTimestamps)
+                val nameWithDate = "${etudiant.nom} ${etudiant.prenom}\n(${etudiant.age} سنوات)\n$creationDateAr"
                 drawRTLText(
-                    canvas, student.studentInfo.fullName,
-                    xPosition + 5f, yPosition + 20f, (colWidths[colWidths.size - 2] - 10f).toInt(),
+                    canvas, nameWithDate,
+                    xPosition + 5f, yPosition + 5f, (colWidths[colWidths.size - 2] - 10f).toInt(),
                     paintTableCell, Layout.Alignment.ALIGN_NORMAL
                 )
                 xPosition += colWidths[colWidths.size - 2]
@@ -534,6 +554,21 @@ fun generatePdfDocument_6(
         Log.e("AttendanceReport", "❌ Error creating PDF", e)
         null
     }
+}
+
+/**
+ * Format a timestamp as an Arabic date string, e.g. "20 جويلية 2024"
+ */
+private fun formatArabicDate(timestamp: Long): String {
+    val arabicMonths = arrayOf(
+        "جانفي", "فيفري", "مارس", "أفريل", "ماي", "جوان",
+        "جويلية", "أوت", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+    )
+    val cal = Calendar.getInstance().apply { timeInMillis = timestamp }
+    val day  = cal.get(Calendar.DAY_OF_MONTH)
+    val month = arabicMonths[cal.get(Calendar.MONTH)]
+    val year = cal.get(Calendar.YEAR)
+    return "$day $month $year"
 }
 
 /**

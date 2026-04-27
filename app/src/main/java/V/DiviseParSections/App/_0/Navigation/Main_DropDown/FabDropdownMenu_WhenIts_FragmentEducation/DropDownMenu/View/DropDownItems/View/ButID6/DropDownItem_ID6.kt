@@ -172,9 +172,7 @@ fun DropDownItem_ID6(
                     else -> chosenTeacher!!.nom_arab
                 }
 
-                Text(           //<--
-                //(1): creee log Spesifie pk mem si pour moi nov 25 quand je schoi moi au dialof select moi
-                    // il ya raeeb obsrv mais au pdf ce nai pas affiche au tableau    et recree ce fiche
+                Text(
                     text = when {
                         isLoading && generationStatus.isNotEmpty() -> generationStatus
                         isLoading -> "جاري الإنشاء..."
@@ -340,6 +338,61 @@ fun createAndOpenPdfDocument(
             }
 
             onStatusChange("جاري معالجة ${activeEtudiants.size} طالب...")
+
+            // ── Diagnostic log ────────────────────────────────────────────────────────
+            // Helps answer: "why are Raeeb observations present but not shown in the PDF?"
+            //
+            // Root cause checklist:
+            //   1. The observation's day-of-month must match a session day (Sunday/Thursday).
+            //      If it was recorded on a Mon-Wed/Fri-Sat it will count in totals but NEVER
+            //      appear in the calendar columns (getAbsencesByDate silently drops it).
+            //   2. The pre-filter above restricts observations to [monthStart, monthEnd].
+            //      Any obs whose creationTimestamps falls even one second outside that range
+            //      is invisible to the PDF.
+            //   3. affiche_que_aucune_n_ai_absent=true means ONLY students with 0 absences
+            //      are rendered — an absent student's row won't appear at all.
+            run {
+                val TAG = "AbsenceDebug_PDF"
+                val sessionDays = setOf(java.util.Calendar.SUNDAY, java.util.Calendar.THURSDAY)
+                val dayNames = mapOf(
+                    java.util.Calendar.SUNDAY to "الأحد",
+                    java.util.Calendar.MONDAY to "الإثنين",
+                    java.util.Calendar.TUESDAY to "الثلاثاء",
+                    java.util.Calendar.WEDNESDAY to "الأربعاء",
+                    java.util.Calendar.THURSDAY to "الخميس",
+                    java.util.Calendar.FRIDAY to "الجمعة",
+                    java.util.Calendar.SATURDAY to "السبت"
+                )
+                val monthLabel = if (selectedMonth != null)
+                    java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale("ar")).format(selectedMonth.time)
+                else "الشهر الحالي"
+
+                Log.e(TAG, "═══ PDF DIAGNOSTIC ═══")
+                Log.e(TAG, "Selected month  : $monthLabel")
+                Log.e(TAG, "Total obs passed: ${observations.size}")
+                Log.e(TAG, "Active students : ${activeEtudiants.size}")
+
+                activeEtudiants.forEach { etudiant ->
+                    val raeebObs = observations.filter {
+                        it.etudiant_keyID == etudiant.keyID &&
+                                it.type == Application5.App.Repository.M20ObsarvationEtudion.Type.Raeeb
+                    }
+                    Log.e(TAG, "")
+                    Log.e(TAG, "  Student: ${etudiant.nom} ${etudiant.prenom}")
+                    Log.e(TAG, "  Raeeb obs in month: ${raeebObs.size}")
+                    raeebObs.forEach { obs ->
+                        val cal = java.util.Calendar.getInstance().apply { timeInMillis = obs.creationTimestamps }
+                        val dow  = cal.get(java.util.Calendar.DAY_OF_WEEK)
+                        val isSession = dow in sessionDays
+                        Log.e(TAG, "    Day ${cal.get(java.util.Calendar.DAY_OF_MONTH)} " +
+                                "(${dayNames[dow]}) " +
+                                "→ ${if (isSession) "✅ session day → WILL appear" else "❌ NOT a session day (الأحد/الخميس) → WON'T appear in calendar columns"} " +
+                                "| justified=${obs.tabrire_riyab.isNotBlank()}")
+                    }
+                }
+                Log.e(TAG, "═══════════════════════")
+            }
+            // ─────────────────────────────────────────────────────────────────────────
 
             val cardsData = activeEtudiants.map { etudiant ->
                 ParentCommunicationCardData_But6.fromEtudiant(
