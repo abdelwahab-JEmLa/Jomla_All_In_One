@@ -1,5 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
+import A_Main.Shared.Module.RepositorysMainSetter_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
@@ -35,7 +36,12 @@ class A_ViewModel_NewProtoPatterns(
     val _uiStateNewProtoPatterns = MutableStateFlow(UiState_NewProtoPatterns())
     val uiState = _uiStateNewProtoPatterns.asStateFlow()
 
-    val repositorysMainSetter_NewProtoPatterns by lazy { RepositorysMainSetter_NewProtoPatterns(appDatabase, context) }
+    val repositorysMainSetter_NewProtoPatterns by lazy {
+        RepositorysMainSetter_NewProtoPatterns(
+            appDatabase,
+            context
+        )
+    }
 
     val wifi = WifiTransferDatas_ControllerApp(
         context = context,

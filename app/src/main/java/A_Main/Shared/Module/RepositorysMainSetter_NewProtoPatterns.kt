@@ -1,12 +1,12 @@
-package Application4.App.Fragment.ID1.Fragment.ViewModel
+package A_Main.Shared.Module
 
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import android.widget.Toast
@@ -30,7 +30,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             if (datas.isNotEmpty()) {
                 datas.forEach { appDatabase.dao_M1Produit().update(it) }
                 val updates: Map<String, Any> = datas.associate { it.keyID to it.toFirebaseMap() }
-                M01Produit.ref.updateChildren(updates).await()
+                M01Produit.Companion.ref.updateChildren(updates).await()
             }
             withContext(Dispatchers.Main) { onSuccess() }
         }
@@ -44,7 +44,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             if (datas.isNotEmpty()) {
                 datas.forEach { appDatabase.dao_M03CouleurProduitInfos().update(it) }
                 val updates: Map<String, Any> = datas.associate { it.keyID to it.toFirebaseMap() }
-                M3CouleurProduitInfos.ref.updateChildren(updates).await()
+                M3CouleurProduitInfos.Companion.ref.updateChildren(updates).await()
             }
             withContext(Dispatchers.Main) { onSuccess() }
         }
@@ -54,7 +54,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_M1Produit().update(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
-            M01Produit.ref.updateChildren(updates).await()
+            M01Produit.Companion.ref.updateChildren(updates).await()
         }
     }
 
@@ -64,11 +64,6 @@ class RepositorysMainSetter_NewProtoPatterns(
             M01Produit.Companion.ref.child(data.keyID).removeValue().await()
         }
     }
-
-
-    // -------------------------------------------------------------------------
-    // M3CouleurProduitInfos
-    // -------------------------------------------------------------------------
 
     fun insertFireBase_list_Main_Values_M3CouleurProduitInfos(
         keys: Map<String, Ref_list_Filtred_Keys_M3Couleur_Main_Values>,

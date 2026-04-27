@@ -81,7 +81,11 @@ data class M8BonVent(
     }
 
     @IgnoreExtraProperties
-    enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
+    enum class EtateActuellementEst(
+        val color: Int,
+        val nomArabe: String,
+        val nonDeletable: Boolean = false,
+    ) {
         CreeMaisNonDefinie(R.color.white, "غير محدد"),
         ON_MODE_COMMEND_ACTUELLEMENT(
             R.color.holo_green_light,
@@ -97,9 +101,7 @@ data class M8BonVent(
             R.color.holo_purple, "تم تاكيد الطلبية"
         ),
         COMMANDE_LIVRAI(R.color.holo_blue_dark, "تم أيصال منتجاته"),
-        Cette_Transaction_Type_Est_Credit(R.color.holo_red_dark, "تم اقراضه  "),
-        Versemment(com.example.clientjetpack.R.color.c5, ""),
-        Demande_Versemet(R.color.holo_red_dark, "طلب تحظير الدين القديم عند احظار الطلبية"),
+
         ACHETEUR_NON_DISPO(com.example.clientjetpack.R.color.c2, "الشاري غائب"),
         AVEC_MARCHANDISE(com.example.clientjetpack.R.color.c5, "عندو سلعة"),
 
@@ -119,7 +121,12 @@ data class M8BonVent(
         PASSE(com.example.clientjetpack.R.color.c6, "اقترح ان يؤجل الى مدة قادمة"),
         CommantaireSpeciale(com.example.clientjetpack.R.color.c7, "ملاحظة خاصة بالطلبية"),
         Passed_Sans_Livre(R.color.darker_gray, "Passed_Sans_Livre"),
-        Credit(R.color.holo_red_dark, " "), ;
+
+        Credit(R.color.holo_red_dark, " ", true),
+        Cette_Transaction_Type_Est_Credit(R.color.holo_red_dark, "تم اقراضه  ", true),
+        Versemment(com.example.clientjetpack.R.color.c5, "", true),
+        Demande_Versemet(R.color.holo_red_dark, "طلب تحظير الدين القديم عند احظار الطلبية", true),
+        ;
 
         companion object {
             const val keyModel = "ID8C2"

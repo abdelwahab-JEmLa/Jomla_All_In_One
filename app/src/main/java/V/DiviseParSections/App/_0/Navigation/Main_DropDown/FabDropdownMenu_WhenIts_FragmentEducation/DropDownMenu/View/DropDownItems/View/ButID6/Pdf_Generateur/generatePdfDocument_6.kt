@@ -80,9 +80,6 @@ fun generatePdfDocument_6(
             null
         }
 
-        // TODO(1) + TODO(3): when affiche_que_aucune_n_ai_absent = true, show ONLY
-        // students with zero absences (so no red cells appear) and sort by most-recently
-        // created first. Otherwise sort by unjustified-absence count descending.
         val sortedIndices = if (affiche_que_aucune_n_ai_absent) {
             etudiants.indices
                 .filter { i ->
@@ -255,7 +252,6 @@ fun generatePdfDocument_6(
                 )
                 yPosition += 28f
 
-                // TODO(1): teacher name with student count beside it
                 val studentCountLabel = "(${sortedIndices.size} طالب)"
                 drawRTLText(
                     canvas,
@@ -501,7 +497,6 @@ fun generatePdfDocument_6(
                     xPosition += sessionColWidth
                 }
 
-                // Column: Name with age and Arabic creation date (TODO 2)
                 canvas.drawRect(xPosition, yPosition, xPosition + colWidths[colWidths.size - 2],
                     yPosition + rowHeight, paintBorder)
                 val creationDateAr = formatArabicDate(etudiant.creationTimestamps)

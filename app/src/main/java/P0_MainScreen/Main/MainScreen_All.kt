@@ -410,7 +410,6 @@ fun MainScreen_All(
                     )
                     val getter = aCentralFacade.repositorysMainGetter
                     Floating_Separated_Button(
-                        fragmentNavigationHandler = fragmentNavigationHandler,
                         list_m16 = getter.repoM16CategorieProduit.datasValue,
                         list_m1 = getter.repoM1Produit.datasValue,
                         list_m3 = getter.repo3CouleurProduit.datasValue,

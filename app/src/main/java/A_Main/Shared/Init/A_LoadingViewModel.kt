@@ -1,6 +1,6 @@
 package A_Main.Shared.Init
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.RepositorysMainSetter_NewProtoPatterns
+import A_Main.Shared.Module.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Do
 import EntreApps.Shared.Models.Relative_Vents.Models.Jomla_Clients

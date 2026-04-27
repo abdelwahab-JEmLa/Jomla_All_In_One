@@ -34,6 +34,7 @@ class ViewModelPresistantButtonsSec8FWinID1(
     ) {
         enum class Button(val nom: String) { ID4("ClientSearchButton") }
     }
+
     private val _uiState = MutableStateFlow(UiState(
         focusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade,
         getter =aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,

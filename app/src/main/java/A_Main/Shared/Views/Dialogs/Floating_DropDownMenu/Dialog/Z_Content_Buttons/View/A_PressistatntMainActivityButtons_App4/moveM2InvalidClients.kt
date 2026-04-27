@@ -63,7 +63,13 @@ fun moveM2InvalidClients(
     repositorysMainGetter: RepositorysMainGetter,
     onProgress: (Float) -> Unit = {},
 ) {
+    val clientsWithProtectedBonVent: Set<String> = repositorysMainGetter.repo8BonVent.datasValue
+        .filter { it.etateActuellementEst.nonDeletable }
+        .map { it.parent_M2Client_KeyID }
+        .toSet()
+
     val toMove = repositorysMainGetter.repo2Client.datasValue.filter { client ->
+        if (client.keyID in clientsWithProtectedBonVent) return@filter false
         invalidM2ClientPredicate(client.keyID, client.numTelephone, client.latitude, client.longitude)
     }
     if (toMove.isEmpty()) { onProgress(1f); return }
