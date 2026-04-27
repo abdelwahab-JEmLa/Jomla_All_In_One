@@ -1,7 +1,7 @@
 package EntreApps.Shared.Models.Relative_Vents.Models
 
-//noinspection SuspiciousImport
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+//noinspection SuspiciousImport,SuspiciousImport
 import android.R
 import androidx.room.Entity
 import androidx.room.PrimaryKey
