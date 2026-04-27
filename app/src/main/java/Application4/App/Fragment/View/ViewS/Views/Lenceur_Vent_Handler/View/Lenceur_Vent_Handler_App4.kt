@@ -90,9 +90,8 @@ fun Lenceur_Vent_Handler_App4(
         else 1
     }
 
-    val isAvailable by remember(au_depot, isGrossist) {
-        derivedStateOf { au_depot > 0 || isGrossist }
-    }
+    // Always allow selling regardless of depot count — a zero depot is informational only.
+    val isAvailable = true
 
     val datasValue_distinct_type = remember(uiState.list_M13TarificationInfos) {
         uiState.list_M13TarificationInfos

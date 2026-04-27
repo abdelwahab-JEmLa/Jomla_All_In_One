@@ -1,6 +1,7 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ItsMode_TabletteProduits_Plus_Echants
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode.Companion.sum_vent_et_benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_vents
@@ -17,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -46,8 +49,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
@@ -68,6 +73,7 @@ fun But_4_FloatingSearchFAB(
     if (currentMode == ProductDisplayMode.AllProducts) return
 
     var showField by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -117,6 +123,10 @@ fun But_4_FloatingSearchFAB(
                     }
                 },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }
+                ),
                 textStyle = MaterialTheme.typography.bodyMedium,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -151,6 +161,11 @@ fun PressistatntMainActivityButtons_App4(
         viewModelNewProtoPatterns.active_Datas.isEchatillantsMode =
             mode == ProductDisplayMode.Echantillons
         viewModelNewProtoPatterns.active_Datas.filter_echatilaten = ""
+        // Sync the segmented toggle so it matches the newly selected mode.
+        viewModelNewProtoPatterns.active_Datas.itsMode_TabletteProduits_Plus_Echants = when (mode) {
+            ProductDisplayMode.Echantillons -> ItsMode_TabletteProduits_Plus_Echants.Echants_Seulement
+            else -> ItsMode_TabletteProduits_Plus_Echants.Tablette_Produits_Seulement
+        }
         viewModelNewProtoPatterns.active_Datas.active_M9Compt?.let { compt ->
             viewModelNewProtoPatterns.update_active_Compt(
                 compt.copy(its_Panie_Mode_Au_Lence_Boutique = isPanie)
@@ -372,42 +387,82 @@ fun PressistatntMainActivityButtons_App4(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
 
-                FloatingActionButton(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .size(56.dp),
-                    onClick = { showDropdown = true },
-                    containerColor = fabColor,
+                // TODO(1) fixed: FAB + DropdownMenu in a Box so the menu stays anchored to the FAB,
+                // then wrapped with the segmented toggle in a Column so the toggle sits under the FAB.
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Icon(imageVector = fabIcon, contentDescription = null, tint = fabTint)
-                }
+                    Box {
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(56.dp),
+                            onClick = { showDropdown = true },
+                            containerColor = fabColor,
+                        ) {
+                            Icon(imageVector = fabIcon, contentDescription = null, tint = fabTint)
+                        }
+                        DropdownMenu(
+                            expanded = showDropdown,
+                            onDismissRequest = { showDropdown = false }
+                        ) {
+                            ModeMenuItem(
+                                label = "Tous les produits",
+                                icon = Icons.Default.FilterList,
+                                isSelected = currentMode == ProductDisplayMode.AllProducts,
+                                onClick = {
+                                    applyMode(ProductDisplayMode.AllProducts); showDropdown = false
+                                }
+                            )
+                            ModeMenuItem(
+                                label = "Échantillons",
+                                icon = Icons.Default.Check,
+                                isSelected = currentMode == ProductDisplayMode.Echantillons,
+                                onClick = {
+                                    applyMode(ProductDisplayMode.Echantillons); showDropdown = false
+                                }
+                            )
+                            ModeMenuItem(
+                                label = "Panier",
+                                icon = Icons.Default.ShoppingCart,
+                                isSelected = currentMode == ProductDisplayMode.Panie,
+                                onClick = { applyMode(ProductDisplayMode.Panie); showDropdown = false }
+                            )
+                        }
+                    }
 
-                DropdownMenu(
-                    expanded = showDropdown,
-                    onDismissRequest = { showDropdown = false }
-                ) {
-                    ModeMenuItem(
-                        label = "Tous les produits",
-                        icon = Icons.Default.FilterList,
-                        isSelected = currentMode == ProductDisplayMode.AllProducts,
-                        onClick = {
-                            applyMode(ProductDisplayMode.AllProducts); showDropdown = false
+                    // Segmented toggle: Tablette / Échants / Les deux — now under the FAB
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        val tabletteMode = activeDatas.itsMode_TabletteProduits_Plus_Echants
+                        listOf(
+                            ItsMode_TabletteProduits_Plus_Echants.Tablette_Produits_Seulement to "Tablette",
+                            ItsMode_TabletteProduits_Plus_Echants.Echants_Seulement           to "Échants",
+                            ItsMode_TabletteProduits_Plus_Echants.Tablette_Et_Echants         to "Les 2",
+                        ).forEach { (mode, label) ->
+                            val isSelected = tabletteMode == mode
+                            FloatingActionButton(
+                                modifier = Modifier
+                                    .widthIn(min = 48.dp)
+                                    .height(36.dp),
+                                onClick = { activeDatas.itsMode_TabletteProduits_Plus_Echants = mode },
+                                containerColor = if (isSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor   = if (isSelected) Color.White
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                                shape = RoundedCornerShape(8.dp),
+                            ) {
+                                Text(
+                                    text     = label,
+                                    style    = MaterialTheme.typography.labelSmall,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+                            }
                         }
-                    )
-                    ModeMenuItem(
-                        label = "Échantillons",
-                        icon = Icons.Default.Check,
-                        isSelected = currentMode == ProductDisplayMode.Echantillons,
-                        onClick = {
-                            applyMode(ProductDisplayMode.Echantillons); showDropdown = false
-                        }
-                    )
-                    ModeMenuItem(
-                        label = "Panier",
-                        icon = Icons.Default.ShoppingCart,
-                        isSelected = currentMode == ProductDisplayMode.Panie,
-                        onClick = { applyMode(ProductDisplayMode.Panie); showDropdown = false }
-                    )
+                    }
                 }
 
                 But_4_FloatingSearchFAB(

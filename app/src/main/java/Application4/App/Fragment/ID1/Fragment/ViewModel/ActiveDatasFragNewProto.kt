@@ -2,12 +2,12 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
-import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -29,6 +29,7 @@ class ActiveDatasFragNewProto {
 
     var isEchatillantsMode: Boolean by mutableStateOf(false)
     var its_Panie_Mode: Boolean by mutableStateOf(false)
+    var itsMode_TabletteProduits_Plus_Echants: ItsMode_TabletteProduits_Plus_Echants by mutableStateOf(ItsMode_TabletteProduits_Plus_Echants.Tablette_Produits_Seulement)
 
     /** Search query that filters displayed products by name (case-insensitive). */
     var filter_echatilaten: String by mutableStateOf("")
@@ -82,6 +83,15 @@ class ActiveDatasFragNewProto {
     val currentApp_ItsWorkChezGrossisst: Boolean by derivedStateOf {
         active_M9Compt?.travailleChezGrossisst3Ali == true
     }
+}
+
+enum class ItsMode_TabletteProduits_Plus_Echants {
+    /** Normal product grid — echantillants hidden. 2-column layout. */
+    Tablette_Produits_Seulement,
+    /** Echantillants-only grid. 4-column layout. */
+    Echants_Seulement,
+    /** Products + echantillants shown together. 2-column layout. */
+    Tablette_Et_Echants,
 }
 
 enum class Prioriter {

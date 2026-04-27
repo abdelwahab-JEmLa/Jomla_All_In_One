@@ -1,6 +1,7 @@
 package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.ItsMode_TabletteProduits_Plus_Echants
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
@@ -52,8 +53,6 @@ fun Etager_LazyColumn(
     val wifiState by viewModel.wifiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Ordered list of colour keys from the échantillon bon, sorted by most-recent operation first.
-    // Used to rank products when isEchatillantsMode is active.
     val set_couleursKey_echantilliants_achat by remember {
         derivedStateOf {
             val bon_abdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a =
@@ -79,7 +78,7 @@ fun Etager_LazyColumn(
         derivedStateOf {
             val allColours = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
             val allProducts = activeDatas.list_M1Produit ?: emptyList()
-            val isEchatillantsMode = activeDatas.isEchatillantsMode
+            val displayMode = activeDatas.itsMode_TabletteProduits_Plus_Echants
             val isPanieMode = activeDatas.its_Panie_Mode
             val searchQuery = activeDatas.filter_echatilaten.trim().lowercase()
 
@@ -100,8 +99,12 @@ fun Etager_LazyColumn(
                 .mapNotNull { (product, colors) ->
                     val filtered = when {
                         isPanieMode -> colors.filter { it.keyID in ventColourKeys }
-                        isEchatillantsMode -> colors.filter { it.keyID in echaKeys }
-                        else -> colors.filter { it.keyID !in echaKeys }
+                        displayMode == ItsMode_TabletteProduits_Plus_Echants.Echants_Seulement ->
+                            colors.filter { it.keyID in echaKeys }
+                        displayMode == ItsMode_TabletteProduits_Plus_Echants.Tablette_Et_Echants ->
+                            colors // show all colours — both echants and regular
+                        else -> // Tablette_Produits_Seulement
+                            colors.filter { it.keyID !in echaKeys }
                     }
                     if (filtered.isEmpty()) null else product to filtered
                 }
@@ -110,8 +113,8 @@ fun Etager_LazyColumn(
                 }
                 .let { list ->
                     when {
-                        isEchatillantsMode -> {
-                            // a product's rank = the earliest index any of its colours occupies in that list.
+                        displayMode == ItsMode_TabletteProduits_Plus_Echants.Echants_Seulement -> {
+                            // rank by earliest position in the echantillants purchase order
                             val echaOrder = set_couleursKey_echantilliants_achat
                             if (echaOrder.isEmpty()) list
                             else list.sortedBy { (_, colors) ->
@@ -137,7 +140,12 @@ fun Etager_LazyColumn(
     }
 
     val gridColumns by remember {
-        derivedStateOf { if (activeDatas.isEchatillantsMode) 4 else 2 }
+        derivedStateOf {
+            when (activeDatas.itsMode_TabletteProduits_Plus_Echants) {
+                ItsMode_TabletteProduits_Plus_Echants.Echants_Seulement -> 4
+                else -> 2 // Tablette_Produits_Seulement and Tablette_Et_Echants both use 2 columns
+            }
+        }
     }
 
     LaunchedEffect(displayList) {
