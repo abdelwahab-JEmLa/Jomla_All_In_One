@@ -51,6 +51,9 @@ data class M8BonVent(
     var a_etai_imprime_au_moi_ne_foit: Boolean = false,
     var versement_fait: Double = 0.0,
     var ancien_credit: Double = 0.0,
+
+    var moulahada: String = "",
+
     var cUn_Credit_duBonVentKey: String = "",
     var new_credit_apre_tout_fait: Double = 0.0,
     var affiche_le_verssement_au_prochen_print: Boolean = false,
