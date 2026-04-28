@@ -54,8 +54,6 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.D
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Preview.Preview_DataBaseInitFactory_15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInitFactory_16CategorieProduit
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repository.DataBaseInitFactory_19Etudiant
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_M20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
@@ -126,8 +124,6 @@ val centralDataBasesModule = module {
 }
 
 val factoryDataBaseProtoAvantJuin3Module = module {
-    single { DataBaseInitFactory_M20ObsarvationEtudion(get()) }
-    single { DataBaseInitFactory_19Etudiant(get()) }
     single { DataBaseInitFactory_2ClientProtoJuil28(get()) }
     single { DataBaseInitFactory_16CategorieProduit(get()) }
     single { DataBaseInitFactory_11AchatOperation(get()) }
@@ -181,7 +177,7 @@ val classesHandlersModule = module {
     single { PrintReceiptHandler_Juil( get()) }
     single { DebugKey(get()) }
     single { WifiTransferDatas(androidContext(), get(), get()) }
-    single { WDatabaseInitializationManager(get(), get(),get(), get(), get(),get(),get(),get(), get(),get(),get(),get(),get(), ) }
+    single { WDatabaseInitializationManager(get(), get(),get(),get(),get(),get(), get(),get(),get(),get(),get(), ) }
 
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }

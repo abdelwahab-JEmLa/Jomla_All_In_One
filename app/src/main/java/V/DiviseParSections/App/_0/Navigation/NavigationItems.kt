@@ -21,7 +21,6 @@ object NavigationItems {
         // Admin-only items
         val adminItems = listOf(
             Screen.EditDatabaseWithCreateNewArticles,
-            Screen.EducationFragment,
             Screen.FragmentProduitFastSearchDialog,
         )
 

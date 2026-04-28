@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.Modules.Ui.FastEdite_OutlinedTextField.View.V.Proto
 
-import Application5.App.Repository.AbsenceJustificationShortcuts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -73,14 +72,7 @@ fun String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
             value = textInput,
             onValueChange = { newValue ->
                 textInput = newValue
-                // Auto-complete when single character shortcuts are entered
-                if (AbsenceJustificationShortcuts.isShortcut(newValue)) {
-                    val completed = AbsenceJustificationShortcuts.processInput(newValue)
-                    textInput = completed
-                    // Auto-save and exit edit mode
-                    on_DonneClick_Data_Update(completed)
-                    isEditMode = false
-                }
+
             },
             modifier = modifier
                 .width(200.dp)
@@ -99,10 +91,6 @@ fun String_OutlinedText_Avec_Init_Click_Button_Modulable_Proto4_ForStrings(
             textStyle = textStyle.copy(fontWeight = FontWeight.Bold),
             enabled = isAvailable,
             supportingText = {
-                Text(
-                    text = AbsenceJustificationShortcuts.getHelperText(),
-                    style = MaterialTheme.typography.bodySmall
-                )
             }
         )
     } else {

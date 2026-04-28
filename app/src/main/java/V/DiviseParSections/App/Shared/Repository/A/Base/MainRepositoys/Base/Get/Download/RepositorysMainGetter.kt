@@ -1,15 +1,17 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
-import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
+import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
+import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -23,13 +25,9 @@ import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo1
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repo19Etudiant
-import Application5.App.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
-import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
-import EntreApps.Shared.Modules.Loading_Datas.Init.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import android.content.Context
 import androidx.compose.runtime.Stable
@@ -75,8 +73,6 @@ class RepositorysMainGetter(
     val repoM16CategorieProduit: RepoM16CategorieProduit,
     val repo17MessageVocale: Repo17MessageVocale,
     val repo18CentralParametresOfAllApps: Repo18CentralParametresOfAllApps,
-    val repo19Etudiant: Repo19Etudiant,
-    val repo20ObsarvationEtudion: Repo20ObsarvationEtudion,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 ) {

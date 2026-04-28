@@ -16,8 +16,6 @@ import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Ac
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_Achats.FloatingItems.Views.FragAchats_FloatingOutlinedSearcher_4
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabButton_When_Its_FastVent.FloatingItems.Views.CheckList_ChoisiseurActiveFilter
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabButton_When_Its_EducationFragment
-import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu_WhenIts_FragmentEducation.DropDownMenu.View.FabDropdownMenu_WhenIts_FragmentEducation
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabButton_When_Its_FacadeElectroBoutique
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
@@ -198,17 +196,6 @@ fun NavigationBarWithFab(
                 )
             }
 
-            its_EducationFragment -> {
-                FabButton_When_Its_EducationFragment(
-                    showWarningState = showWarningState,
-                    isFabVisible = isFabVisible,
-                    its_Targeted_Frag = true,
-                    onToggleFabVisibility = onToggleFabVisibility,
-                    onShowDropdown = {
-                        showFabDropdownEducation = true
-                    }
-                )
-            }
 
             else -> {
                 FabButton(
@@ -264,11 +251,6 @@ fun NavigationBarWithFab(
             )
         }
 
-        if (showFabDropdownEducation && its_EducationFragment) {
-            FabDropdownMenu_WhenIts_FragmentEducation(
-                onDismissDropdown = { showFabDropdownEducation = false }
-            )
-        }
 
         if (showFabDropdown_MainPresenterFragment && its_Compact_Presentoire_App_Produits_FragID4) {
             FabDropdownMenu_WhenIts_FacadeBoutiqueElectro(

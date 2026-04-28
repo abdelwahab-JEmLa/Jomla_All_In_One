@@ -1,7 +1,6 @@
 package EntreApps.Shared.Models
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import android.os.Build
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -208,6 +207,6 @@ data class M09AppCompt(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
         )
 
-        fun generePushKey() = RepositorysMainSetter.Companion.genereUnPushKeyFireBase(ref)
+        fun generePushKey() = M00CentralParametresOfAllApps.genereUnPushKeyFireBase(ref)
     }
 }

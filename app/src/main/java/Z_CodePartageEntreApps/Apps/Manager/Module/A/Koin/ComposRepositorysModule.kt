@@ -19,8 +19,6 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repo19Etudiant
-import Application5.App.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
@@ -30,8 +28,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
-    single { Repo20ObsarvationEtudion(context = androidContext(), get(),) }
-    single { Repo19Etudiant(context = androidContext(),get(),) }
 
     single { Repo18CentralParametresOfAllApps(get(),) }
 
@@ -82,11 +78,10 @@ val composRepositorysModule = module {
         get(),
         get(),
         get(),
-        get(), get(),get(),get(),get(), ) }
+        get(), get(),get(),) }
 
     single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(), get(), get(),get(),get(),
         get(),
-        get(),get(),
         ) }
     single { ModulesCentral(get(), get(), get(),get(),get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }

@@ -54,7 +54,7 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.JomLaElectroLivreurGrossist_VendeurHost
         } else {
-            AppType.JomLaElectroLivreurGrossist_VendeurHost
+            AppType.AllInOne
             //JomLaElectroLivreurGrossist_VendeurHost
         }
     },
@@ -89,10 +89,10 @@ data class M00CentralParametresOfAllApps(
             append("/storage/emulated/0/Abdelwahab_jeMla.com")
         }
 
-
         fun genereUnPushKeyFireBase(ref: DatabaseReference): String {
             return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
         }
+
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 

@@ -1,40 +1,36 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload
 
+import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.toggleEtateDeliveryNonTrouveVentOu
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.updateListRelativeVentCouleurPrixVent
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
-import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
-import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
-import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
-import Application5.App.Repository.M19Etudiant
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repo19Etudiant
-import Application5.App.Repository.M20ObsarvationEtudion
-import Application5.App.Repository.Repo20ObsarvationEtudion
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
 import com.google.firebase.database.DatabaseReference
@@ -56,8 +52,6 @@ class RepositorysMainSetter(
     private val repo15Grossist: Repo15Grossist,
     private val repoM16CategorieProduit: RepoM16CategorieProduit,
     private val repo17MessageVocale: Repo17MessageVocale,
-    private val repo19Etudiant: Repo19Etudiant,
-    private val repo20ObsarvationEtudion: Repo20ObsarvationEtudion,
 ) {
     private val get = focusedVarsHandlerFacade.focusedValuesGetter
 //--------------------By.Repo.Position-----------------------------------------------------------------------------------------------------------------------------
@@ -241,12 +235,6 @@ class RepositorysMainSetter(
     //------------R17 -------------------------------------------------------------------------------------------------------------------------------------
     fun upsert_M17MessageVocale(data: M17MessageVocale) = repo17MessageVocale.addOrUpdateData(data)
 
-    //------------R19 -------------------------------------------------------------------------------------------------------------------------------------
-    fun add_M19Etudiant(data: M19Etudiant) = repo19Etudiant.add(data)
-    fun upsert_M19Etudiant(data: M19Etudiant) = repo19Etudiant.upsert(data)
-    //------------R20 -------------------------------------------------------------------------------------------------------------------------------------
-    fun upsert_M20ObsarvationEtudion(data: M20ObsarvationEtudion) = repo20ObsarvationEtudion.upsert(data)
-    //-------------------------------------------------------------------------------------------------------------------------------------------------
 
     companion object {
         fun getListDesParentKeys(keyByParent: String): Map<String, String> =

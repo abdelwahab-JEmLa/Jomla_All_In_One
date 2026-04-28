@@ -1,7 +1,7 @@
 package EntreApps.Shared.Models.Relative_Vents.Models
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 //noinspection SuspiciousImport,SuspiciousImport
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import android.R
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -52,8 +52,6 @@ data class M8BonVent(
     var versement_fait: Double = 0.0,
     var ancien_credit: Double = 0.0,
 
-    var moulahada: String = "",
-
     var cUn_Credit_duBonVentKey: String = "",
     var new_credit_apre_tout_fait: Double = 0.0,
     var affiche_le_verssement_au_prochen_print: Boolean = false,
@@ -68,7 +66,44 @@ data class M8BonVent(
     var cActive: Boolean = false,
     val parentID8C2TypeTransactionKeyByParent: String = "",
     var vid: Long = 0L,
+
+    var moulahada: String = "",    //06_27
+    var new_situation: Double = 0.0, //06_21
 ) {
+    /**
+     * Calculates the primary monetary value for this bon depending on its state:
+     * - New_Situation_Credit → Σ credit_fait  −  Σ versement_fait  (for same client + period)
+     * - Versemment           → versement_fait
+     * - Credit / Cette_Transaction_Type_Est_Credit → credit_fait
+     * - Demande_Versemet     → demande_Versemet_si_Type
+     * - everything else      → 0.0
+     */
+    fun fun_calculative_du_main_val(allBons: List<M8BonVent>): Double {
+        val samePeriodClientBons = allBons.filter {
+            it.parent_M2Client_KeyID == this.parent_M2Client_KeyID &&
+                    it.parent_M14VentPeriod_KeyId == this.parent_M14VentPeriod_KeyId
+        }
+        return when (etateActuellementEst) {
+            EtateActuellementEst.New_Situation_Credit -> {
+                val sumCredits = samePeriodClientBons
+                    .filter {
+                        it.etateActuellementEst == EtateActuellementEst.Credit ||
+                                it.etateActuellementEst == EtateActuellementEst.Cette_Transaction_Type_Est_Credit
+                    }
+                    .sumOf { it.credit_fait }
+                val sumVersements = samePeriodClientBons
+                    .filter { it.etateActuellementEst == EtateActuellementEst.Versemment }
+                    .sumOf { it.versement_fait }
+                sumCredits - sumVersements
+            }
+            EtateActuellementEst.Versemment -> versement_fait
+            EtateActuellementEst.Credit,
+            EtateActuellementEst.Cette_Transaction_Type_Est_Credit -> credit_fait
+            EtateActuellementEst.Demande_Versemet -> demande_Versemet_si_Type
+            else -> 0.0
+        }
+    }
+
 
     fun get_DebugInfos(): String {
         return buildString {
@@ -82,6 +117,7 @@ data class M8BonVent(
             append("])")
         }
     }
+
 
     @IgnoreExtraProperties
     enum class EtateActuellementEst(
@@ -98,18 +134,18 @@ data class M8BonVent(
             R.color.holo_red_light,
             ":تقرير الدخول معه في حالة انسداد في التجارة بسبب"
         ),
-        Bloque_Probleme(com.example.clientjetpack.R.color.c3, "حدث مشكل معه"),
-        Ordre_Gerant(com.example.clientjetpack.R.color.c4, "توجيه المسير"),
+        Bloque_Probleme(R.color.holo_red_dark, "حدث مشكل معه"),
+        Ordre_Gerant(R.color.holo_red_dark, "توجيه المسير"),
         A_COMMANDE_CONFIRME(
             R.color.holo_purple, "تم تاكيد الطلبية"
         ),
         COMMANDE_LIVRAI(R.color.holo_blue_dark, "تم أيصال منتجاته"),
 
-        ACHETEUR_NON_DISPO(com.example.clientjetpack.R.color.c2, "الشاري غائب"),
-        AVEC_MARCHANDISE(com.example.clientjetpack.R.color.c5, "عندو سلعة"),
-
+        // Value = Σ credit_fait − Σ versement_fait  (computed by fun_calculative_du_main_val)
         New_Situation_Credit(R.color.holo_red_dark, "الحالة الجديدة للدين"),
 
+        ACHETEUR_NON_DISPO(R.color.holo_red_dark, "الشاري غائب"),
+        AVEC_MARCHANDISE(R.color.holo_red_dark, "عندو سلعة"),
         FERME(R.color.darker_gray, "مغلق"),
         Cible(R.color.holo_orange_dark, "معين من المسير"),
         CIBLE_PRIORITE_2(R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
@@ -121,8 +157,8 @@ data class M8BonVent(
         RAPPORT_AU_ENREGESTREMENT_VOCALE(R.color.black, "التقرير قي التسجيل الصوتي "),
         ON_MODE_VOIRE_PANIE_ARTICLES(R.color.holo_blue_dark, "في معاينة السلة"),
         A_EVITE(R.color.holo_green_light, "اقترح ان يتجنب لمدة اسبوعين"),
-        PASSE(com.example.clientjetpack.R.color.c6, "اقترح ان يؤجل الى مدة قادمة"),
-        CommantaireSpeciale(com.example.clientjetpack.R.color.c7, "ملاحظة خاصة بالطلبية"),
+        PASSE(R.color.holo_red_dark, "اقترح ان يؤجل الى مدة قادمة"),
+        CommantaireSpeciale(R.color.holo_red_dark, "ملاحظة خاصة بالطلبية"),
         Passed_Sans_Livre(R.color.darker_gray, "Passed_Sans_Livre"),
 
         Credit(R.color.holo_red_dark, " ", true),
@@ -157,7 +193,7 @@ data class M8BonVent(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
         ).child("Datas08BonVent")
 
-        fun generePushKey() = RepositorysMainSetter.Companion.genereUnPushKeyFireBase(ref)
+        fun generePushKey() = M00CentralParametresOfAllApps.genereUnPushKeyFireBase(ref)
 
         fun get_default2(): M8BonVent {
             return M8BonVent()

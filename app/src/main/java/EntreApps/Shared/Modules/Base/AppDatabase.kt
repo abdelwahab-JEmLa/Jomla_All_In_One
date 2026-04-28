@@ -1,9 +1,6 @@
 package EntreApps.Shared.Modules.Base
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Prioriter
-import Application5.App.Repository.Dao19Etudiant
-import Application5.App.Repository.M19Etudiant
-import Application5.App.Repository.M20ObsarvationEtudion
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
@@ -41,7 +38,6 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase02.Factory.Dao_M2Client
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.Dao11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Dao15Grossist
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.Dao20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
@@ -106,7 +102,6 @@ import java.util.Date
         M2Client::class,
 
         M10OperationVentCouleur::class,
-        M09AppCompt::class,
         M8BonVent::class,
         M14VentPeriode::class,
         M15Grossist::class,
@@ -114,11 +109,12 @@ import java.util.Date
 
         M17MessageVocale::class,
         M00CentralParametresOfAllApps::class,
-        M19Etudiant::class,
-        M20ObsarvationEtudion::class,
+
 
         M01Produit::class,
         M16CategorieProduit::class,
+
+        M09AppCompt::class,
     ],
     version = 4, // Bumped from 3 → 4 to register the new AppTypeConverter
     exportSchema = false
@@ -159,18 +155,17 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun M17MessageVocaleDao(): M17MessageVocaleDao
     abstract fun M18CentralParametresOfAllAppsDao(): M18CentralParametresOfAllAppsDao
 
-    abstract fun Dao19Etudiant(): Dao19Etudiant
-    abstract fun Dao20ObsarvationEtudion(): Dao20ObsarvationEtudion
 
     abstract fun dao_M1Produit(): Dao_M1Produit
     abstract fun dao_16CategorieProduit(): Dao_M16CategorieProduit
     abstract fun dao_M03CouleurProduitInfos(): Dao_M03CouleurProduitInfos
-    abstract fun dao_M9AppCompt(): Dao_M9AppCompt
     abstract fun dao_M8BonVent(): Dao_M8BonVent
     abstract fun dao_M13TarificationInfos(): Dao13TarificationInfos
     abstract fun dao_M14VentPeriode(): Dao14VentPeriode
     abstract fun dao_M10OperationVentCouleur(): Dao_M10OperationVentCouleur
     abstract fun dao_M2Client(): Dao_M2Client
+
+    abstract fun dao_M9AppCompt(): Dao_M9AppCompt
 
     object DatabaseModule {
 

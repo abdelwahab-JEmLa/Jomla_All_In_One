@@ -1,7 +1,6 @@
 package EntreApps.Shared.Modules.Loading_Datas.Init
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import V.DiviseParSections.App.SectionID13.Classe_Tahfid_Quran.App.Main.ViewModel.Repository.DataBaseInitFactory_19Etudiant
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_M3CouleurProduitInfos
@@ -12,7 +11,6 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInit
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase16.Factory.DataBaseInitFactory_16CategorieProduit
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase20.Factory.DataBaseInitFactory_M20ObsarvationEtudion
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase8.Factory.DataBaseInitFactory_8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.DataBaseInit_Z_AppCompt
 import android.content.Context
@@ -40,8 +38,6 @@ class WDatabaseInitializationManager(
     val dataBaseInitFactory_8BonVent: DataBaseInitFactory_8BonVent,
     val dataBaseInitFactory_16CategorieProduit: DataBaseInitFactory_16CategorieProduit,
     val dataBaseInitFactory_2ClientProtoJuil28: DataBaseInitFactory_2ClientProtoJuil28,
-    val dataBaseInitFactory_19Etudiant: DataBaseInitFactory_19Etudiant,
-    val dataBaseInitFactory_M_20ObsarvationEtudion: DataBaseInitFactory_M20ObsarvationEtudion,
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
@@ -136,20 +132,6 @@ class WDatabaseInitializationManager(
             {
                 val factory = dataBaseInitFactory_2ClientProtoJuil28
                 initRepo(Repository.Entity_2Client.name, context) {
-                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
-                    factory.triggerUpdateFbParTimestampsListener()
-                }
-            },
-            {
-                val factory = dataBaseInitFactory_19Etudiant
-                initRepo(Repository.Entity_19Etudiant.name, context) {
-                    factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
-                    factory.triggerUpdateFbParTimestampsListener()
-                }
-            },
-            {
-                val factory = dataBaseInitFactory_M_20ObsarvationEtudion
-                initRepo(Repository.Entity_M20ObsarvationEtudion.name, context) {
                     factory.init(isInternetAvailable = internet) { name, progress -> scope.launch { updateRepoProgress(name, progress) } }
                     factory.triggerUpdateFbParTimestampsListener()
                 }
