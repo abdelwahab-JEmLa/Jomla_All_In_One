@@ -2,10 +2,10 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import A_Main.Shared.Module.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -22,9 +22,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class SecID5FragID2UiState(
-    val activeCompt: M09AppCompt? =null,
+    val activeCompt: M09AppCompt? = null,
     val B_ClientInfosProtoJuin3List: List<M2Client> = emptyList(),
     val mainLoadingProgress: Float = 0f,
+    val isResettingEchantillons: Boolean = false,
 )
 
 @SuppressLint("StaticFieldLeak")
@@ -85,8 +86,18 @@ class E0AfficheHistoriqueTransactionsViewModel(
         repositorysMainSetter_NewProtoPatterns.update_List_M1Produit_BathFireBase(datas)
     }
 
-    fun fireBase_batch_set_list_M3CouleurProduitInfos(datas: List<M3CouleurProduitInfos>) {
-        repositorysMainSetter_NewProtoPatterns.update_List_M3CouleurProduitInfos_BathFireBase(datas)
+    fun fireBase_batch_set_list_M3CouleurProduitInfos(
+        datas: List<M3CouleurProduitInfos>,
+        onSuccess: () -> Unit = {}
+    ) {
+        _uiState.value = _uiState.value.copy(isResettingEchantillons = true)
+        repositorysMainSetter_NewProtoPatterns.update_List_M3CouleurProduitInfos_BathFireBase(
+            datas = datas,
+            onSuccess = {
+                _uiState.value = _uiState.value.copy(isResettingEchantillons = false)
+                onSuccess()
+            }
+        )
     }
     // FIXED: Completed the empty function with proper implementation
     // This function notifies observers that data has changed and triggers a refresh

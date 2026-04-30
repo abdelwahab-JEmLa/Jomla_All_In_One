@@ -1,6 +1,7 @@
 package Application2.App.Base.Modules
 
 import Application2.App.Base.Repository.ActiveCentralValues_app2
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
@@ -46,6 +47,11 @@ data class ProductDisplayController_App2(
     val clientWindowsSelectedColorId: Long = 0,
     val clientWindowsLazyRowSupColorsScroll: Int = 0,
     val filterProduitsParCatalogueBsonID: String = "",
+    /**
+     * The tablette-filter mode sent by the host via [Wifi_Messages_Types_NewProto.Change_Filtered_Produits_Du_TabletteDisplayer].
+     * null means no active filter (any mode other than Tablette_Et_Echants).
+     */
+    val filter_Affichage_Mode_Proto: Filter_Affichage_Mode_Proto? = Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement,
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",
     val isHostPhone: Boolean = true,
@@ -189,13 +195,19 @@ class WifiTransferDatas_PresenterApp(
                         _state.update { it.copy(filterProduitsParCatalogueBsonID = content) }
                     Wifi_Messages_Types_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran -> {
                         list_M3CouleurProduit.find { it.keyID == content }
-                            ?.let { toggleExpandedCouleur(it)
-                            }
+                            ?.let { toggleExpandedCouleur(it) }
                     }
                     Wifi_Messages_Types_NewProto.Collapse_Client_Expanded_Produit -> {
                         _state.update { it.copy(expanded_M3CouleurProduitInfos = null, expanded_M1Produit = null) }
                         val cur = onGetActiveCentralValues()
                         onUpdateActiveCentralValues(cur.copy(expanded_M3CouleurProduitInfos = null, expanded_M1Produit = null))
+                    }
+                    // content == enum name for Tablette_Et_Echants, or "null" for any other mode.
+                    // Update tabletteDisplayerMode so the ViewModel can mirror it into UiState.filter_des_produits.
+                    Wifi_Messages_Types_NewProto.Change_Filtered_Produits_Du_TabletteDisplayer -> {
+                        val mode = Filter_Affichage_Mode_Proto.entries
+                            .find { it.name == content }   // null when content == "null" or unrecognised
+                        _state.update { it.copy(filter_Affichage_Mode_Proto = mode) }
                     }
                     else -> Unit
                 }
@@ -254,9 +266,7 @@ class WifiTransferDatas_PresenterApp(
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES)
-                try {
-                    handlePayload(String(payload.asBytes()!!)
-                    ) } catch (_: Exception) {}
+                try { handlePayload(String(payload.asBytes()!!)) } catch (_: Exception) {}
         }
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) = Unit
     }

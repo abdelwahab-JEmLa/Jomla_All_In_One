@@ -1,7 +1,8 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.ItsMode_TabletteProduits_Plus_Echants
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
+import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode.Companion.sum_vent_et_benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_vents
@@ -162,9 +163,9 @@ fun PressistatntMainActivityButtons_App4(
             mode == ProductDisplayMode.Echantillons
         viewModelNewProtoPatterns.active_Datas.filter_echatilaten = ""
         // Sync the segmented toggle so it matches the newly selected mode.
-        viewModelNewProtoPatterns.active_Datas.itsMode_TabletteProduits_Plus_Echants = when (mode) {
-            ProductDisplayMode.Echantillons -> ItsMode_TabletteProduits_Plus_Echants.Echants_Seulement
-            else -> ItsMode_TabletteProduits_Plus_Echants.Tablette_Produits_Seulement
+        viewModelNewProtoPatterns.active_Datas.filterAffichageMode_Proto = when (mode) {
+            ProductDisplayMode.Echantillons -> Filter_Affichage_Mode_Proto.Echants_Seulement
+            else -> Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement
         }
         viewModelNewProtoPatterns.active_Datas.active_M9Compt?.let { compt ->
             viewModelNewProtoPatterns.update_active_Compt(
@@ -387,8 +388,6 @@ fun PressistatntMainActivityButtons_App4(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
 
-                // TODO(1) fixed: FAB + DropdownMenu in a Box so the menu stays anchored to the FAB,
-                // then wrapped with the segmented toggle in a Column so the toggle sits under the FAB.
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -432,23 +431,30 @@ fun PressistatntMainActivityButtons_App4(
                         }
                     }
 
-                    // Segmented toggle: Tablette / Échants / Les deux — now under the FAB
+                    // Segmented toggle: Tablette / Échants / Les deux — under the FAB
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        val tabletteMode = activeDatas.itsMode_TabletteProduits_Plus_Echants
+                        val tabletteMode = activeDatas.filterAffichageMode_Proto
                         listOf(
-                            ItsMode_TabletteProduits_Plus_Echants.Tablette_Produits_Seulement to "Tablette",
-                            ItsMode_TabletteProduits_Plus_Echants.Echants_Seulement           to "Échants",
-                            ItsMode_TabletteProduits_Plus_Echants.Tablette_Et_Echants         to "Les 2",
+                            Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement to "Tablette",
+                            Filter_Affichage_Mode_Proto.Echants_Seulement           to "Échants",
+                            Filter_Affichage_Mode_Proto.Tablette_Et_Echants         to "Les 2",
                         ).forEach { (mode, label) ->
                             val isSelected = tabletteMode == mode
                             FloatingActionButton(
                                 modifier = Modifier
                                     .widthIn(min = 48.dp)
                                     .height(36.dp),
-                                onClick = { activeDatas.itsMode_TabletteProduits_Plus_Echants = mode },
+                                onClick = {
+                                    activeDatas.filterAffichageMode_Proto = mode
+
+                                    viewModelNewProtoPatterns.sendData(
+                                        Wifi_Messages_Types_NewProto.Change_Filtered_Produits_Du_TabletteDisplayer.prefix,
+                                        mode.name
+                                    )
+                                },
                                 containerColor = if (isSelected) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.surfaceVariant,
                                 contentColor   = if (isSelected) Color.White

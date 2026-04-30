@@ -39,9 +39,7 @@ object Init_LightDataBases {
             val raw = M8BonVent.ref.get().await()
                 .children.mapNotNull { it.getValue(M8BonVent::class.java) }
             m8List = if (applyFilters) {
-                raw.filter { bon ->
-                    bon.parent_M14VentPeriod_KeyId in m14Keys
-                }
+                raw.filter { bon -> bon.parent_M14VentPeriod_KeyId in m14Keys }
             } else raw
         } catch (_: Exception) {}
 
@@ -59,9 +57,7 @@ object Init_LightDataBases {
             val raw = M13TarificationInfos.ref.get().await()
                 .children.mapNotNull { it.getValue(M13TarificationInfos::class.java) }
             m13List = if (applyFilters) {
-                raw.filter { tariff ->
-                    tariff.parent_M1Produit_KeyId in filteredProductKeys!!
-                }
+                raw.filter { tariff -> tariff.parent_M1Produit_KeyId in filteredProductKeys!! }
             } else raw
         } catch (_: Exception) {}
 
@@ -76,10 +72,8 @@ object Init_LightDataBases {
                     else
                         client
                 }
-            m2ClientList = if (applyFilters)
-                raw
-            else
-                raw
+            // m2Clients are always loaded in full — no product-key filter applies to clients
+            m2ClientList = raw
         } catch (_: Exception) {}
 
         return LightDataBasesResult(

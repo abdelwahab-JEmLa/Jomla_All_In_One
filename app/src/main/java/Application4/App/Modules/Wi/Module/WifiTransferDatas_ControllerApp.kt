@@ -44,6 +44,8 @@ data class ProductDisplayController_NewProto(
     val clientWindowsSelectedColorId: Long = 0,
     val clientWindowsLazyRowSupColorsScroll: Int = 0,
     val filterProduitsParCatalogueBsonID: String = "",
+    /** Receives the [ItsMode_TabletteProduits_Plus_Echants.name] sent by the host. */
+    val tabletteDisplayerMode: String = "",
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",
     val isHostPhone: Boolean = true,
@@ -201,10 +203,16 @@ class WifiTransferDatas_ControllerApp(
                         )
                     }
                 }
+                // Collapses the expanded product/colour card on the client (displayer) side.
+                Wifi_Messages_Types_NewProto.Collapse_Client_Expanded_Produit ->
+                    _state.update { it.copy(expanded_M1Produit = null, expanded_M3CouleurProduitInfos = null) }
 
-                else -> {
+                // `data` carries the Filter_Affichage_Mode_Proto.name chosen on the host.
+                // Store it in state so the client UI can react (filter list, hide/show echantillons, …).
+                Wifi_Messages_Types_NewProto.Change_Filtered_Produits_Du_TabletteDisplayer ->
+                    _state.update { it.copy(tabletteDisplayerMode = data) }
 
-                }
+                else -> Unit
             }
         }
     }

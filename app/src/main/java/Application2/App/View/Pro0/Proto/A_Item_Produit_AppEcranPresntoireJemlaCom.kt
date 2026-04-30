@@ -1,5 +1,6 @@
 package Application2.App.View.Pro0.Proto
 
+import Application2.App.App.ViewModel.ViewModel_MainFragment
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import Application2.App.View.Pro0.Proto.Components.Big_Principale_AppEcranPresntoireJemlaCom
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
@@ -35,6 +36,7 @@ private const val DBG_M3_PARENT = "-OV3rmZ-9sy3P5rnINL3"
 fun Item_Produit_AppEcranPresntoireJemlaCom(
     relative_M1ProduitToListM3Couleur: Pair<M01Produit, List<M3CouleurProduitInfos>>,
     focusedValuesGetter_app2: RepositorysMainGetter_app2 = koinInject(),
+    viewModel: ViewModel_MainFragment,
 ) {
     val relative_M1produit = relative_M1ProduitToListM3Couleur.first
     val relativeList_M3ColorsProduit = relative_M1ProduitToListM3Couleur.second
@@ -94,7 +96,9 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
                 )
 
                 Big_Principale_AppEcranPresntoireJemlaCom(
-                    big_presenter_couleur_produit = expandState.bigPresenterCouleur,
+                    viewModel   =viewModel,
+
+                            big_presenter_couleur_produit = expandState.bigPresenterCouleur,
                     expandState = expandState,
                 )
 
@@ -110,6 +114,7 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
                             relativeList_M3ColorsProduit.forEachIndexed { index, couleur ->
                                 if (index != expandState.bigPresenterIndex) {
                                     SubColorCard_WithButton_app2(
+                                        viewModel   =viewModel,
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
                                         expandState = expandState,
@@ -127,10 +132,10 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
                             relativeList_M3ColorsProduit.forEachIndexed { index, couleur ->
                                 if (index != expandState.bigPresenterIndex) {
                                     SubColorCard_WithButton_app2(
+                                        viewModel   =viewModel,
                                         couleur = couleur,
                                         relative_M1produit = relative_M1produit,
                                         expandState = expandState,
-                                        isExpanded = false,
                                         modifier = Modifier.fillMaxWidth(),
                                     )
                                 }

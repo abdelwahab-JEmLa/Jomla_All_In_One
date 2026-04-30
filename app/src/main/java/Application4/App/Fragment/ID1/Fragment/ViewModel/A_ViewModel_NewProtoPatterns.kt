@@ -7,11 +7,11 @@ import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.annotation.SuppressLint
 import android.content.Context
@@ -181,5 +181,14 @@ class A_ViewModel_NewProtoPatterns(
 
     override fun onCleared() {
         super.onCleared()
+    }
+
+    /**
+     * Sends an arbitrary [prefix]+[data] payload directly to the tablet over Nearby Connections.
+     * Used for messages that don't fit the [sendOrderToClientDisplayerT] typed enum pattern,
+     * e.g. [Wifi_Messages_Types_NewProto.Change_Filtered_Produits_Du_TabletteDisplayer].
+     */
+    fun sendData(prefix: String, data: String) {
+        wifi.sendData("$prefix$data")
     }
 }

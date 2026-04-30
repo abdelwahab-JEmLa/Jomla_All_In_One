@@ -27,10 +27,7 @@ enum class pourcentage {
     standart,
     min_possible
 }
-                                         //<--
-                                         // nomImageFichieSansEtansion is preferred.
-                                         // Fallback: parentBProduitOldID + indexCouleurDansAncienProto
-                                         //   e.g. parentBProduitOldID=4117, indexCouleurDansAncienProto=1 → "4117_1"
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye(
@@ -65,7 +62,6 @@ fun Image_Displaye(
         val baseDir = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
 
         if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo") {
-            // Preferred path: new-proto explicit file name
             val fileName =
                 "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
             File(baseDir, fileName)

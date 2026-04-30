@@ -1,11 +1,15 @@
 package Application2.App.View.Pro0.Proto.ViewS.Views
 
+import Application2.App.App.ViewModel.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -79,8 +83,13 @@ fun Image_Displaye_app2(
     expandState: ProduitExpandState,
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
+    viewModel: ViewModel_MainFragment,
 ) {
     val qualite = resolveQualite(expandState)
+
+    // Get WiFi state to determine if user can interact with images
+    val wifiState by viewModel.wifiState.collectAsState()
+    val canInteract = wifiState.isHostPhone || !wifiState.isConnected
 
     val imageFile = remember(
         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
@@ -98,7 +107,17 @@ fun Image_Displaye_app2(
         GlideImage(
             model = imageFile,
             contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier
+                .fillMaxSize()
+                .then(
+                    if (canInteract) {
+                        Modifier.clickable {
+                            viewModel.wifi.toggleExpandedCouleur(relative_M3CouleurProduitInfos)
+                        }
+                    } else {
+                        Modifier
+                    }
+                ),
             contentScale = contentScale
         ) { it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, qualite) }
     } else {

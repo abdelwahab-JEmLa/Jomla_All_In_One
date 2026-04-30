@@ -46,7 +46,14 @@ class RepositorysMainSetter_NewProtoPatterns(
                 val updates: Map<String, Any> = datas.associate { it.keyID to it.toFirebaseMap() }
                 M3CouleurProduitInfos.Companion.ref.updateChildren(updates).await()
             }
-            withContext(Dispatchers.Main) { onSuccess() }
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "Firebase : ${datas.size} couleurs synchronisées ✓",
+                    Toast.LENGTH_SHORT
+                ).show()
+                onSuccess()
+            }
         }
     }
 

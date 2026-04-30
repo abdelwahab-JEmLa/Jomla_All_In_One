@@ -32,7 +32,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
 
-    ) {
+    ) {      //<--
+    //TODO(1): ajout un log comme celui de l autre lazy column pour trouve le targed m3
     val active_Datas = viewModelNewProtoPatterns.active_Datas
 
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()

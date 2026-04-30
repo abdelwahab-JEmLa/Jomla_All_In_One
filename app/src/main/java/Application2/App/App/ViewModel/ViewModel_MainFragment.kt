@@ -4,6 +4,7 @@ import Application2.App.Base.Modules.ProductDisplayController_App2
 import Application2.App.Base.Modules.WifiTransferDatas_PresenterApp
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,6 +30,7 @@ data class UiState(
     val active_Central_Values: ActiveCentralValues_app2 = ActiveCentralValues_app2.get_Default(),
     val list_M1Produit: List<M01Produit> = emptyList(),
     val list_M3CouleurProduit: List<M3CouleurProduitInfos> = emptyList(),
+    val filter_des_produits: Filter_Affichage_Mode_Proto? = null,
     val initDatasProgressEtate: Float = 0f,
 )
 
@@ -106,6 +109,16 @@ class ViewModel_MainFragment(
                 wifi.list_M1Produit = products
                 wifi.list_M3CouleurProduit = colors
             }
+        }
+
+        // Mirror the wifi-received tablette filter into UiState so the UI reacts automatically.
+        // tabletteDisplayerMode is null for any mode other than Tablette_Et_Echants (host sent "null").
+        viewModelScope.launch {
+            wifi.state
+                .distinctUntilChangedBy { it.filter_Affichage_Mode_Proto }
+                .collect { wifiState ->
+                    _uiState.update { it.copy(filter_des_produits = wifiState.filter_Affichage_Mode_Proto) }
+                }
         }
     }
 

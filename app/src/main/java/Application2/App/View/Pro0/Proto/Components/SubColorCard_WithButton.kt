@@ -1,5 +1,6 @@
 package Application2.App.View.Pro0.Proto.Components
 
+import Application2.App.App.ViewModel.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.ViewS.ColorImageCard_AppEcranPresntoireJemlaCom
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
@@ -17,13 +18,15 @@ fun SubColorCard_WithButton_app2(
     expandState: ProduitExpandState,
     isExpanded: Boolean = false,
     modifier: Modifier = Modifier,
+    viewModel: ViewModel_MainFragment,
 ) {
     Column(modifier = modifier) {
         ColorImageCard_AppEcranPresntoireJemlaCom(
             relative_M3CouleurProduitInfos = couleur,
             expandState = expandState,
-            isSelected = false,
             modifier = Modifier.fillMaxWidth().height(if (isExpanded) 80.dp else 40.dp),
-        )
+            viewModel   =viewModel,
+
+            )
     }
 }

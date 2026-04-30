@@ -3,11 +3,11 @@ package A_Main.Shared.Init
 import A_Main.Shared.Module.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Do
-import EntreApps.Shared.Models.Relative_Vents.Models.Jomla_Clients
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.Jomla_Clients
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -132,7 +132,8 @@ class A_LoadingViewModel(
                 dao_M10OperationVentCouleur().deleteAll()
             }
         }
-
+             //<--
+             //TODO(1): cree logs pk targted m3 passe le filter meme si
         suspend fun insertSeedAndLightDbs(
             seed: Empty_App_Initialize_M1_3_16_Filtered_App4Proto2.SeedResult,
             applyLightDbFilters: Boolean = false,

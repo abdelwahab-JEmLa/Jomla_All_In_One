@@ -29,7 +29,7 @@ class ActiveDatasFragNewProto {
 
     var isEchatillantsMode: Boolean by mutableStateOf(false)
     var its_Panie_Mode: Boolean by mutableStateOf(false)
-    var itsMode_TabletteProduits_Plus_Echants: ItsMode_TabletteProduits_Plus_Echants by mutableStateOf(ItsMode_TabletteProduits_Plus_Echants.Tablette_Produits_Seulement)
+    var filterAffichageMode_Proto: Filter_Affichage_Mode_Proto by mutableStateOf(Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement)
 
     /** Search query that filters displayed products by name (case-insensitive). */
     var filter_echatilaten: String by mutableStateOf("")
@@ -85,7 +85,7 @@ class ActiveDatasFragNewProto {
     }
 }
 
-enum class ItsMode_TabletteProduits_Plus_Echants {
+enum class Filter_Affichage_Mode_Proto {
     /** Normal product grid — echantillants hidden. 2-column layout. */
     Tablette_Produits_Seulement,
     /** Echantillants-only grid. 4-column layout. */
