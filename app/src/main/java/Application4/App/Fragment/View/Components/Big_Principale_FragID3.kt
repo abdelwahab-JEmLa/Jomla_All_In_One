@@ -42,6 +42,8 @@ fun Big_Principale_FragID3(
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
 ) {
+    val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
+
     val its_Grid4_Mode =
         uiState_NewProtoPatterns_viewModel.second.active_Datas.isEchatillantsMode
     val imageHeight by animateDpAsState(
@@ -90,6 +92,7 @@ fun Big_Principale_FragID3(
                 selectedCouleur = selectedCouleur,
                 selectedTariff = selectedTariff,
                 compactMode = !isThisProductExpanded,
+                listM10OperationVentCouleur_FilteredBy_activeM8BonVent = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
             )
 
             Pricipale_Tariffs_Vendeurs_FragID3(

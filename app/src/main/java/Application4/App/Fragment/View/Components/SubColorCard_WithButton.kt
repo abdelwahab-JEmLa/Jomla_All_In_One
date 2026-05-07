@@ -5,8 +5,8 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewPro
 import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_FragID3
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,8 +25,7 @@ fun SubColorCard_WithButton(
     shouldShowButtons: Boolean,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
 ) {
-    val uiState = uiState_NewProtoPatterns_viewModel.first
-
+    val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
     Column(modifier = modifier
     ) {
@@ -48,7 +47,9 @@ fun SubColorCard_WithButton(
                 selectedTariff = selectedTariff,
                 compactMode = !isExpanded,
                 modifier = Modifier.fillMaxWidth(),
-                isWifiClientConnected = shouldShowButtons
+                isWifiClientConnected = shouldShowButtons,
+                listM10OperationVentCouleur_FilteredBy_activeM8BonVent =
+                    viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
             )
         }
     }

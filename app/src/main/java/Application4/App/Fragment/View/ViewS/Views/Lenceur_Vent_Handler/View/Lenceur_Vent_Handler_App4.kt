@@ -4,9 +4,9 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatt
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.CatronAdd.CartonVentHandler_App4
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Utils.M1.Module.Views.FastInit_Outlined_Int_Edite_Modulable_Proto4
 import androidx.compose.foundation.background
@@ -35,21 +35,19 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Lenceur_Vent_Handler_App4(
+    modifier: Modifier = Modifier,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     relative_M1produit: M01Produit,
     relative_M8BonVent: M8BonVent? = null,
     selectedCouleur: M3CouleurProduitInfos,
     selectedTariff: M13TarificationInfos,
     compactMode: Boolean = false,
-    modifier: Modifier = Modifier,
     isWifiClientConnected: Boolean = false,
-) {
+    listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>?,
+    ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
     val activeOnVent_M8BonVent = viewModel.active_Datas.activeOnVent_M8BonVent
-
-    val listM10OperationVentCouleur_FilteredBy_activeM8BonVent =
-        viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
 
     val relative_M10OperationVentCouleur by remember(
         selectedCouleur.keyID,
@@ -201,6 +199,13 @@ fun Lenceur_Vent_Handler_App4(
         modifier = modifier
             .fillMaxWidth()
             .semantics(mergeDescendants = true) {
+                set(
+                    value = listM10OperationVentCouleur_FilteredBy_activeM8BonVent
+                        ?.filter {
+                            it.parent_M1Produit_DebugInfos.contains("Lino")
+                        } ?: emptyList(),
+                    key = SemanticsPropertyKey("filter")
+                )
                 set(
                     value = tariff_Stocked_Pour_NewOperationVent,
                     key = SemanticsPropertyKey("tariff_Stocked_Pour_NewOperationVent")

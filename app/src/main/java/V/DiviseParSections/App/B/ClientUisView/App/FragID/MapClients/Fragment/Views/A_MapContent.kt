@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_OnClickMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But2_GPSFollowMode
@@ -315,7 +316,6 @@ fun MapContent(
                                 context = context,
                                 aCentralFacade = aCentralFacade,
                                 focusedValuesGetter = fg,
-                                list_M13TarificationInfos = uiState_viewModelNewProtoPatterns.list_M13TarificationInfos,
                                 onPdfSaved = { savedPath ->
                                     val pdfFile = java.io.File(savedPath)
                                     var cleaned = enteredPhone.replace(Regex("[^0-9]"), "")
@@ -343,7 +343,11 @@ fun MapContent(
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
-                                }
+                                },
+                                list_M13TarificationInfos = uiState_viewModelNewProtoPatterns.list_M13TarificationInfos,
+                                relative_List_M13Vent = fg
+                                    .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+                                    .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
                             )
                     }
                 }

@@ -5,6 +5,7 @@ import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
@@ -462,7 +463,6 @@ fun createAndAddMarker(
                             context = context,
                             aCentralFacade = aCentralFacade,
                             focusedValuesGetter = focusedValuesGetter,
-                            list_M13TarificationInfos = list_M13TarificationInfos,
                             onPdfSaved = { savedPath ->
                                 val pdfFile = File(savedPath)
                                 android.util.Log.d("WhatsAppPdf", "onPdfSaved: path=$savedPath  exists=${pdfFile.exists()}  size=${pdfFile.length()} bytes")
@@ -492,23 +492,11 @@ fun createAndAddMarker(
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
-                            }                //<--
-                            //TODO(1): le pdf ce cree RE ✅ Product table added, total: 0.0
-                            //15:32:24.032                   ════════════════════════════════════════
-                            //15:32:24.032                   ✅ PDF generation complete
-                            //15:32:24.032                   ════════════════════════════════════════
-                            //15:32:24.095 PdfPrintHandler   PDF saved to downloads: /storage/emulated/0/Android/data/com.example.clientjetpack/files/Download/receipt_3omar_yousef_N1_20260407_153222_vent_2540.pdf
-                            //15:32:24.095                   PDF generation complete, skipping auto-open: /storage/emulated/0/Android/data/com.example.clientjetpack/files/Documents/bonVents_pdf/receipt_3omar_yousef_N1_20260407_153222_vent_2540.pdf
-                            //15:32:24.096 PdfSaverUtility   📁 Saving PDF: NBKaKt_3omar_yousef_N1_3.pdf to BonsWhatsApp
-                            //15:32:24.097                   📂 MediaStore path: Download/BonsWhatsApp/04_07/NBKaKt_3omar_yousef_N1_3.pdf
-                            //15:32:24.357 BpBinder          PerfMonitor binderTransact :  time=232ms interface=android.content.IContentProvider code=1
-                            //15:32:24.427 PdfSaverUtility   📝 MediaStore URI created: content://media/external_primary/downloads/10983
-                            //15:32:24.449                   ✅ PDF saved via MediaStore (909173 bytes): Downloads/BonsWhatsApp/04_07/NBKaKt_3omar_yousef_N1_3.pdf
-                            //15:32:24.451 WhatsAppPdf       onPdfSaved: path=Downloads/BonsWhatsApp/04_07/NBKaKt_3omar_yousef_N1_3.pdf  exists=false  size=0 bytes
-                            //15:32:24.452                   ⚠️ PDF is EMPTY — focused values may not have settled before PDF creation. Check activeOnVentM2ClientInfos and lignesBonVentList above.
-                            //15:32:26.071 DBInit            initialized 
-                            //15:32:30.888 Activit...Wrapper getRecentTasks: taskId=3036   userId=0   baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.example.clientjetpack/.MainActivity } 
-                            //mais send inten ne se lence pas comme autre 
+                            },
+                            list_M13TarificationInfos = list_M13TarificationInfos,
+                            relative_List_M13Vent = focusedValuesGetter
+                                .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+                                .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
                         )
                     }
                     true

@@ -26,17 +26,15 @@ suspend fun initiateBackgroundPdfCreation_NewP(
     focusedValuesGetter: FocusedValuesGetter,
     onPdfSaved: ((savedPath: String) -> Unit)? = null,
     list_M13TarificationInfos: List<M13TarificationInfos>,
-) {
+    relative_List_M13Vent: List<M10OperationVentCouleur>,
+    ) {
     val activeClient  = focusedValuesGetter.activeOnVentM2ClientInfos
     val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val activeVents   = focusedValuesGetter
-        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-        .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
 
     when {
         activeClient  == null -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show() }; return }
         activeBonVent == null -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun bon de vente actif",  Toast.LENGTH_SHORT).show() }; return }
-        activeVents.isEmpty() -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun article à traiter",   Toast.LENGTH_SHORT).show() }; return }
+        relative_List_M13Vent.isEmpty() -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun article à traiter",   Toast.LENGTH_SHORT).show() }; return }
     }
 
     try {
@@ -56,7 +54,7 @@ suspend fun initiateBackgroundPdfCreation_NewP(
                 repoM1Produit                        = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,
                 repo3CouleurProduitInfos             = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
                 scope                               = CoroutineScope(currentCoroutineContext()),
-                relative_ListM10OperationVentCouleur = activeVents,
+                relative_ListM10OperationVentCouleur = relative_List_M13Vent,
                 relative_bonVent                    = activeBonVent,
                 client                              = activeClient,
                 showCreditSection                   = false,
@@ -74,9 +72,9 @@ suspend fun initiateBackgroundPdfCreation_NewP(
         }
 
         // baseName has NO extension — used in the Toast and as the JPG file stem.
-        val baseName = "${activeBonVent!!.keyID.takeLast(6)}" +
+        val baseName = activeBonVent!!.keyID.takeLast(6) +
                 "_${activeClient!!.nom.replace(Regex("[^A-Za-z0-9_\\-]"), "_").take(20)}" +
-                "_${activeVents.size}"
+                "_${relative_List_M13Vent.size}"
         val fileName = "$baseName.pdf"
 
         PdfSaverUtility_Proto2.savePdf(context, tempFile, fileName, "BonsWhatsApp")
@@ -95,7 +93,7 @@ suspend fun initiateBackgroundPdfCreation_NewP(
                     aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(
                         activeBonVent.copy(
                             path_pdf_bon_file                      = pathToStore,
-                            nombre_produits_don_dernier_pdf_stoked = activeVents.size
+                            nombre_produits_don_dernier_pdf_stoked = relative_List_M13Vent.size
                         )
                     )
                 }
