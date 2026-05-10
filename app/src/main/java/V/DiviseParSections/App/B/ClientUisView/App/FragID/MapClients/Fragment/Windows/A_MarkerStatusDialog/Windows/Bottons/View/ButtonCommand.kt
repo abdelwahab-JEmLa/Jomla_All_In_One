@@ -115,9 +115,6 @@ fun CommandButton(
                     Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
                 )
             }
-
-
-
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(

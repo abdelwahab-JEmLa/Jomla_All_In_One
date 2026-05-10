@@ -1,6 +1,5 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -9,8 +8,10 @@ import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -64,11 +65,8 @@ import org.koin.compose.koinInject
 fun Imgs_Send_whatsappBuisness_Stored_Bon_(
     modifier: Modifier = Modifier,
     showLabels: Boolean = true,
-    overridePath: String = "",
-    overrideCount: Int = 0,
     aCentralFacade: ACentralFacade = koinInject(),
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
     list_M13TarificationInfos: List<M13TarificationInfos>,
 ) {
     val context = LocalContext.current
@@ -333,6 +331,7 @@ fun Imgs_Send_whatsappBuisness_Stored_Bon_(
  *
  * Results are sorted by display-name so multi-page docs arrive in order.
  */
+@RequiresApi(Build.VERSION_CODES.Q)
 private fun findBonJpgsFromMediaStore(context: Context, baseName: String): List<Uri> {
     if (baseName.isEmpty()) return emptyList()
     return try {

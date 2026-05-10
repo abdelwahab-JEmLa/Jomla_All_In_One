@@ -464,9 +464,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         )
                         Imgs_Send_whatsappBuisness_Stored_Bon_(
                             showLabels = showLabels,
-                            overridePath = sharedPdfPath,
-                            overrideCount = sharedPdfCount,
-                            viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                             list_M13TarificationInfos = list_M13TarificationInfos
                         )
                     }
