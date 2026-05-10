@@ -61,6 +61,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.FileProvider
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.toColorInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -288,18 +290,18 @@ private fun createAndSaveWelcomeImage(context: Context): Uri? {
 
 private fun buildWelcomeBitmap(): Bitmap {
     val W = 900; val H = 400
-    val bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888)
+    val bmp = createBitmap(W, H)
     val canvas = Canvas(bmp)
 
-    canvas.drawRect(0f, 0f, W.toFloat(), H.toFloat(), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.parseColor("#1B5E20") })
-    canvas.drawRect(16f, 16f, W - 16f, H - 16f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.parseColor("#FFD700"); style = Paint.Style.STROKE; strokeWidth = 12f })
+    canvas.drawRect(0f, 0f, W.toFloat(), H.toFloat(), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = "#1B5E20".toColorInt() })
+    canvas.drawRect(16f, 16f, W - 16f, H - 16f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = "#FFD700".toColorInt(); style = Paint.Style.STROKE; strokeWidth = 12f })
     canvas.drawRect(30f, 30f, W - 30f, H - 30f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.parseColor("#A5D6A7"); style = Paint.Style.STROKE; strokeWidth = 3f })
 
-    val mainPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.parseColor("#FFD700"); textSize = 140f; textAlign = Paint.Align.CENTER; isFakeBoldText = true }
+    val mainPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = "#FFD700".toColorInt(); textSize = 140f; textAlign = Paint.Align.CENTER; isFakeBoldText = true }
     val mainY = H / 2f - (mainPaint.fontMetrics.ascent + mainPaint.fontMetrics.descent) / 2f - 30f
     canvas.drawText("مرحبا بك", W / 2f, mainY, mainPaint)
 
-    val subPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.parseColor("#C8E6C9"); textSize = 44f; textAlign = Paint.Align.CENTER }
+    val subPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = "#C8E6C9".toColorInt(); textSize = 44f; textAlign = Paint.Align.CENTER }
     val subY = mainY + mainPaint.fontMetrics.descent - mainPaint.fontMetrics.ascent + 10f - (subPaint.fontMetrics.ascent + subPaint.fontMetrics.descent) / 2f
     canvas.drawText("✦  شكراً لثقتكم  ✦", W / 2f, subY, subPaint)
 
