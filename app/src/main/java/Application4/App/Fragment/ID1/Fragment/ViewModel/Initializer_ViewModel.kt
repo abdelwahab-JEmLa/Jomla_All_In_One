@@ -3,12 +3,12 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
-import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +24,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
 
     fun run() {
         collect_ListDatas()
-        load_then_Collect_Active_DatasMutableStates()
         startPeriodicComptKeyCheck()
     }
 
@@ -93,10 +92,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         collectList_M8BonVent()
         collectList_M2Client()
         collectList_M10OperationVentCouleur_All()
-    }
-
-    private fun load_then_Collect_Active_DatasMutableStates() {
-        collectM10OperationVentCouleur()
     }
 
     private fun load_then_Collect_Active_Datas() {
@@ -255,24 +250,4 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         }
     }
 
-    private fun collectM10OperationVentCouleur() {
-        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
-            FlowsFunctions_ActiveDatasFragNewProto.getFlow_listM10OperationVentCouleur_By_active_Central_Values(
-                dao_M10OperationVentCouleur = AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur(),
-                dao_M9AppCompt              = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt()
-            ).collect { (emittedKey, filtered) ->
-                when {
-                    filtered.isNotEmpty() -> {
-                        AViewModel_NewProtoPatterns.active_Datas.lastKnownBonVentKey = emittedKey
-                        AViewModel_NewProtoPatterns.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = filtered
-                    }
-                    emittedKey == null -> Unit
-                    emittedKey != AViewModel_NewProtoPatterns.active_Datas.lastKnownBonVentKey -> {
-                        AViewModel_NewProtoPatterns.active_Datas.lastKnownBonVentKey = emittedKey
-                        AViewModel_NewProtoPatterns.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = emptyList()
-                    }
-                }
-            }
-        }
-    }
 }

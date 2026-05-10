@@ -7,7 +7,6 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
-import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Utils.M1.Module.Views.FastInit_Outlined_Int_Edite_Modulable_Proto4
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,11 +37,9 @@ fun Lenceur_Vent_Handler_App4(
     modifier: Modifier = Modifier,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     relative_M1produit: M01Produit,
-    relative_M8BonVent: M8BonVent? = null,
     selectedCouleur: M3CouleurProduitInfos,
     selectedTariff: M13TarificationInfos,
     compactMode: Boolean = false,
-    isWifiClientConnected: Boolean = false,
     listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>?,
     ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel

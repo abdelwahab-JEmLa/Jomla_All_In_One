@@ -51,6 +51,7 @@ private const val TAG = "NavigationBarWithFab"
 
 @Composable
 fun NavigationBarWithFab(
+    modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp,
     aCentralFacade: ACentralFacade = viewModelInitApp.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
@@ -62,7 +63,6 @@ fun NavigationBarWithFab(
     isFabVisible: Boolean,
     onToggleFabVisibility: () -> Unit,
     onCatalogSelected: (Long) -> Unit,
-    modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     onClickImageToShowControles: () -> Unit,
     showWarningState: Boolean = true

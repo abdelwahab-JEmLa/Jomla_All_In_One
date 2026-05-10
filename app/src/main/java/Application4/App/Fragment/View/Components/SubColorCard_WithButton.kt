@@ -41,13 +41,12 @@ fun SubColorCard_WithButton(
 
         shouldShowButtons.ifTrue {
             Lenceur_Vent_Handler_App4(
+                modifier = Modifier.fillMaxWidth(),
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,
                 selectedCouleur = couleur,
                 selectedTariff = selectedTariff,
                 compactMode = !isExpanded,
-                modifier = Modifier.fillMaxWidth(),
-                isWifiClientConnected = shouldShowButtons,
                 listM10OperationVentCouleur_FilteredBy_activeM8BonVent =
                     viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
             )

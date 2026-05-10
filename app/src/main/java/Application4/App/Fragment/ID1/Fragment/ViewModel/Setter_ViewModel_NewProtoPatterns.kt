@@ -70,7 +70,13 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
     fun addNew_listM10OperationVentCouleur(
         updatedList: List<M10OperationVentCouleur>?,
     ) {
-        vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
+        if (!updatedList.isNullOrEmpty()) {
+            val existingKeys = vm.active_Datas.list_M10OperationVentCouleur
+                ?.map { it.keyID }?.toSet() ?: emptySet()
+            val newOnly = updatedList.filter { it.keyID !in existingKeys }
+            vm.active_Datas.list_M10OperationVentCouleur =
+                (vm.active_Datas.list_M10OperationVentCouleur ?: emptyList()) + newOnly
+        }
         upsert_M10OperationVentCouleur(updatedList)
     }
 
@@ -82,9 +88,8 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
     fun update_listM10OperationVentCouleur(
         updatedList: List<M10OperationVentCouleur>?,
     ) {
-        val currentList =
-            vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-        val existingKeys = currentList?.map { it.keyID }?.toSet() ?: emptySet()
+        val currentAll = vm.active_Datas.list_M10OperationVentCouleur ?: emptyList()
+        val existingKeys = currentAll.map { it.keyID }.toSet()
 
         val missingEntries = updatedList?.filter { it.keyID !in existingKeys }
         if (!missingEntries.isNullOrEmpty()) {
@@ -96,14 +101,20 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
             return
         }
 
-        vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
+        val updatedMap = updatedList?.associateBy { it.keyID } ?: emptyMap()
+        vm.active_Datas.list_M10OperationVentCouleur =
+            currentAll.map { existing -> updatedMap[existing.keyID] ?: existing }
         upsert_M10OperationVentCouleur(updatedList)
     }
 
     fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(
         updatedList: List<M10OperationVentCouleur>?,
     ) {
-        vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
+        val updatedMap = updatedList?.associateBy { it.keyID } ?: emptyMap()
+        vm.active_Datas.list_M10OperationVentCouleur =
+            vm.active_Datas.list_M10OperationVentCouleur?.map { existing ->
+                updatedMap[existing.keyID] ?: existing
+            }
         upsert_M10OperationVentCouleur(updatedList)
     }
 
@@ -114,13 +125,12 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
      */
     private fun addNew_ListM10OperationVentCouleur(datas: List<M10OperationVentCouleur>?) {
         if (datas.isNullOrEmpty()) return
-        val currentList =
-            vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-        val existingKeys = currentList?.map { it.keyID }?.toSet() ?: emptySet()
+        val existingKeys = vm.active_Datas.list_M10OperationVentCouleur
+            ?.map { it.keyID }?.toSet() ?: emptySet()
         val newOnly = datas.filter { it.keyID !in existingKeys }
         if (newOnly.isEmpty()) return
-        val merged = (currentList ?: emptyList()) + newOnly
-        vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = merged
+        vm.active_Datas.list_M10OperationVentCouleur =
+            (vm.active_Datas.list_M10OperationVentCouleur ?: emptyList()) + newOnly
         upsert_M10OperationVentCouleur(newOnly)
     }
 
@@ -155,10 +165,10 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
         }
         vm.repositorysMainSetter_NewProtoPatterns.update_M13TarificationInfos(tariff)
 
-        val currentList = vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-        val affected = currentList?.filter { it.parentM13TarificationKeyID == tariff.keyID }
+        val currentAll = vm.active_Datas.list_M10OperationVentCouleur
+        val affected = currentAll?.filter { it.parentM13TarificationKeyID == tariff.keyID }
         if (!affected.isNullOrEmpty()) {
-            val updatedList = currentList.map { op ->
+            vm.active_Datas.list_M10OperationVentCouleur = currentAll.map { op ->
                 if (op.parentM13TarificationKeyID == tariff.keyID)
                     op.copy(
                         prix_de_Vent_entre_directement_NewProto = tariff.prixCurrency,
@@ -167,8 +177,7 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
                     )
                 else op
             }
-            vm.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state = updatedList
-            upsert_M10OperationVentCouleur(updatedList.filter { op ->
+            upsert_M10OperationVentCouleur(vm.active_Datas.list_M10OperationVentCouleur?.filter { op ->
                 affected.any { it.keyID == op.keyID }
             })
         }

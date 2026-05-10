@@ -40,12 +40,15 @@ class ActiveDatasFragNewProto {
 
     var parentProduit_Classement: Map<String, Int> by mutableStateOf(emptyMap())
 
-    var listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? by mutableStateOf(
-        null
-    )
-    var lastKnownBonVentKey: String? = null
-
     var list_M10OperationVentCouleur: List<M10OperationVentCouleur>? by mutableStateOf(null)
+
+    /** Derived from [list_M10OperationVentCouleur] + [active_M9Compt] — no manual tracking needed. */
+    val listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur> by derivedStateOf {
+        val key = active_M9Compt?.onVentM8BonVentKey
+            ?.takeIf { it.isNotBlank() && it != "null" }
+            ?: return@derivedStateOf emptyList()
+        list_M10OperationVentCouleur?.filter { it.parent_M8BonVent_KeyId == key } ?: emptyList()
+    }
 
     var list_M8BonVent: List<M8BonVent>? by mutableStateOf(null)
     var list_M2Client: List<M2Client>? by mutableStateOf(null)

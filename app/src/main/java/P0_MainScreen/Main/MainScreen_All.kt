@@ -326,6 +326,8 @@ fun MainScreen_All(
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     NavigationBarWithFab(
+                        modifier = Modifier.padding(bottom = 2.dp),
+                        viewModelInitApp = viewModelViewModelInitApp,
                         items = items.filter { it != Screen.ToggleFab },
                         currentRoute = currentRoute,
                         onNavigate = { route ->
@@ -345,8 +347,6 @@ fun MainScreen_All(
                         onCatalogSelected = {
                             targetCategoryId.value = it
                         },
-                        modifier = Modifier.padding(bottom = 2.dp),
-                        viewModelInitApp = viewModelViewModelInitApp,
                         onClickImageToShowControles = {
                             isControleFabVisible = !isControleFabVisible
                         }
