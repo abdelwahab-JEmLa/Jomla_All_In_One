@@ -12,6 +12,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingSecureClickToggleFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingUpdateAllChecksFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.ButtonID_5.Action.Button_5_Imgs_Send_whatsappBuisness_Stored_Bon
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.ButtonID_6.Action.Button_6_Imgs_Send_whatsappBuisness_By_Folder
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.Button_Click_Send_Stored_Bon_Par_whatsappBuisness
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.PdfBonVentFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.Button_ID2_Menagerie_Telegram
@@ -469,6 +470,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(
                             showLabels = showLabels,
                             list_M13TarificationInfos = list_M13TarificationInfos
+                        )
+                        Button_6_Imgs_Send_whatsappBuisness_By_Folder(
                         )
                     }
 

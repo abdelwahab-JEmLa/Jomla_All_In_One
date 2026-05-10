@@ -4,10 +4,8 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -299,80 +297,7 @@ fun Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
-private fun findBonJpgsFromMediaStore(context: Context, baseName: String): List<Uri> {
-    if (baseName.isEmpty()) return emptyList()
-    return try {
-        val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        context.contentResolver.query(
-            collection,
-            arrayOf(MediaStore.Downloads._ID, MediaStore.Downloads.DISPLAY_NAME),
-            "${MediaStore.Downloads.DISPLAY_NAME} LIKE ? AND ${MediaStore.Downloads.RELATIVE_PATH} LIKE ?",
-            arrayOf("$baseName%.jpg", "%BonsWhatsApp%"),
-            "${MediaStore.Downloads.DISPLAY_NAME} ASC"
-        )?.use { cursor ->
-            buildList {
-                val idCol = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID)
-                while (cursor.moveToNext()) add(
-                    ContentUris.withAppendedId(
-                        collection,
-                        cursor.getLong(idCol)
-                    )
-                )
-            }
-        } ?: emptyList()
-    } catch (e: Exception) {
-        emptyList()
-    }
-}
-
-private fun sendImgsViaWhatsAppBusiness(
-    context: Context,
-    phoneNumber: String,
-    imageUris: List<Uri>,
-    clientName: String,
-    onResult: () -> Unit
-) {
-    try {
-        if (imageUris.isEmpty()) {
-            Toast.makeText(context, "Aucune image à envoyer", Toast.LENGTH_SHORT)
-                .show(); onResult(); return
-        }
-        val allUris = createAndSaveWelcomeImage(context)?.let { imageUris + it } ?: imageUris
-        val jid = "${formatPhoneForWhatsApp(phoneNumber)}@s.whatsapp.net"
-        val intent = if (allUris.size == 1) {
-            Intent(Intent.ACTION_SEND).apply {
-                type = "image/jpeg"; setPackage("com.whatsapp.w4b"); putExtra(
-                Intent.EXTRA_STREAM,
-                allUris.first()
-            ); putExtra("jid", jid); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-        } else {
-            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                type = "image/jpeg"; setPackage("com.whatsapp.w4b"); putParcelableArrayListExtra(
-                Intent.EXTRA_STREAM,
-                ArrayList(allUris)
-            ); putExtra("jid", jid); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-        }
-        context.startActivity(intent)
-        Toast.makeText(
-            context,
-            "Ouverture WhatsApp Business pour $clientName (${allUris.size} image${if (allUris.size > 1) "s" else ""})",
-            Toast.LENGTH_SHORT
-        ).show()
-    } catch (e: Exception) {
-        Toast.makeText(
-            context,
-            "WhatsApp Business non installé ou erreur: ${e.message}",
-            Toast.LENGTH_LONG
-        ).show()
-    } finally {
-        onResult()
-    }
-}
-
-private fun createAndSaveWelcomeImage(context: Context): Uri? {
+fun createAndSaveWelcomeImage(context: Context): Uri? {
     val fileName = "welcome_marhaba.jpg"
     val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/BonsWhatsApp/"
     return try {
@@ -412,7 +337,7 @@ private fun createAndSaveWelcomeImage(context: Context): Uri? {
     }
 }
 
-private fun buildWelcomeBitmap(): Bitmap {
+ fun buildWelcomeBitmap(): Bitmap {
     val W = 900;
     val H = 400
     val bmp = createBitmap(W, H)
@@ -459,7 +384,7 @@ private fun buildWelcomeBitmap(): Bitmap {
     return bmp
 }
 
-private fun formatPhoneForWhatsApp(raw: String): String {
+ fun formatPhoneForWhatsApp(raw: String): String {
     var cleaned = raw.replace(Regex("[^0-9]"), "")
     if (!cleaned.startsWith("213")) {
         if (cleaned.startsWith("0")) cleaned = cleaned.drop(1); cleaned = "213$cleaned"
@@ -468,7 +393,7 @@ private fun formatPhoneForWhatsApp(raw: String): String {
 }
 
 @Composable
-private fun PhoneEntryDialog(
+ fun PhoneEntryDialog(
     clientName: String,
     onDismiss: () -> Unit,
     onPhoneConfirmed: (String) -> Unit
