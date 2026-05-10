@@ -82,7 +82,7 @@ fun Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(
     val scope = rememberCoroutineScope()
 
     val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val activeClient  = focusedValuesGetter.activeOnVentM2ClientInfos
+    val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
 
     val activeVents = focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -92,10 +92,12 @@ fun Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(
 
     val zeroOrNullPriceProducts = remember(activeVents) {
         activeVents.mapNotNull { vent ->
-            val tariff = list_M13TarificationInfos.find { it.keyID == vent.parentM13TarificationKeyID }
+            val tariff =
+                list_M13TarificationInfos.find { it.keyID == vent.parentM13TarificationKeyID }
             val produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
                 .datasValue.find { it.keyID == vent.parent_M1Produit_KeyId }
-            if (tariff?.prixCurrency == null || tariff.prixCurrency == 0.0) produit?.nom ?: "Produit inconnu"
+            if (tariff?.prixCurrency == null || tariff.prixCurrency == 0.0) produit?.nom
+                ?: "Produit inconnu"
             else null
         }
     }
@@ -111,7 +113,10 @@ fun Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(
 
     val jpgUris by produceState<List<Uri>>(initialValue = emptyList(), key1 = baseName) {
         while (true) {
-            value = if (baseName.isNotEmpty()) findBonJpgsFromMediaStore(context, baseName) else emptyList()
+            value = if (baseName.isNotEmpty()) findBonJpgsFromMediaStore(
+                context,
+                baseName
+            ) else emptyList()
             delay(1_000L)
         }
     }
@@ -122,22 +127,61 @@ fun Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(
 
     if (showZeroPriceWarning) {
         Dialog(onDismissRequest = { showZeroPriceWarning = false }) {
-            Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("⚠️ خطر خسارة المال!", style = MaterialTheme.typography.titleLarge, color = Color(0xFFFF9800))
-                    Text("${zeroOrNullPriceProducts.size} منتج بدون سعر محدد:", style = MaterialTheme.typography.bodyMedium)
-                    zeroOrNullPriceProducts.forEach { Text("• $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
-                    Text("يرجى تحديد الأسعار قبل الإرسال لتجنب الخسائر.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        TextButton(onClick = { showZeroPriceWarning = false }, modifier = Modifier.weight(1f)) { Text("إلغاء") }
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        "⚠️ خطر خسارة المال!",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFFFF9800)
+                    )
+                    Text(
+                        "${zeroOrNullPriceProducts.size} منتج بدون سعر محدد:",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    zeroOrNullPriceProducts.forEach {
+                        Text(
+                            "• $it",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    Text(
+                        "يرجى تحديد الأسعار قبل الإرسال لتجنب الخسائر.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TextButton(
+                            onClick = { showZeroPriceWarning = false },
+                            modifier = Modifier.weight(1f)
+                        ) { Text("إلغاء") }
                         Button(
                             onClick = {
                                 showZeroPriceWarning = false
                                 val phone = activeClient?.numTelephone?.trim() ?: ""
-                                if (phone.isEmpty()) { showPhoneDialog = true }
-                                else {
+                                if (phone.isEmpty()) {
+                                    showPhoneDialog = true
+                                } else {
                                     isSending = true
-                                    scope.launch { sendImgsViaWhatsAppBusiness(context, phone, jpgUris, activeClient?.nom ?: "") { isSending = false } }
+                                    scope.launch {
+                                        sendImgsViaWhatsAppBusiness(
+                                            context,
+                                            phone,
+                                            jpgUris,
+                                            activeClient?.nom ?: ""
+                                        ) { isSending = false }
+                                    }
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
@@ -152,45 +196,80 @@ fun Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(
     if (showPhoneDialog) {
         PhoneEntryDialog(
             clientName = activeClient?.nom ?: "Client",
-            onDismiss  = { showPhoneDialog = false },
+            onDismiss = { showPhoneDialog = false },
             onPhoneConfirmed = { enteredPhone ->
                 showPhoneDialog = false
-                activeClient?.let { aCentralFacade.repositorysMainSetter.upsert_M2Client(it.copy(numTelephone = enteredPhone)) }
+                activeClient?.let {
+                    aCentralFacade.repositorysMainSetter.upsert_M2Client(
+                        it.copy(
+                            numTelephone = enteredPhone
+                        )
+                    )
+                }
                 isSending = true
                 scope.launch {
                     delay(200)
-                    sendImgsViaWhatsAppBusiness(context, enteredPhone, jpgUris, activeClient?.nom ?: "") { isSending = false }
+                    sendImgsViaWhatsAppBusiness(
+                        context,
+                        enteredPhone,
+                        jpgUris,
+                        activeClient?.nom ?: ""
+                    ) { isSending = false }
                 }
             }
         )
     }
 
     val btnColor = when {
-        isSending            -> MaterialTheme.colorScheme.surfaceVariant
-        !imagesExist         -> Color(0xFF9E9E9E)
+        isSending -> MaterialTheme.colorScheme.surfaceVariant
+        !imagesExist -> Color(0xFF9E9E9E)
         hasZeroPriceProducts -> Color(0xFFFF9800)
-        else                 -> Color(0xFF1E88E5)
+        else -> Color(0xFF1E88E5)
     }
 
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
+    ) {
         FloatingActionButton(
             modifier = Modifier.size(40.dp),
-            onClick  = {
+            onClick = {
                 if (isSending) return@FloatingActionButton
-                if (activeBonVent == null) { Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT).show(); return@FloatingActionButton }
-                if (!imagesExist) { Toast.makeText(context, "Générez d'abord le PDF — les images apparaîtront ensuite", Toast.LENGTH_SHORT).show(); return@FloatingActionButton }
-                if (hasZeroPriceProducts) { showZeroPriceWarning = true; return@FloatingActionButton }
+                if (activeBonVent == null) {
+                    Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT)
+                        .show(); return@FloatingActionButton
+                }
+                if (!imagesExist) {
+                    Toast.makeText(
+                        context,
+                        "Générez d'abord le PDF — les images apparaîtront ensuite",
+                        Toast.LENGTH_SHORT
+                    ).show(); return@FloatingActionButton
+                }
+                if (hasZeroPriceProducts) {
+                    showZeroPriceWarning = true; return@FloatingActionButton
+                }
                 val phone = activeClient?.numTelephone?.trim() ?: ""
                 if (phone.isEmpty()) showPhoneDialog = true
-                else { isSending = true; scope.launch { sendImgsViaWhatsAppBusiness(context, phone, jpgUris, activeClient?.nom ?: "") { isSending = false } } }
+                else {
+                    isSending = true; scope.launch {
+                        sendImgsViaWhatsAppBusiness(
+                            context,
+                            phone,
+                            jpgUris,
+                            activeClient?.nom ?: ""
+                        ) { isSending = false }
+                    }
+                }
             },
             containerColor = btnColor
         ) {
             Icon(
                 imageVector = when {
-                    isSending            -> Icons.Default.Phone
+                    isSending -> Icons.Default.Phone
                     hasZeroPriceProducts -> Icons.Default.Warning
-                    else                 -> Icons.Default.Image
+                    else -> Icons.Default.Image
                 },
                 contentDescription = null,
                 tint = Color.White
@@ -200,16 +279,16 @@ fun Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(
         if (showLabels) {
             val phone = activeClient?.numTelephone?.trim() ?: ""
             val labelText = when {
-                isSending            -> "Envoi images…"
-                !imagesExist         -> "Images non prêtes"
+                isSending -> "Envoi images…"
+                !imagesExist -> "Images non prêtes"
                 hasZeroPriceProducts -> "⚠️ ${zeroOrNullPriceProducts.size} prix manquant${if (zeroOrNullPriceProducts.size > 1) "s" else ""}"
-                else                 -> buildString {
+                else -> buildString {
                     if (phone.isNotEmpty()) append("📱 $phone  ")
                     append("🖼️ ${jpgUris.size} img.")
                 }
             }
             Text(
-                text  = labelText,
+                text = labelText,
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White,
                 modifier = Modifier
@@ -234,38 +313,78 @@ private fun findBonJpgsFromMediaStore(context: Context, baseName: String): List<
         )?.use { cursor ->
             buildList {
                 val idCol = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID)
-                while (cursor.moveToNext()) add(ContentUris.withAppendedId(collection, cursor.getLong(idCol)))
+                while (cursor.moveToNext()) add(
+                    ContentUris.withAppendedId(
+                        collection,
+                        cursor.getLong(idCol)
+                    )
+                )
             }
         } ?: emptyList()
-    } catch (e: Exception) { emptyList() }
+    } catch (e: Exception) {
+        emptyList()
+    }
 }
 
-private fun sendImgsViaWhatsAppBusiness(context: Context, phoneNumber: String, imageUris: List<Uri>, clientName: String, onResult: () -> Unit) {
+private fun sendImgsViaWhatsAppBusiness(
+    context: Context,
+    phoneNumber: String,
+    imageUris: List<Uri>,
+    clientName: String,
+    onResult: () -> Unit
+) {
     try {
-        if (imageUris.isEmpty()) { Toast.makeText(context, "Aucune image à envoyer", Toast.LENGTH_SHORT).show(); onResult(); return }
+        if (imageUris.isEmpty()) {
+            Toast.makeText(context, "Aucune image à envoyer", Toast.LENGTH_SHORT)
+                .show(); onResult(); return
+        }
         val allUris = createAndSaveWelcomeImage(context)?.let { imageUris + it } ?: imageUris
         val jid = "${formatPhoneForWhatsApp(phoneNumber)}@s.whatsapp.net"
         val intent = if (allUris.size == 1) {
-            Intent(Intent.ACTION_SEND).apply { type = "image/jpeg"; setPackage("com.whatsapp.w4b"); putExtra(Intent.EXTRA_STREAM, allUris.first()); putExtra("jid", jid); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            Intent(Intent.ACTION_SEND).apply {
+                type = "image/jpeg"; setPackage("com.whatsapp.w4b"); putExtra(
+                Intent.EXTRA_STREAM,
+                allUris.first()
+            ); putExtra("jid", jid); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
         } else {
-            Intent(Intent.ACTION_SEND_MULTIPLE).apply { type = "image/jpeg"; setPackage("com.whatsapp.w4b"); putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(allUris)); putExtra("jid", jid); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                type = "image/jpeg"; setPackage("com.whatsapp.w4b"); putParcelableArrayListExtra(
+                Intent.EXTRA_STREAM,
+                ArrayList(allUris)
+            ); putExtra("jid", jid); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
         }
         context.startActivity(intent)
-        Toast.makeText(context, "Ouverture WhatsApp Business pour $clientName (${allUris.size} image${if (allUris.size > 1) "s" else ""})", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            context,
+            "Ouverture WhatsApp Business pour $clientName (${allUris.size} image${if (allUris.size > 1) "s" else ""})",
+            Toast.LENGTH_SHORT
+        ).show()
     } catch (e: Exception) {
-        Toast.makeText(context, "WhatsApp Business non installé ou erreur: ${e.message}", Toast.LENGTH_LONG).show()
-    } finally { onResult() }
+        Toast.makeText(
+            context,
+            "WhatsApp Business non installé ou erreur: ${e.message}",
+            Toast.LENGTH_LONG
+        ).show()
+    } finally {
+        onResult()
+    }
 }
 
 private fun createAndSaveWelcomeImage(context: Context): Uri? {
-    val fileName     = "welcome_marhaba.jpg"
+    val fileName = "welcome_marhaba.jpg"
     val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/BonsWhatsApp/"
     return try {
         val bmp = buildWelcomeBitmap()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val resolver   = context.contentResolver
+            val resolver = context.contentResolver
             val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-            resolver.delete(collection, "${MediaStore.Downloads.RELATIVE_PATH} = ? AND ${MediaStore.Downloads.DISPLAY_NAME} = ?", arrayOf(relativePath, fileName))
+            resolver.delete(
+                collection,
+                "${MediaStore.Downloads.RELATIVE_PATH} = ? AND ${MediaStore.Downloads.DISPLAY_NAME} = ?",
+                arrayOf(relativePath, fileName)
+            )
             val values = ContentValues().apply {
                 put(MediaStore.Downloads.DISPLAY_NAME, fileName)
                 put(MediaStore.Downloads.MIME_TYPE, "image/jpeg")
@@ -279,30 +398,62 @@ private fun createAndSaveWelcomeImage(context: Context): Uri? {
             bmp.recycle(); uri
         } else {
             @Suppress("DEPRECATION")
-            val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "BonsWhatsApp").also { it.mkdirs() }
+            val dir = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                "BonsWhatsApp"
+            ).also { it.mkdirs() }
             val outFile = File(dir, fileName)
             FileOutputStream(outFile).use { bmp.compress(Bitmap.CompressFormat.JPEG, 95, it) }
             bmp.recycle()
             FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", outFile)
         }
-    } catch (e: Exception) { null }
+    } catch (e: Exception) {
+        null
+    }
 }
 
 private fun buildWelcomeBitmap(): Bitmap {
-    val W = 900; val H = 400
+    val W = 900;
+    val H = 400
     val bmp = createBitmap(W, H)
     val canvas = Canvas(bmp)
 
-    canvas.drawRect(0f, 0f, W.toFloat(), H.toFloat(), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = "#1B5E20".toColorInt() })
-    canvas.drawRect(16f, 16f, W - 16f, H - 16f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = "#FFD700".toColorInt(); style = Paint.Style.STROKE; strokeWidth = 12f })
-    canvas.drawRect(30f, 30f, W - 30f, H - 30f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.parseColor("#A5D6A7"); style = Paint.Style.STROKE; strokeWidth = 3f })
+    canvas.drawRect(
+        0f,
+        0f,
+        W.toFloat(),
+        H.toFloat(),
+        Paint(Paint.ANTI_ALIAS_FLAG).apply { color = "#1B5E20".toColorInt() })
+    canvas.drawRect(
+        16f,
+        16f,
+        W - 16f,
+        H - 16f,
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = "#FFD700".toColorInt(); style = Paint.Style.STROKE; strokeWidth = 12f
+        })
+    canvas.drawRect(
+        30f,
+        30f,
+        W - 30f,
+        H - 30f,
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = android.graphics.Color.parseColor("#A5D6A7"); style =
+            Paint.Style.STROKE; strokeWidth = 3f
+        })
 
-    val mainPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = "#FFD700".toColorInt(); textSize = 140f; textAlign = Paint.Align.CENTER; isFakeBoldText = true }
+    val mainPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = "#FFD700".toColorInt(); textSize = 140f; textAlign =
+        Paint.Align.CENTER; isFakeBoldText = true
+    }
     val mainY = H / 2f - (mainPaint.fontMetrics.ascent + mainPaint.fontMetrics.descent) / 2f - 30f
     canvas.drawText("مرحبا بك", W / 2f, mainY, mainPaint)
 
-    val subPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = "#C8E6C9".toColorInt(); textSize = 44f; textAlign = Paint.Align.CENTER }
-    val subY = mainY + mainPaint.fontMetrics.descent - mainPaint.fontMetrics.ascent + 10f - (subPaint.fontMetrics.ascent + subPaint.fontMetrics.descent) / 2f
+    val subPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = "#C8E6C9".toColorInt(); textSize = 44f; textAlign = Paint.Align.CENTER
+    }
+    val subY =
+        mainY + mainPaint.fontMetrics.descent - mainPaint.fontMetrics.ascent + 10f - (subPaint.fontMetrics.ascent + subPaint.fontMetrics.descent) / 2f
     canvas.drawText("✦  شكراً لثقتكم  ✦", W / 2f, subY, subPaint)
 
     return bmp
@@ -310,42 +461,75 @@ private fun buildWelcomeBitmap(): Bitmap {
 
 private fun formatPhoneForWhatsApp(raw: String): String {
     var cleaned = raw.replace(Regex("[^0-9]"), "")
-    if (!cleaned.startsWith("213")) { if (cleaned.startsWith("0")) cleaned = cleaned.drop(1); cleaned = "213$cleaned" }
+    if (!cleaned.startsWith("213")) {
+        if (cleaned.startsWith("0")) cleaned = cleaned.drop(1); cleaned = "213$cleaned"
+    }
     return cleaned
 }
 
 @Composable
-private fun PhoneEntryDialog(clientName: String, onDismiss: () -> Unit, onPhoneConfirmed: (String) -> Unit) {
+private fun PhoneEntryDialog(
+    clientName: String,
+    onDismiss: () -> Unit,
+    onPhoneConfirmed: (String) -> Unit
+) {
     var phoneNumber by remember { mutableStateOf("") }
-    var showError   by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) { focusRequester.requestFocus(); keyboard?.show() }
 
     Dialog(onDismissRequest = onDismiss) {
-        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 Text("Numéro de $clientName", style = MaterialTheme.typography.titleMedium)
                 OutlinedTextField(
-                    value         = phoneNumber,
+                    value = phoneNumber,
                     onValueChange = { phoneNumber = it; showError = false },
-                    label            = { Text("Numéro de téléphone") },
-                    placeholder      = { Text("0XXXXXXXXX") },
-                    isError          = showError,
-                    supportingText   = if (showError) { { Text("Numéro invalide", color = MaterialTheme.colorScheme.error) } } else null,
-                    leadingIcon      = { Icon(Icons.Default.Phone, contentDescription = null) },
-                    keyboardOptions  = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
-                    keyboardActions  = KeyboardActions(onDone = { if (phoneNumber.trim().isNotEmpty()) onPhoneConfirmed(phoneNumber.trim()) else showError = true }),
+                    label = { Text("Numéro de téléphone") },
+                    placeholder = { Text("0XXXXXXXXX") },
+                    isError = showError,
+                    supportingText = if (showError) {
+                        { Text("Numéro invalide", color = MaterialTheme.colorScheme.error) }
+                    } else null,
+                    leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        if (phoneNumber.trim()
+                                .isNotEmpty()
+                        ) onPhoneConfirmed(phoneNumber.trim()) else showError = true
+                    }),
                     singleLine = true,
-                    colors     = OutlinedTextFieldDefaults.colors(focusedContainerColor = Color.White, unfocusedContainerColor = Color.White),
-                    modifier   = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
                 )
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     TextButton(onClick = onDismiss) { Text("Annuler") }
                     Button(
-                        onClick = { if (phoneNumber.trim().isNotEmpty()) onPhoneConfirmed(phoneNumber.trim()) else showError = true },
-                        colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E88E5))
+                        onClick = {
+                            if (phoneNumber.trim().isNotEmpty()) onPhoneConfirmed(
+                                phoneNumber.trim()
+                            ) else showError = true
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E88E5))
                     ) { Text("Envoyer", color = Color.White) }
                 }
             }
