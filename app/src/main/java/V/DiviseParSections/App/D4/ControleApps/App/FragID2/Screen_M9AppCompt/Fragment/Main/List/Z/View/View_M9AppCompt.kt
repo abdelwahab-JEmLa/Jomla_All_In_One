@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fragment.Main.List.Z.View
 
+import EntreApps.Shared.Models.M09AppCompt
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.D4.ControleApps.App.FragID2.Screen_M9AppCompt.Fragment.ViewModel_M9AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import EntreApps.Shared.Models.M09AppCompt
 import Z_CodePartageEntreApps.DataBase.Repo18CentralParametresOfAllApps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -142,6 +142,7 @@ private fun SettingsDialog(
 
     // State for credit_fait
     var creditFait by remember { mutableStateOf(relative_M9AppCompt.credit_fait.toString()) }
+    var limite_couleurs_ou_leur_last_achate_est_moin_que_jour by remember { mutableStateOf("") }
 
     var showWarningMessage by remember {
         mutableStateOf(relative_M9AppCompt.text_Message_Warning.isNotEmpty())
@@ -182,6 +183,17 @@ private fun SettingsDialog(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     isError = creditFait.toDoubleOrNull() == null && creditFait.isNotEmpty()
+                )
+
+                OutlinedTextField(
+                    value = limite_couleurs_ou_leur_last_achate_est_moin_que_jour,
+                    onValueChange = { newValue ->
+                            limite_couleurs_ou_leur_last_achate_est_moin_que_jour = newValue
+                    },
+                    label = { Text(relative_M9AppCompt.limite_couleurs_ou_leur_last_achate_est_moin_que_jour.toString()) },
+                    placeholder = { Text("limite_couleurs_ou_leur_last_achate_est_moin_que_jour") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                 )
 
                 if (creditFait.isNotEmpty() && creditFait.toDoubleOrNull() == null) {
