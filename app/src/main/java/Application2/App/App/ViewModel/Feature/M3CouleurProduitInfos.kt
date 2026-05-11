@@ -1,4 +1,4 @@
-package EntreApps.Shared.Models.Relative_Produits.Models
+package Application2.App.App.ViewModel.Feature
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
@@ -19,6 +19,8 @@ data class M3CouleurProduitInfos(
     val aAffiche: Type = Type.Image,
     val dropBox_key: String = "Non Dispo",
     val nomImageFichieSansEtansion: String = "Non Dispo",
+
+    var dernier_achant_timeTamp: Long = 0,
 
     val telephone_Prise_depuit: String = "",
 
@@ -43,8 +45,6 @@ data class M3CouleurProduitInfos(
 
 
     val extensionDisponible: String = "webp", // Default extension
-
-    var dernier_achant_timeTamp: Long = 0,
 ) {
     fun to_Map(): Map<String, Any?> = mapOf(
         "keyID" to keyID,
@@ -68,8 +68,6 @@ data class M3CouleurProduitInfos(
         "parentId1ProduitInfosDebugName" to parentId1ProduitInfosDebugName,
         "indexCouleurDansAncienProto" to indexCouleurDansAncienProto,
         "extensionDisponible" to extensionDisponible,
-
-        "dernier_achant_timeTamp" to dernier_achant_timeTamp,
     )
 
     fun get_DebugsInfos(): String {

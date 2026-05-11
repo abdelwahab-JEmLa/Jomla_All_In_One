@@ -1,10 +1,11 @@
-package Application2.App.App.ViewModel
+package Application2.App.App.ViewModel.Feature
 
 import Application2.App.Base.Modules.ProductDisplayController_App2
 import Application2.App.Base.Modules.WifiTransferDatas_PresenterApp
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
+import EntreApps.Shared.Models.Relative_Produits.Models.Functions.get_filtred_m3_by_limite_period
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
@@ -91,24 +92,28 @@ class ViewModel_MainFragment(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            combine(
-                dao_M1Produit.getAllFlow(),
-                dao_M3CouleurProduitInfos.getAllFlow()
-            ) { products, colors ->
-                productsReady.value = true
-                colorsReady.value = true
-                products to colors
-            }.collect { (products, colors) ->
-                _uiState.update {
-                    it.copy(
-                        list_M1Produit = products,
-                        list_M3CouleurProduit = colors,
-                        list_ProductWithColors = get_grouped_datas(colors, products),
-                    )
-                }
-                wifi.list_M1Produit = products
-                wifi.list_M3CouleurProduit = colors
+            // One-time fetches (no Flow)
+            val ventPeriods = appDatabase.dao_M14VentPeriode().getAll()
+            val products    = dao_M1Produit.getAll()
+            val colors      = dao_M3CouleurProduitInfos.getAll()
+
+            productsReady.value = true
+            colorsReady.value   = true
+
+            // Keep only colors whose dernier_achant_timeTamp does not exceed the
+            // creationTimestamp of the most-recent VentPeriode, but only when
+            // its_limite_active_couleurs is enabled on that period.
+            val filteredColors = get_filtred_m3_by_limite_period(ventPeriods, colors)
+
+            _uiState.update {
+                it.copy(
+                    list_M1Produit         = products,
+                    list_M3CouleurProduit  = filteredColors,
+                    list_ProductWithColors = get_grouped_datas(filteredColors, products),
+                )
             }
+            wifi.list_M1Produit        = products
+            wifi.list_M3CouleurProduit = filteredColors
         }
 
         // Mirror the wifi-received tablette filter into UiState so the UI reacts automatically.

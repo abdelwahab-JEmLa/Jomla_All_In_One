@@ -1,11 +1,15 @@
-package EntreApps.Shared.Models.Relative_Vents.Models
+package Application2.App.App.ViewModel.Feature
 
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_et_benifice
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlin.collections.filter
 
 @Entity
 data class M14VentPeriode(
@@ -16,13 +20,15 @@ data class M14VentPeriode(
 
     val abdelmounen_Doit_Etre_Ici: Boolean = false,
 
-
     //---------------------------------Forging Keys.Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
     var parent_M9AppCompt_KeyID: String = "",
     var parent_M9AppCompt_DebugInfos: String = "",
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     val son_verification_entre_vent_et_achat_est_fait: Boolean = true,
+
+    val its_limite_active_couleurs: Boolean = false,
+
     // Section StatuesMutable
     val credit_Vents_Totale: Double = 0.0,
     val cash_Vents_Totale: Double = 0.0,
@@ -40,10 +46,7 @@ data class M14VentPeriode(
 
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.SoquetteNonDefinie,
-
-    val its_limite_active_couleurs: Boolean = false,
-
- ) {
+) {
     fun get_DebugInfos(): String {
         return buildString {
             append(keyID.takeLast(3))
@@ -59,12 +62,11 @@ data class M14VentPeriode(
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DatasM14VentPeriode"
         )
-
-        fun remove_ref() {
+        fun remove_ref(){
             ref.removeValue()
         }
 
-        fun generePushKey() = M00CentralParametresOfAllApps.genereUnPushKeyFireBase(ref)
+        fun generePushKey() = RepositorysMainSetter.Companion.genereUnPushKeyFireBase(ref)
 
         fun get_Default() = M14VentPeriode()
 
@@ -81,34 +83,32 @@ data class M14VentPeriode(
             ventsList: List<M10OperationVentCouleur>,
             tariffsList: List<M13TarificationInfos>,
         ): Sums_Data {
-            var totalVentes = 0.0
+            var totalVentes    = 0.0
             var totalBenifices = 0.0
-            var onCommandBons = 0
-            var creditsBons = 0.0
-            var creditSum = 0.0
-            var cashSum = 0.0
+            var onCommandBons  = 0
+            var creditsBons    = 0.0
+            var creditSum      = 0.0
+            var cashSum        = 0.0
 
             // Filter bons that belong to this period
             val periodBons = bonsList.filter { it.parent_M14VentPeriod_KeyId == this.keyID }
 
             periodBons.forEach { bon ->
                 val bonSums = bon.sum_totale_et_benifice(ventsList, tariffsList)
-                totalVentes += bonSums.totale_vents
+                totalVentes    += bonSums.totale_vents
                 totalBenifices += bonSums.benifices_vents
 
                 when (bon.etateActuellementEst) {
                     M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit,
                     M8BonVent.EtateActuellementEst.Credit -> {
                         creditsBons += 1.0
-                        creditSum += bonSums.totale_vents
+                        creditSum   += bonSums.totale_vents
                     }
-
                     M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                     M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
                         onCommandBons++
                         cashSum += bonSums.totale_vents
                     }
-
                     else -> {
                         cashSum += bonSums.totale_vents
                     }
@@ -116,12 +116,12 @@ data class M14VentPeriode(
             }
 
             return Sums_Data(
-                totale_vents = totalVentes,
+                totale_vents     = totalVentes,
                 totale_benifices = totalBenifices,
-                on_command_bons = onCommandBons,
-                credits_bons = creditsBons,
-                credit_sum = creditSum,
-                totale_cash = cashSum,
+                on_command_bons  = onCommandBons,
+                credits_bons     = creditsBons,
+                credit_sum       = creditSum,
+                totale_cash      = cashSum,
             )
         }
     }

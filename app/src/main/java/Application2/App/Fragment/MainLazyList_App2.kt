@@ -1,6 +1,6 @@
 package Application2.App.Fragment
 
-import Application2.App.App.ViewModel.ViewModel_MainFragment
+import Application2.App.App.ViewModel.Feature.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.Item_Produit_AppEcranPresntoireJemlaCom
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
@@ -89,7 +89,6 @@ fun MainLazyList_App2(
             null,
             Filter_Affichage_Mode_Proto.Tablette_Et_Echants ->
                 sortedProductWithColors
-
 
             Filter_Affichage_Mode_Proto.Echants_Seulement ->
                 sortedProductWithColors.filter { (_, colors) -> colors.any { it.its_in_echantiallants } }

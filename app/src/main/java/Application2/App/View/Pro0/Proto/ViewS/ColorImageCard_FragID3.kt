@@ -1,6 +1,6 @@
 package Application2.App.View.Pro0.Proto.ViewS
 
-import Application2.App.App.ViewModel.ViewModel_MainFragment
+import Application2.App.App.ViewModel.Feature.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import Application2.App.View.Pro0.Proto.ViewS.Views.Image_Displaye_app2
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos

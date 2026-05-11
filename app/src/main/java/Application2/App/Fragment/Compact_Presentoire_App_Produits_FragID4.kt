@@ -1,6 +1,6 @@
 package Application2.App.Fragment
 
-import Application2.App.App.ViewModel.ViewModel_MainFragment
+import Application2.App.App.ViewModel.Feature.ViewModel_MainFragment
 import Application2.App.Base.Modules.ConnexionCard_App2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.ifTrue
