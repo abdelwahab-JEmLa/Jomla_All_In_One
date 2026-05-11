@@ -2,6 +2,7 @@ package EntreApps.Shared.Models.Relative_Produits.Models
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit.Companion.filter_passive
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import android.util.Log
 import androidx.room.Entity
@@ -85,6 +86,14 @@ data class M16CategorieProduit(
                         "Timestamp=${category.dernierTimeTampsSynchronisationAvecFireBase}"
             )
         }
+
+        /**
+         * Keeps only categories whose [id] appears in [activeProductCategoryIds] —
+         * i.e. the distinct [M01Produit.idParentCategorie] values from products
+         * that survived [M01Produit.filter_passive].
+         */
+        fun List<M16CategorieProduit>.filter_passive(
+            activeProductCategoryIds: List<Long>,
+        ): List<M16CategorieProduit> = filter { it.id in activeProductCategoryIds }
     }
 }
-

@@ -4,9 +4,13 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit.Companion.filter_passive
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit.Companion.filter_passive
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos.Companion.filter_passive_datas
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos.Companion.filter_passive
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import android.widget.Toast
@@ -108,16 +112,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
                     initDatasProgressEtate = p
                 )
         }
-
         progress(1 / 9f)
-        val products  = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
-        progress(2 / 9f)
-        val colours   = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
-        progress(3 / 9f)
-        val clients   = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
-        progress(4 / 9f)
-        val categories = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAll()
-        progress(5 / 9f)
 
         // Try local DB first; fall back to Firebase if the compt is not yet cached locally.
         val appCompt: M09AppCompt? = run {
@@ -138,6 +133,26 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             remote
         }
 
+        val limiteCouleursOuLeurLastAchateEstMoinQueJour =
+            appCompt?.limite_couleurs_ou_leur_last_achate_est_moin_que_jour
+
+        val colours   = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll().filter_passive_datas(
+            20
+        )
+
+        progress(2 / 9f)
+        val products  = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
+            .filter_passive(colours.map { it.parentBProduitInfosKeyID }.distinct())
+
+        progress(3 / 9f)
+        val clients   = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
+        progress(4 / 9f)
+
+        val categories = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAll()
+            .filter_passive(products.map { it.idParentCategorie }.distinct())
+
+        progress(5 / 9f)
+
         if (appCompt == null) {
             AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value =
                 AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(
@@ -152,6 +167,8 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         val ventPeriodes   = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
         progress(8 / 9f)
         val tarification   = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
+            .filter_passive(products.map { it.keyID }.distinct())
+
         val operationVentCouleurs =
             AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
 

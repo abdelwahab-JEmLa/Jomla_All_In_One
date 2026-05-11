@@ -240,7 +240,6 @@ fun AppNavHost(
 
                 composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
                     A_Compact_Presentoire_App_Produits_App4(
-                        fragmentNavigationHandler=fragmentNavigationHandler_NewProto,
                         viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                     )
                 }

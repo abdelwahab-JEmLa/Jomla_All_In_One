@@ -44,7 +44,7 @@ data class M3CouleurProduitInfos(
 
     val extensionDisponible: String = "webp", // Default extension
 
-    var dernier_achant_timeTamp: Long = 0,
+    var dernier_achant_timeTamp: Long =0,
 ) {
     fun to_Map(): Map<String, Any?> = mapOf(
         "keyID" to keyID,
@@ -202,6 +202,24 @@ data class M3CouleurProduitInfos(
 
             // Return incremented filename
             return "${prefix}_${currentNumber + 1}"
+        }
+
+        fun List<M3CouleurProduitInfos>.filter_passive_datas(
+            limite_couleurs_ou_leur_last_achate_est_moin_que_jour: Int?,
+        ): List<M3CouleurProduitInfos> {
+            val limitMs: Long? =
+                limite_couleurs_ou_leur_last_achate_est_moin_que_jour?.times(24L)
+                    ?.times(60L)?.times(60L)?.times(1_000L)
+            val now = System.currentTimeMillis()
+            
+            return filter { m3 ->
+                val referenceTimestamp =
+                    if (m3.dernier_achant_timeTamp > 0L) m3.dernier_achant_timeTamp
+                    else m3.creationTimestamp     //<--
+                    //TODO(1): pk quand creationTimestamp ca ne fait pas le comparaison de limite_couleurs_ou_leur_last_achate_est_moin_que_jour - creationTimestamp 
+                
+                (now - referenceTimestamp) < (limitMs ?: 0L)
+            }
         }
     }
 }

@@ -5,9 +5,9 @@ import Application2.App.Base.Modules.WifiTransferDatas_PresenterApp
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
-import EntreApps.Shared.Models.Relative_Produits.Models.Functions.get_filtred_m3_by_limite_period
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos.Companion.filter_passive_datas
 import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
@@ -92,32 +92,29 @@ class ViewModel_MainFragment(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            // One-time fetches (no Flow)
             val ventPeriods = appDatabase.dao_M14VentPeriode().getAll()
-            val products    = dao_M1Produit.getAll()
-            val colors      = dao_M3CouleurProduitInfos.getAll()
+            val products = dao_M1Produit.getAll()
+            val limiteCouleursOuLeurLastAchateEstMoinQueJour = appDatabase.dao_M9AppCompt()
+                .getBy_M00_Lence_Key().limite_couleurs_ou_leur_last_achate_est_moin_que_jour
+
+            val filteredColors = dao_M3CouleurProduitInfos.getAll().filter_passive_datas(
+                limite_couleurs_ou_leur_last_achate_est_moin_que_jour = 1
+            )
 
             productsReady.value = true
-            colorsReady.value   = true
-
-            // Keep only colors whose dernier_achant_timeTamp does not exceed the
-            // creationTimestamp of the most-recent VentPeriode, but only when
-            // its_limite_active_couleurs is enabled on that period.
-            val filteredColors = get_filtred_m3_by_limite_period(ventPeriods, colors)
+            colorsReady.value = true
 
             _uiState.update {
                 it.copy(
-                    list_M1Produit         = products,
-                    list_M3CouleurProduit  = filteredColors,
+                    list_M1Produit = products,
+                    list_M3CouleurProduit = filteredColors,
                     list_ProductWithColors = get_grouped_datas(filteredColors, products),
                 )
             }
-            wifi.list_M1Produit        = products
+            wifi.list_M1Produit = products
             wifi.list_M3CouleurProduit = filteredColors
         }
 
-        // Mirror the wifi-received tablette filter into UiState so the UI reacts automatically.
-        // tabletteDisplayerMode is null for any mode other than Tablette_Et_Echants (host sent "null").
         viewModelScope.launch {
             wifi.state
                 .distinctUntilChangedBy { it.filter_Affichage_Mode_Proto }

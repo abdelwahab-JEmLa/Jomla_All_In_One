@@ -281,7 +281,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             try {
                 appDatabase.dao_M9AppCompt().insert(data)
-                val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
+                val updates = mutableMapOf<String, Any>(data.keyID to data.to_Map())
                 M09AppCompt.Companion.ref.updateChildren(updates).await()
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
@@ -315,7 +315,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             try {
                 appDatabase.dao_M9AppCompt().update(data)
-                val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
+                val updates = mutableMapOf<String, Any>(data.keyID to data.to_Map())
                 M09AppCompt.Companion.ref.updateChildren(updates).await()
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {

@@ -2,10 +2,10 @@ package Application4.App.Fragment.ID1.Fragment
 
 import A_Main.Shared.Views.Dialogs.B.Dialoge.PressistatntMainActivityButtons_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.a.ID1_Fe.Feature.Options.a.Main.FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -22,23 +22,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
 @Composable
 fun A_Compact_Presentoire_App_Produits_App4(
     modifier: Modifier = Modifier,
-    onClickImageToShowControles: () -> Unit = {},
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
-
-    ) {      //<--
-    //TODO(1): ajout un log comme celui de l autre lazy column pour trouve le targed m3
+) {
     val active_Datas = viewModelNewProtoPatterns.active_Datas
 
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val isInitDone = uiState.initDatasProgressEtate >= 1f
-
 
     val allCategories: List<M16CategorieProduit>? by remember {
         derivedStateOf {
@@ -83,15 +80,26 @@ fun A_Compact_Presentoire_App_Produits_App4(
             )
         }
     } else {
-        Box() {
+        Box(
+            modifier = Modifier.semantics(mergeDescendants = true) {
+                set(value = active_Datas.list_M03CouleurProduitInfos?.find {
+                    it.keyID == "-OWDMGKsnReAaqOHO5iH"
+                }, key = SemanticsPropertyKey(""))
+
+                set(value = active_Datas.list_M03CouleurProduitInfos?.size, key = SemanticsPropertyKey("size"))
+            }
+        ) {
             Etager_LazyColumn(
                 modifier = modifier,
-
                 onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
                 justMovedProductKeyID = justMovedProductKeyID,
                 uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),
             )
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)
+
+            FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
+                appDatabase = viewModelNewProtoPatterns.appDatabase
+            )
         }
     }
 

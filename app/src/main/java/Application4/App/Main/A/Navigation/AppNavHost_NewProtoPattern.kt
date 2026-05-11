@@ -91,7 +91,6 @@ fun AppNavHost_NewProtoPattern(
                     )
                 } else {
                     A_Compact_Presentoire_App_Produits_App4(
-                        fragmentNavigationHandler=fragmentNavigationHandler,
                         viewModelNewProtoPatterns=viewModelNewProtoPatterns,
                     )
                 }

@@ -4,6 +4,7 @@ import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit.Companion.filter_passive
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -318,6 +319,15 @@ data class M13TarificationInfos(
         }
 
 
+        /**
+         * Keeps only tarifications whose [parent_M1Produit_KeyId] appears in
+         * [activeProductKeyIDs] — i.e. products that are still considered active
+         * after [M01Produit.filter_passive] has been applied.
+         */
+        fun List<M13TarificationInfos>.filter_passive(
+            activeProductKeyIDs: List<String>,
+        ): List<M13TarificationInfos> = filter { it.parent_M1Produit_KeyId in activeProductKeyIDs }
+
         fun analyzeSalesDistribution(
             groupedSales: List<Map.Entry<TypeChoisi, List<M01Produit>>>
         ): String {
@@ -339,4 +349,3 @@ data class M13TarificationInfos(
         }
     }
 }
-

@@ -352,5 +352,8 @@ data class M01Produit(
         ): Boolean {
             return ancien.id == newData.id
         }
+        fun List<M01Produit>.filter_passive(
+            activeColourParentKeyIDs: List<String>,
+        ): List<M01Produit> = filter { it.keyID in activeColourParentKeyIDs }
     }
 }
