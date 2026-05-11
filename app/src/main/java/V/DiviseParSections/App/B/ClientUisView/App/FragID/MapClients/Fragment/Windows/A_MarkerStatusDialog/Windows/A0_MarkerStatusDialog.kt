@@ -91,7 +91,7 @@ private fun CustomStatusDropdownMenu(
                             .fillMaxWidth()
                             .padding(2.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = colorResource(id = status.color)
+                            containerColor = status.color
                         ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {

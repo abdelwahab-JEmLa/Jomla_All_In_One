@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -82,7 +81,7 @@ fun Situation_Card_ItemView(
             .fillMaxWidth()
             .height(if (isVersement || isDemandeVersement) 220.dp else 140.dp),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = relative_M8BonVent.etateActuellementEst.color)
+            containerColor = relative_M8BonVent.etateActuellementEst.color
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

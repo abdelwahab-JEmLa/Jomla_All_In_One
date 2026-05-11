@@ -43,7 +43,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             if (datas.isNotEmpty()) {
                 datas.forEach { appDatabase.dao_M03CouleurProduitInfos().update(it) }
-                val updates: Map<String, Any> = datas.associate { it.keyID to it.toFirebaseMap() }
+                val updates: Map<String, Any> = datas.associate { it.keyID to it.to_Map() }
                 M3CouleurProduitInfos.Companion.ref.updateChildren(updates).await()
             }
             withContext(Dispatchers.Main) {
@@ -139,7 +139,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         }
         composScope.launch {
             appDatabase.dao_M03CouleurProduitInfos().update(data)
-            val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
+            val updates = mutableMapOf<String, Any>(data.keyID to data.to_Map())
             M3CouleurProduitInfos.Companion.ref.updateChildren(updates).await()
             withContext(Dispatchers.Main) { onSuccess() }
         }

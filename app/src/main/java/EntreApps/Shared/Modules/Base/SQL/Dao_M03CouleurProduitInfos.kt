@@ -15,10 +15,13 @@ interface Dao_M03CouleurProduitInfos {
     @Query("SELECT * FROM M3CouleurProduitInfos")
     fun getAllFlow(): Flow<List<M3CouleurProduitInfos>>
 
+    @Upsert
+    suspend fun upsert(data: M3CouleurProduitInfos)
+
     @Update
     suspend fun update(data: M3CouleurProduitInfos)
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: M3CouleurProduitInfos)
 
     @Upsert
@@ -30,7 +33,7 @@ interface Dao_M03CouleurProduitInfos {
     @Query("SELECT * FROM M3CouleurProduitInfos ")
     suspend fun getAll(): MutableList<M3CouleurProduitInfos>
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(articlesBasesStatTabelles: List<M3CouleurProduitInfos>)
 
     @Query("DELETE FROM M3CouleurProduitInfos")

@@ -37,7 +37,7 @@ fun BonVentInfoCard(
     // Background color matches EtateActuellementEst color
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = Color(context.getColor(m8BonVent.etateActuellementEst.color)),
+        color = m8BonVent.etateActuellementEst.color,
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(

@@ -112,7 +112,7 @@ fun moveColorsWithoutImagesToNonActive(
         // ── Phase 1 · Colors ─────────────────────────────────────────────────
         try {
             val nonActiveColors: Map<String, Any> =
-                colorsToMove.associate { it.keyID to it.toFirebaseMap() }
+                colorsToMove.associate { it.keyID to it.to_Map() }
             M3CouleurProduitInfos.ref_Non_Active_Datas.updateChildren(nonActiveColors).await()
 
             val nullColors: Map<String, Any?> = colorsToMove.associate { it.keyID to null }

@@ -53,9 +53,7 @@ fun ConfirmationButton(
     // Helper function to get color from enum
     @Composable
     fun getStateColor(state: EtateActuellementEst?): Color {
-        return state?.let {
-            colorResource(it.color)
-        } ?: Color(0xFF9E9E9E) // Default gray if state is null
+        return state?.color ?: Color(0xFF9E9E9E)
     }
 
     // Helper function to get appropriate icon based on state

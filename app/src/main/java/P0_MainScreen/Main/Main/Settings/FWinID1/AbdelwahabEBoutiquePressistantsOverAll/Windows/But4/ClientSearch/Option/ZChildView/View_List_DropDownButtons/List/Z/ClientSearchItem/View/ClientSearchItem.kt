@@ -197,10 +197,8 @@ fun ClientSearchItem(
                         modifier = Modifier
                             .size(12.dp)
                             .background(
-                                color = Color(
-                                    latestBonVent?.etateActuellementEst?.color
-                                        ?: m2Client.actuelleEtat.color
-                                ),
+                                color = latestBonVent?.etateActuellementEst?.color
+                                    ?: Color.Red,
                                 shape = CircleShape
                             )
                     )

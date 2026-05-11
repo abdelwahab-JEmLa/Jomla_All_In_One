@@ -39,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -130,12 +129,8 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
             aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
         },
         colors = ButtonDefaults.filledTonalButtonColors(
-            containerColor = Color(
-                ContextCompat.getColor(context, relative_Etate.color)
-            ).copy(alpha = 0.2f),
-            contentColor = Color(
-                ContextCompat.getColor(context, relative_Etate.color)
-            )
+            containerColor = relative_Etate.color.copy(alpha = 0.2f),
+            contentColor = relative_Etate.color
         )
     ) {
         Row(

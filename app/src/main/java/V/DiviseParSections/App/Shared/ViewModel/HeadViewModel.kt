@@ -1,14 +1,15 @@
 package V.DiviseParSections.App.Shared.ViewModel
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Modules.Base.AppDatabase
+import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.a.toggle_update_expanded_M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
-import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Modules.Base.AppDatabase
-import EntreApps.Shared.Modules.Loading_Datas.Init.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesAcheteModele
@@ -72,7 +73,7 @@ data class UiState(
 open class HeadViewModel(
     val aCentralFacade: ACentralFacade,
     val context: Context,
-    val database: AppDatabase,
+    val appDatabase: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3
 ) : ViewModel() {
     val focusedValuesGetter =aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
@@ -303,7 +304,7 @@ open class HeadViewModel(
                 setLoading(true)
 
                 // Clear Room database
-                database.soldArticlesModelDao().deleteAll()
+                appDatabase.soldArticlesModelDao().deleteAll()
 
 
                 refSoldArticlesTabelle.removeValue()
@@ -358,7 +359,7 @@ open class HeadViewModel(
             refDBJetPackExport.child(newArticle.id.toString()).setValue(newArticle)
 
             // Add to Room database
-            database.dao_M1Produit().insert(newArticle)
+            appDatabase.dao_M1Produit().insert(newArticle)
             newArticle
 
         } catch (exception: Exception) {
@@ -618,7 +619,7 @@ open class HeadViewModel(
 
 
                 // Update Room database
-                database.soldArticlesModelDao().insert(updatedSale)
+                appDatabase.soldArticlesModelDao().insert(updatedSale)
 
                 // Update UI state
                 _uiState.update { state ->
@@ -655,7 +656,7 @@ open class HeadViewModel(
                 // Only proceed if article is found
                 articleToDelete?.let { article ->
                     // Delete from database
-                    database.soldArticlesModelDao().delete(article)
+                    appDatabase.soldArticlesModelDao().delete(article)
 
                     // Update the UI state
                     _uiState.update { state ->
@@ -676,7 +677,7 @@ open class HeadViewModel(
             _currentSaleInWindows.value?.let { sale ->
                 try {
                     // Update the sale in the database
-                    database.soldArticlesModelDao().insert(sale)
+                    appDatabase.soldArticlesModelDao().insert(sale)
 
                     // Update the UI state
                     _uiState.update { state ->
@@ -744,7 +745,7 @@ open class HeadViewModel(
                 id = maxId + 1, nom = "NewArrivale", position = 1, displayedHeader = true
             )
 
-            database.dao_16CategorieProduit().insert(newArrivaleCategory)
+            appDatabase.dao_16CategorieProduit().insert(newArrivaleCategory)
 
         }
     }
@@ -845,9 +846,9 @@ open class HeadViewModel(
             snapshot.getValue(DiviseurDeDisplayProductForEachClient::class.java)
         }
 
-        database.diviseurDeDisplayProductForEachClientDao().deleteAll()
+        appDatabase.diviseurDeDisplayProductForEachClientDao().deleteAll()
 
-        database.diviseurDeDisplayProductForEachClientDao().insertAll(it)
+        appDatabase.diviseurDeDisplayProductForEachClientDao().insertAll(it)
         updateLoadingProgress(fl)
     }
 
@@ -857,9 +858,9 @@ open class HeadViewModel(
             snapshot.getValue(DevicesTypeManager::class.java)
         }
 
-        database.devicesTypeManagerDao().deleteAll()
+        appDatabase.devicesTypeManagerDao().deleteAll()
 
-        database.devicesTypeManagerDao().insertAll(devicesTypeManager)
+        appDatabase.devicesTypeManagerDao().insertAll(devicesTypeManager)
         updateLoadingProgress(fl)
     }
 
@@ -904,7 +905,7 @@ open class HeadViewModel(
         val colors = colorsSnapshot.children.mapNotNull { snapshot ->
             snapshot.getValue(ColorsArticlesTabelle::class.java)
         }
-        database.colorsArticlesDao().insertAll(colors)
+        appDatabase.colorsArticlesDao().insertAll(colors)
         updateLoadingProgress(fl)
     }
 
@@ -915,7 +916,7 @@ open class HeadViewModel(
         val soldArticles = soldArticlesSnapshot.children.mapNotNull { snapshot ->
             snapshot.getValue(SoldArticlesTabelle::class.java)
         }
-        database.soldArticlesModelDao().insertAll(soldArticles)
+        appDatabase.soldArticlesModelDao().insertAll(soldArticles)
         updateLoadingProgress(fl)
     }
 
@@ -958,7 +959,7 @@ open class HeadViewModel(
 
     init {
         viewModelScope.launch {
-            if (database.dao_M1Produit().getAll().size == 0) {
+            if (appDatabase.dao_M1Produit().getAll().size == 0) {
                 importFromFirebase()
             }
             loadDataCollectOfUiStateFromRoom()
@@ -1007,12 +1008,12 @@ open class HeadViewModel(
             }
             setupAppSettingsListener()
 
-            val colors = database.colorsArticlesDao().getAllOrdred()
-            val soldArticles = database.soldArticlesModelDao().getAll()
-            val devicesTypeManager = database.devicesTypeManagerDao().getAll()
+            val colors = appDatabase.colorsArticlesDao().getAllOrdred()
+            val soldArticles = appDatabase.soldArticlesModelDao().getAll()
+            val devicesTypeManager = appDatabase.devicesTypeManagerDao().getAll()
 
             val diviseurDeDisplayProductForEachClient =
-                database.diviseurDeDisplayProductForEachClientDao().getAll()
+                appDatabase.diviseurDeDisplayProductForEachClientDao().getAll()
 
 
 
@@ -1033,6 +1034,13 @@ open class HeadViewModel(
         }
     }
 
+    fun upsertAll_Room(it: List<M3CouleurProduitInfos>) {
+           viewModelScope.launch {
+               appDatabase.dao_M03CouleurProduitInfos().upsertAllDatas(
+                   it
+               )
+           }
+    }
 }
 
 // Update the price mapping to include client ID

@@ -96,7 +96,7 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
             .fillMaxWidth()
             .wrapContentHeight(),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = relative_M8BonVent.etateActuellementEst.color)
+            containerColor = relative_M8BonVent.etateActuellementEst.color
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

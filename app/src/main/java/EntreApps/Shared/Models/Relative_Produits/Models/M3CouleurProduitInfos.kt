@@ -1,22 +1,17 @@
 package EntreApps.Shared.Models.Relative_Produits.Models
 
-import EntreApps.Shared.Models.Relative_Vents.Models.AbdelwahabJomla_Client_Speciale
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import EntreApps.Shared.Models.Relative_Vents.Models.AbdelwahabJomla_Client_Speciale
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.firestore.CollectionReference
 import java.io.File
 
 @Entity
-data class
-
-
-M3CouleurProduitInfos(
+data class M3CouleurProduitInfos(
     @PrimaryKey
-    var keyID: String = RepositorysMainGetter.Companion.getPushFireBase(ref),
+    var keyID: String = generePushKey(),
     var debugInfos: String = "",
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
@@ -49,8 +44,7 @@ M3CouleurProduitInfos(
 
     val extensionDisponible: String = "webp", // Default extension
 ) {
-
-    fun toFirebaseMap(): Map<String, Any?> = mapOf(
+    fun to_Map(): Map<String, Any?> = mapOf(
         "keyID" to keyID,
         "debugInfos" to debugInfos,
         "creationTimestamp" to creationTimestamp,
@@ -91,8 +85,18 @@ M3CouleurProduitInfos(
     enum class ProcessPositioningInFactory { CreeDepuitRechercheRapid, CreeAuGeneralHandler }
 
     companion object {
-        val ref = central_MainDataBases_RefProduction
-            .child("M03Couleur")
+        const val nam_Model_Str = "M03Couleur"
+
+        val ref = central_MainDataBases_RefProduction.child(nam_Model_Str)
+        val ref_Test = ref
+
+        fun generePushKey() = M00CentralParametresOfAllApps.genereUnPushKeyFireBase(
+            ref
+        )
+        val csv_test = File(
+            M00CentralParametresOfAllApps.central_Local_Csv,
+            "TestDatas/$nam_Model_Str.csv"
+        )
 
 //        val ref = M00CentralParametresOfAllApps.centralRef
 //            .child("B1CouleurOuGoutProduitDataBase")
@@ -103,9 +107,6 @@ M3CouleurProduitInfos(
         //Second Nom Ref_Active_Keys_M03Couleurs
         val ref_listKeys_M3CouleurProduitInfos = ref.child("-00_listKeys_M3CouleurProduitInfos")
 
-        val refFirestore: CollectionReference = RepositorysMainGetter.firestoreCentralRefData
-            .document("M3CouleurProduitInfos")
-            .collection("Datas")
 
         val images_central_Local_storageLink = buildString {
             append(central_Local_storageLink)

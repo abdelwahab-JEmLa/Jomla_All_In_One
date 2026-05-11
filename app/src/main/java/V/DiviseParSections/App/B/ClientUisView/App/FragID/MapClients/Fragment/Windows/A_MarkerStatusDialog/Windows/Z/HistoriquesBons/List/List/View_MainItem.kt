@@ -289,7 +289,8 @@ fun View_MainItem(
             .fillMaxWidth()
             .height(130.dp),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = etateActuellementEst.color)
+            containerColor = relative_M8BonVent.etateActuellementEst.color
+
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

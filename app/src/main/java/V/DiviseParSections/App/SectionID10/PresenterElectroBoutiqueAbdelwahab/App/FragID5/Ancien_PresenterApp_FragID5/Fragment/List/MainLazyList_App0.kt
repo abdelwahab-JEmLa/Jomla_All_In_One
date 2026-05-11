@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List
 
-import EntreApps.Shared.Models.Relative_Vents.Models.Jomla_Clients
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.Jomla_Clients
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.CategoryStickyHeader
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Reset_its_pour_affiche_au_presenter
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.List.View.Updated_list_m3couleurs_Affichable_Au_Presenters
@@ -317,12 +317,20 @@ fun Etager_LazyColumn_App0(
                                 it.parentId1ProduitInfosDebugName to it
                             },
                         onDismissDropdown = { showUploadDropdown = false }
-                    )
+                    )  {
+                        viewModelHeadViewModel.upsertAll_Room(
+                            it
+                        )
+                    }
 
                     Reset_its_pour_affiche_au_presenter(
                         allColors = repo3CouleurProduit_datasValue(),
                         onDismissDropdown = { showUploadDropdown = false }
-                    )
+                    ) {
+                        viewModelHeadViewModel.upsertAll_Room(
+                            it
+                        )
+                    }
 
                 }
             }

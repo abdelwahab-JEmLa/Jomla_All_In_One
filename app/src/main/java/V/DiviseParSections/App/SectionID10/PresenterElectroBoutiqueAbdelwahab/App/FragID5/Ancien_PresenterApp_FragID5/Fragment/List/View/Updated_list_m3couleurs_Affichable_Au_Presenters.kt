@@ -32,6 +32,7 @@ fun Updated_list_m3couleurs_Affichable_Au_Presenters(
     appDatabase: AppDatabase = koinInject(),
     updated_list_m3couleurs_Affichable_Au_Presenters: List<M3CouleurProduitInfos>,
     updated_list_m3couleurs_Affichable_Au_Presenters_filtred: List<Pair<String, M3CouleurProduitInfos>>,
+    on_pour_Room_UpsertAll: (List<M3CouleurProduitInfos>) -> Unit,
 ) {
     var isUploading by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
@@ -83,6 +84,9 @@ fun Updated_list_m3couleurs_Affichable_Au_Presenters(
                         // It will be cleared inside onSuccess, which the repository also
                         // dispatches on Main — after Firebase.updateChildren().await() completes.
                         isUploading = true
+                        on_pour_Room_UpsertAll(
+                            updated_list_m3couleurs_Affichable_Au_Presenters
+                        )
                         RepositorysMainSetter_NewProtoPatterns(
                             appDatabase = appDatabase,
                             context = context
@@ -94,6 +98,7 @@ fun Updated_list_m3couleurs_Affichable_Au_Presenters(
                                 onDismissDropdown()
                             }
                         )
+
                     }
                 ) { Text("Envoyer", color = MaterialTheme.colorScheme.error) }
             },
@@ -112,6 +117,7 @@ fun Reset_its_pour_affiche_au_presenter(
     allColors: List<M3CouleurProduitInfos>,
     context: Context = koinInject(),
     appDatabase: AppDatabase = koinInject(),
+    on_pour_Room_UpsertAll: (List<M3CouleurProduitInfos>) -> Unit,
 ) {
     var isResetting by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
@@ -159,22 +165,22 @@ fun Reset_its_pour_affiche_au_presenter(
                     modifier = Modifier.semantics(mergeDescendants = true) {},
                     onClick = {
                         showConfirmDialog = false
-                        // isResetting is set here on the Main thread (onClick runs on Main).
-                        // It will be cleared inside onSuccess, which the repository also
-                        // dispatches on Main — after Firebase.updateChildren().await() completes.
                         isResetting = true
                         val resetColors = allColors.map { it.copy(its_pour_affiche_au_presenter = false) }
+                        on_pour_Room_UpsertAll(
+                            resetColors
+                        )
                         RepositorysMainSetter_NewProtoPatterns(
                             appDatabase = appDatabase,
                             context = context
                         ).update_List_M3CouleurProduitInfos_BathFireBase(
                             datas = resetColors,
                             onSuccess = {
-                                // Runs on Dispatchers.Main after Firebase write is confirmed.
                                 isResetting = false
                                 onDismissDropdown()
                             }
                         )
+
                     }
                 ) { Text("Réinitialiser", color = MaterialTheme.colorScheme.error) }
             },

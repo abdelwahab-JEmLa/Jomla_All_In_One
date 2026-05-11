@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
+import java.io.File
 
 enum class Compts(val keyId: String) {
     AbdelwahabTravailleChezGros_KeyId("-OV9dYujH9cA3yEx8AY2"),
@@ -47,6 +48,9 @@ data class M00CentralParametresOfAllApps(
     val time_tamp_all_tariffs: Boolean = false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val itsDevMode: Boolean = false,
+
+    val chose_ref_test_For_Datas_Car_C_DevMode: Boolean = true,
+
     val force_next_start_DeleteInsertAll: Boolean = false,
     val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
@@ -81,6 +85,9 @@ data class M00CentralParametresOfAllApps(
         val central_MainDataBases_RefProduction = central_All_References_Production
             .child("A_Main_DataBases")
 
+        val central_Developing_Test = central_All_References_Production
+            .child("Developing_Test")
+
         val centralRef_Non_Active_Datas_PourLightApp = central_All_References_Production
             .child("Z_NonActiveDatas")
 
@@ -88,6 +95,10 @@ data class M00CentralParametresOfAllApps(
         val central_Local_storageLink = buildString {
             append("/storage/emulated/0/Abdelwahab_jeMla.com")
         }
+
+        val central_Local_Csv= File(central_Local_storageLink, "CSV_Export")
+
+//─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
         fun genereUnPushKeyFireBase(ref: DatabaseReference): String {
             return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")

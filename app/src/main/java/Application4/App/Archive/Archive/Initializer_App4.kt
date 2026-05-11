@@ -1,21 +1,20 @@
 package Application4.App.Archive.Archive
 
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
-import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Modules.Base.AppDatabase
 import EntreApps.Shared.Modules.Base.SQL.Dao_M03CouleurProduitInfos
 import EntreApps.Shared.Modules.Base.SQL.Dao_M16CategorieProduit
 import EntreApps.Shared.Modules.Base.SQL.Dao_M1Produit
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Modules.Base.SQL.Dao_M8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.Dao_M10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
-import EntreApps.Shared.Modules.Base.SQL.Dao_M8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt
 import android.content.Context
 import android.net.ConnectivityManager
@@ -85,12 +84,7 @@ object Initializer_App4 {
             }
             launch(Dispatchers.IO) {
                 seedRepo("M3CouleurProduitInfos") {
-                    if (dao_M03CouleurProduitInfos.getAll().isEmpty()) {
-                        fetchWithRetry(M3CouleurProduitInfos.refFirestore)
-                            ?.documents?.mapNotNull { it.toObject(M3CouleurProduitInfos::class.java) }
-                            ?.takeIf { it.isNotEmpty() }?.let { dao_M03CouleurProduitInfos.insertAll(it) }
-                            ?: return@seedRepo
-                    }
+
                     if (isOnline) callerScope.launch(Dispatchers.IO) {
                         DropboxImageSyncer.syncAll(dao_M03CouleurProduitInfos) { p ->
                             callerScope.launch { setProgress("M3CouleurProduitInfos", p) }

@@ -593,7 +593,7 @@ fun BonVentReplayCard(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = getColorFromResource(bonVent.etateActuellementEst.color)
+            containerColor = bonVent.etateActuellementEst.color
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {

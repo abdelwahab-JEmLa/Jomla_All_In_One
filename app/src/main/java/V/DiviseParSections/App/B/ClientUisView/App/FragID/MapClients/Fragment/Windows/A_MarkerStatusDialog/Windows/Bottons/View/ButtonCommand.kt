@@ -25,10 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import org.koin.compose.koinInject
 
 private const val TAG = "CommandButton"
@@ -117,18 +115,8 @@ fun CommandButton(
             }
         },
         colors = ButtonDefaults.filledTonalButtonColors(
-            containerColor = Color(
-                ContextCompat.getColor(
-                    context,
-                    relative_Etate.color
-                )
-            ).copy(alpha = 0.2f),
-            contentColor = Color(
-                ContextCompat.getColor(
-                    context,
-                    relative_Etate.color
-                )
-            )
+            containerColor = relative_Etate.color.copy(alpha = 0.2f),
+            contentColor = relative_Etate.color
         )
     ) {
         Row(

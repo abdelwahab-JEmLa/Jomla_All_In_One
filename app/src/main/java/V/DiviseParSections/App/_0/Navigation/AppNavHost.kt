@@ -258,7 +258,7 @@ fun AppNavHost(
                             }
 
                             // Clear the database in coroutine
-                            viewModel.database.soldArticlesModelDao().deleteAll()
+                            viewModel.appDatabase.soldArticlesModelDao().deleteAll()
 
                             // Clear Firebase references
                             val database = Firebase.database

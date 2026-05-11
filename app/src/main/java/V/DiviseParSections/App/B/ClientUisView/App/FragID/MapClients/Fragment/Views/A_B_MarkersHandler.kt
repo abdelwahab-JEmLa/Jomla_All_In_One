@@ -29,7 +29,7 @@ import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -593,12 +593,8 @@ fun configureMarkerInfoWindow(
 
     val container = marker.infoWindow.view.findViewById<LinearLayout>(containerResourceId)
     container?.let { it ->
-        val backgroundColor = viewModel.getLastTransaction(client)?.let {
-            ContextCompat.getColor(
-                context,
-                viewModel.getLastTransaction(client)!!.etateActuellementEst.color
-            )
-        }
+        val backgroundColor = viewModel.getLastTransaction(client)
+            ?.etateActuellementEst?.color?.toArgb()
 
         if (backgroundColor != null) {
             it.setBackgroundColor(backgroundColor)
