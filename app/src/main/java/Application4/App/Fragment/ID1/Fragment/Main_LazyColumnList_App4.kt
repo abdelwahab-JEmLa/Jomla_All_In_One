@@ -49,7 +49,12 @@ fun Main_LazyColumnList_App4(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
-    debug_count: List<M3CouleurProduitInfos>,
+    raw_filterByDepot: List<M3CouleurProduitInfos> = ProductListFilterLogic.filterByDepot(relative_list_m3 ?: emptyList()),
+    filterByMode: List<M3CouleurProduitInfos> = ProductListFilterLogic.filterByMode(
+        relative_list_m3 ?: emptyList(),
+        mode = Filter_Affichage_Mode_Proto.Echants_Seulement,
+        ventCouleurs = relative_list_m10_vents
+    ),
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second

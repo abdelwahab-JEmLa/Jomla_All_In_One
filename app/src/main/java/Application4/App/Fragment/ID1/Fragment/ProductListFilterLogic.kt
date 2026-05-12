@@ -21,9 +21,9 @@ object ProductListFilterLogic {
         if (q.isEmpty()) return list
         return list.filter {
             it.nomCouleurStrSiSonImageDispo.lowercase().contains(q) ||
-            it.keyID.lowercase().contains(q) ||
-            it.parentBProduitInfosKeyID.lowercase().contains(q) ||
-            it.parentId1ProduitInfosDebugName.lowercase().contains(q)
+                    it.keyID.lowercase().contains(q) ||
+                    it.parentBProduitInfosKeyID.lowercase().contains(q) ||
+                    it.parentId1ProduitInfosDebugName.lowercase().contains(q)
         }
     }
 
@@ -80,7 +80,7 @@ object ProductListFilterLogic {
         classement: Map<String, Int>,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
         val filtered = rawColors
-            ?.let { filterByDepot(it) }
+            ?.let { if (mode == Filter_Affichage_Mode_Proto.Panie) it else filterByDepot(it) }
             ?.let { filterByQuery(it, query) }
             ?.let { filterByMode(it, mode, ventCouleurs) }
             ?: return emptyList()

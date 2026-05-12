@@ -159,6 +159,7 @@ fun PressistatntMainActivityButtons_App4(
     fun applyMode(mode: ProductDisplayMode) {
         val isPanie = mode == ProductDisplayMode.Panie
         viewModelNewProtoPatterns.active_Datas.its_Panie_Mode = isPanie
+
         viewModelNewProtoPatterns.active_Datas.isEchatillantsMode =
             mode == ProductDisplayMode.Echantillons
         viewModelNewProtoPatterns.active_Datas.filter_echatilaten = ""
@@ -426,7 +427,11 @@ fun PressistatntMainActivityButtons_App4(
                                 label = "Panier",
                                 icon = Icons.Default.ShoppingCart,
                                 isSelected = currentMode == ProductDisplayMode.Panie,
-                                onClick = { applyMode(ProductDisplayMode.Panie); showDropdown = false }
+                                onClick = {
+                                    applyMode(ProductDisplayMode.Panie)
+                                    activeDatas.filterAffichageMode_Proto = Filter_Affichage_Mode_Proto.Panie
+
+                                    ; showDropdown = false }
                             )
                         }
                     }

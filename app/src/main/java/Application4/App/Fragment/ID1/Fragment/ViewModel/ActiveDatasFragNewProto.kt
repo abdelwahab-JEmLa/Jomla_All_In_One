@@ -29,7 +29,7 @@ class ActiveDatasFragNewProto {
 
     var isEchatillantsMode: Boolean by mutableStateOf(false)
     var its_Panie_Mode: Boolean by mutableStateOf(false)
-    var filterAffichageMode_Proto: Filter_Affichage_Mode_Proto by mutableStateOf(Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement)
+    var filterAffichageMode_Proto: Filter_Affichage_Mode_Proto by mutableStateOf(Filter_Affichage_Mode_Proto.Panie)
 
     /** Search query that filters displayed products by name (case-insensitive). */
     var filter_echatilaten: String by mutableStateOf("")
