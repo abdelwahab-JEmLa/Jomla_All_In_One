@@ -49,6 +49,7 @@ fun Main_LazyColumnList_App4(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
+    debug_count: List<M3CouleurProduitInfos>,
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
@@ -56,7 +57,6 @@ fun Main_LazyColumnList_App4(
     val wifiState by viewModel.wifiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Ordered list of M3 color keys by most-recent purchase — used to sort echantillants.
     val set_couleursKey_echantilliants_achat by remember {
         derivedStateOf {
             uiState_NewProtoPatterns_viewModel.first.list_Datas?.m10OperationVentCouleur

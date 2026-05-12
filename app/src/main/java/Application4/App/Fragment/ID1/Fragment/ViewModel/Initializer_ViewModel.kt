@@ -137,7 +137,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             appCompt?.limite_couleurs_ou_leur_last_achate_est_moin_que_jour
 
         val colours   = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll().filter_passive_datas(
-            20
+            1000
         )
 
         progress(2 / 9f)

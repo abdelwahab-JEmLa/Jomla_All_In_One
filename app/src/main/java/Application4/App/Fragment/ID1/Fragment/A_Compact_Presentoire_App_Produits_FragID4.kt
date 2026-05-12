@@ -105,7 +105,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 outlined_search_Query,
                 Pair(uiState, viewModelNewProtoPatterns),
                 { product -> selectedProductForCategoryChange = product },
-                justMovedProductKeyID
+                justMovedProductKeyID,
+                ProductListFilterLogic.filterByDepot(relative_list_m3 ?: emptyList())
             )
 
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)
