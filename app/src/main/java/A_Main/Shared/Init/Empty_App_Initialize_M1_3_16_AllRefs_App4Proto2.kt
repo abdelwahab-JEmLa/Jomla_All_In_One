@@ -8,8 +8,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 
-private typealias Repo = Empty_App_Initialize_M1_3_16_Filtered_App4Proto2.Repo
-private typealias SeedResult = Empty_App_Initialize_M1_3_16_Filtered_App4Proto2.SeedResult
 
 object Empty_App_Initialize_M1_3_16_AllRefs_App4Proto2 {
 
@@ -72,13 +70,13 @@ object Empty_App_Initialize_M1_3_16_AllRefs_App4Proto2 {
         }
 
         mutex.withLock { Repo.entries.forEach { progress[it.name] = 0f } }
-        val isOnline = Empty_App_Initialize_M1_3_16_Filtered_App4Proto2.isInternetAvailable(context)
+        val isOnline = isInternetAvailable(context)
 
         seedRepo(Repo.M3CouleurProduitInfos, isOnline) { seedColors() }
         seedRepo(Repo.M1Produit,             isOnline) { seedProducts() }
         seedRepo(Repo.M16CategorieProduit,   isOnline) { seedCategories() }
 
         on_Progress_Datas(1f)
-        return SeedResult(allColors, allProducts, allCategories)
+        return A_Main.Shared.Init.SeedResult(allColors, allProducts, allCategories)
     }
 }

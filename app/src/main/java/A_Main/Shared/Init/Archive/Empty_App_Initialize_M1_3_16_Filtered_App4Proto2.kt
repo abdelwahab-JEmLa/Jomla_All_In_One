@@ -1,37 +1,14 @@
-package A_Main.Shared.Init
+package A_Main.Shared.Init.Archive
 
-import EntreApps.Shared.Models.AppType
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import android.content.Context
-import android.net.ConnectivityManager
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.tasks.await
-
+/*
 object Empty_App_Initialize_M1_3_16_Filtered_App4Proto2 {
 
-    enum class Repo { M1Produit, M16CategorieProduit, M3CouleurProduitInfos }
-
-    data class SeedResult(
-        val colors: List<M3CouleurProduitInfos> = emptyList(),
-        val products: List<M01Produit> = emptyList(),
-        val categories: List<M16CategorieProduit> = emptyList(),
-    )
 
     // ── Centralized filter predicates ──────────────────────────────────────────
     object ColorFilters {
         fun isVisible(color: M3CouleurProduitInfos) = color.its_pour_affiche_au_presenter
         fun isNotEchantillon(color: M3CouleurProduitInfos) = !color.its_in_echantiallants
     }
-
-    fun isInternetAvailable(context: Context): Boolean = try {
-        @Suppress("DEPRECATION")
-        (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
-            .activeNetworkInfo?.isConnected == true
-    } catch (_: Exception) { false }
 
     // ── Seed ───────────────────────────────────────────────────────────────────
     suspend fun getReturn_Filtred_For_Presenter_M1_3_16(
@@ -107,3 +84,4 @@ object Empty_App_Initialize_M1_3_16_Filtered_App4Proto2 {
         return SeedResult(colors, products, categories)
     }
 }
+                          */

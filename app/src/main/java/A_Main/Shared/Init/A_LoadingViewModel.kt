@@ -33,8 +33,8 @@ class A_LoadingViewModel(
         val progress: Float = 0f,
         val currentJobName: String = "",
         val activeCompt: M09AppCompt? = null,
-        val seedResult: Empty_App_Initialize_M1_3_16_Filtered_App4Proto2.SeedResult =
-            Empty_App_Initialize_M1_3_16_Filtered_App4Proto2.SeedResult(),
+        val seedResult: SeedResult =
+            SeedResult(),
         val lightDataBasesResult: Init_LightDataBases.LightDataBasesResult =
             Init_LightDataBases.LightDataBasesResult(),
     )
@@ -45,6 +45,8 @@ class A_LoadingViewModel(
     private val initMutex = Mutex()
     private var initStarted = false
     private val repo by lazy { RepositorysMainSetter_NewProtoPatterns(appDatabase, appContext) }
+
+    val isPresenter = false
 
     private fun setProgressAndLog(p: Float, job: String) {
         _uiState.update { it.copy(progress = p, currentJobName = job) }
@@ -133,11 +135,9 @@ class A_LoadingViewModel(
             }
         }
         suspend fun insertSeedAndLightDbs(
-            seed: Empty_App_Initialize_M1_3_16_Filtered_App4Proto2.SeedResult,
+            seed: SeedResult,
             applyLightDbFilters: Boolean = false,
         ) {
-            val isPresenter = M00CentralParametresOfAllApps.get_Default().its_AppType ==
-                    AppType.JomLaElectroLivreurGrossist_PresenterScreen
 
             val lightDbJob = viewModelScope.launch(Dispatchers.IO) {
                 if (isPresenter) return@launch
@@ -189,20 +189,13 @@ class A_LoadingViewModel(
             Do.DeleteInsertAll_Active_Key -> {
                 viewModelScope.launch(Dispatchers.IO) { deleteAllLocal() }.join()
                 viewModelScope.launch(Dispatchers.IO) {
-                    val result = Empty_App_Initialize_M1_3_16_Filtered_App4Proto2
-                        .getReturn_Filtred_For_Presenter_M1_3_16(
+                    val result = Empty_App_Initialize_M1_3_16_AllRefs_App4Proto2
+                        .getReturn_M1_3_16_AllRefs(
                             context = appContext,
-                            on_Progress_Datas = { p -> setProgress(p, "Chargement produits…") },
+                            on_Progress_Datas = { p -> setProgress(p, "Chargement données…") },
                         )
                     _uiState.update { it.copy(seedResult = result) }
-
-                    DropBox_Init.syncAll(result.colors) { p -> setProgress(p, "Sync images…") }
-
-                    insertSeedAndLightDbs(result, applyLightDbFilters = true)
-
-                    val isPresenter = M00CentralParametresOfAllApps.get_Default().its_AppType ==
-                            AppType.JomLaElectroLivreurGrossist_PresenterScreen
-                    if (!isPresenter) insertMissingEchatillantsProductsAndColors()
+                    insertSeedAndLightDbs(result, applyLightDbFilters = false)
                 }.join()
             }
 
@@ -240,8 +233,6 @@ class A_LoadingViewModel(
     }
 
     private fun startPeriodicDataIntegrityCheck() {
-        val isPresenter = M00CentralParametresOfAllApps.get_Default().its_AppType ==
-                AppType.JomLaElectroLivreurGrossist_PresenterScreen
         if (isPresenter) return
 
         viewModelScope.launch(Dispatchers.IO) {

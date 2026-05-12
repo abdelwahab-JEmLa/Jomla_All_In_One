@@ -91,10 +91,7 @@ fun Compact_Presentoire_App_Produits_App2(
             (!wifiState.isConnected).ifTrue {
                 ConnexionCard_App2(vm = vm)
             }
-            MainLazyList_App2(
-                productWithColors = uiState.list_ProductWithColors,
-                viewModel = vm,
-            )
+            MainLazyList_App2(viewModel = vm)
         }
     }
 }
