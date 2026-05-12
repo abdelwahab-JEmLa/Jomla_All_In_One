@@ -8,6 +8,7 @@ import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -67,21 +68,31 @@ fun Etager_LazyColumn(
 
     val displayList by remember {
         derivedStateOf {
-            val allColours = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
+            val list_m3 = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
             val allProducts = activeDatas.list_M1Produit ?: emptyList()
             val displayMode = activeDatas.filterAffichageMode_Proto
             val isPanieMode = activeDatas.its_Panie_Mode
             val searchQuery = activeDatas.filter_echatilaten.trim().lowercase()
 
-            val echaKeys = allColours.filter { it.its_in_echantiallants }.map { it.keyID }.toSet()
-            val ventColourKeys: Set<String> = if (isPanieMode)
+            val listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
                 activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+
+            fun getKeys_filtredBy_its_in_echantiallants(datas: List<M3CouleurProduitInfos>): Set<String> =
+                datas.filter { it.its_in_echantiallants }.map { it.keyID }.toSet()
+
+            fun getKeys_filtred_by_onVent(vents: List<M10OperationVentCouleur>): Set<String> = if (isPanieMode)
+                vents
                     .map { it.parent_M3CouleurProduit_KeyID }.toSet()
             else emptySet()
 
+            val echantsKeys = getKeys_filtredBy_its_in_echantiallants(list_m3)
+            val ventColourKeys: Set<String> = getKeys_filtred_by_onVent(
+                listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+            )
+
             val productByKey = allProducts.associateBy { it.keyID }
 
-            allColours
+            list_m3
                 .groupBy { it.parentBProduitInfosKeyID }
                 .mapNotNull { (produitKeyID, colours) ->
                     val product = productByKey[produitKeyID] ?: return@mapNotNull null
@@ -91,11 +102,13 @@ fun Etager_LazyColumn(
                     val filtered = when {
                         isPanieMode -> colors.filter { it.keyID in ventColourKeys }
                         displayMode == Filter_Affichage_Mode_Proto.Echants_Seulement ->
-                            colors.filter { it.keyID in echaKeys }
+                            colors.filter { it.keyID in echantsKeys }
+
                         displayMode == Filter_Affichage_Mode_Proto.Tablette_Et_Echants ->
                             colors
+
                         else ->
-                            colors.filter { it.keyID !in echaKeys }
+                            colors.filter { it.keyID !in echantsKeys }
                     }
                     if (filtered.isEmpty()) null else product to filtered
                 }
@@ -114,14 +127,14 @@ fun Etager_LazyColumn(
                                 } ?: Int.MAX_VALUE
                             }
                         }
+
                         isPanieMode -> {
-                            val ventOps =
-                                activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
                             list.sortedByDescending { (product, _) ->
-                                ventOps.filter { it.parent_M1Produit_KeyId == product.keyID }
+                                listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state.filter { it.parent_M1Produit_KeyId == product.keyID }
                                     .maxOfOrNull { it.creationTimestamps } ?: 0L
                             }
                         }
+
                         else -> list
                     }
                 }
