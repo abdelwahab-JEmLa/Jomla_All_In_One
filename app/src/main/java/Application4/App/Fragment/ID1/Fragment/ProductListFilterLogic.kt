@@ -1,34 +1,18 @@
 package Application4.App.Fragment.ID1.Fragment
 
-import Application4.App.Fragment.ID1.Fragment.ProductListFilterLogic.compute
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 
-/**
- * Pure, stateless filter logic for the product grid.
- *
- * Each step is exposed as a named function so it can be unit-tested and
- * reused independently. The [compute] entry-point chains them all.
- */
 object ProductListFilterLogic {
-
     // ── Step 1 ───────────────────────────────────────────────────────────────
-
-    /** Keeps only colors that have at least one unit in depot stock. */
     fun filterByDepot(
         list: List<M3CouleurProduitInfos>,
     ): List<M3CouleurProduitInfos> =
         list.filter { it.count_Don_Depot > 0 }
 
     // ── Step 2 ───────────────────────────────────────────────────────────────
-
-    /**
-     * Case-insensitive substring search across color name, keyID,
-     * parent product keyID, and parent product debug name.
-     * Returns [list] unchanged when [query] is blank.
-     */
     fun filterByQuery(
         list: List<M3CouleurProduitInfos>,
         query: String,
@@ -44,14 +28,6 @@ object ProductListFilterLogic {
     }
 
     // ── Step 3 ───────────────────────────────────────────────────────────────
-
-    /**
-     * Applies the active display-mode filter:
-     * - [Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement] — hides echantillants
-     * - [Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto.Echants_Seulement]           — only echantillants
-     * - [Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto.Tablette_Et_Echants]          — everything
-     * - [Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto.Panie]                        — only colors with quantity > 0
-     */
     fun filterByMode(
         list: List<M3CouleurProduitInfos>,
         mode: Filter_Affichage_Mode_Proto,
@@ -72,15 +48,6 @@ object ProductListFilterLogic {
     }
 
     // ── Steps 4 & 5 ─────────────────────────────────────────────────────────
-
-    /**
-     * Groups filtered colors by their parent [M01Produit], drops orphans
-     * (colors whose product key is absent from [productMap]), then sorts:
-     * - Products: by [classement] position (unknown products go last).
-     * - Colors within each product: by [echantillantsPurchaseOrder] when in
-     *   [Filter_Affichage_Mode_Proto.Echants_Seulement] mode (most-recently
-     *   purchased first); natural order otherwise.
-     */
     fun groupAndSort(
         filteredColors: List<M3CouleurProduitInfos>,
         productMap: Map<String, M01Produit>,
@@ -103,13 +70,6 @@ object ProductListFilterLogic {
             .sortedBy { (product, _) -> classement[product.keyID] ?: Int.MAX_VALUE }
 
     // ── Main entry-point ─────────────────────────────────────────────────────
-
-    /**
-     * Runs the full pipeline:
-     * depot → query → mode → groupAndSort.
-     *
-     * Returns an empty list when [rawColors] is null.
-     */
     fun compute(
         rawColors: List<M3CouleurProduitInfos>?,
         productMap: Map<String, M01Produit>,
