@@ -77,6 +77,17 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     FilledTonalButton(
         modifier = Modifier,
         onClick = {
+            (relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME) .ifTrue {
+                viewModel.update_list_M3(
+                                            //<--
+                                            //TODO(1): ici trouve le relative m3 et copy son dernien achat a current
+                    aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.map {
+                        it.dernierTimeTampsSynchronisationAvecFireBase
+                    }
+                )
+
+            }
+
             val found_Or_Default_M8BonVent =
                 get_Found_Or_Default_M8BonVent(aCentralFacade, relative_M2Client, relative_Etate)
                     ?: return@FilledTonalButton
@@ -94,6 +105,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
 
             (relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
                 .ifTrue {
+
                     val lastCommande_Transaction_ON_MODE_COMMEND_ACTUELLEMENT =
                         repositorysMainGetter.repo8BonVent.datasValue.lastOrNull {
                             it.parent_M2Client_KeyID == relative_M2Client.keyID

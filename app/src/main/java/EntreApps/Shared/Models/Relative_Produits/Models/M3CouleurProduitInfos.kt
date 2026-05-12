@@ -215,9 +215,7 @@ data class M3CouleurProduitInfos(
             return filter { m3 ->
                 val referenceTimestamp =
                     if (m3.dernier_achant_timeTamp > 0L) m3.dernier_achant_timeTamp
-                    else m3.creationTimestamp     //<--
-                    //TODO(1): pk quand creationTimestamp ca ne fait pas le comparaison de limite_couleurs_ou_leur_last_achate_est_moin_que_jour - creationTimestamp 
-                
+                    else m3.creationTimestamp
                 (now - referenceTimestamp) < (limitMs ?: 0L)
             }
         }
