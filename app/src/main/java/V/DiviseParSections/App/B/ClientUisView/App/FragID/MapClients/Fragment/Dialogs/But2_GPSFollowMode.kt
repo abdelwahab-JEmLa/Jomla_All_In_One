@@ -88,8 +88,6 @@ fun But2_GPSFollowMode(
                 // Constrain to screen width so LazyRow has a bounded scroll area
                 .widthIn(max = screenWidth - 32.dp)
         ) {
-            // FIX TODO(1): replaced Row with LazyRow so items scroll horizontally
-            // instead of overflowing / clipping when the screen is narrow.
             LazyRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)

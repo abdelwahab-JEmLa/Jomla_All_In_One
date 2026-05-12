@@ -211,7 +211,7 @@ data class M3CouleurProduitInfos(
                 limite_couleurs_ou_leur_last_achate_est_moin_que_jour?.times(24L)
                     ?.times(60L)?.times(60L)?.times(1_000L)
             val now = System.currentTimeMillis()
-            
+
             return filter { m3 ->
                 val referenceTimestamp =
                     if (m3.dernier_achant_timeTamp > 0L) m3.dernier_achant_timeTamp

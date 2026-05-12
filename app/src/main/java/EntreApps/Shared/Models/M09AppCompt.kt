@@ -113,7 +113,7 @@ data class M09AppCompt(
     var KeyByParent: String = "",
     var vid: Long = 1,
 
-    var limite_couleurs_ou_leur_last_achate_est_moin_que_jour: Int = 30,
+    var limite_couleurs_ou_leur_last_achate_est_moin_que_jour: Int = 1000,
 ) {
     fun get_DebugInfos(): String = buildString {
         append("(M9=")

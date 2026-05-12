@@ -132,8 +132,6 @@ class A_LoadingViewModel(
                 dao_M10OperationVentCouleur().deleteAll()
             }
         }
-             //<--
-             //TODO(1): cree logs pk targted m3 passe le filter meme si
         suspend fun insertSeedAndLightDbs(
             seed: Empty_App_Initialize_M1_3_16_Filtered_App4Proto2.SeedResult,
             applyLightDbFilters: Boolean = false,

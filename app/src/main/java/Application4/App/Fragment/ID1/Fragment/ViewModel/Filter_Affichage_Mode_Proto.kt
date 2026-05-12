@@ -7,4 +7,6 @@ enum class Filter_Affichage_Mode_Proto {
     Echants_Seulement,
     /** Products + echantillants shown together. 2-column layout. */
     Tablette_Et_Echants,
+
+    Panie,
 }

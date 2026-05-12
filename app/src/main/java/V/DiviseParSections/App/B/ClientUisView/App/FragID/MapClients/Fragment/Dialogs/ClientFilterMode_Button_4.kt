@@ -74,8 +74,6 @@ fun ClientFilterMode_Button_4(
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 300f) }
     var showDropdown by remember { mutableStateOf(false) }
 
-    // FIX TODO(1): hoist count calculations above the Row so the label can
-    // display the same counts that appear in the dropdown items.
     val bons = repositorysMainGetter.repo8BonVent.datasValue
 
     val acceptedBons = bons.filter { bon ->

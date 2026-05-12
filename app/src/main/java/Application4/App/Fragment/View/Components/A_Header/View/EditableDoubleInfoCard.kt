@@ -22,11 +22,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
-/**
- * EditableDoubleInfoCard - Now uses FastInit_Double component for editing
- * FIXED TODO(1): Uses OutlinedTextField with empty initial value, previous value as placeholder,
- * and auto-focus keyboard on start
- */
 @Composable
 fun EditableDoubleInfoCard(
     icon: @Composable () -> Unit,

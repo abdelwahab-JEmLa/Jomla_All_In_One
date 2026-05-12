@@ -40,11 +40,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun Etager_LazyColumn(
+fun Main_LazyColumnList_App4(
     modifier: Modifier = Modifier,
+    relative_list_m3: List<M3CouleurProduitInfos>?,
+    relative_list_m10_vents: List<M10OperationVentCouleur>,
+    mode: Filter_Affichage_Mode_Proto,
+    outlined_search_Query: String,
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
@@ -52,6 +56,7 @@ fun Etager_LazyColumn(
     val wifiState by viewModel.wifiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
+    // Ordered list of M3 color keys by most-recent purchase — used to sort echantillants.
     val set_couleursKey_echantilliants_achat by remember {
         derivedStateOf {
             uiState_NewProtoPatterns_viewModel.first.list_Datas?.m10OperationVentCouleur
@@ -66,92 +71,31 @@ fun Etager_LazyColumn(
     val currentScrollPosition = wifiState.mainGridScrollPosition
     val isScrollEnabled = isHostPhone || !isConnected
 
-    val displayList by remember {
+    val finale_filtred_list by remember {
         derivedStateOf {
-            val list_m3 = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
-            val allProducts = activeDatas.list_M1Produit ?: emptyList()
-            val displayMode = activeDatas.filterAffichageMode_Proto
-            val isPanieMode = activeDatas.its_Panie_Mode
-            val searchQuery = activeDatas.filter_echatilaten.trim().lowercase()
-
-            val listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
-                activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-
-            fun getKeys_filtredBy_its_in_echantiallants(datas: List<M3CouleurProduitInfos>): Set<String> =
-                datas.filter { it.its_in_echantiallants }.map { it.keyID }.toSet()
-
-            fun getKeys_filtred_by_onVent(vents: List<M10OperationVentCouleur>): Set<String> = if (isPanieMode)
-                vents
-                    .map { it.parent_M3CouleurProduit_KeyID }.toSet()
-            else emptySet()
-
-            val echantsKeys = getKeys_filtredBy_its_in_echantiallants(list_m3)
-            val ventColourKeys: Set<String> = getKeys_filtred_by_onVent(
-                listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+            ProductListFilterLogic.compute(
+                rawColors                  = relative_list_m3,
+                productMap                 = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
+                query                      = outlined_search_Query,
+                mode                       = mode,
+                ventCouleurs               = relative_list_m10_vents,
+                echantillantsPurchaseOrder = set_couleursKey_echantilliants_achat,
+                classement                 = activeDatas.parentProduit_Classement,
             )
-
-            val productByKey = allProducts.associateBy { it.keyID }
-
-            list_m3
-                .groupBy { it.parentBProduitInfosKeyID }
-                .mapNotNull { (produitKeyID, colours) ->
-                    val product = productByKey[produitKeyID] ?: return@mapNotNull null
-                    product to colours
-                }
-                .mapNotNull { (product, colors) ->
-                    val filtered = when {
-                        isPanieMode -> colors.filter { it.keyID in ventColourKeys }
-                        displayMode == Filter_Affichage_Mode_Proto.Echants_Seulement ->
-                            colors.filter { it.keyID in echantsKeys }
-
-                        displayMode == Filter_Affichage_Mode_Proto.Tablette_Et_Echants ->
-                            colors
-
-                        else ->
-                            colors.filter { it.keyID !in echantsKeys }
-                    }
-                    if (filtered.isEmpty()) null else product to filtered
-                }
-                .filter { (product, _) ->
-                    searchQuery.isEmpty() || product.nom.lowercase().contains(searchQuery)
-                }
-                .let { list ->
-                    when {
-                        displayMode == Filter_Affichage_Mode_Proto.Echants_Seulement -> {
-                            val echaOrder = set_couleursKey_echantilliants_achat
-                            if (echaOrder.isEmpty()) list
-                            else list.sortedBy { (_, colors) ->
-                                colors.minOfOrNull { c ->
-                                    val idx = echaOrder.indexOf(c.keyID)
-                                    if (idx < 0) Int.MAX_VALUE else idx
-                                } ?: Int.MAX_VALUE
-                            }
-                        }
-
-                        isPanieMode -> {
-                            list.sortedByDescending { (product, _) ->
-                                listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state.filter { it.parent_M1Produit_KeyId == product.keyID }
-                                    .maxOfOrNull { it.creationTimestamps } ?: 0L
-                            }
-                        }
-
-                        else -> list
-                    }
-                }
         }
     }
 
     val gridColumns by remember {
         derivedStateOf {
-            when (activeDatas.filterAffichageMode_Proto) {
+            when (mode) {
                 Filter_Affichage_Mode_Proto.Echants_Seulement -> 4
-                else -> 2 // Tablette_Produits_Seulement and Tablette_Et_Echants both use 2 columns
+                else -> 2
             }
         }
     }
 
-    LaunchedEffect(displayList) {
-        activeDatas.parentProduit_Classement = displayList
+    LaunchedEffect(finale_filtred_list) {
+        activeDatas.parentProduit_Classement = finale_filtred_list
             .mapIndexed { index, (product, _) -> product.keyID to index }
             .toMap()
     }
@@ -163,7 +107,7 @@ fun Etager_LazyColumn(
         if (!isHostPhone) return@LaunchedEffect
         val targetKeyID = expanded_M1Produit.keyID
         if (targetKeyID.isBlank()) return@LaunchedEffect
-        val foundIndex = displayList.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
+        val foundIndex = finale_filtred_list.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
         if (foundIndex < 0) return@LaunchedEffect
         coroutineScope.launch { gridState.scrollToItem(foundIndex) }
         delay(300)
@@ -193,7 +137,7 @@ fun Etager_LazyColumn(
         verticalItemSpacing = 8.dp,
         userScrollEnabled = isScrollEnabled
     ) {
-        displayList.forEach { (product, colors) ->
+        finale_filtred_list.forEach { (product, colors) ->
             val isExpanded = wifiState.expanded_M1Produit?.keyID == product.keyID
             item(
                 key = "product_${product.keyID}",

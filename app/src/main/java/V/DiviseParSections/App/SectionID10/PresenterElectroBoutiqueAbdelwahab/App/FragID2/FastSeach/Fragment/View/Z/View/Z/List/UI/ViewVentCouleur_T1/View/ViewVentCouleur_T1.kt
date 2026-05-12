@@ -2,10 +2,10 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.C.Components.DropBox_Init_3
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos.TypeChoisi
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.Z.Components.ColorImageDisplayer
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.Z.Components.PickQantity.Dialog.Dialog_Choisire_Quantity_Carton
@@ -229,7 +229,7 @@ fun ViewVentCouleur_T1(
                 }
                 // Upload captured image to DropBox Images_2 folder, then persist the path in dropBox_key
                 CoroutineScope(Dispatchers.IO).launch {            //<--
-                //TODO(1): fait que le temp du creatio et modfication  image et -mn de current temp
+                //(1): fait que le temp du creatio et modfication  image et -mn de current temp
                     val dropBoxPath = DropBox_Init_3.uploadToImages2(fileName, imageBytes)
                     if (dropBoxPath != null) {
                         val withDropBoxKey = updatedCouleur.copy(dropBox_key = dropBoxPath)

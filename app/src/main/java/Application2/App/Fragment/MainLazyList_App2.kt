@@ -92,6 +92,8 @@ fun MainLazyList_App2(
 
             Filter_Affichage_Mode_Proto.Echants_Seulement ->
                 sortedProductWithColors.filter { (_, colors) -> colors.any { it.its_in_echantiallants } }
+
+            else -> sortedProductWithColors
         }
     }
 

@@ -89,12 +89,25 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 set(value = active_Datas.list_M03CouleurProduitInfos?.size, key = SemanticsPropertyKey("size"))
             }
         ) {
-            Etager_LazyColumn(
-                modifier = modifier,
-                onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
-                justMovedProductKeyID = justMovedProductKeyID,
-                uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),
+            val relative_list_m3 = viewModelNewProtoPatterns.active_Datas.list_M03CouleurProduitInfos
+            val activeDatas = viewModelNewProtoPatterns.active_Datas
+            val outlined_search_Query = activeDatas.filter_echatilaten.trim().lowercase()
+            val relative_list_m10_vents =
+                activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+
+            val mode = activeDatas.filterAffichageMode_Proto
+
+            Main_LazyColumnList_App4(
+                modifier,
+                relative_list_m3,
+                relative_list_m10_vents,
+                mode,
+                outlined_search_Query,
+                Pair(uiState, viewModelNewProtoPatterns),
+                { product -> selectedProductForCategoryChange = product },
+                justMovedProductKeyID
             )
+
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)
 
             FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(

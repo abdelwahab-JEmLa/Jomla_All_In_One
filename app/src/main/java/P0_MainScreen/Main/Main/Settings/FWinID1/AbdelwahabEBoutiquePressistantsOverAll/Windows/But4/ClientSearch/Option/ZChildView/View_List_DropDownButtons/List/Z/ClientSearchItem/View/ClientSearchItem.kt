@@ -301,7 +301,7 @@ fun ClientSearchItem(
                     }
                 }
                    //<--
-                   //TODO(1): ajout UN BUTTON AU CLICK IL LENCE toggleUpdate_nonDeletableClient
+                   //(1): ajout UN BUTTON AU CLICK IL LENCE toggleUpdate_nonDeletableClient
                 IconButton(
                     onClick = {
                         val updatedList = if (isInDeletionList) {
