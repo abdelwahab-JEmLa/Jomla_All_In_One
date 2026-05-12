@@ -308,7 +308,4 @@ class MapClientsViewModel(
 
     fun startRecordIfNot() { recordingHandler.startRecordIfNot() }
 
-    fun update_active_M9Compt_its_panie_mode_par(bool: Boolean) {
-        update_active_Compt(active_Datas.active_M9Compt!!.copy(its_Panie_Mode_Au_Lence_Boutique = bool))
-    }
 }

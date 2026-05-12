@@ -1,6 +1,7 @@
 package Application4.App.Fragment.View.Components
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_FragID3
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
@@ -45,7 +46,7 @@ fun Big_Principale_FragID3(
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
     val its_Grid4_Mode =
-        uiState_NewProtoPatterns_viewModel.second.active_Datas.isEchatillantsMode
+        uiState_NewProtoPatterns_viewModel.second.active_Datas.filterAffichageMode_Proto== Filter_Affichage_Mode_Proto.Echants_Seulement
     val imageHeight by animateDpAsState(
         targetValue = if (isThisProductExpanded) {
             IMAGE_HEIGHT_EXPANDED.dp

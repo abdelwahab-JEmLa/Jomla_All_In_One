@@ -4,8 +4,12 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Pr
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import android.util.Log
 
-object ProductListFilterLogic {
+private const val TAG = "FilterLogic"
+
+object ProductListFilterLogic {        //<--
+
     // ── Step 1 ───────────────────────────────────────────────────────────────
     fun filterByDepot(
         list: List<M3CouleurProduitInfos>,
@@ -45,6 +49,35 @@ object ProductListFilterLogic {
                 .toSet()
             list.filter { it.keyID in activeKeys }
         }
+        Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> {
+            // Find parent-product keys that have at least one color with an active vent,
+            // then return ALL sibling colors belonging to those parents.
+            Log.d(TAG, "=== Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres ===")
+            Log.d(TAG, "ventCouleurs.size = ${ventCouleurs.size}")
+            Log.d(TAG, "list (input colors).size = ${list.size}")
+
+            val activeColorKeys = ventCouleurs
+                .filter { it.quantity > 0 }
+                .map { it.parent_M3CouleurProduit_KeyID }
+                .toSet()
+            Log.d(TAG, "activeColorKeys (quantity>0): $activeColorKeys")
+
+            val activeParentKeys = list
+                .filter { it.keyID in activeColorKeys }
+                .map { it.parentBProduitInfosKeyID }
+                .toSet()
+            Log.d(TAG, "activeParentKeys resolved from list: $activeParentKeys")
+
+            // Safety check: keys in ventCouleurs that didn't match any color in list
+            val unmatchedVentKeys = activeColorKeys - list.map { it.keyID }.toSet()
+            if (unmatchedVentKeys.isNotEmpty()) {
+                Log.w(TAG, "⚠️ ventCouleur keys with no matching color in list: $unmatchedVentKeys")
+            }
+
+            val result = list.filter { it.parentBProduitInfosKeyID in activeParentKeys }
+            Log.d(TAG, "result.size = ${result.size}")
+            result
+        }
     }
 
     // ── Steps 4 & 5 ─────────────────────────────────────────────────────────
@@ -79,8 +112,16 @@ object ProductListFilterLogic {
         echantillantsPurchaseOrder: List<String>,
         classement: Map<String, Int>,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
+        if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) {
+            Log.d(TAG, "--- compute() called ---")
+            Log.d(TAG, "mode = $mode")
+            Log.d(TAG, "rawColors?.size = ${rawColors?.size}")
+            Log.d(TAG, "ventCouleurs.size = ${ventCouleurs.size}")
+            Log.d(TAG, "productMap.size = ${productMap.size}")
+        }
+
         val filtered = rawColors
-            ?.let { if (mode == Filter_Affichage_Mode_Proto.Panie) it else filterByDepot(it) }
+            ?.let { if (mode == Filter_Affichage_Mode_Proto.Panie || mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) it else filterByDepot(it) }
             ?.let { filterByQuery(it, query) }
             ?.let { filterByMode(it, mode, ventCouleurs) }
             ?: return emptyList()

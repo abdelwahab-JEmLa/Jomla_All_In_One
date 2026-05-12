@@ -58,10 +58,12 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
-enum class ProductDisplayMode {
+enum class ProductDisplayMode {  //<--
+//TODO(1): enleve uitilse Filter_Affichage_Mode_Proto au lieu
     AllProducts,
     Echantillons,
     Panie,
+    PanieToutLesFreres,
 }
 
 @Composable
@@ -148,31 +150,34 @@ fun PressistatntMainActivityButtons_App4(
     val currentMode by remember {
         derivedStateOf {
             val datas = viewModelNewProtoPatterns.active_Datas
-            when {
-                datas.its_Panie_Mode -> ProductDisplayMode.Panie
-                datas.isEchatillantsMode -> ProductDisplayMode.Echantillons
+            when (datas.filterAffichageMode_Proto) {
+                Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres ->
+                    ProductDisplayMode.PanieToutLesFreres
+
+                Filter_Affichage_Mode_Proto.Echants_Seulement ->
+                    ProductDisplayMode.Echantillons
+
+                Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement ->
+                    ProductDisplayMode.AllProducts
+
+                Filter_Affichage_Mode_Proto.Panie ->
+                    ProductDisplayMode.Panie
+
                 else -> ProductDisplayMode.AllProducts
             }
         }
     }
 
     fun applyMode(mode: ProductDisplayMode) {
-        val isPanie = mode == ProductDisplayMode.Panie
-        viewModelNewProtoPatterns.active_Datas.its_Panie_Mode = isPanie
-
-        viewModelNewProtoPatterns.active_Datas.isEchatillantsMode =
-            mode == ProductDisplayMode.Echantillons
         viewModelNewProtoPatterns.active_Datas.filter_echatilaten = ""
-        // Sync the segmented toggle so it matches the newly selected mode.
         viewModelNewProtoPatterns.active_Datas.filterAffichageMode_Proto = when (mode) {
             ProductDisplayMode.Echantillons -> Filter_Affichage_Mode_Proto.Echants_Seulement
             else -> Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement
         }
-        viewModelNewProtoPatterns.active_Datas.active_M9Compt?.let { compt ->
-            viewModelNewProtoPatterns.update_active_Compt(
-                compt.copy(its_Panie_Mode_Au_Lence_Boutique = isPanie)
-            )
-        }
+    }
+
+    fun apply_Mode_Au_Filter_Affichage_Mode_Proto(mode: Filter_Affichage_Mode_Proto) {
+        viewModelNewProtoPatterns.active_Datas.filterAffichageMode_Proto = mode
     }
 
     var showDropdown by remember { mutableStateOf(false) }
@@ -183,12 +188,14 @@ fun PressistatntMainActivityButtons_App4(
         ProductDisplayMode.AllProducts -> MaterialTheme.colorScheme.surfaceVariant
         ProductDisplayMode.Echantillons -> MaterialTheme.colorScheme.primary
         ProductDisplayMode.Panie -> MaterialTheme.colorScheme.tertiary
+        ProductDisplayMode.PanieToutLesFreres -> MaterialTheme.colorScheme.tertiary
     }
 
     val fabIcon: ImageVector = when (currentMode) {
         ProductDisplayMode.AllProducts -> Icons.Default.FilterList
         ProductDisplayMode.Echantillons -> Icons.Default.Check
         ProductDisplayMode.Panie -> Icons.Default.ShoppingCart
+        ProductDisplayMode.PanieToutLesFreres -> Icons.Default.ShoppingCart
     }
 
     val fabTint = when (currentMode) {
@@ -200,6 +207,7 @@ fun PressistatntMainActivityButtons_App4(
         ProductDisplayMode.AllProducts -> "Tous les produits"
         ProductDisplayMode.Echantillons -> "Échantillons"
         ProductDisplayMode.Panie -> "Panier"
+        ProductDisplayMode.PanieToutLesFreres -> "Panier + frères"
     }
 
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
@@ -403,7 +411,8 @@ fun PressistatntMainActivityButtons_App4(
                         ) {
                             Icon(imageVector = fabIcon, contentDescription = null, tint = fabTint)
                         }
-                        DropdownMenu(
+                        DropdownMenu(                      //<--
+                        //TODO(1): pk ca ne affiche pas le mode don
                             expanded = showDropdown,
                             onDismissRequest = { showDropdown = false }
                         ) {
@@ -413,6 +422,9 @@ fun PressistatntMainActivityButtons_App4(
                                 isSelected = currentMode == ProductDisplayMode.AllProducts,
                                 onClick = {
                                     applyMode(ProductDisplayMode.AllProducts); showDropdown = false
+                                    apply_Mode_Au_Filter_Affichage_Mode_Proto(
+                                        Filter_Affichage_Mode_Proto.Tablette_Et_Echants
+                                    )
                                 }
                             )
                             ModeMenuItem(
@@ -420,7 +432,12 @@ fun PressistatntMainActivityButtons_App4(
                                 icon = Icons.Default.Check,
                                 isSelected = currentMode == ProductDisplayMode.Echantillons,
                                 onClick = {
-                                    applyMode(ProductDisplayMode.Echantillons); showDropdown = false
+                                    applyMode(ProductDisplayMode.Echantillons)
+                                    apply_Mode_Au_Filter_Affichage_Mode_Proto(
+                                        Filter_Affichage_Mode_Proto.Echants_Seulement
+                                    )
+                                    ; showDropdown = false
+
                                 }
                             )
                             ModeMenuItem(
@@ -429,9 +446,23 @@ fun PressistatntMainActivityButtons_App4(
                                 isSelected = currentMode == ProductDisplayMode.Panie,
                                 onClick = {
                                     applyMode(ProductDisplayMode.Panie)
-                                    activeDatas.filterAffichageMode_Proto = Filter_Affichage_Mode_Proto.Panie
-
-                                    ; showDropdown = false }
+                                    apply_Mode_Au_Filter_Affichage_Mode_Proto(
+                                        Filter_Affichage_Mode_Proto.Panie
+                                    )
+                                    showDropdown = false
+                                }
+                            )
+                            ModeMenuItem(
+                                label = "Panier + frères",
+                                icon = Icons.Default.ShoppingCart,
+                                isSelected = currentMode == ProductDisplayMode.PanieToutLesFreres,
+                                onClick = {
+                                    applyMode(ProductDisplayMode.Panie)
+                                    apply_Mode_Au_Filter_Affichage_Mode_Proto(
+                                        Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
+                                    )
+                                    showDropdown = false
+                                }
                             )
                         }
                     }

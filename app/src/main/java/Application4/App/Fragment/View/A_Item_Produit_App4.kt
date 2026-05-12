@@ -1,14 +1,15 @@
 package Application4.App.Fragment.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -52,10 +53,10 @@ fun A_Item_Produit_App4(
             )
         }
 
-    val isEchatillantsMode = centralValues.isEchatillantsMode
+    val isEchatillantsMode = centralValues.filterAffichageMode_Proto== Filter_Affichage_Mode_Proto.Echants_Seulement
 
     val relative_ListM3Couleurs = remember(allColorsForProduit, isEchatillantsMode) {
-        if (isEchatillantsMode) allColorsForProduit.filter { it.its_in_echantiallants == true }
+        if (isEchatillantsMode) allColorsForProduit.filter { it.its_in_echantiallants }
         else allColorsForProduit
     }
 

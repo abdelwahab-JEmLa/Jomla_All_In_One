@@ -66,7 +66,6 @@ data class M09AppCompt(
 
     var mainInitDataBaseProgressEtate: Float = 0f,
 
-    var its_Panie_Mode_Au_Lence_Boutique: Boolean = false,
 
     val filter_marqueClient_Name: String = "no Filter",
 

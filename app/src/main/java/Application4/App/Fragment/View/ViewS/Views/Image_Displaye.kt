@@ -1,6 +1,7 @@
 package Application4.App.Fragment.View.ViewS.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
@@ -49,7 +50,7 @@ fun Image_Displaye(
     val effectiveQuality: pourcentage = when {
         isExpandedProduct -> pourcentage.max_possible
         isAnyExpanded     -> pourcentage.min_possible
-        else              -> if (viewModel.active_Datas.isEchatillantsMode) pourcentage.min_possible
+        else              -> if (viewModel.active_Datas.filterAffichageMode_Proto== Filter_Affichage_Mode_Proto.Echants_Seulement) pourcentage.min_possible
         else image_pourcetage_qualite
     }
 

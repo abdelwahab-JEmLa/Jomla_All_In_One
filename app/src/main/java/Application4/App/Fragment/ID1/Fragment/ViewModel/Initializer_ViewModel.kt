@@ -212,8 +212,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         AViewModel_NewProtoPatterns.active_Datas.list_M1Produit               = products
         AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos  = colours
         AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = allOperations
-        AViewModel_NewProtoPatterns.active_Datas.its_Panie_Mode               =
-            appCompt?.its_Panie_Mode_Au_Lence_Boutique ?: false
     }
 
     private suspend fun collectActiveM9Compt() {

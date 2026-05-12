@@ -1,9 +1,10 @@
 package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyRow
@@ -25,7 +26,7 @@ fun Tariffs_MainList(
     tariffsList: List<M13TarificationInfos>,
     tariff_achat_prix: Double,
 ) {
-    val isEchatillantsMode = uiState_NewProtoPatterns_viewModel.second.active_Datas.isEchatillantsMode
+    val isEchatillantsMode = uiState_NewProtoPatterns_viewModel.second.active_Datas.filterAffichageMode_Proto== Filter_Affichage_Mode_Proto.Echants_Seulement
 
     val tariffs_SansModeEditable = sortedTariffs.filter {
         it.typeChoisi != M13TarificationInfos.TypeChoisi.Edited_Pour_Client &&
