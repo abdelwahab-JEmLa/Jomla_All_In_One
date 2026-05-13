@@ -1,5 +1,6 @@
 package EntreApps.Shared.Models.Relative_Produits.Models
 
+import Application4.App.Fragment.ID1.Fragment.ProductListFilterLogic
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction

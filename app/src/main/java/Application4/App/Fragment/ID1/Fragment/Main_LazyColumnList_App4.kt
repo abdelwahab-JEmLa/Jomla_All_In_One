@@ -49,12 +49,6 @@ fun Main_LazyColumnList_App4(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
-    raw_filterByDepot: List<M3CouleurProduitInfos> = ProductListFilterLogic.filterByDepot(relative_list_m3 ?: emptyList()),
-    filterByMode: List<M3CouleurProduitInfos> = ProductListFilterLogic.filterByMode(
-        relative_list_m3 ?: emptyList(),
-        mode = Filter_Affichage_Mode_Proto.Echants_Seulement,
-        ventCouleurs = relative_list_m10_vents
-    ),
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
@@ -62,9 +56,10 @@ fun Main_LazyColumnList_App4(
     val wifiState by viewModel.wifiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
+
     val set_couleursKey_echantilliants_achat by remember {
         derivedStateOf {
-            uiState_NewProtoPatterns_viewModel.first.list_Datas?.m10OperationVentCouleur
+            activeDatas.list_M10OperationVentCouleur
                 ?.sortedByDescending { it.creationTimestamps }
                 ?.map { it.parent_M3CouleurProduit_KeyID }
                 ?: emptyList()
@@ -79,11 +74,11 @@ fun Main_LazyColumnList_App4(
     val finale_filtred_list by remember {
         derivedStateOf {
             ProductListFilterLogic.compute(
-                rawColors                  = relative_list_m3,
+                rawColors                  = activeDatas.list_M03CouleurProduitInfos,
                 productMap                 = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
-                query                      = outlined_search_Query,
-                mode                       = mode,
-                ventCouleurs               = relative_list_m10_vents,
+                query                      = activeDatas.filter_echatilaten.trim().lowercase(),
+                mode                       = activeDatas.filterAffichageMode_Proto,
+                ventCouleurs               = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
                 echantillantsPurchaseOrder = set_couleursKey_echantilliants_achat,
                 classement                 = activeDatas.parentProduit_Classement,
             )
@@ -92,7 +87,7 @@ fun Main_LazyColumnList_App4(
 
     val gridColumns by remember {
         derivedStateOf {
-            when (mode) {
+            when (activeDatas.filterAffichageMode_Proto) {
                 Filter_Affichage_Mode_Proto.Echants_Seulement -> 4
                 else -> 2
             }

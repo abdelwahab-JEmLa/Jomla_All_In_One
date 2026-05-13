@@ -112,16 +112,8 @@ object ProductListFilterLogic {        //<--
         echantillantsPurchaseOrder: List<String>,
         classement: Map<String, Int>,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
-        if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) {
-            Log.d(TAG, "--- compute() called ---")
-            Log.d(TAG, "mode = $mode")
-            Log.d(TAG, "rawColors?.size = ${rawColors?.size}")
-            Log.d(TAG, "ventCouleurs.size = ${ventCouleurs.size}")
-            Log.d(TAG, "productMap.size = ${productMap.size}")
-        }
 
         val filtered = rawColors
-            ?.let { if (mode == Filter_Affichage_Mode_Proto.Panie || mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) it else filterByDepot(it) }
             ?.let { filterByQuery(it, query) }
             ?.let { filterByMode(it, mode, ventCouleurs) }
             ?: return emptyList()

@@ -2,7 +2,6 @@ package A_Main.Shared.Views.Dialogs.B.Dialoge
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
-import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode.Companion.sum_vent_et_benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_vents
@@ -16,26 +15,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -50,134 +41,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
-
-enum class ProductDisplayMode {  //<--
-//TODO(1): enleve uitilse Filter_Affichage_Mode_Proto au lieu
-    AllProducts,
-    Echantillons,
-    Panie,
-    PanieToutLesFreres,
-}
-
-@Composable
-fun But_4_FloatingSearchFAB(
-    searchText: String,
-    onSearchTextChange: (String) -> Unit,
-    currentMode: ProductDisplayMode,
-    modifier: Modifier = Modifier,
-) {
-    if (currentMode == ProductDisplayMode.AllProducts) return
-
-    var showField by remember { mutableStateOf(false) }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
-    ) {
-        FloatingActionButton(
-            modifier = Modifier.size(40.dp),
-            onClick = {
-                showField = !showField
-                if (!showField) onSearchTextChange("")
-            },
-            containerColor = MaterialTheme.colorScheme.tertiary,
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Rechercher un produit",
-                tint = Color.White
-            )
-        }
-
-        if (showField) {
-            OutlinedTextField(
-                value = searchText,
-                onValueChange = onSearchTextChange,
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(56.dp),
-                placeholder = {
-                    Text(
-                        "Rechercher...",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                trailingIcon = {
-                    if (searchText.isNotEmpty()) {
-                        IconButton(
-                            onClick = { onSearchTextChange("") },
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "Effacer",
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    }
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = { keyboardController?.hide() }
-                ),
-                textStyle = MaterialTheme.typography.bodyMedium,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedBorderColor = MaterialTheme.colorScheme.tertiary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                ),
-            )
-        }
-    }
-}
-
+            //<--
+            //TODO(1): pk quand je chnage ici 
 @Composable
 fun PressistatntMainActivityButtons_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
+    val activeDatas = viewModelNewProtoPatterns.active_Datas
 
     val currentMode by remember {
-        derivedStateOf {
-            val datas = viewModelNewProtoPatterns.active_Datas
-            when (datas.filterAffichageMode_Proto) {
-                Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres ->
-                    ProductDisplayMode.PanieToutLesFreres
-
-                Filter_Affichage_Mode_Proto.Echants_Seulement ->
-                    ProductDisplayMode.Echantillons
-
-                Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement ->
-                    ProductDisplayMode.AllProducts
-
-                Filter_Affichage_Mode_Proto.Panie ->
-                    ProductDisplayMode.Panie
-
-                else -> ProductDisplayMode.AllProducts
-            }
-        }
+        derivedStateOf { activeDatas.filterAffichageMode_Proto }
     }
 
-    fun applyMode(mode: ProductDisplayMode) {
-        viewModelNewProtoPatterns.active_Datas.filter_echatilaten = ""
-        viewModelNewProtoPatterns.active_Datas.filterAffichageMode_Proto = when (mode) {
-            ProductDisplayMode.Echantillons -> Filter_Affichage_Mode_Proto.Echants_Seulement
-            else -> Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement
-        }
-    }
-
-    fun apply_Mode_Au_Filter_Affichage_Mode_Proto(mode: Filter_Affichage_Mode_Proto) {
-        viewModelNewProtoPatterns.active_Datas.filterAffichageMode_Proto = mode
+    fun setMode(mode: Filter_Affichage_Mode_Proto, resetSearch: Boolean = true) {
+        if (resetSearch) activeDatas.filter_echatilaten = ""
+        activeDatas.filterAffichageMode_Proto = mode
     }
 
     var showDropdown by remember { mutableStateOf(false) }
@@ -185,33 +68,34 @@ fun PressistatntMainActivityButtons_App4(
     var offsetY by remember { mutableFloatStateOf(0f) }
 
     val fabColor = when (currentMode) {
-        ProductDisplayMode.AllProducts -> MaterialTheme.colorScheme.surfaceVariant
-        ProductDisplayMode.Echantillons -> MaterialTheme.colorScheme.primary
-        ProductDisplayMode.Panie -> MaterialTheme.colorScheme.tertiary
-        ProductDisplayMode.PanieToutLesFreres -> MaterialTheme.colorScheme.tertiary
+        Filter_Affichage_Mode_Proto.Echants_Seulement -> MaterialTheme.colorScheme.primary
+        Filter_Affichage_Mode_Proto.Panie,
+        Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> MaterialTheme.colorScheme.tertiary
+        else -> MaterialTheme.colorScheme.surfaceVariant
     }
 
     val fabIcon: ImageVector = when (currentMode) {
-        ProductDisplayMode.AllProducts -> Icons.Default.FilterList
-        ProductDisplayMode.Echantillons -> Icons.Default.Check
-        ProductDisplayMode.Panie -> Icons.Default.ShoppingCart
-        ProductDisplayMode.PanieToutLesFreres -> Icons.Default.ShoppingCart
+        Filter_Affichage_Mode_Proto.Echants_Seulement -> Icons.Default.Check
+        Filter_Affichage_Mode_Proto.Panie,
+        Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> Icons.Default.ShoppingCart
+        else -> Icons.Default.FilterList
     }
 
     val fabTint = when (currentMode) {
-        ProductDisplayMode.AllProducts -> MaterialTheme.colorScheme.onSurfaceVariant
+        Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement,
+        Filter_Affichage_Mode_Proto.Tablette_Et_Echants -> MaterialTheme.colorScheme.onSurfaceVariant
         else -> Color.White
     }
 
     val labelText = when (currentMode) {
-        ProductDisplayMode.AllProducts -> "Tous les produits"
-        ProductDisplayMode.Echantillons -> "Échantillons"
-        ProductDisplayMode.Panie -> "Panier"
-        ProductDisplayMode.PanieToutLesFreres -> "Panier + frères"
+        Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement -> "Tablette seulement"
+        Filter_Affichage_Mode_Proto.Echants_Seulement -> "Échantillons"
+        Filter_Affichage_Mode_Proto.Tablette_Et_Echants -> "Tous les produits"
+        Filter_Affichage_Mode_Proto.Panie -> "Panier"
+        Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> "Panier + frères"
     }
 
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
-    val activeDatas = viewModelNewProtoPatterns.active_Datas
     val listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
         activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
     val tariffs = uiState.list_M13TarificationInfos
@@ -411,98 +295,46 @@ fun PressistatntMainActivityButtons_App4(
                         ) {
                             Icon(imageVector = fabIcon, contentDescription = null, tint = fabTint)
                         }
-                        DropdownMenu(                      //<--
-                        //TODO(1): pk ca ne affiche pas le mode don
+                        DropdownMenu(
                             expanded = showDropdown,
                             onDismissRequest = { showDropdown = false }
                         ) {
                             ModeMenuItem(
                                 label = "Tous les produits",
                                 icon = Icons.Default.FilterList,
-                                isSelected = currentMode == ProductDisplayMode.AllProducts,
+                                isSelected = currentMode == Filter_Affichage_Mode_Proto.Tablette_Et_Echants,
                                 onClick = {
-                                    applyMode(ProductDisplayMode.AllProducts); showDropdown = false
-                                    apply_Mode_Au_Filter_Affichage_Mode_Proto(
-                                        Filter_Affichage_Mode_Proto.Tablette_Et_Echants
-                                    )
+                                    setMode(Filter_Affichage_Mode_Proto.Tablette_Et_Echants)
+                                    showDropdown = false
                                 }
                             )
                             ModeMenuItem(
                                 label = "Échantillons",
                                 icon = Icons.Default.Check,
-                                isSelected = currentMode == ProductDisplayMode.Echantillons,
+                                isSelected = currentMode == Filter_Affichage_Mode_Proto.Echants_Seulement,
                                 onClick = {
-                                    applyMode(ProductDisplayMode.Echantillons)
-                                    apply_Mode_Au_Filter_Affichage_Mode_Proto(
-                                        Filter_Affichage_Mode_Proto.Echants_Seulement
-                                    )
-                                    ; showDropdown = false
-
+                                    setMode(Filter_Affichage_Mode_Proto.Echants_Seulement)
+                                    showDropdown = false
                                 }
                             )
                             ModeMenuItem(
                                 label = "Panier",
                                 icon = Icons.Default.ShoppingCart,
-                                isSelected = currentMode == ProductDisplayMode.Panie,
+                                isSelected = currentMode == Filter_Affichage_Mode_Proto.Panie,
                                 onClick = {
-                                    applyMode(ProductDisplayMode.Panie)
-                                    apply_Mode_Au_Filter_Affichage_Mode_Proto(
-                                        Filter_Affichage_Mode_Proto.Panie
-                                    )
+                                    setMode(Filter_Affichage_Mode_Proto.Panie)
                                     showDropdown = false
                                 }
                             )
                             ModeMenuItem(
                                 label = "Panier + frères",
                                 icon = Icons.Default.ShoppingCart,
-                                isSelected = currentMode == ProductDisplayMode.PanieToutLesFreres,
+                                isSelected = currentMode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres,
                                 onClick = {
-                                    applyMode(ProductDisplayMode.Panie)
-                                    apply_Mode_Au_Filter_Affichage_Mode_Proto(
-                                        Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
-                                    )
+                                    setMode(Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres)
                                     showDropdown = false
                                 }
                             )
-                        }
-                    }
-
-                    // Segmented toggle: Tablette / Échants / Les deux — under the FAB
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        val tabletteMode = activeDatas.filterAffichageMode_Proto
-                        listOf(
-                            Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement to "Tablette",
-                            Filter_Affichage_Mode_Proto.Echants_Seulement           to "Échants",
-                            Filter_Affichage_Mode_Proto.Tablette_Et_Echants         to "Les 2",
-                        ).forEach { (mode, label) ->
-                            val isSelected = tabletteMode == mode
-                            FloatingActionButton(
-                                modifier = Modifier
-                                    .widthIn(min = 48.dp)
-                                    .height(36.dp),
-                                onClick = {
-                                    activeDatas.filterAffichageMode_Proto = mode
-
-                                    viewModelNewProtoPatterns.sendData(
-                                        Wifi_Messages_Types_NewProto.Change_Filtered_Produits_Du_TabletteDisplayer.prefix,
-                                        mode.name
-                                    )
-                                },
-                                containerColor = if (isSelected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.surfaceVariant,
-                                contentColor   = if (isSelected) Color.White
-                                else MaterialTheme.colorScheme.onSurfaceVariant,
-                                shape = RoundedCornerShape(8.dp),
-                            ) {
-                                Text(
-                                    text     = label,
-                                    style    = MaterialTheme.typography.labelSmall,
-                                    modifier = Modifier.padding(horizontal = 8.dp)
-                                )
-                            }
                         }
                     }
                 }

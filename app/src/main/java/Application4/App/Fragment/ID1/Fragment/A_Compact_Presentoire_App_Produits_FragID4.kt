@@ -55,7 +55,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
     // Retry loading data if initialization is done but no items are displayed
     LaunchedEffect(isInitDone, allProducts) {
         if (isInitDone && !hasRetriedLoading && allProducts.isNullOrEmpty()) {
-            delay(6000) // Wait 6 seconds
+            delay(6000)
             if (allProducts.isNullOrEmpty()) {
                 hasRetriedLoading = true
                 viewModelNewProtoPatterns.retryLoadingData()
@@ -160,6 +160,4 @@ fun A_Compact_Presentoire_App_Produits_App4(
             }
         )
     }
-    val activeM9compt = viewModelNewProtoPatterns.active_Datas.active_M9Compt
-
 }

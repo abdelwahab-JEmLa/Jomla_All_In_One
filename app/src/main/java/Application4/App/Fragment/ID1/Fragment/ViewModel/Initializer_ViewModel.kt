@@ -1,5 +1,6 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
+import Application4.App.Fragment.ID1.Fragment.ProductListFilterLogic
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
@@ -64,8 +65,11 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
 
                 val remote = snap.children
                     .mapNotNull { child ->
-                        try { child.getValue(M09AppCompt::class.java) }
-                        catch (_: Exception) { null }
+                        try {
+                            child.getValue(M09AppCompt::class.java)
+                        } catch (_: Exception) {
+                            null
+                        }
                     }
                     .find { it.keyID == expectedKey }
                 if (remote == null) {
@@ -122,11 +126,14 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
                 .firstOrNull()
             if (local != null) return@run local
 
-            val key  = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
+            val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             val snap = withTimeoutOrNull(10_000L) { M09AppCompt.ref.get().await() }
             val remote = snap?.children?.mapNotNull { child ->
-                try { child.getValue(M09AppCompt::class.java) }
-                catch (_: Exception) { null }
+                try {
+                    child.getValue(M09AppCompt::class.java)
+                } catch (_: Exception) {
+                    null
+                }
             }?.find { it.keyID == key }
 
             remote?.let { AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt().upsert(it) }
@@ -136,16 +143,21 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         val limiteCouleursOuLeurLastAchateEstMoinQueJour =
             appCompt?.limite_couleurs_ou_leur_last_achate_est_moin_que_jour
 
-        val colours   = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll().filter_passive_datas(
-            limiteCouleursOuLeurLastAchateEstMoinQueJour
-        )
+        val colours = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
+            .filter_passive_datas(
+                limiteCouleursOuLeurLastAchateEstMoinQueJour
+            ).let {
+                val mode = AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto
+                if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) it
+                else ProductListFilterLogic.filterByDepot(it)
+            }
 
         progress(2 / 9f)
-        val products  = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
+        val products = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
             .filter_passive(colours.map { it.parentBProduitInfosKeyID }.distinct())
 
         progress(3 / 9f)
-        val clients   = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
+        val clients = AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAll()
         progress(4 / 9f)
 
         val categories = AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAll()
@@ -162,23 +174,24 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         }
 
         progress(6 / 9f)
-        val bonVent        = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
+        val bonVent = AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
         progress(7 / 9f)
-        val ventPeriodes   = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
+        val ventPeriodes = AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll()
         progress(8 / 9f)
-        val tarification   = AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
-            .filter_passive(products.map { it.keyID }.distinct())
+        val tarification =
+            AViewModel_NewProtoPatterns.appDatabase.dao_M13TarificationInfos().getAll()
+                .filter_passive(products.map { it.keyID }.distinct())
 
         val operationVentCouleurs =
             AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAll()
 
         seedActiveDatas(
-            appCompt      = appCompt,
-            bonVent       = bonVent,
-            clients       = clients,
-            categories    = categories,
-            products      = products,
-            colours       = colours,
+            appCompt = appCompt,
+            bonVent = bonVent,
+            clients = clients,
+            categories = categories,
+            products = products,
+            colours = colours,
             allOperations = operationVentCouleurs,
         )
 
@@ -186,11 +199,11 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             AViewModel_NewProtoPatterns._uiStateNewProtoPatterns.value.copy(
                 initDatasProgressEtate = 1f,
                 list_Datas = List_Datas(
-                    m2Client                = clients,
-                    m14VentPeriode          = ventPeriodes,
-                    m16CategorieProduit     = categories,
-                    m8BonVent               = bonVent,
-                    m13TarificationInfos    = tarification,
+                    m2Client = clients,
+                    m14VentPeriode = ventPeriodes,
+                    m16CategorieProduit = categories,
+                    m8BonVent = bonVent,
+                    m13TarificationInfos = tarification,
                     m10OperationVentCouleur = operationVentCouleurs,
                 )
             )
@@ -205,18 +218,18 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         colours: List<M3CouleurProduitInfos>,
         allOperations: List<M10OperationVentCouleur>,
     ) {
-        AViewModel_NewProtoPatterns.active_Datas.active_M9Compt               = appCompt
-        AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent               = bonVent
-        AViewModel_NewProtoPatterns.active_Datas.list_M2Client                = clients
-        AViewModel_NewProtoPatterns.active_Datas.list_M16CategorieProduit     = categories
-        AViewModel_NewProtoPatterns.active_Datas.list_M1Produit               = products
-        AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos  = colours
+        AViewModel_NewProtoPatterns.active_Datas.active_M9Compt = appCompt
+        AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent = bonVent
+        AViewModel_NewProtoPatterns.active_Datas.list_M2Client = clients
+        AViewModel_NewProtoPatterns.active_Datas.list_M16CategorieProduit = categories
+        AViewModel_NewProtoPatterns.active_Datas.list_M1Produit = products
+        AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = colours
         AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = allOperations
     }
 
     private suspend fun collectActiveM9Compt() {
         FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
-            dao_M9AppCompt          = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt(),
+            dao_M9AppCompt = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt(),
             activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
         ).collect { }
     }
@@ -231,7 +244,7 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     private fun collectListM1Produit() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
             FlowsFunctions_ActiveDatasFragNewProto.getFlow_list_M1Produit(
-                dao_M1Produit           = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit(),
+                dao_M1Produit = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit(),
                 activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
             ).collect { }
         }
@@ -240,7 +253,9 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     private fun collectList_M3() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
             AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
-                .collect { AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = it }
+                .collect {
+                    AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = it
+                }
         }
     }
 
@@ -261,7 +276,9 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     private fun collectList_M10OperationVentCouleur_All() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
             AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAllFlow()
-                .collect { AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = it }
+                .collect {
+                    AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = it
+                }
         }
     }
 
