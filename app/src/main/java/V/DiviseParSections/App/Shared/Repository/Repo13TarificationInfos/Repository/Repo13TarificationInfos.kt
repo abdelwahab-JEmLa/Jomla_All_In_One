@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository
 
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -21,7 +21,9 @@ class Repo13TarificationInfos(
 ) {
     val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M13TarificationInfos>>(emptyList())
-    val datasValue by derivedStateOf { _datas.value }
+    val datasValue by derivedStateOf { _datas.value }         //<--
+    //TODO(2.C Relative Au Todo(1): 
+            //... par add ou update le tariff ui
 
 
     init {
@@ -97,6 +99,7 @@ class Repo13TarificationInfos(
         }
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
+
 
     fun refresh_Datas() {
         repoScope.launch {

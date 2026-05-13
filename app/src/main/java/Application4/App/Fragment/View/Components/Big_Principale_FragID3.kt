@@ -42,6 +42,7 @@ fun Big_Principale_FragID3(
     tariffsList: List<M13TarificationInfos>,
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
@@ -97,13 +98,14 @@ fun Big_Principale_FragID3(
             )
 
             Pricipale_Tariffs_Vendeurs_FragID3(
-                une_des_selectedCouleur=selectedCouleur,
-                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,
                 tariffsList = tariffsList,
                 selectedTariff_Par_AncienProto = selectedTariff,
                 onTariffSelected = onTariffSelected,
                 compactMode = !isThisProductExpanded,
+                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+                une_des_selectedCouleur=selectedCouleur,
+                on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
             )
         }
     }

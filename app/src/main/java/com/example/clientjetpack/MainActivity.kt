@@ -5,6 +5,7 @@ import Application2.App.App.appModule_App2_ac_app1
 import Application2.App.Fragment.Compact_Presentoire_App_Produits_App2
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import Application4.App.Screen.MainScreen_NewProtoPattern
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
@@ -27,8 +28,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -113,7 +116,6 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
 
-                            val context = LocalContext.current
                             if (permissionsChecked) {
                                 var initDone by rememberSaveable { mutableStateOf(false) }
 
@@ -124,31 +126,37 @@ class MainActivity : ComponentActivity() {
                                         appDatabase = koinInject()
                                     )
                                 } else {
+                                    val context = LocalContext.current
+                                    val appDatabase = koinInject<AppDatabase>()
+                                    val fragmentNavigationHandler_passed =
+                                        koinInject<FragmentNavigationHandler_NewProto>()
+
+                                    val scope = rememberCoroutineScope()
+
+                                    val list_M1Produit by appDatabase.dao_M1Produit().getAllFlow()
+                                        .collectAsState(initial = emptyList())
+                                    val list_M3CouleurProduit by appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
+                                        .collectAsState(initial = emptyList())
+
+                                    val wifiTransferDatas_ControllerApp = WifiTransferDatas_ControllerApp(
+                                        context = context,
+                                        coroutineScope=scope ,
+                                        list_M1Produit = list_M1Produit,
+                                        list_M3CouleurProduit = list_M3CouleurProduit,
+
+                                    )
+
                                     when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
                                         AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
                                             Compact_Presentoire_App_Produits_App2()
                                         }
 
                                         AppType.JomLaElectroLivreurGrossist_VendeurHost -> {
-                                            val appDatabase = koinInject<AppDatabase>()
-                                            val fragmentNavigationHandler =
-                                                koinInject<FragmentNavigationHandler_NewProto>()
-
-                                            val viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns =
-                                                viewModel(
-                                                    factory = viewModelFactory {
-                                                        initializer {
-                                                            A_ViewModel_NewProtoPatterns(
-                                                                context = context,
-                                                                appDatabase = appDatabase,
-                                                                fragmentNavigationHandler = fragmentNavigationHandler,
-                                                            )
-                                                        }
-                                                    }
-                                                )
                                             MainScreen_NewProtoPattern(
-                                                viewModelNewProtoPatterns_passed = viewModelNewProtoPatterns,
-                                                fragmentNavigationHandler_passed = fragmentNavigationHandler
+                                                appDatabase=appDatabase,
+                                                wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
+                                                fragmentNavigationHandler_passed=fragmentNavigationHandler_passed,
+                                                on_update_M13TarificationInfos_par_ecriture= {},
                                             )
                                         }
 
@@ -162,6 +170,7 @@ class MainActivity : ComponentActivity() {
                                                     factory = viewModelFactory {
                                                         initializer {
                                                             A_ViewModel_NewProtoPatterns(
+                                                                wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
                                                                 context = context,
                                                                 appDatabase = appDatabase,
                                                                 fragmentNavigationHandler = fragmentNavigationHandler,
@@ -170,8 +179,11 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                 )
                                             MainScreen_All(
+                                                fragmentNavigationHandler_passed = fragmentNavigationHandler,
                                                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-                                                fragmentNavigationHandler_passed = fragmentNavigationHandler
+                                                wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
+                                                appDatabase=appDatabase,
+                                                on_update_M13TarificationInfos_par_ecriture={}
                                             )
                                         }
                                     }

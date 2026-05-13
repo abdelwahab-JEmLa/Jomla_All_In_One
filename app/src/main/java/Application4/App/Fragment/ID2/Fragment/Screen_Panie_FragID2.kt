@@ -1,10 +1,11 @@
 package Application4.App.Fragment.ID2.Fragment
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.MarkerStatusDialog
@@ -49,7 +50,8 @@ fun Screen_Panie_FragID2(
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject(),
     aCentralFacade: ACentralFacade = koinInject(),
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
+    list_M13TarificationInfos: List<M13TarificationInfos>,
 ) {
     val isControleFabVisible =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.isControleFabVisible
@@ -61,9 +63,10 @@ fun Screen_Panie_FragID2(
         Box(modifier = Modifier.fillMaxSize()) {
             MainFastSearchProduitPourVent_App4(
                 fragmentNavigationHandler=fragmentNavigationHandler,
+                wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp
             )
             PressistatntMainActivityButtons_Sec8FWinID1(
-                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                list_M13TarificationInfos = list_M13TarificationInfos
             )
             isControleFabVisible.ifTrue {
                 Box(
@@ -85,9 +88,10 @@ fun MainFastSearchProduitPourVent_App4(
     viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
     sourceLenceurDeCetteFragment: ActiveCentralValues.RoleDefinieParSourceACetteFragment? = null,
     aCentralFacade: ACentralFacade = koinInject(),
-    appDatabase: AppDatabase=koinInject(),
+    appDatabase: AppDatabase = koinInject(),
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
 ) {
     val active_Central_Values = focusedValuesGetter.active_Central_Values
     val uiState by viewModel.uiState.collectAsState()
@@ -262,14 +266,15 @@ fun MainFastSearchProduitPourVent_App4(
 
             if (shouldShowMarkerDialog) {
                 MarkerStatusDialog(
-                     fragmentNavigationHandler_NewProto=fragmentNavigationHandler,
+                    fragmentNavigationHandler_NewProto=fragmentNavigationHandler,
                     relative_M2Client = markerStatusDialogActiveM2Client,
-                    markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
                     on_dissmiss_dialog_avec_enleve_focuse_bon = {
                         focusedValuesGetter.update_activeCentralValues(
                             currentValues.copy(markerStatusDialogActiveM2Client = null)
                         )
-                    }
+                    },
+                    markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
+                    wifiTransferDatas_ControllerApp = wifiTransferDatas_ControllerApp
                 )
             }
         }

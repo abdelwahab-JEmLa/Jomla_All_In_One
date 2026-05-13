@@ -10,6 +10,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -49,6 +50,7 @@ fun Main_LazyColumnList_App4(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
@@ -149,12 +151,13 @@ fun Main_LazyColumnList_App4(
                 span = if (isExpanded) StaggeredGridItemSpan.FullLine else StaggeredGridItemSpan.SingleLane
             ) {
                 LazyStigerList_Produits_FragID4(
-                    uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                     product = product,
                     colors = colors,
                     onCategoryClick = { onProductCategoryClick(product) },
-                    justMoved = product.keyID == justMovedProductKeyID
-                )
+                    justMoved = product.keyID == justMovedProductKeyID,
+                    uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+                    on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
+                    )
             }
         }
     }
@@ -167,7 +170,8 @@ fun LazyStigerList_Produits_FragID4(
     colors: List<M3CouleurProduitInfos>,
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit
 ) {
     val backgroundColor by animateColorAsState(
         targetValue = if (justMoved) Color(0xFF4CAF50).copy(alpha = 0.3f) else Color.Transparent,
@@ -188,11 +192,13 @@ fun LazyStigerList_Produits_FragID4(
             .background(backgroundColor, RoundedCornerShape(12.dp))
     ) {
         A_Item_Produit_App4(
-            uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
             relative_M1produit = product,
-            relative_ListM3Couleurs_override = colors,
+            modifier = modifier,
             onCategoryClick = onCategoryClick,
-            modifier = modifier
-        )
+            uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+            relative_ListM3Couleurs_override = colors,
+            on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
+
+            )
     }
 }

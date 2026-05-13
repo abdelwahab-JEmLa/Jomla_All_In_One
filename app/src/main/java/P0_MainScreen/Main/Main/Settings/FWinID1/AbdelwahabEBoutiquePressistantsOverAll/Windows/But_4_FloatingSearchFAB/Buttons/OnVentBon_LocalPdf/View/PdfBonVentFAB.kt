@@ -3,6 +3,7 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -39,22 +40,22 @@ import org.koin.compose.koinInject
 
 @Composable
 fun PdfBonVentFAB(
-    showLabels: Boolean,
+    showLabels: Boolean = true,
     modifier: Modifier = Modifier,
     onPdfSaved: ((savedPath: String, count: Int) -> Unit)? = null,
     aCentralFacade: ACentralFacade = koinInject(),
     appDatabase: AppDatabase = koinInject(),
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
     context: Context = LocalContext.current,
-    listm13: List<M13TarificationInfos>
+    listm13: List<M13TarificationInfos>,
+    on_vent_bon: M8BonVent?,
+    on_vent_couleurs: List<M10OperationVentCouleur>
 ) {
     val context = LocalContext.current
     val focusedValuesGetter: FocusedValuesGetter =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 
-    val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val activeVents = focusedValuesGetter
-        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+    val activeVents = on_vent_couleurs
         .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
 
     // Compute the live total value of the current bon so we can detect price-change staleness.
@@ -68,30 +69,30 @@ fun PdfBonVentFAB(
     val defaultPathSuffix = "/Pdf/"
     val activeCount = activeVents.size
 
-    var localSavedPath by remember(activeBonVent?.keyID) {
+    var localSavedPath by remember(on_vent_bon?.keyID) {
         mutableStateOf(
-            activeBonVent?.path_pdf_bon_file ?: ""
+            on_vent_bon?.path_pdf_bon_file ?: ""
         )
     }
-    var localSavedCount by remember(activeBonVent?.keyID) {
+    var localSavedCount by remember(on_vent_bon?.keyID) {
         mutableStateOf(
-            activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0
+            on_vent_bon?.nombre_produits_don_dernier_pdf_stoked ?: 0
         )
     }
     // Tracks the total value at the time the last PDF was generated so price changes invalidate it.
-    var localSavedTotal by remember(activeBonVent?.keyID) {
+    var localSavedTotal by remember(on_vent_bon?.keyID) {
         mutableStateOf(
-            activeBonVent?.last_sort_pdf_locale_totale_a_paye ?: 0.0
+            on_vent_bon?.last_sort_pdf_locale_totale_a_paye ?: 0.0
         )
     }
 
     val storedPath = localSavedPath.takeIf { it.isNotBlank() && !it.endsWith(defaultPathSuffix) }
-        ?: (activeBonVent?.path_pdf_bon_file ?: "")
+        ?: (on_vent_bon?.path_pdf_bon_file ?: "")
     val storedCount =
-        localSavedCount.takeIf { it > 0 } ?: (activeBonVent?.nombre_produits_don_dernier_pdf_stoked
+        localSavedCount.takeIf { it > 0 } ?: (on_vent_bon?.nombre_produits_don_dernier_pdf_stoked
             ?: 0)
     val storedTotal =
-        localSavedTotal.takeIf { it > 0.0 } ?: (activeBonVent?.last_sort_pdf_locale_totale_a_paye
+        localSavedTotal.takeIf { it > 0.0 } ?: (on_vent_bon?.last_sort_pdf_locale_totale_a_paye
             ?: 0.0)
 
     val fileExistsOnDisk = if (storedPath.startsWith("/")) {
@@ -111,8 +112,7 @@ fun PdfBonVentFAB(
 
     var isGenerating by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val relativeListM13vent = focusedValuesGetter
-        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+    val relativeListM13vent = on_vent_couleurs
         .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -141,17 +141,15 @@ fun PdfBonVentFAB(
                 isGenerating = true
                 scope.launch {
                     try {
-
                         initiateBackgroundPdfCreation_NewP(
                             context = context,
                             aCentralFacade = aCentralFacade,
-                            focusedValuesGetter = focusedValuesGetter,
                             onPdfSaved = { savedPath ->
                                 localSavedPath = savedPath
                                 localSavedCount = activeCount
                                 localSavedTotal = activeTotal
                                 onPdfSaved?.invoke(savedPath, activeCount)
-                                activeBonVent?.let { bon ->
+                                on_vent_bon?.let { bon ->
                                     aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(
                                         bon.copy(
                                             path_pdf_bon_file = savedPath,
@@ -162,7 +160,9 @@ fun PdfBonVentFAB(
                                 }
                             },
                             list_M13TarificationInfos = listm13,
-                            relative_List_M13Vent = relativeListM13vent
+                            relative_List_M13Vent = relativeListM13vent,
+                            on_vent_client = focusedValuesGetter.activeOnVentM2ClientInfos,
+                            on_vent_bon = focusedValuesGetter.activeOnVent_M8BonVent
                         )
                     } finally {
                         isGenerating = false

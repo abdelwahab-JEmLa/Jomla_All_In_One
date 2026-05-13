@@ -3,9 +3,12 @@ package P0_MainScreen.Main
 import A_Main.Shared.Views.Dialogs.Floating_DropDownMenu.Dialog.Floating_Separated_Button
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
+import EntreApps.Shared.Modules.Base.AppDatabase
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
@@ -80,7 +83,10 @@ fun MainScreen_All(
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject(),
     fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
+    appDatabase: AppDatabase,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit
 ) {
     var lence_hor_conxion = false
 
@@ -298,8 +304,6 @@ fun MainScreen_All(
                             }
                         } else {
                             AppNavHost(
-                                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-                                isWifiClientConnected_1 = isWifiClientConnected_1,
                                 modifier = Modifier.fillMaxSize(),
                                 viewModel = headViewModel,
                                 viewModelInitApp = viewModelViewModelInitApp,
@@ -316,6 +320,11 @@ fun MainScreen_All(
                                 onClickImageToShowControles = {
                                     isControleFabVisible = !isControleFabVisible
                                 },
+                                isWifiClientConnected_1 = isWifiClientConnected_1,
+                                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                                wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
+                                fragmentNavigationHandler_passed=fragmentNavigationHandler_passed,
+                                appDatabase=appDatabase,on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture
                             )
                         }
                     }
@@ -405,9 +414,7 @@ fun MainScreen_All(
                 }
 
                 if (isHostPhone && shouldShowContent && !hideAppScreen) {
-                    PressistatntMainActivityButtons_Sec8FWinID1(
-                        viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-                    )
+                    PressistatntMainActivityButtons_Sec8FWinID1()
                     val getter = aCentralFacade.repositorysMainGetter
                     Floating_Separated_Button(
                         list_m16 = getter.repoM16CategorieProduit.datasValue,

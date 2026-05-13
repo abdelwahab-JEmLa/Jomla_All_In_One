@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
@@ -32,10 +32,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
-// Replace your existing Credit button section in AfficheurRegleOuvert with this:
 @Composable
 fun AfficheurRegleOuvert(
-    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns? ,
     uiState: UiState,
     viewModel: MapClientsViewModel,
     aCentralFacade: ACentralFacade = koinInject(),
@@ -44,6 +42,7 @@ fun AfficheurRegleOuvert(
     onPourEdite_Gps_Client: (M2Client) -> Unit,
     extracted: (M8BonVent) -> Unit,
     extracted_2: () -> Unit,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp?,
 ) {
     val clientId = relative_Client?.id ?: 0L
 
@@ -128,7 +127,8 @@ fun AfficheurRegleOuvert(
                         repositorysMainSetter = aCentralFacade.repositorysMainSetter,
                         relative_M8BonVent = it,
                         context = context,
-                        viewModelNewProtoPatterns_passed =viewModelNewProtoPatterns_passed
+                        wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
+                        couleurs = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent,
                     )
                 }
 

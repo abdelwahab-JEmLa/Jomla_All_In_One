@@ -520,9 +520,9 @@ fun View_MainItem(
                                         relative_M8BonVent
                                     )
 
-                                    fragmentNavigationHandler_NewProto.navigateTo(
-                                        Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
-                                    )
+                                fragmentNavigationHandler_NewProto.navigateTo(
+                                    Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
+                                )
                             }
                         ) {
                             Icon(
@@ -531,7 +531,7 @@ fun View_MainItem(
                                 tint = if (activeM8BonVentId == relative_M8BonVent.vid) {
                                     Color.White
                                 } else {
-                                     Color.Red
+                                    Color.Red
                                 }
                             )
                         }
@@ -823,6 +823,7 @@ fun View_MainItem(
                         repositorysMainSetter = repositorysMainSetter,
                         relative_M8BonVent = relative_M8BonVent,
                         context = context,
+                        couleurs = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
                     )
 
                     Button_StockOptions_AddToStock(
@@ -943,7 +944,6 @@ fun View_MainItem(
                         viewModel.deleteListOperationVents(
                             relative_list_Vent
                         )
-
 
 
                         val audioKeyToDelete = if (hasVoiceMessage) {

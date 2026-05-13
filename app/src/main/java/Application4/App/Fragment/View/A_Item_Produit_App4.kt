@@ -40,6 +40,7 @@ fun A_Item_Produit_App4(
     onCategoryClick: (() -> Unit)? = null,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     relative_ListM3Couleurs_override: List<M3CouleurProduitInfos>? = null,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
@@ -213,7 +214,8 @@ fun A_Item_Produit_App4(
         )
 
         Big_Principale_FragID3(
-            uiState_NewProtoPatterns_viewModel,
+            on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
+            uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
             relative_M1produit = relative_M1produit,
             selectedCouleur = selectedCouleur,
             selectedTariff = selectedTariff,

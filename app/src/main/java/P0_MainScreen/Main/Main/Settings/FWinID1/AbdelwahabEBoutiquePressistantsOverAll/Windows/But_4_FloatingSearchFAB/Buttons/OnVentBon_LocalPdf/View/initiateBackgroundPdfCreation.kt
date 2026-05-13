@@ -2,9 +2,10 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfSaverUtility_Proto2
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import android.content.Context
 import android.os.Environment
 import android.util.Log
@@ -23,27 +24,20 @@ private const val TAG = "PdfBonVent"
 suspend fun initiateBackgroundPdfCreation_NewP(
     context: Context,
     aCentralFacade: ACentralFacade,
-    focusedValuesGetter: FocusedValuesGetter,
     onPdfSaved: ((savedPath: String) -> Unit)? = null,
     list_M13TarificationInfos: List<M13TarificationInfos>,
     relative_List_M13Vent: List<M10OperationVentCouleur>,
+    on_vent_client: M2Client?,
+    on_vent_bon: M8BonVent?,
     ) {
-    val activeClient  = focusedValuesGetter.activeOnVentM2ClientInfos
-    val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
 
     when {
-        activeClient  == null -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show() }; return }
-        activeBonVent == null -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun bon de vente actif",  Toast.LENGTH_SHORT).show() }; return }
+        on_vent_client == null -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show() }; return }
+        on_vent_bon == null -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun bon de vente actif",  Toast.LENGTH_SHORT).show() }; return }
         relative_List_M13Vent.isEmpty() -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun article à traiter",   Toast.LENGTH_SHORT).show() }; return }
     }
 
     try {
-        val cv   = focusedValuesGetter.active_Central_Values
-        val bons = cv.bons_a_imprime_avec_image_produit.toMutableList()
-        if (bons.none { it.keyID == activeBonVent!!.keyID }) {
-            bons.add(activeBonVent!!)
-            focusedValuesGetter.update_activeCentralValues(cv.copy(bons_a_imprime_avec_image_produit = bons))
-        }
 
         delay(300)
 
@@ -55,8 +49,8 @@ suspend fun initiateBackgroundPdfCreation_NewP(
                 repo3CouleurProduitInfos             = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
                 scope                               = CoroutineScope(currentCoroutineContext()),
                 relative_ListM10OperationVentCouleur = relative_List_M13Vent,
-                relative_bonVent                    = activeBonVent,
-                client                              = activeClient,
+                relative_bonVent                    = on_vent_bon,
+                client                              = on_vent_client,
                 showCreditSection                   = false,
                 versement                           = 0.0,
                 shouldOpenFile                      = false
@@ -72,8 +66,8 @@ suspend fun initiateBackgroundPdfCreation_NewP(
         }
 
         // baseName has NO extension — used in the Toast and as the JPG file stem.
-        val baseName = activeBonVent!!.keyID.takeLast(6) +
-                "_${activeClient!!.nom.replace(Regex("[^A-Za-z0-9_\\-]"), "_").take(20)}" +
+        val baseName = on_vent_bon!!.keyID.takeLast(6) +
+                "_${on_vent_client!!.nom.replace(Regex("[^A-Za-z0-9_\\-]"), "_").take(20)}" +
                 "_${relative_List_M13Vent.size}"
         val fileName = "$baseName.pdf"
 
@@ -91,7 +85,7 @@ suspend fun initiateBackgroundPdfCreation_NewP(
 
                 if (onPdfSaved == null) {
                     aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(
-                        activeBonVent.copy(
+                        on_vent_bon.copy(
                             path_pdf_bon_file                      = pathToStore,
                             nombre_produits_don_dernier_pdf_stoked = relative_List_M13Vent.size
                         )
@@ -125,13 +119,6 @@ suspend fun initiateBackgroundPdfCreation_NewP(
     } catch (e: Exception) {
         withContext(Dispatchers.Main) { Toast.makeText(context, "❌ Erreur: ${e.message}", Toast.LENGTH_LONG).show() }
     } finally {
-        val fv = focusedValuesGetter.active_Central_Values
-        focusedValuesGetter.update_activeCentralValues(
-            fv.copy(
-                bons_a_imprime_avec_image_produit =
-                    fv.bons_a_imprime_avec_image_produit.filter { it.keyID != activeBonVent?.keyID }
-            )
-        )
         delay(500)
     }
 }

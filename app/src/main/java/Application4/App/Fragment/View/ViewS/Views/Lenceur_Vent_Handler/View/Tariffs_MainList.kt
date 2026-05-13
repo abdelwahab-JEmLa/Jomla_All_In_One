@@ -25,6 +25,7 @@ fun Tariffs_MainList(
     onTariffSelected: (M13TarificationInfos) -> Unit,
     tariffsList: List<M13TarificationInfos>,
     tariff_achat_prix: Double,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
     val isEchatillantsMode = uiState_NewProtoPatterns_viewModel.second.active_Datas.filterAffichageMode_Proto== Filter_Affichage_Mode_Proto.Echants_Seulement
 
@@ -51,11 +52,13 @@ fun Tariffs_MainList(
                 tariff_achat_prix = tariff_achat_prix,
             )
         }
+
         item(key = "__entre_par_ecriture__") {
             EntreParEcriture_Tariff(
                 relative_M1produit = relative_M1produit,
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 onTariffSelected = onTariffSelected,
+                on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
                 compactMode = compactMode,
                 isSelected = selectedTariff_Par_AncienProto.typeChoisi == M13TarificationInfos.TypeChoisi.Edited_Pour_Client,
             )

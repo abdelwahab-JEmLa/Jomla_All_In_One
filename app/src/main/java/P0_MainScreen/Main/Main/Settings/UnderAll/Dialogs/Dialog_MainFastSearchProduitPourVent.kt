@@ -92,9 +92,7 @@ fun Dialog_MainFastSearchProduitPourVent(
                     sourceLenceurDeCetteFragment = sourceLenceurDeCetteFragment,
                 )
 
-                PressistatntMainActivityButtons_Sec8FWinID1(
-                    viewModelNewProtoPatterns = koinInject ()
-                )
+                PressistatntMainActivityButtons_Sec8FWinID1()
 
                 Row(
                     modifier = Modifier

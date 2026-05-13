@@ -46,12 +46,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
+
 @Composable
 fun PressistatntMainActivityButtons_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
     val activeDatas = viewModelNewProtoPatterns.active_Datas
-
+    var sharedPdfPath by remember { mutableStateOf("") }
+    var sharedPdfCount by remember { mutableStateOf(0) }
     val currentMode by remember {
         derivedStateOf { activeDatas.filterAffichageMode_Proto }
     }
@@ -164,7 +166,36 @@ fun PressistatntMainActivityButtons_App4(
             },
     ) {
 
+     /*   val listM13tarificationinfos = emptyList()
+
+        val on_vent_couleurs =
+            activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+        val on_vent_bon = activeDatas.activeOnVent_M8BonVent     */
         Column {
+            /*
+            PdfBonVentFAB(
+                onPdfSaved = { path, count ->
+                    sharedPdfPath = path
+                    sharedPdfCount = count
+                },
+                listm13 = listM13tarificationinfos,
+                on_vent_bon = on_vent_bon,
+                on_vent_couleurs = on_vent_couleurs
+            )
+            Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
+                overridePath = sharedPdfPath,
+                overrideCount = sharedPdfCount,
+                list_M13TarificationInfos = listM13tarificationinfos,
+                activeClient = activeDatas.activeOnVent_M2Client,
+                on_vent_couleurs = on_vent_couleurs,
+                produits = activeDatas.list_M1Produit ?: emptyList(),
+                on_vent_m8 = on_vent_bon ,
+                on_upsert_M2Client={
+                    viewModelNewProtoPatterns.update_m2(
+                        it
+                    )
+                }
+            )       */
             Text("Period")
             Row {
                 m14VentPeriode_sums?.let { periodSums ->

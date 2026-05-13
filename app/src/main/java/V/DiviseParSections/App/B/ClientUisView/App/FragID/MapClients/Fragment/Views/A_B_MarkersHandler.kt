@@ -462,7 +462,6 @@ fun createAndAddMarker(
                         initiateBackgroundPdfCreation_NewP(
                             context = context,
                             aCentralFacade = aCentralFacade,
-                            focusedValuesGetter = focusedValuesGetter,
                             onPdfSaved = { savedPath ->
                                 val pdfFile = File(savedPath)
                                 android.util.Log.d("WhatsAppPdf", "onPdfSaved: path=$savedPath  exists=${pdfFile.exists()}  size=${pdfFile.length()} bytes")
@@ -496,7 +495,9 @@ fun createAndAddMarker(
                             list_M13TarificationInfos = list_M13TarificationInfos,
                             relative_List_M13Vent = focusedValuesGetter
                                 .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                                .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
+                                .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 },
+                            on_vent_client = focusedValuesGetter.activeOnVentM2ClientInfos,
+                            on_vent_bon = focusedValuesGetter.activeOnVent_M8BonVent
                         )
                     }
                     true

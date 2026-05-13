@@ -37,6 +37,11 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
      * Periodically verifies that active_M9Compt.keyID matches the expected
      * au_Lence_Set_Compt_Ac_KeyId. When they differ (or the compt is null),
      * fetches from Firebase, upserts to the local DAO and refreshes active_Datas.
+     *
+     * Note: the initial seeding of active_M9Compt is handled synchronously in
+     * [loadAllDatasOnce] (local DB first, Firebase fallback). This loop only
+     * takes over afterwards to keep the compt in sync if the key changes at runtime
+     * (e.g. after a hot-swap of accounts).
      */
     private fun startPeriodicComptKeyCheck() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
@@ -130,6 +135,8 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         progress(1 / 9f)
 
         // Try local DB first; fall back to Firebase if the compt is not yet cached locally.
+        // This is the authoritative first load of active_M9Compt — the periodic check in
+        // startPeriodicComptKeyCheck() only runs afterwards to keep it in sync.
         val appCompt: M09AppCompt? = run {
             val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             val local = AViewModel_NewProtoPatterns.appDatabase
@@ -235,6 +242,4 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = colours
         AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = allOperations
     }
-
-
 }

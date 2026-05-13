@@ -2,9 +2,9 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -42,6 +42,7 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
     modifier: Modifier = Modifier,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     une_des_selectedCouleur: M3CouleurProduitInfos,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val listM10OperationVentCouleur_FilteredBy_activeM8BonVent =
@@ -107,7 +108,8 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         selectedTariff_Par_AncienProto = selectedTariff_Par_AncienProto,
         compactMode = compactMode,
         onTariffSelected = onTariffSelected,
-        tariffsList = tariffsList,tariff_achat_prix=tariff_achat_prix,
+        tariffsList = tariffsList, tariff_achat_prix=tariff_achat_prix,
+        on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
     )
 }
 

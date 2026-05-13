@@ -7,6 +7,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.Ref_list_Filtred_Keys_M3Couleur_Main_Values
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import android.widget.Toast
@@ -15,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlin.Any
+import kotlin.String
 
 class RepositorysMainSetter_NewProtoPatterns(
     val appDatabase: AppDatabase,
@@ -370,6 +373,14 @@ class RepositorysMainSetter_NewProtoPatterns(
                 val updates = mutableMapOf<String, Any>(op.keyID to op)
                 M10OperationVentCouleur.Companion.ref.updateChildren(updates).await()
             }
+        }
+    }
+
+    fun update_M2(new: M2Client) {
+        composScope.launch {
+            appDatabase.dao_M2Client().upsert(new)
+             //<--
+             //TODO(1): ajout pdate fb
         }
     }
 }

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
@@ -94,7 +94,7 @@ fun MapContent(
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
-    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -180,7 +180,6 @@ fun MapContent(
             cleanupMapResources(mapView, viewModel)
         }
     }
-    val uiState_viewModelNewProtoPatterns by viewModelNewProtoPatterns_passed.uiState.collectAsState()
 
     LaunchedEffect(
         viewModel.getter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
@@ -201,7 +200,7 @@ fun MapContent(
             showMarkerDetails = showMarkerDetails,
             proximityFilterCenter = proximityFilterCenter,
             proximityFilterRadiusMeters = viewModel.proximite_de_vision_meter.toDouble(),
-            list_M13TarificationInfos = uiState_viewModelNewProtoPatterns.list_M13TarificationInfos
+            list_M13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
         )
         ensureLocationOverlayIsAtBottom(mapView)
     }
@@ -272,7 +271,7 @@ fun MapContent(
 
         if (shouldShowMarkerDialog) {
             MarkerStatusDialog(
-                viewModelNewProtoPatterns_passed=viewModelNewProtoPatterns_passed,
+                wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
                 fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
                 viewModel = viewModel,
                 relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
@@ -316,7 +315,6 @@ fun MapContent(
                             .initiateBackgroundPdfCreation_NewP(
                                 context = context,
                                 aCentralFacade = aCentralFacade,
-                                focusedValuesGetter = fg,
                                 onPdfSaved = { savedPath ->
                                     val pdfFile = java.io.File(savedPath)
                                     var cleaned = enteredPhone.replace(Regex("[^0-9]"), "")
@@ -345,10 +343,12 @@ fun MapContent(
                                         ).show()
                                     }
                                 },
-                                list_M13TarificationInfos = uiState_viewModelNewProtoPatterns.list_M13TarificationInfos,
+                                list_M13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
                                 relative_List_M13Vent = fg
                                     .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                                    .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
+                                    .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 },
+                                on_vent_client = fg.activeOnVentM2ClientInfos,
+                                on_vent_bon = fg.activeOnVent_M8BonVent
                             )
                     }
                 }

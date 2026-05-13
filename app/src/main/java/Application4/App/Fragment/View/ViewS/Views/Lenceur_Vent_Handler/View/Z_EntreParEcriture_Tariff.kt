@@ -2,9 +2,9 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +45,7 @@ fun EntreParEcriture_Tariff(
     relative_M1produit: M01Produit,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     onTariffSelected: (M13TarificationInfos) -> Unit = {},
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit = {},
     compactMode: Boolean = false,
     isSelected: Boolean = false,
     listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? = uiState_NewProtoPatterns_viewModel.second
@@ -174,9 +175,11 @@ fun EntreParEcriture_Tariff(
                         dernierTimeTampsSynchronisationAvecFireBase = now,
                     )
                     viewModel.update_M13TarificationInfos(finalTariff)
+                    on_update_M13TarificationInfos_par_ecriture(finalTariff)
 
                     val productOps =
                         listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.filter { it.parent_M1Produit_KeyId == relative_M1produit.keyID }
+
                     if (!productOps.isNullOrEmpty()) {
                         viewModel.update_listM10OperationVentCouleur(
                             listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state.map { op ->

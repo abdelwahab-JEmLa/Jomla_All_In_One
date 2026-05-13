@@ -3,7 +3,10 @@ package V.DiviseParSections.App._0.Navigation
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
@@ -81,6 +84,10 @@ fun AppNavHost(
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto = koinInject(),
     isWifiClientConnected_1: Boolean,
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
+    fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto,
+    appDatabase: AppDatabase,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
     // Initialize UI state and navigation
     val uiState by viewModel.uiState.collectAsState()
@@ -240,13 +247,16 @@ fun AppNavHost(
 
                 composable(Screen.Fragment_Compact_Presentoir_Echantilliants.route) {
                     A_Compact_Presentoire_App_Produits_App4(
-                        viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                        wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
+                        appDatabase = appDatabase,
+                        fragmentNavigationHandler = fragmentNavigationHandler_passed,
+                        on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture
                     )
                 }
 
                 // Add client map routes
                 app2(
-                    viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                    wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
                     viewModelInitApp = viewModelInitApp,
                     clientEnCourDeVent = clientEnCourDeVent,
                     navController = navController,
@@ -381,7 +391,7 @@ fun NavGraphBuilder.app2(
     mapReloadTrigger: Int = 0,
     fragmentNavigationHandler_nP: FragmentNavigationHandler_NewProto,
     fragmentNavigationHandler: FragmentNavigationHandler,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
 ) {
     composable(
         route = Screen.A_Clients_LocationGps.route,
@@ -396,7 +406,7 @@ fun NavGraphBuilder.app2(
 
         key(screenKey.value) {
             A_MapClients_A2FragID_1(
-                viewModelNewProtoPatterns_passed=viewModelNewProtoPatterns,
+                wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
                 fragmentNavigationHandler_NewProto
                = fragmentNavigationHandler_nP,
                 onUpdateLongAppSetting = {

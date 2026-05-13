@@ -1,12 +1,13 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import kotlinx.coroutines.flow.update
 
 private const val TAG_SETTER = "Setter_ViewModel"
@@ -205,5 +206,19 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
             )
         }
         vm.repositorysMainSetter_NewProtoPatterns.update_M16CategorieProduit(new)
+    }
+
+    fun update_m2(new: M2Client) {
+        vm._uiStateNewProtoPatterns.update { state ->
+            val current = state.list_Datas ?: List_Datas()
+            state.copy(
+                list_Datas = current.copy(
+                    m2Client = current.m2Client.map {
+                        if (it.keyID == new.keyID) new else it
+                    }
+                )
+            )
+        }
+        vm.repositorysMainSetter_NewProtoPatterns.update_M2(new)
     }
 }

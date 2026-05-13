@@ -12,6 +12,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.annotation.SuppressLint
 import android.content.Context
@@ -29,6 +30,7 @@ class A_ViewModel_NewProtoPatterns(
     private val context: Context,
     val appDatabase: AppDatabase,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
+    val wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
 ) : ViewModel() {
     val active_Datas = ActiveDatasFragNewProto()
     private val updater = Setter_ViewModel_NewProtoPatterns(this)
@@ -43,14 +45,9 @@ class A_ViewModel_NewProtoPatterns(
         )
     }
 
-    val wifi = WifiTransferDatas_ControllerApp(
-        context = context,
-        coroutineScope = viewModelScope,
-        list_M1Produit = emptyList(),
-        list_M3CouleurProduit = emptyList(),
-    )
 
-    val wifiState = wifi.state.stateIn(
+
+    val wifiState = wifiTransferDatas_ControllerApp.state.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         ProductDisplayController_NewProto()
@@ -58,28 +55,28 @@ class A_ViewModel_NewProtoPatterns(
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() {
-        wifi.startAsClient(); wifi.updateTypePhone(isHost = false)
+        wifiTransferDatas_ControllerApp.startAsClient(); wifiTransferDatas_ControllerApp.updateTypePhone(isHost = false)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() {
-        wifi.startAsHost(); wifi.updateTypePhone(isHost = true)
+        wifiTransferDatas_ControllerApp.startAsHost(); wifiTransferDatas_ControllerApp.updateTypePhone(isHost = true)
     }
 
-    fun disconnect() = wifi.disconnect()
+    fun disconnect() = wifiTransferDatas_ControllerApp.disconnect()
 
     fun sendOrderToClientDisplayerT(
         order: Wifi_Messages_Types_NewProto,
         data: Any? = null
     ) =
-        wifi.sendOrderToClientDisplayerT(order, data)
+        wifiTransferDatas_ControllerApp.sendOrderToClientDisplayerT(order, data)
 
     /** Setter direct de l'expansion (produit + couleur) — met à jour le state local ET notifie le client. */
     fun updateExpandedProduitEtCouleur(
         produit: M01Produit?,
         couleur: M3CouleurProduitInfos?,
         sendToClient: Boolean = true,
-    ) = wifi.updateExpandedProduitEtCouleur(produit, couleur, sendToClient)
+    ) = wifiTransferDatas_ControllerApp.updateExpandedProduitEtCouleur(produit, couleur, sendToClient)
 
     init {
         fragmentNavigationHandler.closeAllActiveFragments()
@@ -136,6 +133,8 @@ class A_ViewModel_NewProtoPatterns(
     fun update_m1Produit(new: M01Produit) = updater.update_m1Produit(new)
     fun delete_m1Produit(produit: M01Produit) = updater.delete_m1Produit(produit)
 
+    fun update_m2(new: M2Client) = updater.update_m2(new)
+
     fun deleteInsertFireBase_listKeys_M3CouleurProduitInfos(
         keys: Map<String, Boolean>,
         onSuccess: () -> Unit = {}
@@ -189,6 +188,6 @@ class A_ViewModel_NewProtoPatterns(
      * e.g. [Wifi_Messages_Types_NewProto.Change_Filtered_Produits_Du_TabletteDisplayer].
      */
     fun sendData(prefix: String, data: String) {
-        wifi.sendData("$prefix$data")
+        wifiTransferDatas_ControllerApp.sendData("$prefix$data")
     }
 }

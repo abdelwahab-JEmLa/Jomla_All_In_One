@@ -57,7 +57,7 @@ data class ProductDisplayController_NewProto(
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas_ControllerApp(
     private val context: Context,
-    private val coroutineScope: CoroutineScope,
+    private val coroutineScope: CoroutineScope ,
     var list_M1Produit: List<M01Produit>,
     var list_M3CouleurProduit: List<M3CouleurProduitInfos>,
 ) {

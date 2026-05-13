@@ -372,12 +372,12 @@ fun MainFastSearchProduitPourVent(
                 MarkerStatusDialog(
                     fragmentNavigationHandler_NewProto=fragmentNavigationHandler,
                     relative_M2Client = markerStatusDialogActiveM2Client,
-                    markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
                     on_dissmiss_dialog_avec_enleve_focuse_bon = {
                         focusedValuesGetter.update_activeCentralValues(
                             currentValues.copy(markerStatusDialogActiveM2Client = null)
                         )
-                    }
+                    },
+                    markerStatusDialogActiveM2Client = markerStatusDialogActiveM2Client,
                 )
             }
 

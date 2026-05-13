@@ -1,13 +1,15 @@
 package Application4.App.Screen
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Main.A.Navigation.AppNavHost_NewProtoPattern
+import Application4.App.Main.A.Navigation.AppNavHost_App4
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.NavigationBarWithFab_NewProto
 import Application4.App.Main.A.Navigation.Component.NavigationItems
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import android.annotation.SuppressLint
 import android.os.Build
@@ -28,11 +30,12 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun MainScreen_NewProtoPattern(
     modifier: Modifier = Modifier,
-    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
-    fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto
+    appDatabase: AppDatabase,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
+    fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
-
-    val wifiState = viewModelNewProtoPatterns_passed.wifiState.collectAsState()
+    val wifiState = wifiTransferDatas_ControllerApp.state.collectAsState()
 
     val navController = rememberNavController()
     LaunchedEffect(navController) {
@@ -51,8 +54,10 @@ fun MainScreen_NewProtoPattern(
         currentRoute = currentRoute,
         navController = navController,
         fragmentNavigationHandler_passed = fragmentNavigationHandler_passed,
-        viewModelNewProtoPatterns_passed = viewModelNewProtoPatterns_passed,
-    )
+        wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
+        appDatabase=appDatabase,
+        on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
+        )
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -64,13 +69,15 @@ private fun MainScaffold(
     currentRoute: String?,
     navController: NavHostController,
     fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto,
-    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
+    appDatabase: AppDatabase,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
             NavigationBarWithFab_NewProto(
-                viewModelNewProtoPatterns_passed=viewModelNewProtoPatterns_passed,
+                wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
                 items = NavigationItems.getItems(isAdmin = true),
                 currentRoute = currentRoute,
                 onNavigate = { route -> fragmentNavigationHandler_passed.navigateTo(route) },
@@ -78,20 +85,24 @@ private fun MainScaffold(
                 isFabVisible = true,
                 onToggleFabVisibility = {},
                 showWarningState = false,
-                onClickImageToShowControles = {},
             )
         }
     ) { innerPadding ->
         Column {
             (!wifiState.isConnected).ifTrue {
-                ConnexionCardHost_App4(vm = viewModelNewProtoPatterns_passed)
+                ConnexionCardHost_App4(
+                    wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
+                )
             }
-            AppNavHost_NewProtoPattern(
-                fragmentNavigationHandler=fragmentNavigationHandler_passed,
+            AppNavHost_App4(
                 modifier = Modifier.fillMaxSize(),
-                viewModelNewProtoPatterns_passed = viewModelNewProtoPatterns_passed,
                 navController = navController,
                 innerPadding = innerPadding,
+                fragmentNavigationHandler=fragmentNavigationHandler_passed,
+                wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
+                appDatabase=appDatabase,
+
+                on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
             )
         }
     }

@@ -1,10 +1,10 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
@@ -46,15 +46,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 import java.io.File
 
 @Composable
@@ -63,21 +60,19 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     showLabels: Boolean = true,
     overridePath: String = "",
     overrideCount: Int = 0,
-    aCentralFacade: ACentralFacade = koinInject(),
-    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
     list_M13TarificationInfos: List<M13TarificationInfos>,
+    activeClient: M2Client?,
+    on_vent_couleurs: List<M10OperationVentCouleur>,
+    produits: List<M01Produit>,
+    on_vent_m8: M8BonVent?,
+    on_upsert_M2Client: (M2Client) -> Unit,
     ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val activeBonVent = focusedValuesGetter.activeOnVent_M8BonVent
-    val activeClient = focusedValuesGetter.activeOnVentM2ClientInfos
-
     val defaultPathSuffix = "/Pdf/"
 
-    val activeVents = focusedValuesGetter
-        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+    val activeVents = on_vent_couleurs
         .filter {
             it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve
                     && it.quantity > 0
@@ -89,8 +84,7 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                 .find {
                     it.keyID == vent.parentM13TarificationKeyID
                 }
-            val produit = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
-                .datasValue.find { it.keyID == vent.parent_M1Produit_KeyId }
+            val produit = produits.find { it.keyID == vent.parent_M1Produit_KeyId }
             if (tariff?.prixCurrency == null || tariff.prixCurrency == 0.0) {
                 produit?.nom ?: "Produit inconnu"
             } else null
@@ -100,11 +94,11 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     val hasZeroPriceProducts = zeroOrNullPriceProducts.isNotEmpty()
 
     val livePdfPath by produceState(
-        initialValue = activeBonVent?.path_pdf_bon_file ?: "",
-        key1 = activeBonVent?.keyID
+        initialValue = on_vent_m8?.path_pdf_bon_file ?: "",
+        key1 = on_vent_m8?.keyID
     ) {
         while (true) {
-            val current = focusedValuesGetter.activeOnVent_M8BonVent?.path_pdf_bon_file ?: ""
+            val current = on_vent_m8?.path_pdf_bon_file ?: ""
             if (current != value) value = current
             kotlinx.coroutines.delay(500L)
         }
@@ -116,11 +110,11 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
     val storedPdfFile = if (storedPdfPath.startsWith("/")) File(storedPdfPath) else null
     val activeCount = activeVents.size
     val liveCount by produceState(
-        initialValue = activeBonVent?.nombre_produits_don_dernier_pdf_stoked ?: 0,
-        key1 = activeBonVent?.keyID
+        initialValue = on_vent_m8?.nombre_produits_don_dernier_pdf_stoked ?: 0,
+        key1 = on_vent_m8?.keyID
     ) {
         while (true) {
-            val current = focusedValuesGetter.activeOnVent_M8BonVent
+            val current = on_vent_m8
                 ?.nombre_produits_don_dernier_pdf_stoked ?: 0
             if (current != value) value = current
             kotlinx.coroutines.delay(500L)
@@ -224,7 +218,7 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
             onPhoneConfirmed = { enteredPhone ->
                 showPhoneDialog = false
                 activeClient?.let { client ->
-                    aCentralFacade.repositorysMainSetter.upsert_M2Client(
+                    on_upsert_M2Client(
                         client.copy(numTelephone = enteredPhone)
                     )
                 }
@@ -254,7 +248,7 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
             modifier = Modifier.size(40.dp),
             onClick = {
                 if (isSending) return@FloatingActionButton
-                if (activeBonVent == null) {
+                if (on_vent_m8 == null) {
                     Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT).show()
                     return@FloatingActionButton
                 }
@@ -337,21 +331,7 @@ fun Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White,
                 modifier = Modifier
-                    .semantics(mergeDescendants = true) {
-                        set(value = activeVents, key = SemanticsPropertyKey("activeVents"))
-                        set(
-                            value =
-                                activeVents.map {
-                                    aCentralFacade.repositorysMainGetter
-                                        .find_M13Tarification_By_KeyID(it.parentM13TarificationKeyID)
-                                }, key = SemanticsPropertyKey("find_M13Tarification_By_KeyID")
-                        )
-                        set(value = activeVents.map {
-                            it.parentM13TarificationKeyID
-                        },
-                            key = SemanticsPropertyKey(activeVents.map {
-                            it.parentM13TarificationKeyID
-                        }.toString())) }
+
                     .background(
                         color = when {
                             isSending -> MaterialTheme.colorScheme.surfaceVariant

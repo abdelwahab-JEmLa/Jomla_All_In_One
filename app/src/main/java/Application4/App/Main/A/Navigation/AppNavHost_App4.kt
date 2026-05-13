@@ -2,10 +2,12 @@ package Application4.App.Main.A.Navigation
 
 import A_Main.Shared.Init.A_LoadingApp4_Init_Screen
 import Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_App4
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID2.Fragment.Screen_Panie_FragID2
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.centralDataBasesModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.classesHandlersModule
@@ -45,17 +47,26 @@ private val heavyModulesLoaded = AtomicBoolean(false)
 
 @SuppressLint("RememberReturnType")
 @Composable
-fun AppNavHost_NewProtoPattern(
+fun AppNavHost_App4(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     innerPadding: PaddingValues = PaddingValues(),
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
-    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
+    appDatabase: AppDatabase,
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
     LaunchedEffect(currentRoute) {
         fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
+    }
+
+    var list_M13TarificationInfos by remember {
+        mutableStateOf<MutableList<M13TarificationInfos>>(mutableListOf())
+    }
+    LaunchedEffect(Unit) {
+        list_M13TarificationInfos = appDatabase.dao_M13TarificationInfos().getAll()
     }
 
     val heavyReady = remember { mutableStateOf(heavyModulesLoaded.get()) }
@@ -81,17 +92,28 @@ fun AppNavHost_NewProtoPattern(
                     }
                 }
 
-                var initDone by rememberSaveable { mutableStateOf(false) }
+                var initDone by remember { mutableStateOf(false) }
 
                 if (!initDone) {
                     A_LoadingApp4_Init_Screen(
                         innerPadding = PaddingValues(),
                         onInitDone = { initDone = true },
-                        appDatabase = koinInject()
+                        appDatabase = appDatabase
                     )
                 } else {
                     A_Compact_Presentoire_App_Produits_App4(
-                        viewModelNewProtoPatterns=viewModelNewProtoPatterns_passed,
+                        wifiTransferDatas_ControllerApp = wifiTransferDatas_ControllerApp,
+                        appDatabase = appDatabase,
+                        fragmentNavigationHandler = fragmentNavigationHandler,
+                        on_update_M13TarificationInfos_par_ecriture = { updated ->
+                            on_update_M13TarificationInfos_par_ecriture(updated)
+                            list_M13TarificationInfos = list_M13TarificationInfos
+                                .toMutableList()
+                                .apply {
+                                    val index = indexOfFirst { it.keyID == updated.keyID }
+                                    if (index >= 0) set(index, updated) else add(updated)
+                                }
+                        },
                     )
                 }
             }
@@ -119,8 +141,9 @@ fun AppNavHost_NewProtoPattern(
                         )
                     } else {
                         Screen_Panie_FragID2(
-                            viewModelNewProtoPatterns=viewModelNewProtoPatterns_passed,
                             fragmentNavigationHandler = fragmentNavigationHandler,
+                            wifiTransferDatas_ControllerApp = wifiTransferDatas_ControllerApp,
+                            list_M13TarificationInfos = list_M13TarificationInfos
                         )
                     }
                 }
@@ -149,7 +172,7 @@ fun AppNavHost_NewProtoPattern(
                         )
                     } else {
                         A_MapClients_A2FragID_1(
-                            viewModelNewProtoPatterns_passed=viewModelNewProtoPatterns_passed,
+                            wifiTransferDatas_ControllerApp = wifiTransferDatas_ControllerApp,
                             onUpdateLongAppSetting = {
                                 fragmentNavigationHandler.navigateTo(
                                     Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route
@@ -157,8 +180,7 @@ fun AppNavHost_NewProtoPattern(
                             },
                             onClear = {},
                             fragmentNavigationHandler_NewProto = fragmentNavigationHandler,
-
-                            )
+                        )
                     }
                 }
             }

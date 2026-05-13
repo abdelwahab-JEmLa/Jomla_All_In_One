@@ -2,6 +2,7 @@ package Application4.App.Main.A.Navigation.Component
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.Panie.FabDropdownMenu_WhenIts_Frag_Panie
 import androidx.compose.foundation.Image
@@ -44,7 +45,7 @@ fun NavigationBarWithFab_NewProto(
     onToggleFabVisibility: () -> Unit,
     showWarningState: Boolean = true,
     onClickImageToShowControles: () -> Unit = {},
-    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
 ) {
     val its_Panier = currentRoute == Screen_NewProtoPattern.Panier.route
     val its_A_Clients_LocationGps =
@@ -147,14 +148,7 @@ fun NavigationBarWithFab_NewProto(
             )
         }
 
-        if (showFabDropdown_Compact_Presentoire_App_Produits_FragID4 && its_Compact_Presentoire) {
-            FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
-                viewModelNewProtoPatterns=viewModelNewProtoPatterns_passed,
-                onDismissDropdown = {
-                    showFabDropdown_Compact_Presentoire_App_Produits_FragID4 = false
-                },
-            )
-        }
+
 
         if (showFabDropdown_Panier && its_Panier) {
             FabDropdownMenu_WhenIts_Frag_Panie(

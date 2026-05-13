@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
-import org.koin.compose.koinInject
 
 @Composable
 private fun Dialog_Panie(
@@ -79,10 +78,7 @@ private fun Dialog_Panie(
                     Column {
                     }
 
-                    PressistatntMainActivityButtons_Sec8FWinID1(
-                        viewModelNewProtoPatterns = koinInject ()
-
-                    )
+                    PressistatntMainActivityButtons_Sec8FWinID1()
 
                     FloatingActionButton(
                         onClick = {

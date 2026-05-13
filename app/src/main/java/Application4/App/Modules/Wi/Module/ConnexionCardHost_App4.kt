@@ -1,6 +1,5 @@
 package Application4.App.Modules.Wi.Module
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
@@ -33,9 +32,9 @@ import androidx.compose.ui.unit.dp
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ConnexionCardHost_App4(
-    vm: A_ViewModel_NewProtoPatterns
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp
 ) {
-    val state by vm.wifiState.collectAsState()
+    val state by wifiTransferDatas_ControllerApp.state.collectAsState()
     var isCollapsed by remember { mutableStateOf(true) }
     var messageText by remember { mutableStateOf("") }
     val isHostEnabled = true
@@ -76,7 +75,7 @@ fun ConnexionCardHost_App4(
                 if (!state.isConnected) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         if (isHostEnabled) {
-                            Button(onClick = { vm.startAsHost() }) {
+                            Button(onClick = { wifiTransferDatas_ControllerApp.startAsHost() }) {
                                 Text("Mode Hôte")
                             }
                         }
@@ -92,7 +91,7 @@ fun ConnexionCardHost_App4(
                         Button(
                             onClick = {
                                 if (messageText.isNotEmpty()) {
-                                    vm.sendOrderToClientDisplayerT(
+                                    wifiTransferDatas_ControllerApp.sendOrderToClientDisplayerT(
                                         Wifi_Messages_Types_NewProto.SearchWindowsDisplaye,
                                         messageText
                                     )
@@ -102,7 +101,7 @@ fun ConnexionCardHost_App4(
                             modifier = Modifier.weight(1f)
                         ) { Text("Envoyer") }
                         Button(
-                            onClick = { vm.disconnect() },
+                            onClick = { wifiTransferDatas_ControllerApp.disconnect() },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                         ) { Text("Déconnecter") }

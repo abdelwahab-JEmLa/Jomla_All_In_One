@@ -1,6 +1,5 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
@@ -98,12 +97,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
     onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
     onClickAnulationButton: () -> Unit = {},
+    list_M13TarificationInfos: List<M13TarificationInfos> = repositorysMainGetter.repo13TarificationInfos.datasValue,
 ) {
-    var searchTextForFastPanier by remember { mutableStateOf("") }
 
-    val uiState_viewModelNewProtoPatterns by viewModelNewProtoPatterns.uiState.collectAsState()
+    var searchTextForFastPanier by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
     val showButtons by remember { mutableStateOf(true) }
@@ -445,25 +443,36 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
 
-                    val list_M13TarificationInfos =
-                        if (focusedValuesGetter.currentApp_ItsWorkChezGrossisst) repositorysMainGetter.repo13TarificationInfos.datasValue
-                        else uiState_viewModelNewProtoPatterns.list_M13TarificationInfos
+
 
                     if (focusedValuesGetter.activeOnVent_M8BonVent != null) {
                         PdfBonVentFAB(
-                            listm13 = list_M13TarificationInfos,
                             showLabels = showLabels,
                             onPdfSaved = { path, count ->
                                 sharedPdfPath = path
                                 sharedPdfCount = count
-                            }
+                            },
+                            listm13 = list_M13TarificationInfos,
+                            on_vent_bon = focusedValuesGetter.activeOnVent_M8BonVent,
+                            on_vent_couleurs = focusedValuesGetter
+                                .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
                         )
                         Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                             showLabels = showLabels,
                             overridePath = sharedPdfPath,
                             overrideCount = sharedPdfCount,
-                            viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-                            list_M13TarificationInfos = list_M13TarificationInfos
+                            list_M13TarificationInfos = list_M13TarificationInfos,
+                            on_vent_m8 = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M8BonVent,
+                            activeClient = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
+                            on_vent_couleurs = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                                .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent,
+                            produits = repositorysMainGetter.repo1ProduitInfos
+                                .datasValue,
+                            on_upsert_M2Client={
+                                aCentralFacade.repositorysMainSetter.upsert_M2Client(
+                                    it
+                                )
+                            }
                         )
 
                         Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(

@@ -110,6 +110,7 @@ fun Display_Tariff_NonGrossistContext(
         }
 
         val datasValue = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+
         val parentM13TarificationKeyID =
             relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
 

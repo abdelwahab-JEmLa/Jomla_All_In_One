@@ -407,9 +407,7 @@ fun DropDownItem_ThermiquePrint(
                         }
                     }
 
-                    PressistatntMainActivityButtons_Sec8FWinID1(
-                        viewModelNewProtoPatterns = koinInject ()
-                    )
+                    PressistatntMainActivityButtons_Sec8FWinID1()
 
                     // Close button at bottom right
                     FloatingActionButton(

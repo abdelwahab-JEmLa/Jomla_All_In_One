@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
@@ -215,7 +215,6 @@ private fun CustomStatusDropdownMenu(
 
 @Composable
 fun MarkerStatusDialog(
-    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns?=null,
     viewModel: MapClientsViewModel = koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
@@ -230,6 +229,7 @@ fun MarkerStatusDialog(
     onPourEdite_Gps_Client: (M2Client) -> Unit = {},
     on_dissmiss_dialog_avec_enleve_focuse_bon: () -> Unit = {},
     markerStatusDialogActiveM2Client: M2Client?,
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp?=null,
 ) {
     var showCreditDialog by remember { mutableStateOf(false) }
     var currentCreditTransaction by remember { mutableStateOf<M8BonVent?>(null) }
@@ -304,7 +304,7 @@ fun MarkerStatusDialog(
                         if (activeClient != null) {
                             item {
                                 AfficheurRegleOuvert(
-                                    viewModelNewProtoPatterns_passed=viewModelNewProtoPatterns_passed,
+                                    wifiTransferDatas_ControllerApp =wifiTransferDatas_ControllerApp,
                                     uiState = uiState,
                                     viewModel = viewModel,
                                     relative_Client = relative_M2Client,
@@ -593,9 +593,7 @@ fun MarkerStatusDialog(
         }
 
         if(!M00CentralParametresOfAllApps.get_Default().itsDevMode) {
-            PressistatntMainActivityButtons_Sec8FWinID1(
-                viewModelNewProtoPatterns = koinInject ()
-            )
+            PressistatntMainActivityButtons_Sec8FWinID1()
         }
     }
 }
