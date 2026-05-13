@@ -71,7 +71,6 @@ fun Main_LazyColumnList_App4(
     val currentScrollPosition = wifiState.mainGridScrollPosition
     val isScrollEnabled = isHostPhone || !isConnected
 
-    val mode = activeDatas.filterAffichageMode_Proto
 
     val finale_filtred_list by remember {
         derivedStateOf {
@@ -79,20 +78,20 @@ fun Main_LazyColumnList_App4(
                 rawColors                  = activeDatas.list_M03CouleurProduitInfos,
                 productMap                 = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
                 query                      = activeDatas.filter_echatilaten.trim().lowercase(),
-                mode                       = mode,
+                mode                       = activeDatas.filterAffichageMode_Proto,
                 ventCouleurs               = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
                 categories                 = activeDatas.list_M16CategorieProduit ?: emptyList(),
                 catalogues                 = get_ListM21CataloguesCategorie(),
                 echantillantsPurchaseOrder = set_couleursKey_echantilliants_achat,
                 classement                 = activeDatas.parentProduit_Classement,
-                sort_Order = mode.mais_sort_order,
+                sort_Order = activeDatas.filterAffichageMode_Proto.mais_sort_order,
             )
         }
     }
 
     val gridColumns by remember {
         derivedStateOf {
-            when (mode) {
+            when (activeDatas.filterAffichageMode_Proto) {
                 Filter_Affichage_Mode_Proto.Echants_Seulement -> 4
                 else -> 2
             }
