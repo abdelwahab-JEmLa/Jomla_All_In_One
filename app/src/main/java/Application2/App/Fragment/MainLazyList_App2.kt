@@ -70,6 +70,8 @@ fun MainLazyList_App2(
                 mode                       = uiState.filter_des_produits
                                                  ?: Filter_Affichage_Mode_Proto.Tablette_Et_Echants,
                 ventCouleurs               = emptyList(), // App2 has no panier ops at this level
+                categories                 = uiState.list_M16CategorieProduit,
+                catalogues                 = uiState.list_M21CataloguesCategorie,
                 echantillantsPurchaseOrder = emptyList(),
                 classement                 = classement,
             )

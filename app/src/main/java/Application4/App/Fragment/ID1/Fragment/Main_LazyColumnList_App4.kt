@@ -8,6 +8,7 @@ import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -44,7 +45,6 @@ fun Main_LazyColumnList_App4(
     modifier: Modifier = Modifier,
     relative_list_m3: List<M3CouleurProduitInfos>?,
     relative_list_m10_vents: List<M10OperationVentCouleur>,
-    mode: Filter_Affichage_Mode_Proto,
     outlined_search_Query: String,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     onProductCategoryClick: (M01Produit) -> Unit,
@@ -71,23 +71,28 @@ fun Main_LazyColumnList_App4(
     val currentScrollPosition = wifiState.mainGridScrollPosition
     val isScrollEnabled = isHostPhone || !isConnected
 
+    val mode = activeDatas.filterAffichageMode_Proto
+
     val finale_filtred_list by remember {
         derivedStateOf {
             ProductListFilterLogic.compute(
                 rawColors                  = activeDatas.list_M03CouleurProduitInfos,
                 productMap                 = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
                 query                      = activeDatas.filter_echatilaten.trim().lowercase(),
-                mode                       = activeDatas.filterAffichageMode_Proto,
+                mode                       = mode,
                 ventCouleurs               = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+                categories                 = activeDatas.list_M16CategorieProduit ?: emptyList(),
+                catalogues                 = get_ListM21CataloguesCategorie(),
                 echantillantsPurchaseOrder = set_couleursKey_echantilliants_achat,
                 classement                 = activeDatas.parentProduit_Classement,
+                sort_Order = mode.mais_sort_order,
             )
         }
     }
 
     val gridColumns by remember {
         derivedStateOf {
-            when (activeDatas.filterAffichageMode_Proto) {
+            when (mode) {
                 Filter_Affichage_Mode_Proto.Echants_Seulement -> 4
                 else -> 2
             }

@@ -2,13 +2,12 @@ package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
-import android.util.Log
 
-private const val TAG = "FilterLogic"
-
-object ProductListFilterLogic {        //<--
+object ProductListFilterLogic {
 
     // ── Step 1 ───────────────────────────────────────────────────────────────
     fun filterByDepot(
@@ -50,45 +49,36 @@ object ProductListFilterLogic {        //<--
             list.filter { it.keyID in activeKeys }
         }
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> {
-            // Find parent-product keys that have at least one color with an active vent,
-            // then return ALL sibling colors belonging to those parents.
-            Log.d(TAG, "=== Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres ===")
-            Log.d(TAG, "ventCouleurs.size = ${ventCouleurs.size}")
-            Log.d(TAG, "list (input colors).size = ${list.size}")
-
             val activeColorKeys = ventCouleurs
                 .filter { it.quantity > 0 }
                 .map { it.parent_M3CouleurProduit_KeyID }
                 .toSet()
-            Log.d(TAG, "activeColorKeys (quantity>0): $activeColorKeys")
-
             val activeParentKeys = list
                 .filter { it.keyID in activeColorKeys }
                 .map { it.parentBProduitInfosKeyID }
                 .toSet()
-            Log.d(TAG, "activeParentKeys resolved from list: $activeParentKeys")
-
-            // Safety check: keys in ventCouleurs that didn't match any color in list
-            val unmatchedVentKeys = activeColorKeys - list.map { it.keyID }.toSet()
-            if (unmatchedVentKeys.isNotEmpty()) {
-                Log.w(TAG, "⚠️ ventCouleur keys with no matching color in list: $unmatchedVentKeys")
-            }
-
-            val result = list.filter { it.parentBProduitInfosKeyID in activeParentKeys }
-            Log.d(TAG, "result.size = ${result.size}")
-            result
+            list.filter { it.parentBProduitInfosKeyID in activeParentKeys }
         }
+    }
+
+    enum class Sort_Order {
+        Produits_Grouped_Par_Categories,
+        Vents_Creation,
     }
 
     // ── Steps 4 & 5 ─────────────────────────────────────────────────────────
     fun groupAndSort(
+        sort_Order: Sort_Order = Sort_Order.Produits_Grouped_Par_Categories,
         filteredColors: List<M3CouleurProduitInfos>,
         productMap: Map<String, M01Produit>,
         mode: Filter_Affichage_Mode_Proto,
         echantillantsPurchaseOrder: List<String>,
         classement: Map<String, Int>,
-    ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> =
-        filteredColors
+        ventCouleurs: List<M10OperationVentCouleur> = emptyList(),
+        categories: List<M16CategorieProduit> = emptyList(),
+        catalogues: List<M21CataloguesCategorie> = emptyList(),
+    ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
+        val pairs = filteredColors
             .groupBy { it.parentBProduitInfosKeyID }
             .mapNotNull { (productKeyID, colors) ->
                 val product = productMap[productKeyID] ?: return@mapNotNull null
@@ -100,7 +90,34 @@ object ProductListFilterLogic {        //<--
                 } else colors
                 product to sortedColors
             }
-            .sortedBy { (product, _) -> classement[product.keyID] ?: Int.MAX_VALUE }
+
+        return when (sort_Order) {
+            Sort_Order.Produits_Grouped_Par_Categories -> {
+                val categoryMap  = categories.associateBy { it.id }
+                val catalogueMap = catalogues.associateBy { it.id }
+                pairs.sortedWith(
+                    compareBy(
+                        { (product, _) ->
+                            val cat = categoryMap[product.idParentCategorie]
+                            catalogueMap[cat?.catalogueParentId]?.position ?: Int.MAX_VALUE
+                        },
+                        { (product, _) ->
+                            categoryMap[product.idParentCategorie]?.positionDouble ?: Double.MAX_VALUE
+                        },
+                        { (product, _) -> classement[product.keyID] ?: Int.MAX_VALUE }
+                    )
+                )
+            }
+            Sort_Order.Vents_Creation -> {
+                val latestVentTimestampByColorKey = ventCouleurs
+                    .groupBy { it.parent_M3CouleurProduit_KeyID }
+                    .mapValues { (_, vents) -> vents.maxOf { it.creationTimestamps } }
+                pairs.sortedByDescending { (_, colors) ->
+                    colors.maxOfOrNull { latestVentTimestampByColorKey[it.keyID] ?: 0L } ?: 0L
+                }
+            }
+        }
+    }
 
     // ── Main entry-point ─────────────────────────────────────────────────────
     fun compute(
@@ -109,15 +126,27 @@ object ProductListFilterLogic {        //<--
         query: String,
         mode: Filter_Affichage_Mode_Proto,
         ventCouleurs: List<M10OperationVentCouleur>,
+        categories: List<M16CategorieProduit> = emptyList(),
+        catalogues: List<M21CataloguesCategorie> = emptyList(),
         echantillantsPurchaseOrder: List<String>,
         classement: Map<String, Int>,
+        sort_Order: Sort_Order = Sort_Order.Produits_Grouped_Par_Categories,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
-
         val filtered = rawColors
             ?.let { filterByQuery(it, query) }
             ?.let { filterByMode(it, mode, ventCouleurs) }
             ?: return emptyList()
 
-        return groupAndSort(filtered, productMap, mode, echantillantsPurchaseOrder, classement)
+        return groupAndSort(
+            sort_Order= sort_Order,
+            filteredColors = filtered,
+            productMap = productMap,
+            mode = mode,
+            echantillantsPurchaseOrder = echantillantsPurchaseOrder,
+            classement = classement,
+            ventCouleurs = ventCouleurs,
+            categories = categories,
+            catalogues = catalogues,
+        )
     }
 }

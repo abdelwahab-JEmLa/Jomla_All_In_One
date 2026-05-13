@@ -58,7 +58,7 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.JomLaElectroLivreurGrossist_VendeurHost
         } else {
-            AppType.JomLaElectroLivreurGrossist_VendeurHost
+            AppType.AllInOne
             //JomLaElectroLivreurGrossist_VendeurHost
         }
     },
@@ -73,8 +73,8 @@ data class M00CentralParametresOfAllApps(
     val enableVibrationNotifications: Boolean = true,
     val notificationVolume: Float = 0.8f, // 0.0 to 1.0
 ) {
-
     companion object {
+
         val centralRef = Firebase.database.getReference(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
         )              //anccien Proto

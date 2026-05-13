@@ -95,13 +95,11 @@ fun A_Compact_Presentoire_App_Produits_App4(
             val relative_list_m10_vents =
                 activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
 
-            val mode = activeDatas.filterAffichageMode_Proto
 
             Main_LazyColumnList_App4(
                 modifier,
                 relative_list_m3,
                 relative_list_m10_vents,
-                mode,
                 outlined_search_Query,
                 Pair(uiState, viewModelNewProtoPatterns),
                 { product -> selectedProductForCategoryChange = product },

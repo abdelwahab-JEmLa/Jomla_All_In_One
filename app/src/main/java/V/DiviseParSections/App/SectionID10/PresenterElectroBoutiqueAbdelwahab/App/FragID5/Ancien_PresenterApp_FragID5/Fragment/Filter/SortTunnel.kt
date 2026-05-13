@@ -17,7 +17,7 @@ fun SortTunnel(
     prioritiseProduitsEnVente: Boolean = false,
     onVentProduitKeyIDs: Set<String> = emptySet()
 ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
-
+                                            //<--
     // ── helper: float en-vente products to the top of every category ──────────
     fun floatEnVente(
         result: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>

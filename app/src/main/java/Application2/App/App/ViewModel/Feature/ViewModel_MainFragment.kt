@@ -8,7 +8,10 @@ import Application4.App.Fragment.ID1.Fragment.ProductListFilterLogic
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit.Companion.filter_passive
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
@@ -32,6 +35,8 @@ data class UiState(
     val active_Central_Values: ActiveCentralValues_app2 = ActiveCentralValues_app2.get_Default(),
     val list_M1Produit: List<M01Produit> = emptyList(),
     val list_M3CouleurProduit: List<M3CouleurProduitInfos> = emptyList(),
+    val list_M16CategorieProduit: List<M16CategorieProduit> = emptyList(),
+    val list_M21CataloguesCategorie: List<M21CataloguesCategorie> = emptyList(),
     val filter_des_produits: Filter_Affichage_Mode_Proto? = null,
     val initDatasProgressEtate: Float = 0f,
 )
@@ -44,6 +49,7 @@ class ViewModel_MainFragment(
 ) : ViewModel() {
     private val dao_M1Produit = appDatabase.dao_M1Produit()
     private val dao_M3CouleurProduitInfos = appDatabase.dao_M03CouleurProduitInfos()
+    private val dao_M16CategorieProduit = appDatabase.dao_16CategorieProduit()
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
@@ -81,22 +87,31 @@ class ViewModel_MainFragment(
         wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
-        val productsReady = MutableStateFlow(false)
-        val colorsReady = MutableStateFlow(false)
+        val productsReady    = MutableStateFlow(false)
+        val colorsReady      = MutableStateFlow(false)
+        val categoriesReady  = MutableStateFlow(false)
+        val cataloguesReady  = MutableStateFlow(false)
 
         viewModelScope.launch(Dispatchers.IO) {
-            combine(productsReady, colorsReady) { p, col ->
-                listOf(p, col).count { it } / 2f
+            combine(productsReady, colorsReady, categoriesReady, cataloguesReady) { p, col, cat, cata ->
+                listOf(p, col, cat, cata).count { it } / 4f
             }.collect { progress ->
                 _uiState.update { it.copy(initDatasProgressEtate = progress) }
             }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
+            val categories = dao_M16CategorieProduit.getAll()
+            categoriesReady.value = true
+
+            val catalogues = get_ListM21CataloguesCategorie()
+            cataloguesReady.value = true
+
             val filteredColors = dao_M3CouleurProduitInfos.getAll().let {
-                 ProductListFilterLogic.filterByDepot(it)
+                ProductListFilterLogic.filterByDepot(it)
             }
-            val products = dao_M1Produit.getAll().filter_passive(filteredColors.map { it.parentBProduitInfosKeyID }.distinct())
+            val products = dao_M1Produit.getAll()
+                .filter_passive(filteredColors.map { it.parentBProduitInfosKeyID }.distinct())
 
             productsReady.value = true
             colorsReady.value = true
@@ -105,6 +120,8 @@ class ViewModel_MainFragment(
                 it.copy(
                     list_M1Produit = products,
                     list_M3CouleurProduit = filteredColors,
+                    list_M16CategorieProduit = categories,
+                    list_M21CataloguesCategorie = catalogues,
                     list_ProductWithColors = get_grouped_datas(filteredColors, products),
                 )
             }

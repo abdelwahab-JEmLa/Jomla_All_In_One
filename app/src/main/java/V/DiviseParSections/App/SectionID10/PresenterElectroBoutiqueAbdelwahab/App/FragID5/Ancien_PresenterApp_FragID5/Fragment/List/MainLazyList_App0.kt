@@ -79,7 +79,7 @@ fun Etager_LazyColumn_App0(
         cataloguesWithCategoriesAndProducts
             .flatMap { (_, cats) -> cats }
             .flatMap { (_, productColorPairs) -> productColorPairs }
-            .sortedBy { (_, colors) -> if (colors.any { it.its_in_echantiallants == true }) 0 else 1 }
+            .sortedBy { (_, colors) -> if (colors.any { it.its_in_echantiallants }) 0 else 1 }
             .mapIndexed { index, (product, _) -> product.keyID to index }
             .toMap()
             .also { map ->
