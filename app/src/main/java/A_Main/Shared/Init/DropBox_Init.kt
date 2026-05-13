@@ -33,9 +33,6 @@ object DropBox_Init {
     private suspend fun syncInternal(colors: List<M3CouleurProduitInfos>, onProgress: (Float) -> Unit) {
         onProgress(0.1f)
 
-        // Fast-path: skip the Dropbox index build entirely when there is nothing
-        // to download. A color is downloadable only when its filename is non-blank
-        // and is not the sentinel value "Non Dispo".
         val downloadable = colors.filter { color ->
             color.nomImageFichieSansEtansion.isNotBlank() &&
                     color.nomImageFichieSansEtansion != "Non Dispo"

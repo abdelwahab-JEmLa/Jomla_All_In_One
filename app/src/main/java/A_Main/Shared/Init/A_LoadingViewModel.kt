@@ -1,11 +1,14 @@
 package A_Main.Shared.Init
 
 import A_Main.Shared.Module.RepositorysMainSetter_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ProductListFilterLogic
 import EntreApps.Shared.Models.AppType
 import EntreApps.Shared.Models.Do
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit.Companion.filter_passive
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit.Companion.filter_passive
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.Jomla_Clients
 import EntreApps.Shared.Modules.Base.AppDatabase
@@ -166,9 +169,38 @@ class A_LoadingViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 setProgress(_uiState.value.progress, "Insertion locale…")
                 with(appDatabase) {
-                    if (seed.colors.isNotEmpty())     dao_M03CouleurProduitInfos().insertAll(seed.colors)
-                    if (seed.products.isNotEmpty())   dao_M1Produit().insertAll(seed.products)
-                    if (seed.categories.isNotEmpty()) dao_16CategorieProduit().insertAll(seed.categories)
+                    // Determine once whether depot-filtering is required for this app type.
+                    val filter =
+                        M00CentralParametresOfAllApps.get_Default().its_AppType.let {
+                            it == AppType.JomLaElectroLivreurGrossist_PresenterScreen ||
+                                    it == AppType.JomLaElectroLivreurGrossist_VendeurHost
+                        }
+
+                    // Filter BEFORE inserting so the DAO receives a List, not Unit.
+                    val colorsToInsert = if (filter)
+                        ProductListFilterLogic.filterByDepot(seed.colors)
+                    else
+                        seed.colors
+                    if (colorsToInsert.isNotEmpty())
+                        dao_M03CouleurProduitInfos().insertAll(colorsToInsert)
+
+                    val productsToInsert = if (filter)
+                        seed.products.filter_passive(
+                            colorsToInsert.map { it.parentBProduitInfosKeyID }.distinct()
+                        )
+                    else
+                        seed.products
+                    if (productsToInsert.isNotEmpty())
+                        dao_M1Produit().insertAll(productsToInsert)
+
+                    val categoriesToInsert = if (filter)
+                        seed.categories.filter_passive(
+                            productsToInsert.map { it.idParentCategorie }.distinct()
+                        )
+                    else
+                        seed.categories
+                    if (categoriesToInsert.isNotEmpty())
+                        dao_16CategorieProduit().insertAll(categoriesToInsert)
                 }
             }.join()
 

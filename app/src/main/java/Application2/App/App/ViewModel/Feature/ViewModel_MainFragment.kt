@@ -4,10 +4,11 @@ import Application2.App.Base.Modules.ProductDisplayController_App2
 import Application2.App.Base.Modules.WifiTransferDatas_PresenterApp
 import Application2.App.Base.Repository.ActiveCentralValues_app2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
+import Application4.App.Fragment.ID1.Fragment.ProductListFilterLogic
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit.Companion.filter_passive
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos.Companion.filter_passive_datas
 import EntreApps.Shared.Modules.Base.AppDatabase
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
@@ -92,14 +93,10 @@ class ViewModel_MainFragment(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val ventPeriods = appDatabase.dao_M14VentPeriode().getAll()
-            val products = dao_M1Produit.getAll()
-            val limiteCouleursOuLeurLastAchateEstMoinQueJour = appDatabase.dao_M9AppCompt()
-                .getBy_M00_Lence_Key().limite_couleurs_ou_leur_last_achate_est_moin_que_jour
-
-            val filteredColors = dao_M3CouleurProduitInfos.getAll().filter_passive_datas(
-                limite_couleurs_ou_leur_last_achate_est_moin_que_jour = 1
-            )
+            val filteredColors = dao_M3CouleurProduitInfos.getAll().let {
+                 ProductListFilterLogic.filterByDepot(it)
+            }
+            val products = dao_M1Produit.getAll().filter_passive(filteredColors.map { it.parentBProduitInfosKeyID }.distinct())
 
             productsReady.value = true
             colorsReady.value = true

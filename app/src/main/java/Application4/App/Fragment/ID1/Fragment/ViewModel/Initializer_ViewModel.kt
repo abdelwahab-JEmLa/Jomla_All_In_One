@@ -15,10 +15,11 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos.Compan
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import android.widget.Toast
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -93,20 +94,30 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
     // ─────────────────────────────────────────────────────────────────────────
 
     private fun collect_ListDatas() {
-        load_then_Collect_Active_Datas()
-        collectListM16()
-        collectListM1Produit()
-        collectList_M3()
-        collectList_M8BonVent()
-        collectList_M2Client()
-        collectList_M10OperationVentCouleur_All()
-    }
-
-    private fun load_then_Collect_Active_Datas() {
         AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
             loadAllDatasOnce()
-            collectActiveM9Compt()
         }
+        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.Main) {
+            snapshotFlow { AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto }
+                .drop(1)
+                .collect { withContext(Dispatchers.IO) { reloadPassiveColourFilter() } }
+        }
+    }
+
+    private suspend fun reloadPassiveColourFilter() {
+        val limit = AViewModel_NewProtoPatterns.active_Datas
+            .active_M9Compt?.limite_couleurs_ou_leur_last_achate_est_moin_que_jour
+        val mode = AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto
+        val colours = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
+            .filter_passive_datas(limit)
+            .let {
+                if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) it
+                else ProductListFilterLogic.filterByDepot(it)
+            }
+        AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = colours
+        val products = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
+            .filter_passive(colours.map { it.parentBProduitInfosKeyID }.distinct())
+        AViewModel_NewProtoPatterns.active_Datas.list_M1Produit = products
     }
 
     private suspend fun loadAllDatasOnce() {
@@ -120,13 +131,12 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
 
         // Try local DB first; fall back to Firebase if the compt is not yet cached locally.
         val appCompt: M09AppCompt? = run {
+            val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             val local = AViewModel_NewProtoPatterns.appDatabase
                 .dao_M9AppCompt()
-                .getBy_M00_Lence_Key_Flow()
-                .firstOrNull()
+                .getAll()
+                .find { it.keyID == key }
             if (local != null) return@run local
-
-            val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             val snap = withTimeoutOrNull(10_000L) { M09AppCompt.ref.get().await() }
             val remote = snap?.children?.mapNotNull { child ->
                 try {
@@ -144,9 +154,8 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             appCompt?.limite_couleurs_ou_leur_last_achate_est_moin_que_jour
 
         val colours = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
-            .filter_passive_datas(
-                limiteCouleursOuLeurLastAchateEstMoinQueJour
-            ).let {
+            .filter_passive_datas(limiteCouleursOuLeurLastAchateEstMoinQueJour)
+            .let {
                 val mode = AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto
                 if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) it
                 else ProductListFilterLogic.filterByDepot(it)
@@ -227,59 +236,5 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = allOperations
     }
 
-    private suspend fun collectActiveM9Compt() {
-        FlowsFunctions_ActiveDatasFragNewProto.getFlow_active_M9Compt_By_au_Lence_Set_Compt_Ac_KeyId(
-            dao_M9AppCompt = AViewModel_NewProtoPatterns.appDatabase.dao_M9AppCompt(),
-            activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
-        ).collect { }
-    }
-
-    private fun collectListM16() {
-        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
-            AViewModel_NewProtoPatterns.appDatabase.dao_16CategorieProduit().getAllFlow()
-                .collect { AViewModel_NewProtoPatterns.active_Datas.list_M16CategorieProduit = it }
-        }
-    }
-
-    private fun collectListM1Produit() {
-        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
-            FlowsFunctions_ActiveDatasFragNewProto.getFlow_list_M1Produit(
-                dao_M1Produit = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit(),
-                activeDatasFragNewProto = AViewModel_NewProtoPatterns.active_Datas,
-            ).collect { }
-        }
-    }
-
-    private fun collectList_M3() {
-        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
-            AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
-                .collect {
-                    AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = it
-                }
-        }
-    }
-
-    private fun collectList_M8BonVent() {
-        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
-            AViewModel_NewProtoPatterns.appDatabase.dao_M8BonVent().getAllFlow()
-                .collect { AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent = it }
-        }
-    }
-
-    private fun collectList_M2Client() {
-        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
-            AViewModel_NewProtoPatterns.appDatabase.dao_M2Client().getAllFlow()
-                .collect { AViewModel_NewProtoPatterns.active_Datas.list_M2Client = it }
-        }
-    }
-
-    private fun collectList_M10OperationVentCouleur_All() {
-        AViewModel_NewProtoPatterns.viewModelScope.launch(Dispatchers.IO) {
-            AViewModel_NewProtoPatterns.appDatabase.dao_M10OperationVentCouleur().getAllFlow()
-                .collect {
-                    AViewModel_NewProtoPatterns.active_Datas.list_M10OperationVentCouleur = it
-                }
-        }
-    }
 
 }

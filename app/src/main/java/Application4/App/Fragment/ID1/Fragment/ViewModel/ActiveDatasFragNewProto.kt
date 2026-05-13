@@ -27,7 +27,7 @@ class ActiveDatasFragNewProto {
         null
     )
 
-    var filterAffichageMode_Proto: Filter_Affichage_Mode_Proto by mutableStateOf(Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres)
+    var filterAffichageMode_Proto: Filter_Affichage_Mode_Proto by mutableStateOf(Filter_Affichage_Mode_Proto.Panie)
 
     /** Search query that filters displayed products by name (case-insensitive). */
     var filter_echatilaten: String by mutableStateOf("")

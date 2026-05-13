@@ -46,8 +46,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
-            //<--
-            //TODO(1): pk quand je chnage ici 
 @Composable
 fun PressistatntMainActivityButtons_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
@@ -88,9 +86,11 @@ fun PressistatntMainActivityButtons_App4(
     }
 
     val labelText = when (currentMode) {
-        Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement -> "Tablette seulement"
+        Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement -> "Tablette seulement"          //<--
+        //TODO(1): pk que je choisi Tablette_Produits_Seulement
         Filter_Affichage_Mode_Proto.Echants_Seulement -> "Échantillons"
-        Filter_Affichage_Mode_Proto.Tablette_Et_Echants -> "Tous les produits"
+        Filter_Affichage_Mode_Proto.Tablette_Et_Echants -> "Tous les produits"       //<--
+        //TODO(1): pk que je choisi Tablette_Et_Echants
         Filter_Affichage_Mode_Proto.Panie -> "Panier"
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> "Panier + frères"
     }
