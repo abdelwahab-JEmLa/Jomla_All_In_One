@@ -28,6 +28,7 @@ class ActiveDatasFragNewProto {
     )
 
     var filterAffichageMode_Proto: Filter_Affichage_Mode_Proto by mutableStateOf(Filter_Affichage_Mode_Proto.Panie)
+    var filter_relode_tiger: Int by mutableStateOf(0)
 
     /** Search query that filters displayed products by name (case-insensitive). */
     var filter_echatilaten: String by mutableStateOf("")

@@ -59,6 +59,7 @@ fun PressistatntMainActivityButtons_App4(
     fun setMode(mode: Filter_Affichage_Mode_Proto, resetSearch: Boolean = true) {
         if (resetSearch) activeDatas.filter_echatilaten = ""
         activeDatas.filterAffichageMode_Proto = mode
+        activeDatas.filter_relode_tiger += 1
     }
 
     var showDropdown by remember { mutableStateOf(false) }
@@ -86,11 +87,9 @@ fun PressistatntMainActivityButtons_App4(
     }
 
     val labelText = when (currentMode) {
-        Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement -> "Tablette seulement"          //<--
-        //TODO(1): pk que je choisi Tablette_Produits_Seulement
+        Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement -> "Tablette seulement"
         Filter_Affichage_Mode_Proto.Echants_Seulement -> "Échantillons"
-        Filter_Affichage_Mode_Proto.Tablette_Et_Echants -> "Tous les produits"       //<--
-        //TODO(1): pk que je choisi Tablette_Et_Echants
+        Filter_Affichage_Mode_Proto.Tablette_Et_Echants -> "Tous les produits"
         Filter_Affichage_Mode_Proto.Panie -> "Panier"
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> "Panier + frères"
     }
@@ -308,15 +307,7 @@ fun PressistatntMainActivityButtons_App4(
                                     showDropdown = false
                                 }
                             )
-                            ModeMenuItem(
-                                label = "Échantillons",
-                                icon = Icons.Default.Check,
-                                isSelected = currentMode == Filter_Affichage_Mode_Proto.Echants_Seulement,
-                                onClick = {
-                                    setMode(Filter_Affichage_Mode_Proto.Echants_Seulement)
-                                    showDropdown = false
-                                }
-                            )
+
                             ModeMenuItem(
                                 label = "Panier",
                                 icon = Icons.Default.ShoppingCart,

@@ -147,8 +147,8 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                 )
                                             MainScreen_NewProtoPattern(
-                                                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-                                                fragmentNavigationHandler = fragmentNavigationHandler
+                                                viewModelNewProtoPatterns_passed = viewModelNewProtoPatterns,
+                                                fragmentNavigationHandler_passed = fragmentNavigationHandler
                                             )
                                         }
 
@@ -171,7 +171,7 @@ class MainActivity : ComponentActivity() {
                                                 )
                                             MainScreen_All(
                                                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-                                                fragmentNavigationHandler = fragmentNavigationHandler
+                                                fragmentNavigationHandler_passed = fragmentNavigationHandler
                                             )
                                         }
                                     }

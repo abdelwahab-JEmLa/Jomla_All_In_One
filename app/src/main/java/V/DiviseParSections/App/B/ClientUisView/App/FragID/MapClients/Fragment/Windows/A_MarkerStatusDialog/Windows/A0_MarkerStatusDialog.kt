@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
@@ -57,7 +58,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -215,6 +215,7 @@ private fun CustomStatusDropdownMenu(
 
 @Composable
 fun MarkerStatusDialog(
+    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns?=null,
     viewModel: MapClientsViewModel = koinViewModel(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
@@ -303,6 +304,7 @@ fun MarkerStatusDialog(
                         if (activeClient != null) {
                             item {
                                 AfficheurRegleOuvert(
+                                    viewModelNewProtoPatterns_passed=viewModelNewProtoPatterns_passed,
                                     uiState = uiState,
                                     viewModel = viewModel,
                                     relative_Client = relative_M2Client,

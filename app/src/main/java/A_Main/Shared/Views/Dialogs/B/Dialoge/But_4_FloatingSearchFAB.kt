@@ -19,12 +19,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -37,11 +40,18 @@ fun But_4_FloatingSearchFAB(
     currentMode: Filter_Affichage_Mode_Proto,
     modifier: Modifier = Modifier.Companion,
 ) {
-    if (currentMode == Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement ||
-        currentMode == Filter_Affichage_Mode_Proto.Tablette_Et_Echants) return
-
     var showField by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+
+    // When the field becomes visible: clear the value, request focus, and show keyboard
+    LaunchedEffect(showField) {
+        if (showField) {
+            onSearchTextChange("")
+            focusRequester.requestFocus()
+            keyboardController?.show()
+        }
+    }
 
     Row(
         verticalAlignment = Alignment.Companion.CenterVertically,
@@ -52,7 +62,10 @@ fun But_4_FloatingSearchFAB(
             modifier = Modifier.Companion.size(40.dp),
             onClick = {
                 showField = !showField
-                if (!showField) onSearchTextChange("")
+                if (!showField) {
+                    onSearchTextChange("")
+                    keyboardController?.hide()
+                }
             },
             containerColor = MaterialTheme.colorScheme.tertiary,
         ) {
@@ -69,7 +82,8 @@ fun But_4_FloatingSearchFAB(
                 onValueChange = onSearchTextChange,
                 modifier = Modifier.Companion
                     .width(200.dp)
-                    .height(56.dp),
+                    .height(56.dp)
+                    .focusRequester(focusRequester),
                 placeholder = {
                     Text(
                         "Rechercher...",

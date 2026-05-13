@@ -28,21 +28,21 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun MainScreen_NewProtoPattern(
     modifier: Modifier = Modifier,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto
+    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
+    fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto
 ) {
 
-    val wifiState = viewModelNewProtoPatterns.wifiState.collectAsState()
+    val wifiState = viewModelNewProtoPatterns_passed.wifiState.collectAsState()
 
     val navController = rememberNavController()
     LaunchedEffect(navController) {
-        fragmentNavigationHandler.setNavController(navController)
-        fragmentNavigationHandler.setStartupScreen_NewProtoPattern(
+        fragmentNavigationHandler_passed.setNavController(navController)
+        fragmentNavigationHandler_passed.setStartupScreen_NewProtoPattern(
             Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
         )
     }
 
-    val currentFragment by fragmentNavigationHandler.currentFragment.collectAsState()
+    val currentFragment by fragmentNavigationHandler_passed.currentFragment.collectAsState()
     val currentRoute = currentFragment?.route
 
     MainScaffold(
@@ -50,8 +50,8 @@ fun MainScreen_NewProtoPattern(
         wifiState = wifiState.value,
         currentRoute = currentRoute,
         navController = navController,
-        fragmentNavigationHandler = fragmentNavigationHandler,
-        viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+        fragmentNavigationHandler_passed = fragmentNavigationHandler_passed,
+        viewModelNewProtoPatterns_passed = viewModelNewProtoPatterns_passed,
     )
 }
 
@@ -63,17 +63,17 @@ private fun MainScaffold(
     wifiState: ProductDisplayController_NewProto,
     currentRoute: String?,
     navController: NavHostController,
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto,
+    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
             NavigationBarWithFab_NewProto(
-                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                viewModelNewProtoPatterns_passed=viewModelNewProtoPatterns_passed,
                 items = NavigationItems.getItems(isAdmin = true),
                 currentRoute = currentRoute,
-                onNavigate = { route -> fragmentNavigationHandler.navigateTo(route) },
+                onNavigate = { route -> fragmentNavigationHandler_passed.navigateTo(route) },
                 modifier = modifier,
                 isFabVisible = true,
                 onToggleFabVisibility = {},
@@ -84,11 +84,12 @@ private fun MainScaffold(
     ) { innerPadding ->
         Column {
             (!wifiState.isConnected).ifTrue {
-                ConnexionCardHost_App4(vm = viewModelNewProtoPatterns)
+                ConnexionCardHost_App4(vm = viewModelNewProtoPatterns_passed)
             }
             AppNavHost_NewProtoPattern(
+                fragmentNavigationHandler=fragmentNavigationHandler_passed,
                 modifier = Modifier.fillMaxSize(),
-                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                viewModelNewProtoPatterns_passed = viewModelNewProtoPatterns_passed,
                 navController = navController,
                 innerPadding = innerPadding,
             )

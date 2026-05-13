@@ -44,7 +44,7 @@ fun NavigationBarWithFab_NewProto(
     onToggleFabVisibility: () -> Unit,
     showWarningState: Boolean = true,
     onClickImageToShowControles: () -> Unit = {},
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
 ) {
     val its_Panier = currentRoute == Screen_NewProtoPattern.Panier.route
     val its_A_Clients_LocationGps =
@@ -149,7 +149,7 @@ fun NavigationBarWithFab_NewProto(
 
         if (showFabDropdown_Compact_Presentoire_App_Produits_FragID4 && its_Compact_Presentoire) {
             FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
-                viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                viewModelNewProtoPatterns=viewModelNewProtoPatterns_passed,
                 onDismissDropdown = {
                     showFabDropdown_Compact_Presentoire_App_Produits_FragID4 = false
                 },

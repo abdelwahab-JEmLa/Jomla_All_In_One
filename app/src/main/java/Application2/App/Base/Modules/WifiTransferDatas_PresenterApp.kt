@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
 
 data class ProductDisplayController_App2(
@@ -68,6 +69,14 @@ class WifiTransferDatas_PresenterApp(
     var list_M3CouleurProduit: List<M3CouleurProduitInfos>,
     private val onGetActiveCentralValues: () -> ActiveCentralValues_app2,
     private val onUpdateActiveCentralValues: (ActiveCentralValues_app2) -> Unit,
+    /**
+     * Called after [Update_Depot_Count_Par_Chain_Key_to_NewCount] is received and the
+     * in-memory [list_M3CouleurProduit] has already been patched.
+     * The ViewModel uses this to persist the changes to the DAO and refresh UiState.
+     *
+     * @param updates list of (keyID, newCount) pairs for every colour that was updated.
+     */
+    private val onUpdateDepotCounts: (updates: List<Pair<String, Int>>) -> Unit = {},
 ) {
     private val _state = MutableStateFlow(ProductDisplayController_App2())
     val state: StateFlow<ProductDisplayController_App2> = _state.asStateFlow()
@@ -208,6 +217,32 @@ class WifiTransferDatas_PresenterApp(
                         val mode = Filter_Affichage_Mode_Proto.entries
                             .find { it.name == content }   // null when content == "null" or unrecognised
                         _state.update { it.copy(filter_Affichage_Mode_Proto = mode) }
+                    }
+                    // Payload shape (from the host Button_StockOptions_SubtractFromDepot):
+                    // {"list_m3_a_Update_Leur_Count_Depot":[{"keyID":"...","count_Don_Depot":2},...]}
+                    // 1. Parse the JSON and collect (keyID → newCount) pairs.
+                    // 2. Patch list_M3CouleurProduit in-memory so the UI reacts immediately.
+                    // 3. Delegate DAO persistence + UiState refresh to the ViewModel via onUpdateDepotCounts.
+                    Wifi_Messages_Types_NewProto.Update_Depot_Count_Par_Chain_Key_to_NewCount -> {
+                        try {
+                            val jsonArray = JSONObject(content)
+                                .getJSONArray("list_m3_a_Update_Leur_Count_Depot")
+                            val updates = buildList {
+                                repeat(jsonArray.length()) { i ->
+                                    val item = jsonArray.getJSONObject(i)
+                                    add(item.getString("keyID") to item.getInt("count_Don_Depot"))
+                                }
+                            }
+                            // Patch in-memory list so downstream UI (e.g. expanded card) is instant.
+                            val updatesMap = updates.toMap()
+                            list_M3CouleurProduit = list_M3CouleurProduit.map { couleur ->
+                                updatesMap[couleur.keyID]
+                                    ?.let { newCount -> couleur.copy(count_Don_Depot = newCount) }
+                                    ?: couleur
+                            }
+                            // Persist to DAO + refresh UiState via ViewModel callback.
+                            onUpdateDepotCounts(updates)
+                        } catch (_: Exception) {}
                     }
                     else -> Unit
                 }

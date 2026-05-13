@@ -1,6 +1,7 @@
 package Application4.App.Modules.Wi.Module
 
 enum class Wifi_Messages_Types_NewProto(private val _prefix: String = "") {
+    Update_Depot_Count_Par_Chain_Key_to_NewCount("Update_Depot_Count_Par_Chain_Key_to_NewCount"),
     ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
     ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
     ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),

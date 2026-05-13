@@ -79,7 +79,7 @@ fun MainScreen_All(
     repositorysMainSetter: RepositorysMainSetter = aCentralFacade.repositorysMainSetter,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject(),
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
+    fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto,
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
     var lence_hor_conxion = false

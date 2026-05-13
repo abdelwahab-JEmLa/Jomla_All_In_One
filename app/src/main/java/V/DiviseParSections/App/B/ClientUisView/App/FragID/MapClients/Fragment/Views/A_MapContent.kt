@@ -94,7 +94,7 @@ fun MapContent(
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -180,7 +180,7 @@ fun MapContent(
             cleanupMapResources(mapView, viewModel)
         }
     }
-    val uiState_viewModelNewProtoPatterns by viewModelNewProtoPatterns.uiState.collectAsState()
+    val uiState_viewModelNewProtoPatterns by viewModelNewProtoPatterns_passed.uiState.collectAsState()
 
     LaunchedEffect(
         viewModel.getter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
@@ -272,6 +272,7 @@ fun MapContent(
 
         if (shouldShowMarkerDialog) {
             MarkerStatusDialog(
+                viewModelNewProtoPatterns_passed=viewModelNewProtoPatterns_passed,
                 fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
                 viewModel = viewModel,
                 relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,

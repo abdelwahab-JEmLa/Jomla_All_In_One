@@ -74,6 +74,7 @@ fun Main_LazyColumnList_App4(
 
     val finale_filtred_list by remember {
         derivedStateOf {
+            activeDatas.filter_relode_tiger // tracked: recompute whenever setMode() fires
             ProductListFilterLogic.compute(
                 rawColors                  = activeDatas.list_M03CouleurProduitInfos,
                 productMap                 = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),

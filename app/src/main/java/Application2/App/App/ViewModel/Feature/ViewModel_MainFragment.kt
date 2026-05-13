@@ -68,6 +68,25 @@ class ViewModel_MainFragment(
         list_M3CouleurProduit = emptyList(),
         onGetActiveCentralValues = ::getActiveCentralValues,
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
+        onUpdateDepotCounts = { updates ->
+            viewModelScope.launch(Dispatchers.IO) {
+                val updatesMap = updates.toMap()
+                val updatedColors = _uiState.value.list_M3CouleurProduit.map { couleur ->
+                    updatesMap[couleur.keyID]
+                        ?.let { newCount ->
+                            couleur.copy(count_Don_Depot = newCount)
+                                .also { dao_M3CouleurProduitInfos.update(it) }
+                        }
+                        ?: couleur
+                }
+                _uiState.update { state ->
+                    state.copy(
+                        list_M3CouleurProduit = updatedColors,
+                        list_ProductWithColors = get_grouped_datas(updatedColors, state.list_M1Produit),
+                    )
+                }
+            }
+        },
     )
 
     val wifiState =

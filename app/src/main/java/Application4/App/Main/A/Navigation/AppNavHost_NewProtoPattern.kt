@@ -49,8 +49,8 @@ fun AppNavHost_NewProtoPattern(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     innerPadding: PaddingValues = PaddingValues(),
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
+    viewModelNewProtoPatterns_passed: A_ViewModel_NewProtoPatterns,
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
@@ -91,7 +91,7 @@ fun AppNavHost_NewProtoPattern(
                     )
                 } else {
                     A_Compact_Presentoire_App_Produits_App4(
-                        viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                        viewModelNewProtoPatterns=viewModelNewProtoPatterns_passed,
                     )
                 }
             }
@@ -119,7 +119,7 @@ fun AppNavHost_NewProtoPattern(
                         )
                     } else {
                         Screen_Panie_FragID2(
-                            viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                            viewModelNewProtoPatterns=viewModelNewProtoPatterns_passed,
                             fragmentNavigationHandler = fragmentNavigationHandler,
                         )
                     }
@@ -149,7 +149,7 @@ fun AppNavHost_NewProtoPattern(
                         )
                     } else {
                         A_MapClients_A2FragID_1(
-                            viewModelNewProtoPatterns=viewModelNewProtoPatterns,
+                            viewModelNewProtoPatterns_passed=viewModelNewProtoPatterns_passed,
                             onUpdateLongAppSetting = {
                                 fragmentNavigationHandler.navigateTo(
                                     Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route
