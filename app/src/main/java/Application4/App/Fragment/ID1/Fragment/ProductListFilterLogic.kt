@@ -130,25 +130,31 @@ object ProductListFilterLogic {
         categories: List<M16CategorieProduit> = emptyList(),
         catalogues: List<M21CataloguesCategorie> = emptyList(),
         echantillantsPurchaseOrder: List<String>,
-        periode: M14VentPeriode?,
-        //<--
-        //TODO(1): fait que si panie de laisse passe les coleurs vend don le current period vent
+        periode: M14VentPeriode?=null,
         classement: Map<String, Int>,
         sort_Order: Sort_Order = Sort_Order.Produits_Grouped_Par_Categories,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
+        // In panier modes, restrict vents to those belonging to the active period so that
+        // colours from older periods don't bleed into the basket view.
+        val isPanieMode = mode == Filter_Affichage_Mode_Proto.Panie ||
+                mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
+        val effectiveVentCouleurs = if (isPanieMode && periode != null) {
+            ventCouleurs.filter { it.parent_M14VentPeriod_KeyId == periode.keyID }
+        } else ventCouleurs
+
         val filtered = rawColors
             ?.let { filterByQuery(it, query) }
-            ?.let { filterByMode(it, mode, ventCouleurs) }
+            ?.let { filterByMode(it, mode, effectiveVentCouleurs) }
             ?: return emptyList()
 
         return groupAndSort(
-            sort_Order= sort_Order,
+            sort_Order = sort_Order,
             filteredColors = filtered,
             productMap = productMap,
             mode = mode,
             echantillantsPurchaseOrder = echantillantsPurchaseOrder,
             classement = classement,
-            ventCouleurs = ventCouleurs,
+            ventCouleurs = effectiveVentCouleurs,
             categories = categories,
             catalogues = catalogues,
         )

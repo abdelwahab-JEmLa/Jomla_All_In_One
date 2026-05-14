@@ -162,6 +162,9 @@ class A_ViewModel_NewProtoPatterns(
         updater.addNew_listM10OperationVentCouleur(datas)
 
     fun update_m3couleur(couleur: M3CouleurProduitInfos) = updater.update_m3couleur(couleur)
+    fun delete_m3couleur(couleur: M3CouleurProduitInfos) = updater.delete_m3couleur(couleur)
+    fun delete_M10OperationVentCouleur(op: M10OperationVentCouleur) =
+        updater.delete_M10OperationVentCouleur(op)
     fun update_depot_count(
         couleur: M3CouleurProduitInfos,
         newDepotCount: Int,

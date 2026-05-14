@@ -41,6 +41,12 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
         vm.repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur)
     }
 
+    fun delete_m3couleur(couleur: M3CouleurProduitInfos) {
+        vm.active_Datas.list_M03CouleurProduitInfos =
+            vm.active_Datas.list_M03CouleurProduitInfos?.filter { it.keyID != couleur.keyID }
+        vm.repositorysMainSetter_NewProtoPatterns.delete_M3CouleurProduitInfos(couleur)
+    }
+
     fun update_depot_count(
         couleur: M3CouleurProduitInfos,
         newDepotCount: Int,
@@ -117,6 +123,17 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
                 updatedMap[existing.keyID] ?: existing
             }
         upsert_M10OperationVentCouleur(updatedList)
+    }
+
+    /**
+     * Removes [op] from in-memory state and propagates the delete to DAO + Firebase.
+     * Use this when quantity drops to 0 — do NOT route through [update_listM10OperationVentCouleur],
+     * which only maps/replaces and will silently keep the entry alive.
+     */
+    fun delete_M10OperationVentCouleur(op: M10OperationVentCouleur) {
+        vm.active_Datas.list_M10OperationVentCouleur =
+            vm.active_Datas.list_M10OperationVentCouleur?.filter { it.keyID != op.keyID }
+        vm.repositorysMainSetter_NewProtoPatterns.delete_M10OperationVentCouleur(op)
     }
 
     /**

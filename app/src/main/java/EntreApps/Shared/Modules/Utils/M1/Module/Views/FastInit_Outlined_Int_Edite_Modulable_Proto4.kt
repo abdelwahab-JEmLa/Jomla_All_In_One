@@ -68,6 +68,8 @@ private fun vibrateOnUpdate(context: Context) {
 @Composable
 fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     start_count: Int,
+    /** When true, the depot card and edit-field hint are shown even when [au_depot] == 0. */
+    affichable_mem_si_zero_depot: Boolean = true,
     au_depot: Int = 0,
     standard_count: Int = 1,
     start_au_premier_click_par_add_outlined: Boolean = false,
@@ -167,7 +169,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
             singleLine = true,
             textStyle = textStyle.copy(fontWeight = FontWeight.Bold),
             enabled = isAvailable,
-            placeholder = if (au_depot > 0) {
+            placeholder = if (au_depot > 0 || affichable_mem_si_zero_depot) {
                 { Text("Dépôt: $au_depot", style = textStyle.copy(fontWeight = FontWeight.Normal)) }
             } else null
         )
@@ -193,7 +195,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                 verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 maxItemsInEachRow = 2
             ) {
-                if (au_depot > 0) {
+                if (au_depot > 0 || affichable_mem_si_zero_depot) {
                     Card(
                         modifier = Modifier
                             .clickable(enabled = is_admin) {
@@ -281,7 +283,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                 horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (au_depot > 0) {
+                if (au_depot > 0 || affichable_mem_si_zero_depot) {
                     Card(
                         modifier = Modifier
                             .clickable(enabled = is_admin) {

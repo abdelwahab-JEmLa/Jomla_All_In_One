@@ -60,12 +60,6 @@ fun MainLazyList_App2(
     // ── Classement map — updated after every filter recomputation (mirrors App4) ──
     var classement by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
 
-    // ── Main filtered + sorted list — uses ProductListFilterLogic like App4 ──────
-    // FIXED: This derivedStateOf properly reflects depot count changes because:
-    // 1. uiState.list_M3CouleurProduit is re-filtered in ViewModel.onUpdateDepotCounts
-    // 2. When depot counts update via WiFi, the ViewModel applies filterByDepot
-    // 3. This creates a new list reference, triggering derivedStateOf recomposition
-    // 4. The filtered list then correctly excludes colors with zero depot counts
     val finale_filtred_list by remember {
         derivedStateOf {
             ProductListFilterLogic.compute(
