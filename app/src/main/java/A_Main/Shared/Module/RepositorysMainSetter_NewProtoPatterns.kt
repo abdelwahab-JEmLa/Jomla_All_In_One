@@ -16,8 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import kotlin.Any
-import kotlin.String
 
 class RepositorysMainSetter_NewProtoPatterns(
     val appDatabase: AppDatabase,
@@ -72,6 +70,13 @@ class RepositorysMainSetter_NewProtoPatterns(
         composScope.launch {
             appDatabase.dao_M1Produit().delete(data)
             M01Produit.Companion.ref.child(data.keyID).removeValue().await()
+        }
+    }
+
+    fun delete_M3CouleurProduitInfos(data: M3CouleurProduitInfos) {
+        composScope.launch {
+            appDatabase.dao_M03CouleurProduitInfos().delete(data)
+            M3CouleurProduitInfos.Companion.ref.child(data.keyID).removeValue().await()
         }
     }
 
@@ -207,7 +212,13 @@ class RepositorysMainSetter_NewProtoPatterns(
     // -------------------------------------------------------------------------
     // M10OperationVentCouleur
     // -------------------------------------------------------------------------
-// Add this function after the updateTariffForProductOperations function
+
+    /** Deletes a single operation from Room and Firebase. */
+    fun delete_M10OperationVentCouleur(
+        data: M10OperationVentCouleur,
+        onSuccess: () -> Unit = {}
+    ) = deleteList_M10OperationVentCouleur(listOf(data), onSuccess)
+
     fun deleteList_M10OperationVentCouleur(
         datas: List<M10OperationVentCouleur>,
         onSuccess: () -> Unit = {}
@@ -216,18 +227,11 @@ class RepositorysMainSetter_NewProtoPatterns(
             onSuccess()
             return
         }
-
         composScope.launch {
             try {
-                // Delete from local database
-                datas.forEach { operation ->
-                    appDatabase.dao_M10OperationVentCouleur().delete(operation)
-                }
-
-                // Delete from Firebase
+                datas.forEach { appDatabase.dao_M10OperationVentCouleur().delete(it) }
                 val updates: Map<String, Any?> = datas.associate { it.keyID to null }
                 M10OperationVentCouleur.Companion.ref.updateChildren(updates).await()
-
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -240,6 +244,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             }
         }
     }
+
     fun upsert_M10OperationVentCouleur(
         operation: M10OperationVentCouleur,
         selectedTariff: M13TarificationInfos
@@ -272,11 +277,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         if (data.keyID.isBlank()) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "Erreur : données du compte invalides",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, "Erreur : données du compte invalides", Toast.LENGTH_SHORT).show()
                 }
             }
             return
@@ -289,11 +290,7 @@ class RepositorysMainSetter_NewProtoPatterns(
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "Erreur lors de l'insertion : ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, "Erreur lors de l'insertion : ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -306,11 +303,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         if (data.keyID.isBlank()) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "Erreur : données non disponibles, mise à jour annulée",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, "Erreur : données non disponibles, mise à jour annulée", Toast.LENGTH_SHORT).show()
                 }
             }
             return
@@ -323,11 +316,7 @@ class RepositorysMainSetter_NewProtoPatterns(
                 withContext(Dispatchers.Main) { onSuccess() }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "Erreur lors de la mise à jour : ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, "Erreur lors de la mise à jour : ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -376,11 +365,16 @@ class RepositorysMainSetter_NewProtoPatterns(
         }
     }
 
+    // -------------------------------------------------------------------------
+    // M2Client
+    // -------------------------------------------------------------------------
+
     fun update_M2(new: M2Client) {
+        if (new.keyID.isBlank()) return
         composScope.launch {
             appDatabase.dao_M2Client().upsert(new)
-             //<--
-             //TODO(1): ajout pdate fb
+            val updates = mutableMapOf<String, Any>(new.keyID to new.toFirebaseMap())
+            M2Client.Companion.ref.updateChildren(updates).await()
         }
     }
 }
