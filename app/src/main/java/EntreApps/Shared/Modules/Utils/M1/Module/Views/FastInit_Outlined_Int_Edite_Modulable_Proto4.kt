@@ -142,8 +142,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
             label = { Text("Dépôt") }
         )
     } else if (isEditMode) {
-        OutlinedTextField(     //<--
-        //TODO(1): fait que si l entre 0 de delete le vent operaiotn
+        OutlinedTextField(
             value = quantityInput,
             onValueChange = { newValue ->
                 if (newValue.isEmpty() || newValue.all { it.isDigit() }) {

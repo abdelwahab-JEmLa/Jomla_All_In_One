@@ -78,16 +78,17 @@ fun Main_LazyColumnList_App4(
         derivedStateOf {
             activeDatas.filter_relode_tiger
             ProductListFilterLogic.compute(
-                rawColors                  = activeDatas.list_M03CouleurProduitInfos,
-                productMap                 = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
-                query                      = activeDatas.filter_echatilaten.trim().lowercase(),
-                mode                       = activeDatas.filterAffichageMode_Proto,
-                ventCouleurs               = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
-                categories                 = activeDatas.list_M16CategorieProduit ?: emptyList(),
-                catalogues                 = get_ListM21CataloguesCategorie(),
+                rawColors = activeDatas.list_M03CouleurProduitInfos,
+                productMap = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
+                query = activeDatas.filter_echatilaten.trim().lowercase(),
+                mode = activeDatas.filterAffichageMode_Proto,
+                ventCouleurs = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+                categories = activeDatas.list_M16CategorieProduit ?: emptyList(),
+                catalogues = get_ListM21CataloguesCategorie(),
                 echantillantsPurchaseOrder = set_couleursKey_echantilliants_achat,
-                classement                 = activeDatas.parentProduit_Classement,
+                classement = activeDatas.parentProduit_Classement,
                 sort_Order = activeDatas.filterAffichageMode_Proto.mais_sort_order,
+                periode = activeDatas.active_PeriodVent
             )
         }
     }

@@ -41,7 +41,7 @@ fun Lenceur_Vent_Handler_App4(
     selectedTariff: M13TarificationInfos,
     compactMode: Boolean = false,
     listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>?,
-    ) {
+) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
     val activeOnVent_M8BonVent = viewModel.active_Datas.activeOnVent_M8BonVent
@@ -159,17 +159,24 @@ fun Lenceur_Vent_Handler_App4(
         viewModel.update_listM10OperationVentCouleur(updatedList)
     }
 
-    // ── Dispatcher: route vers add ou update selon l'existence de l'opération ──
+    // ── Dispatcher: route vers add, update, ou delete selon quantité et existence ──
     fun handleLenceVent(newQuantity: Int) {
         val currentList =
             viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
         val currentOp =
-            viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
+            currentList?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
 
-        if (currentOp == null) {
-            handleLenceVent_WhenNew(newQuantity, currentList)
-        } else {
-            handleLenceVent_When_There_Is_Old(newQuantity, currentOp, currentList)
+        when {
+            newQuantity == 0 && currentOp != null -> {
+                // TODO(1) fixed: supprimer l'opération si la quantité revient à 0
+                val updatedList = currentList.filter { it.keyID != currentOp.keyID }
+                viewModel.update_listM10OperationVentCouleur(updatedList)
+            }
+            newQuantity == 0 -> {
+                // Rien à faire : pas d'opération existante et quantité = 0
+            }
+            currentOp == null -> handleLenceVent_WhenNew(newQuantity, currentList)
+            else -> handleLenceVent_When_There_Is_Old(newQuantity, currentOp, currentList)
         }
 
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)

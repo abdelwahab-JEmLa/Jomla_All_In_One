@@ -12,6 +12,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos.Companion.filter_passive_datas
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos.Companion.filter_passive
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import android.widget.Toast
@@ -116,7 +117,9 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         val colours = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
             .filter_passive_datas(limit)
             .let {
-                if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) it
+                if (mode == Filter_Affichage_Mode_Proto.Panie ||
+                    mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
+                ) it
                 else ProductListFilterLogic.filterByDepot(it)
             }
         AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = colours
@@ -164,7 +167,12 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             .filter_passive_datas(limiteCouleursOuLeurLastAchateEstMoinQueJour)
             .let {
                 val mode = AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto
-                if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) it
+                // Both panier modes show colours that may have zero depot stock but carry
+                // active period vents — depot-filtering would hide those; skip it here and
+                // let filterByMode(Panie*) handle visibility via ventCouleurs instead.
+                if (mode == Filter_Affichage_Mode_Proto.Panie ||
+                    mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
+                ) it
                 else ProductListFilterLogic.filterByDepot(it)
             }
 
@@ -203,6 +211,9 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
 
         seedActiveDatas(
             appCompt = appCompt,
+            ventPeriodes= AViewModel_NewProtoPatterns.appDatabase.dao_M14VentPeriode().getAll().find {
+                it.keyID ==appCompt.current_OnVent_M14VentPeriode_KeyID
+            },
             bonVent = bonVent,
             clients = clients,
             categories = categories,
@@ -233,8 +244,10 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         products: List<M01Produit>,
         colours: List<M3CouleurProduitInfos>,
         allOperations: List<M10OperationVentCouleur>,
+        ventPeriodes: M14VentPeriode?,
     ) {
         AViewModel_NewProtoPatterns.active_Datas.active_M9Compt = appCompt
+        AViewModel_NewProtoPatterns.active_Datas.active_PeriodVent = ventPeriodes
         AViewModel_NewProtoPatterns.active_Datas.list_M8BonVent = bonVent
         AViewModel_NewProtoPatterns.active_Datas.list_M2Client = clients
         AViewModel_NewProtoPatterns.active_Datas.list_M16CategorieProduit = categories
