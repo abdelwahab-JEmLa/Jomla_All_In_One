@@ -17,6 +17,7 @@ import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpd
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -70,7 +71,10 @@ class ViewModel_MainFragment(
         onUpdateActiveCentralValues = ::updateActiveCentralValues,
         onUpdateDepotCounts = { updates ->
             viewModelScope.launch(Dispatchers.IO) {
+                // FIXED: Apply depot filtering after updating counts to ensure proper UI refresh
                 val updatesMap = updates.toMap()
+
+                // Step 1: Update depot counts for all affected colors
                 val updatedColors = _uiState.value.list_M3CouleurProduit.map { couleur ->
                     updatesMap[couleur.keyID]
                         ?.let { newCount ->
@@ -79,12 +83,30 @@ class ViewModel_MainFragment(
                         }
                         ?: couleur
                 }
+
+                // Step 2: Re-filter by depot to remove colors with zero depot counts
+                // This ensures the filtered list reflects the updated depot state
+                val filteredColors = ProductListFilterLogic.filterByDepot(updatedColors)
+
+                // Step 3: Re-filter products to only include those with visible colors
+                val filteredProducts = _uiState.value.list_M1Produit.filter_passive(
+                    filteredColors.map { it.parentBProduitInfosKeyID }.distinct()
+                )
+
+                // Step 4: Update UiState with the filtered lists
                 _uiState.update { state ->
                     state.copy(
-                        list_M3CouleurProduit = updatedColors,
-                        list_ProductWithColors = get_grouped_datas(updatedColors, state.list_M1Produit),
+                        list_M1Produit = filteredProducts,
+                        list_M3CouleurProduit = filteredColors,
+                        list_ProductWithColors = get_grouped_datas(filteredColors, filteredProducts),
                     )
                 }
+
+                Log.d(
+                    "DepotSync",
+                    "[ViewModel] DAO + UiState updated & re-filtered — ${updates.size} depot counts updated, " +
+                            "resulting in ${filteredColors.size} visible colors and ${filteredProducts.size} visible products"
+                )
             }
         },
     )
@@ -171,3 +193,4 @@ class ViewModel_MainFragment(
         super.onCleared(); wifi.cancel()
     }
 }
+

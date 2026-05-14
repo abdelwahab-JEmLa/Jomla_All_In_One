@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
+import A_Main.Shared.Module.RepositorysMainSetter_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.ActiveDatasFragNewProto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.FlowsFunctions_ActiveDatasFragNewProto
-import A_Main.Shared.Module.RepositorysMainSetter_NewProtoPatterns
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
@@ -100,16 +100,6 @@ class MapClientsViewModel(
     var proximite_de_vision_meter by mutableStateOf(700)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
 
-    private fun updateUiState() {
-        _uiState.value = _uiState.value.copy(
-            b_ClientInfosProtoJuin3List = this.repo2Client.datasState.value,
-            c3_TransactionCommercialList = transactionsState.datasValue,
-            mainLoadingProgress = getter.loadingProgress!!,
-            isLoading = this.repo2Client.isLoading,
-            error = null
-        )
-    }
-
     fun update_uiState_m2Client_In_ShowEditMarkerMode(m2Client_In_ShowEditMarkerMode: M2Client? = null) {
         _uiState.value = _uiState.value.copy(
             m2Client_In_ShowEditMarkerMode = m2Client_In_ShowEditMarkerMode,
@@ -159,18 +149,44 @@ class MapClientsViewModel(
     }
 
     private fun initializeDataObservers() {
+        // ✅ Each snapshotFlow emits the value safely — we use the emitted value
+        //    directly instead of calling updateUiState() which would re-read
+        //    Compose state outside a snapshot (root cause of the crash).
         viewModelScope.launch {
-            snapshotFlow { transactionsState.datasValue }.collect { updateUiState() }
+            snapshotFlow { transactionsState.datasValue }.collect { transactions ->
+                _uiState.value = _uiState.value.copy(
+                    c3_TransactionCommercialList = transactions
+                )
+            }
         }
         viewModelScope.launch {
-            snapshotFlow { getter.repo9AppCompt.currentAppCompt }.collect { updateUiState() }
+            snapshotFlow { getter.loadingProgress }.collect { progress ->
+                _uiState.value = _uiState.value.copy(
+                    mainLoadingProgress = progress ?: 0f
+                )
+            }
+        }
+        viewModelScope.launch {
+            snapshotFlow { repo2Client.isLoading }.collect { loading ->
+                _uiState.value = _uiState.value.copy(isLoading = loading)
+            }
+        }
+        viewModelScope.launch {
+            snapshotFlow { getter.repo9AppCompt.currentAppCompt }.collect {
+                // currentAppCompt changement — rien à copier directement ici,
+                // les composables lisent repo9AppCompt via le getter.
+            }
         }
         viewModelScope.launch {
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
                     val clients = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList()
                     this@MapClientsViewModel.repo2Client.updateClients(clients)
-                    updateUiState()
+                    _uiState.value = _uiState.value.copy(
+                        b_ClientInfosProtoJuin3List = clients,
+                        isLoading = false,
+                        error = null
+                    )
                 }
             }
         }
@@ -184,7 +200,9 @@ class MapClientsViewModel(
         viewModelScope.launch {
             b_ClientDataBaseRepository.addOrUpdateData(client)
             this@MapClientsViewModel.repo2Client.updateClient(client)
-            updateUiState()
+            _uiState.value = _uiState.value.copy(
+                b_ClientInfosProtoJuin3List = this@MapClientsViewModel.repo2Client.datasState.value
+            )
         }
         mapReloadTrigger++
     }
@@ -210,7 +228,9 @@ class MapClientsViewModel(
                 delay(1500)
                 add_Cible(newClientAchteur)
                 delay(1500)
-                updateUiState()
+                _uiState.value = _uiState.value.copy(
+                    b_ClientInfosProtoJuin3List = this@MapClientsViewModel.repo2Client.datasState.value
+                )
             }
         } catch (e: Exception) {
         }
@@ -238,7 +258,9 @@ class MapClientsViewModel(
         viewModelScope.launch {
             b_ClientDataBaseRepository.deleteData(data)
             this@MapClientsViewModel.repo2Client.removeClient(data.id)
-            updateUiState()
+            _uiState.value = _uiState.value.copy(
+                b_ClientInfosProtoJuin3List = this@MapClientsViewModel.repo2Client.datasState.value
+            )
         }
     }
 
@@ -293,7 +315,6 @@ class MapClientsViewModel(
                 cancelActiveOperations()
                 mapReloadTrigger = 0
                 filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = emptyList()
-                updateUiState()
             } catch (e: Exception) {
             }
         }

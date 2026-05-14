@@ -31,6 +31,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import android.util.Log
+import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
 
 data class ProductDisplayController_NewProto(
@@ -80,8 +82,12 @@ class WifiTransferDatas_ControllerApp(
     fun sendOrderToClientDisplayerT(order: Wifi_Messages_Types_NewProto, data: Any? = null) {
         coroutineScope.launch {
             val payload = "${order.prefix}$data"
+            Log.d("DepotSync", "[ControllerApp] sendOrderToClientDisplayerT → ${order.name}")
             sendData(payload)
-            if (order == Wifi_Messages_Types_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran) {
+            // Echo specific orders into our own handlePayload so the local UI state
+            // stays in sync without a round-trip over the wire.
+            if (order == Wifi_Messages_Types_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran ||
+                order == Wifi_Messages_Types_NewProto.Update_Depot_Count_Par_Chain_Key_to_NewCount) {
                 handlePayload(payload)
             }
         }
@@ -211,6 +217,34 @@ class WifiTransferDatas_ControllerApp(
                 // Store it in state so the client UI can react (filter list, hide/show echantillons, …).
                 Wifi_Messages_Types_NewProto.Change_Filtered_Produits_Du_TabletteDisplayer ->
                     _state.update { it.copy(tabletteDisplayerMode = data) }
+
+                // Patch local list_M3CouleurProduit so the controller UI reflects the
+                // new depot counts immediately after the button is pressed (same JSON
+                // shape produced by Button_StockOptions_SubtractFromDepot).
+                Wifi_Messages_Types_NewProto.Update_Depot_Count_Par_Chain_Key_to_NewCount -> {
+                    try {
+                        val jsonArray = JSONObject(data)
+                            .getJSONArray("list_m3_a_Update_Leur_Count_Depot")
+                        val updates = buildList {
+                            repeat(jsonArray.length()) { i ->
+                                val item = jsonArray.getJSONObject(i)
+                                add(item.getString("keyID") to item.getInt("count_Don_Depot"))
+                            }
+                        }
+                        val updatesMap = updates.toMap()
+                        list_M3CouleurProduit = list_M3CouleurProduit.map { couleur ->
+                            updatesMap[couleur.keyID]
+                                ?.let { newCount -> couleur.copy(count_Don_Depot = newCount) }
+                                ?: couleur
+                        }
+                        Log.d(
+                            "DepotSync",
+                            "[ControllerApp] handlePayload Update_Depot_Count — ${updates.size} entries patched locally"
+                        )
+                    } catch (e: Exception) {
+                        Log.e("DepotSync", "[ControllerApp] Failed to patch local depot counts", e)
+                    }
+                }
 
                 else -> Unit
             }

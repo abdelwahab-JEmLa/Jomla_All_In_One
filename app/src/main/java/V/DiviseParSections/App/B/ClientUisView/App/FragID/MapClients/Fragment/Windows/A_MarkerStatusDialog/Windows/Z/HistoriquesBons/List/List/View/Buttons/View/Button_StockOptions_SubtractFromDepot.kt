@@ -7,6 +7,7 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,7 +36,7 @@ fun Button_StockOptions_SubtractFromDepot(
     context: Context,
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp?= null,
     couleurs: List<M10OperationVentCouleur>,
-    ) {
+) {
     Button(
         modifier = Modifier.fillMaxWidth(),
         onClick = {
@@ -73,6 +74,11 @@ fun Button_StockOptions_SubtractFromDepot(
                     .put("list_m3_a_Update_Leur_Count_Depot", jsonArray)
                     .toString()
 
+                Log.d(
+                    "DepotSync",
+                    "[Button] Sending Update_Depot_Count — ${depotUpdates.size} entries: " +
+                            depotUpdates.joinToString { (k, v) -> "$k→$v" }
+                )
                 wifiTransferDatas_ControllerApp?.sendOrderToClientDisplayerT(
                     order = Wifi_Messages_Types_NewProto.Update_Depot_Count_Par_Chain_Key_to_NewCount,
                     data = jsonPayload,

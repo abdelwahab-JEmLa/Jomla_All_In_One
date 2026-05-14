@@ -106,10 +106,10 @@ fun AfficheurRegleOuvert(
                     }
                 val context = LocalContext.current
                 val datasValue_repo8BonVent = repositorysMainGetter.repo8BonVent.datasValue
-                val filtered by remember(
-                    datasValue_repo8BonVent.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-                    relative_Client?.keyID
-                ) {
+                val filtered by remember(relative_Client?.keyID) {
+                    // derivedStateOf lit datasValue_repo8BonVent de façon réactive —
+                    // pas besoin de le mettre en clé de remember (évite une nouvelle
+                    // List créée à chaque recomposition qui cassait le cache).
                     derivedStateOf {
                         datasValue_repo8BonVent.filter {
                             it.parent_M2Client_KeyID == (relative_Client?.keyID ?: "")

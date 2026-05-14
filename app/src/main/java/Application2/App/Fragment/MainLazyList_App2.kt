@@ -61,6 +61,11 @@ fun MainLazyList_App2(
     var classement by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
 
     // ── Main filtered + sorted list — uses ProductListFilterLogic like App4 ──────
+    // FIXED: This derivedStateOf properly reflects depot count changes because:
+    // 1. uiState.list_M3CouleurProduit is re-filtered in ViewModel.onUpdateDepotCounts
+    // 2. When depot counts update via WiFi, the ViewModel applies filterByDepot
+    // 3. This creates a new list reference, triggering derivedStateOf recomposition
+    // 4. The filtered list then correctly excludes colors with zero depot counts
     val finale_filtred_list by remember {
         derivedStateOf {
             ProductListFilterLogic.compute(
@@ -68,7 +73,7 @@ fun MainLazyList_App2(
                 productMap                 = uiState.list_M1Produit.associateBy { it.keyID },
                 query                      = "",          // App2 has no search bar
                 mode                       = uiState.filter_des_produits
-                                                 ?: Filter_Affichage_Mode_Proto.Tablette_Et_Echants,
+                    ?: Filter_Affichage_Mode_Proto.Tablette_Et_Echants,
                 ventCouleurs               = emptyList(), // App2 has no panier ops at this level
                 categories                 = uiState.list_M16CategorieProduit,
                 catalogues                 = uiState.list_M21CataloguesCategorie,
@@ -139,7 +144,7 @@ fun MainLazyList_App2(
             item(
                 key = "product_${product.keyID}",
                 span = if (isExpanded) StaggeredGridItemSpan.FullLine
-                       else StaggeredGridItemSpan.SingleLane,
+                else StaggeredGridItemSpan.SingleLane,
             ) {
                 if (product.keyID == DBG_M3_PARENT) {
                     val targeted = colors.find { it.keyID == DBG_M3_KEY }

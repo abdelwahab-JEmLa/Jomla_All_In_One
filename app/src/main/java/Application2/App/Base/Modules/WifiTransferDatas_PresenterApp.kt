@@ -10,6 +10,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.gms.nearby.Nearby
@@ -233,6 +234,11 @@ class WifiTransferDatas_PresenterApp(
                                     add(item.getString("keyID") to item.getInt("count_Don_Depot"))
                                 }
                             }
+                            Log.d(
+                                "DepotSync",
+                                "[PresenterApp] Received Update_Depot_Count — ${updates.size} entries: " +
+                                        updates.joinToString { (k, v) -> "$k→$v" }
+                            )
                             // Patch in-memory list so downstream UI (e.g. expanded card) is instant.
                             val updatesMap = updates.toMap()
                             list_M3CouleurProduit = list_M3CouleurProduit.map { couleur ->
