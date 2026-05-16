@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -53,10 +53,7 @@ class PdfTableBuilder(
         boldFont: PdfFont,
         relativeBonvent: M8BonVent?
     ) {
-        val bonsWithImages = focusedValuesGetter.active_Central_Values.bons_a_imprime_avec_image_produit
-        val shouldIncludeImages = relativeBonvent?.let { bonVent ->
-            bonsWithImages.any { it.keyID == bonVent.keyID }
-        } ?: false
+        val shouldIncludeImages = true
 
         val columnWidths = if (shouldIncludeImages) {
             floatArrayOf(25f, 12f, 12f, 38f, 13f)
