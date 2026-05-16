@@ -1,5 +1,6 @@
-package Application4.App.Fragment.ID1.Fragment.ViewModel
+package Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components
 
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.List_Datas
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
@@ -8,6 +9,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import android.util.Log
 import kotlinx.coroutines.flow.update
 
 private const val TAG_SETTER = "Setter_ViewModel"
@@ -100,7 +102,7 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
 
         val missingEntries = updatedList?.filter { it.keyID !in existingKeys }
         if (!missingEntries.isNullOrEmpty()) {
-            android.util.Log.e(
+            Log.e(
                 TAG_SETTER,
                 "update_listM10OperationVentCouleur: entry not found — aborting. " +
                         "Missing keyIDs: ${missingEntries.map { it.keyID }}"

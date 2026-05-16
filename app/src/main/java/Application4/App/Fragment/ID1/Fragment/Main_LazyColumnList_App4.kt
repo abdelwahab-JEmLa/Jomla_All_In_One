@@ -37,6 +37,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,20 +46,20 @@ import kotlinx.coroutines.launch
 @Composable
 fun Main_LazyColumnList_App4(
     modifier: Modifier = Modifier,
-    relative_list_m3: List<M3CouleurProduitInfos>?,
-    relative_list_m10_vents: List<M10OperationVentCouleur>,
-    outlined_search_Query: String,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
+    mode: Filter_Affichage_Mode_Proto,       //<--
+    //TODO(1): pk mem si mode	Panie 
+    ventCouleurs: List<M10OperationVentCouleur>,
+    relative_m3_Couleurs: List<M3CouleurProduitInfos>?,
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     val activeDatas = viewModel.active_Datas
     val wifiState by viewModel.wifiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-
 
     val set_couleursKey_echantilliants_achat by remember {
         derivedStateOf {
@@ -73,21 +75,27 @@ fun Main_LazyColumnList_App4(
     val currentScrollPosition = wifiState.mainGridScrollPosition
     val isScrollEnabled = isHostPhone || !isConnected
 
-
     val finale_filtred_list by remember {
         derivedStateOf {
-            activeDatas.filter_relode_tiger
+            // Read ALL inputs directly from activeDatas so that derivedStateOf tracks
+            // them as Compose state. Parameters like `mode`, `ventCouleurs`, and
+            // `relative_m3_Couleurs` are plain captured values — they don't trigger
+            // recomputation when they change between recompositions.
+            val currentMode   = activeDatas.filterAffichageMode_Proto
+            val currentColors = activeDatas.list_M03CouleurProduitInfos
+            val currentVents  = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+            activeDatas.filter_relode_tiger  // touch to track manual reload trigger
             ProductListFilterLogic.compute(
-                rawColors = activeDatas.list_M03CouleurProduitInfos,
+                rawColors = currentColors,
                 productMap = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
                 query = activeDatas.filter_echatilaten.trim().lowercase(),
-                mode = activeDatas.filterAffichageMode_Proto,
-                ventCouleurs = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+                mode = currentMode,
+                ventCouleurs = currentVents,
                 categories = activeDatas.list_M16CategorieProduit ?: emptyList(),
                 catalogues = get_ListM21CataloguesCategorie(),
                 echantillantsPurchaseOrder = set_couleursKey_echantilliants_achat,
                 classement = activeDatas.parentProduit_Classement,
-                sort_Order = activeDatas.filterAffichageMode_Proto.mais_sort_order,
+                sort_Order = currentMode.mais_sort_order,
                 periode = activeDatas.active_PeriodVent
             )
         }
@@ -95,6 +103,7 @@ fun Main_LazyColumnList_App4(
 
     val gridColumns by remember {
         derivedStateOf {
+            // Same fix: read from activeDatas, not from the captured `mode` parameter.
             when (activeDatas.filterAffichageMode_Proto) {
                 Filter_Affichage_Mode_Proto.Echants_Seulement -> 4
                 else -> 2
@@ -115,7 +124,8 @@ fun Main_LazyColumnList_App4(
         if (!isHostPhone) return@LaunchedEffect
         val targetKeyID = expanded_M1Produit.keyID
         if (targetKeyID.isBlank()) return@LaunchedEffect
-        val foundIndex = finale_filtred_list.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
+        val foundIndex =
+            finale_filtred_list.indexOfFirst { (product, _) -> product.keyID == targetKeyID }
         if (foundIndex < 0) return@LaunchedEffect
         coroutineScope.launch { gridState.scrollToItem(foundIndex) }
         delay(300)
@@ -139,6 +149,18 @@ fun Main_LazyColumnList_App4(
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = ventCouleurs.firstOrNull()?.toString() ?: "[]", key = SemanticsPropertyKey("ventCouleurs.first().toString()"))      //<--
+                //TODO(2.C Relative Au Todo(1):
+                //... et ventCouleurs_semantic_debug	M10OperationVentCouleur(keyID=-Osm-VRnahLiWy6q2KHk, creationTimestamps=1778955453109, dernierTimeTampsSynchronisationAvecFireBase=1778955453109, its_created_in_working_for_wholesaler=true, commetaire=, prix_de_Vent_entre_directement_NewProto=530.0, its_Linked_To_Autre_Vent_Si_NonDispo=false, linked_To_M10OperationVent_KeyID=, linked_To_M10OperationVent_DebugInfos=, siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId=, siNonDispoParentM10Vent_it_parent_M1Produit_Nom=, parent_M9AppCompt_KeyID=null, parent_M9AppCompt_DebugInfos=null, parent_M14VentPeriod_KeyId=null, parent_M14VentPeriod_DebugInfos=null, parentEPeriodVentStartDate=0, parent_M8BonVent_KeyId=-OslwWCTmrnXSGSAwoPG, parent_M8BonVent_DebugInfos=Bon[p.cli->(M2=test[ROP])) [woPG]), parent_M1Produit_KeyId=-OohnpOhLiEcL6ezu3E0, parent_M1Produit_DebugInfos=par.produit Flach Racha, parent_M1Produit_Nom=, parentProduitInfosOldId=0, parent_M3CouleurProduit_KeyID=-OohnpOhLiEcL6ezu3E-, parent_M3CouleurProduit_DebugInfos=03Coul[{U3E-}
+                // To [{ACHA}
+                //]], parentM13TarificationKeyID=-Osb_07F7nHJSqa0s2qJ, parentM13TarificationDebugInfos=Flach Racha[U3E0] Edited_Pour_Client, etateActuellementEst=CreeSlote, provisoireMonPrix=0.0, etateDelivery=Trouve, lence_pour_check=false, premier_Check_Donne=false, last_update_premier_Check_Donne_TimeTamps=0, non_places_au_depot=false, pas_Dispo_Pour_Aujourduit=false, typeTarificationEnumT2=Edited_Pour_Client, parentClientInfosKeyID=, parentClientName=, type=CommandeDeLui, achatParentBsonIDOld=, quantite_Boit_Par_Carton=1, quantity=1, setIN_Vent_Its_Quantity_Represent=quantity_Par_Boit, affiche_Unite_Au_Printing=true, parent_M2Client_KeyID=-OpS1KwWBzDVzNDuvROP)
+
+
+                set(value = finale_filtred_list, key = SemanticsPropertyKey("finale_filtred_list"))       //<--
+                //TODO(2.C Relative Au Todo(1):
+                //...  ici size == 0 log.d au filter normalemnt car ilya une vent et mode panie ca affiche les couleur avec vent
+            }
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -157,8 +179,8 @@ fun Main_LazyColumnList_App4(
                     onCategoryClick = { onProductCategoryClick(product) },
                     justMoved = product.keyID == justMovedProductKeyID,
                     uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                    on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
-                    )
+                    on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
+                )
             }
         }
     }
@@ -198,8 +220,7 @@ fun LazyStigerList_Produits_FragID4(
             onCategoryClick = onCategoryClick,
             uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
             relative_ListM3Couleurs_override = colors,
-            on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
-
-            )
+            on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
+        )
     }
 }

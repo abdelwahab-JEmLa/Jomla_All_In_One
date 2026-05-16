@@ -125,9 +125,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
                 set(value = active_Datas.list_M03CouleurProduitInfos?.size, key = SemanticsPropertyKey("size"))
 
-                // FIX TODO(2.C) / TODO(1-JSON): Expose the active bon-vent debug info via
-                // semantics so UI tests can assert on the currently open bon-vent without
-                // coupling tests to internal Firebase field values.
                 set(
                     value = active_Datas.active_M9Compt?.onVentM8BonVentDebugInfos,
                     key = SemanticsPropertyKey("onVentM8BonVentDebugInfos")
@@ -138,23 +135,15 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 )
             }
         ) {
-            val relative_list_m3 = viewModelNewProtoPatterns.active_Datas.list_M03CouleurProduitInfos
-            val activeDatas = viewModelNewProtoPatterns.active_Datas
-            val outlined_search_Query = activeDatas.filter_echatilaten.trim().lowercase()
-            val relative_list_m10_vents =
-                activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-
-
             Main_LazyColumnList_App4(
-                modifier,
-                relative_list_m3,
-                relative_list_m10_vents,
-                outlined_search_Query,
-                Pair(uiState, viewModelNewProtoPatterns),
-                { product -> selectedProductForCategoryChange = product },
-                justMovedProductKeyID,
-
+                modifier = modifier,
+                uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),
+                onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
+                justMovedProductKeyID = justMovedProductKeyID,
                 on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
+                mode = active_Datas.filterAffichageMode_Proto,
+                ventCouleurs = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+                relative_m3_Couleurs = active_Datas.list_M03CouleurProduitInfos,
             )
 
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)

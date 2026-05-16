@@ -134,12 +134,18 @@ object ProductListFilterLogic {
         classement: Map<String, Int>,
         sort_Order: Sort_Order = Sort_Order.Produits_Grouped_Par_Categories,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
-        // In panier modes, restrict vents to those belonging to the active period so that
-        // colours from older periods don't bleed into the basket view.
         val isPanieMode = mode == Filter_Affichage_Mode_Proto.Panie ||
                 mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
+
         val effectiveVentCouleurs = if (isPanieMode && periode != null) {
-            ventCouleurs.filter { it.parent_M14VentPeriod_KeyId == periode.keyID }
+            ventCouleurs.filter {
+                it.parent_M14VentPeriod_KeyId == periode.keyID ||
+                // Legacy records created before the period field existed have a null /
+                // blank / "null" key; treat them as belonging to the current period so
+                // they are never silently dropped from the Panie view.
+                it.parent_M14VentPeriod_KeyId.isNullOrBlank() ||
+                it.parent_M14VentPeriod_KeyId == "null"
+            }
         } else ventCouleurs
 
         val filtered = rawColors

@@ -172,8 +172,7 @@ class A_LoadingViewModel(
                     // Determine once whether depot-filtering is required for this app type.
                     val filter =
                         M00CentralParametresOfAllApps.get_Default().its_AppType.let {
-                            it == AppType.JomLaElectroLivreurGrossist_PresenterScreen ||
-                                    it == AppType.JomLaElectroLivreurGrossist_VendeurHost
+                            it == AppType.JomLaElectroLivreurGrossist_PresenterScreen
                         }
 
                     // Filter BEFORE inserting so the DAO receives a List, not Unit.

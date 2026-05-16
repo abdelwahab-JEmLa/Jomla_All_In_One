@@ -2,6 +2,7 @@ package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import A_Main.Shared.Module.RepositorysMainSetter_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.Setter_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
@@ -84,7 +85,9 @@ class A_ViewModel_NewProtoPatterns(
     }
 
     fun retryLoadingData() {
-        Initializer_ViewModel(this@A_ViewModel_NewProtoPatterns).run()
+        // Use reload() — not run() — so we never spawn a second startPeriodicComptKeyCheck()
+        // loop. The periodic watcher is started exactly once inside init { … }.
+        Initializer_ViewModel(this@A_ViewModel_NewProtoPatterns).reload()
     }
 
     /**

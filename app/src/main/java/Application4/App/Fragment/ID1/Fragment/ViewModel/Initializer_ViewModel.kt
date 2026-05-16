@@ -29,9 +29,19 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel_NewProtoPatterns) {
 
+    /** Full start: loads data AND starts the periodic compt-key watcher. Call only once. */
     fun run() {
         collect_ListDatas()
         startPeriodicComptKeyCheck()
+    }
+
+    /**
+     * Lightweight reload: re-runs the data load pipeline without spawning another
+     * periodic-check loop. Use this for retries and on-screen re-entry so that
+     * [startPeriodicComptKeyCheck] is never launched more than once per ViewModel lifetime.
+     */
+    fun reload() {
+        collect_ListDatas()
     }
 
     /**
