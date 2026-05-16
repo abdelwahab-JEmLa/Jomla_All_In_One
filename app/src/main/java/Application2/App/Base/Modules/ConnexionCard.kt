@@ -35,7 +35,8 @@ import androidx.compose.ui.unit.dp
 fun ConnexionCard_App2(
     vm: ViewModel_MainFragment,
     onClickToStartAsClient: () -> Unit = {},
-) {
+) {         //<--
+//TODO(1): ici aussi ajou un button qui.. comme 
     val state by vm.wifiState.collectAsState()
     var isCollapsed by remember { mutableStateOf(true) }
     var messageText by remember { mutableStateOf("") }

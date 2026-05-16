@@ -141,9 +141,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
                 justMovedProductKeyID = justMovedProductKeyID,
                 on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
-                mode = active_Datas.filterAffichageMode_Proto,
                 ventCouleurs = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
-                relative_m3_Couleurs = active_Datas.list_M03CouleurProduitInfos,
             )
 
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)

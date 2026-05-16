@@ -50,10 +50,7 @@ fun Main_LazyColumnList_App4(
     onProductCategoryClick: (M01Produit) -> Unit,
     justMovedProductKeyID: String?,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
-    mode: Filter_Affichage_Mode_Proto,       //<--
-    //TODO(1): pk mem si mode	Panie 
     ventCouleurs: List<M10OperationVentCouleur>,
-    relative_m3_Couleurs: List<M3CouleurProduitInfos>?,
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
@@ -77,10 +74,6 @@ fun Main_LazyColumnList_App4(
 
     val finale_filtred_list by remember {
         derivedStateOf {
-            // Read ALL inputs directly from activeDatas so that derivedStateOf tracks
-            // them as Compose state. Parameters like `mode`, `ventCouleurs`, and
-            // `relative_m3_Couleurs` are plain captured values — they don't trigger
-            // recomputation when they change between recompositions.
             val currentMode   = activeDatas.filterAffichageMode_Proto
             val currentColors = activeDatas.list_M03CouleurProduitInfos
             val currentVents  = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state

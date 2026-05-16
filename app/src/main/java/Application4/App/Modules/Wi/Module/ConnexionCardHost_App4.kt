@@ -78,7 +78,8 @@ fun ConnexionCardHost_App4(
                             Button(onClick = { wifiTransferDatas_ControllerApp.startAsHost() }) {
                                 Text("Mode Hôte")
                             }
-                        }
+                        }            //<--
+                        //TODO(1): ajot un button qui arere tou le wifi c comme si il restart de 0 et forced arret de l app pas de tentative cach corrupted
                     }
                 } else {
                     OutlinedTextField(
