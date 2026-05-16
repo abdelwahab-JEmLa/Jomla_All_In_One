@@ -253,6 +253,9 @@ fun Lenceur_Vent_Handler_App4(
                 show_depot_card_on_top_in_flow_row = true,
                 is_admin = isAdmin,
                 add_spacing_between_depot_and_sale = isAdmin,
+                on_admin_depot_update = { newDepotCount ->
+                    viewModel.update_depot_count(selectedCouleur, newDepotCount)
+                },
                 on_Data_Update = { newQuantity -> handleLenceVent(newQuantity) },
             )
         }

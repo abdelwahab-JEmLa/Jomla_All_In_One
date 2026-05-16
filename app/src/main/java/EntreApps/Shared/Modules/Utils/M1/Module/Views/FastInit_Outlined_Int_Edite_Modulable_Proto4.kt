@@ -207,6 +207,10 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                         )
                     ) {
                         Row(
+                            // Two independent callbacks: on_admin_depot_update persists the new
+                            // depot count (M3CouleurProduitInfos.count_Don_Depot) via the ViewModel,
+                            // while on_Data_Update handles sale quantity (M10OperationVentCouleur).
+                            // They are kept separate so each can be wired independently by the caller.
                             modifier = Modifier.padding(
                                 horizontal = horizontalPadding * 0.7f,
                                 vertical = verticalPadding * 0.7f

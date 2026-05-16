@@ -175,9 +175,6 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             .filter_passive_datas(limiteCouleursOuLeurLastAchateEstMoinQueJour)
             .let {
                 val mode = AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto
-                // Both panier modes show colours that may have zero depot stock but carry
-                // active period vents — depot-filtering would hide those; skip it here and
-                // let filterByMode(Panie*) handle visibility via ventCouleurs instead.
                 if (mode == Filter_Affichage_Mode_Proto.Panie ||
                     mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
                 ) it
