@@ -145,11 +145,9 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
                     initDatasProgressEtate = p
                 )
         }
+
         progress(1 / 9f)
 
-        // Try local DB first; fall back to Firebase if the compt is not yet cached locally.
-        // This is the authoritative first load of active_M9Compt — the periodic check in
-        // startPeriodicComptKeyCheck() only runs afterwards to keep it in sync.
         val appCompt: M09AppCompt? = run {
             val key = M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId
             val local = AViewModel_NewProtoPatterns.appDatabase
