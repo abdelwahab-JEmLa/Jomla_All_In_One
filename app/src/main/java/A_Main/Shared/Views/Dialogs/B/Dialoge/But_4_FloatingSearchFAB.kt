@@ -19,10 +19,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun But_4_FloatingSearchFAB(
@@ -43,15 +45,7 @@ fun But_4_FloatingSearchFAB(
     var showField by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
-
-    // When the field becomes visible: clear the value, request focus, and show keyboard
-    LaunchedEffect(showField) {
-        if (showField) {
-            onSearchTextChange("")
-            focusRequester.requestFocus()
-            keyboardController?.show()
-        }
-    }
+    val scope = rememberCoroutineScope()
 
     Row(
         verticalAlignment = Alignment.Companion.CenterVertically,
@@ -61,10 +55,21 @@ fun But_4_FloatingSearchFAB(
         FloatingActionButton(
             modifier = Modifier.Companion.size(40.dp),
             onClick = {
-                showField = !showField
-                if (!showField) {
+                if (showField) {
+                    // Close: clear text, hide keyboard, then collapse the field
                     onSearchTextChange("")
                     keyboardController?.hide()
+                    showField = false
+                } else {
+                    // Open: clear text, show field, then request focus + keyboard after
+                    // composition so the FocusRequester node exists in the tree
+                    onSearchTextChange("")
+                    showField = true
+                    scope.launch {
+                        delay(50)
+                        focusRequester.requestFocus()
+                        keyboardController?.show()
+                    }
                 }
             },
             containerColor = MaterialTheme.colorScheme.tertiary,
