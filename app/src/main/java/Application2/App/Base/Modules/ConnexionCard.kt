@@ -35,8 +35,7 @@ import androidx.compose.ui.unit.dp
 fun ConnexionCard_App2(
     vm: ViewModel_MainFragment,
     onClickToStartAsClient: () -> Unit = {},
-) {         //<--
-//TODO(1): ici aussi ajou un button qui.. comme 
+) {
     val state by vm.wifiState.collectAsState()
     var isCollapsed by remember { mutableStateOf(true) }
     var messageText by remember { mutableStateOf("") }
@@ -73,6 +72,19 @@ fun ConnexionCard_App2(
                 state.error?.let {
                     Text(it, color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
+                }
+
+                // Hard-reset: kills the Nearby stack entirely, no retry, no cached state.
+                Button(
+                    onClick = { vm.wifi.hardReset() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "⟳ Reset WiFi (force)",
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
 
                 if (!state.isConnected) {

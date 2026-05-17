@@ -34,6 +34,7 @@ fun MainScreen_NewProtoPattern(
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
     fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
+    on_clear_wifi_classe_cache: () -> Unit,
 ) {
     val wifiState = wifiTransferDatas_ControllerApp.state.collectAsState()
 
@@ -57,6 +58,7 @@ fun MainScreen_NewProtoPattern(
         wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
         appDatabase=appDatabase,
         on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
+        on_clear_wifi_classe_cache,
         )
 }
 
@@ -72,6 +74,7 @@ private fun MainScaffold(
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
     appDatabase: AppDatabase,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
+    on_clear_wifi_classe_cache: () -> Unit,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -92,6 +95,7 @@ private fun MainScaffold(
             (!wifiState.isConnected).ifTrue {
                 ConnexionCardHost_App4(
                     wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
+                    on_clear_wifi_classe_cache= on_clear_wifi_classe_cache,
                 )
             }
             AppNavHost_App4(

@@ -86,14 +86,21 @@ class WifiTransferDatas_PresenterApp(
     private val serviceId = "com.example.clientjetpack"
     private val strategy = Strategy.P2P_POINT_TO_POINT
     private val isReconnecting = AtomicBoolean(false)
+    private val isConnectingToEndpoint = AtomicBoolean(false)
     private var reconnectionJob: Job? = null
+    private var advertiseDiscoverJob: Job? = null   // tracks the single in-flight _advertise/_discover
     private var connectionMonitorJob: Job? = null
     private var retryCount = 0
     private val maxRetries = 10
     private val baseRetryDelayMs = 3000L
+    private val radioSettleMs = 1500L
     private var lastConnectionMode = ConnectionMode.NONE
+    /** False after hardReset(); set back to true only by an explicit startAsHost/Client call. */
+    private var allowAutoReconnect = true
 
     private enum class ConnectionMode { HOST, CLIENT, NONE }
+
+    companion object { private const val TAG = "WifiPresenter" }
 
     init {
         coroutineScope.launch {
@@ -110,7 +117,7 @@ class WifiTransferDatas_PresenterApp(
         coroutineScope.launch { sendData("$orderName$data") }
     }
 
-    fun sendOrderToClientDisplayerT(order: Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats, data: Any? = null) {
+    fun sendOrderToClientDisplayerT(order: Wifi_Messages_Types_NewProto, data: Any? = null) {
         coroutineScope.launch { sendData("${order.prefix}$data") }
     }
 
@@ -118,43 +125,90 @@ class WifiTransferDatas_PresenterApp(
         _state.update { it.copy(isHostPhone = isHost) }
     }
 
+    // ── Public entry points (manual user click) ──────────────────────────────
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() {
-        coroutineScope.launch {
-            if (!checkRequiredPermissions()) { handleError("Permissions manquantes"); return@launch }
-            lastConnectionMode = ConnectionMode.HOST
-            _state.update { it.copy(isHostPhone = true) }
-            try {
-                Nearby.getConnectionsClient(context).startAdvertising(
-                    "Host Device", serviceId, connectionLifecycleCallback,
-                    AdvertisingOptions.Builder().setStrategy(strategy).build()
-                ).addOnSuccessListener {
-                    updateConnectionStatus("En attente de connexion...")
-                }.addOnFailureListener { e -> handleConnectionFailure("Erreur hôte: ${e.message}") }
-            } catch (e: Exception) { handleConnectionFailure(e.message ?: "Erreur inconnue") }
-        }
+        reconnectionJob?.cancel()
+        advertiseDiscoverJob?.cancel()
+        isReconnecting.set(false)
+        retryCount = 0
+        allowAutoReconnect = true
+        lastConnectionMode = ConnectionMode.HOST
+        _state.update { it.copy(isHostPhone = true) }
+        Log.d(TAG, "startAsHost (manual): retryCount=$retryCount allowAutoReconnect=$allowAutoReconnect")
+        advertiseDiscoverJob = coroutineScope.launch { _advertise() }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() {
-        coroutineScope.launch {
-            if (!checkRequiredPermissions()) { handleError("Permissions manquantes"); return@launch }
-            lastConnectionMode = ConnectionMode.CLIENT
-            _state.update { it.copy(isHostPhone = false) }
-            try {
-                Nearby.getConnectionsClient(context).startDiscovery(
-                    serviceId, endpointDiscoveryCallback,
-                    DiscoveryOptions.Builder().setStrategy(strategy).build()
-                ).addOnSuccessListener {
-                    updateConnectionStatus("Recherche d'appareils...")
-                }.addOnFailureListener { e -> handleConnectionFailure("Erreur recherche: ${e.message}") }
-            } catch (e: Exception) { handleConnectionFailure(e.message ?: "Erreur inconnue") }
+        reconnectionJob?.cancel()
+        advertiseDiscoverJob?.cancel()
+        isReconnecting.set(false)
+        retryCount = 0
+        allowAutoReconnect = true
+        lastConnectionMode = ConnectionMode.CLIENT
+        _state.update { it.copy(isHostPhone = false) }
+        Log.d(TAG, "startAsClient (manual): retryCount=$retryCount allowAutoReconnect=$allowAutoReconnect")
+        advertiseDiscoverJob = coroutineScope.launch { _discover() }
+    }
+
+    // ── Internal Nearby start helpers ─────────────────────────────────────────
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private suspend fun _advertise() {
+        if (!checkRequiredPermissions()) {
+            Log.w(TAG, "_advertise: permissions manquantes"); handleError("Permissions manquantes"); return
+        }
+        try { Nearby.getConnectionsClient(context).stopAdvertising() } catch (_: Exception) {}
+        delay(radioSettleMs)   // let the radio settle before restarting — prevents STATUS_RADIO_ERROR
+        Log.d(TAG, "_advertise: startAdvertising (retryCount=$retryCount)")
+        try {
+            Nearby.getConnectionsClient(context).startAdvertising(
+                "Host Device", serviceId, connectionLifecycleCallback,
+                AdvertisingOptions.Builder().setStrategy(strategy).build()
+            ).addOnSuccessListener {
+                Log.d(TAG, "_advertise: OK")
+                updateConnectionStatus("En attente de connexion...")
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "_advertise: FAILED — ${e.message}")
+                handleConnectionFailure("Erreur hôte: ${e.message}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "_advertise: exception — ${e.message}")
+            handleConnectionFailure(e.message ?: "Erreur inconnue")
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private suspend fun _discover() {
+        if (!checkRequiredPermissions()) {
+            Log.w(TAG, "_discover: permissions manquantes"); handleError("Permissions manquantes"); return
+        }
+        try { Nearby.getConnectionsClient(context).stopDiscovery() } catch (_: Exception) {}
+        delay(radioSettleMs)   // let the radio settle before restarting — prevents STATUS_RADIO_ERROR
+        Log.d(TAG, "_discover: startDiscovery (retryCount=$retryCount)")
+        try {
+            Nearby.getConnectionsClient(context).startDiscovery(
+                serviceId, endpointDiscoveryCallback,
+                DiscoveryOptions.Builder().setStrategy(strategy).build()
+            ).addOnSuccessListener {
+                Log.d(TAG, "_discover: OK")
+                updateConnectionStatus("Recherche d'appareils...")
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "_discover: FAILED — ${e.message}")
+                handleConnectionFailure("Erreur recherche: ${e.message}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "_discover: exception — ${e.message}")
+            handleConnectionFailure(e.message ?: "Erreur inconnue")
         }
     }
 
     fun disconnect() {
         connectionMonitorJob?.cancel()
         reconnectionJob?.cancel()
+        advertiseDiscoverJob?.cancel()
         try {
             Nearby.getConnectionsClient(context).apply {
                 stopAdvertising(); stopDiscovery(); stopAllEndpoints()
@@ -164,10 +218,43 @@ class WifiTransferDatas_PresenterApp(
         lastConnectionMode = ConnectionMode.NONE
         retryCount = 0
         isReconnecting.set(false)
+        isConnectingToEndpoint.set(false)
         _state.update { it.copy(isConnected = false, connectionStatus = "Déconnecté", error = null) }
     }
 
     fun cancel() = disconnect()
+
+    /**
+     * Nuclear reset: cancels every job, stops all Nearby endpoints, blocks all
+     * auto-reconnect until the next explicit startAsHost/Client call.
+     */
+    fun hardReset() {
+        Log.d(TAG, "hardReset: début — endpointId=$endpointId, retryCount=$retryCount, lastMode=$lastConnectionMode, allowAutoReconnect=$allowAutoReconnect")
+        connectionMonitorJob?.cancel()
+        reconnectionJob?.cancel()
+        advertiseDiscoverJob?.cancel()
+        isReconnecting.set(false)
+        isConnectingToEndpoint.set(false)
+        allowAutoReconnect = false
+        retryCount = maxRetries + 1
+        lastConnectionMode = ConnectionMode.NONE
+        endpointId = null
+        try {
+            Nearby.getConnectionsClient(context).apply {
+                stopAdvertising()
+                stopDiscovery()
+                stopAllEndpoints()
+            }
+            Log.d(TAG, "hardReset: Nearby stopAll OK")
+        } catch (e: Exception) {
+            Log.e(TAG, "hardReset: Nearby stopAll FAILED — ${e.message}")
+        }
+        _state.value = ProductDisplayController_App2(
+            connectionStatus = "Réinitialisé",
+            error = null
+        )
+        Log.d(TAG, "hardReset: terminé — allowAutoReconnect=$allowAutoReconnect, retryCount=$retryCount")
+    }
 
     fun sendData(data: Any) {
         endpointId?.let { ep ->
@@ -270,6 +357,7 @@ class WifiTransferDatas_PresenterApp(
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
+            Log.d(TAG, "onConnectionResult: endpoint=$endpointId status=${result.status.statusCode} allowAutoReconnect=$allowAutoReconnect")
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     this@WifiTransferDatas_PresenterApp.endpointId = endpointId
@@ -286,22 +374,39 @@ class WifiTransferDatas_PresenterApp(
         }
 
         override fun onDisconnected(endpointId: String) {
+            Log.d(TAG, "onDisconnected: endpoint=$endpointId storedEndpoint=${this@WifiTransferDatas_PresenterApp.endpointId} allowAutoReconnect=$allowAutoReconnect retryCount=$retryCount")
             if (this@WifiTransferDatas_PresenterApp.endpointId == endpointId) {
                 this@WifiTransferDatas_PresenterApp.endpointId = null
                 _state.update { it.copy(isConnected = false, connectionStatus = "Déconnecté") }
-                if (retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE) initiateReconnection()
-                else handleFinalDisconnection()
+                if (allowAutoReconnect && retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE) {
+                    Log.d(TAG, "onDisconnected: → initiateReconnection")
+                    initiateReconnection()
+                } else if (!allowAutoReconnect) {
+                    Log.d(TAG, "onDisconnected: allowAutoReconnect=false → ignoré (post-reset)")
+                    _state.update { it.copy(connectionStatus = "Réinitialisé", error = null) }
+                } else {
+                    Log.d(TAG, "onDisconnected: retryCount=$retryCount >= maxRetries → handleFinalDisconnection")
+                    handleFinalDisconnection()
+                }
+            } else {
+                Log.w(TAG, "onDisconnected: endpoint=$endpointId ignoré (ne correspond pas au nôtre)")
             }
         }
     }
 
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+            Log.d(TAG, "onEndpointFound: endpoint=$endpointId")
             Nearby.getConnectionsClient(context)
                 .requestConnection("ClientAchteur Device", endpointId, connectionLifecycleCallback)
-                .addOnFailureListener { e -> handleConnectionFailure("Erreur connexion: ${e.message}") }
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "onEndpointFound: requestConnection FAILED — ${e.message}")
+                    handleConnectionFailure("Erreur connexion: ${e.message}")
+                }
         }
-        override fun onEndpointLost(endpointId: String) = Unit
+        override fun onEndpointLost(endpointId: String) {
+            Log.d(TAG, "onEndpointLost: endpoint=$endpointId")
+        }
     }
 
     private val payloadCallback = object : PayloadCallback() {
@@ -321,29 +426,43 @@ class WifiTransferDatas_PresenterApp(
 
     @SuppressLint("NewApi")
     private fun initiateReconnection() {
+        Log.d(TAG, "initiateReconnection: retryCount=$retryCount isReconnecting=${isReconnecting.get()} allowAutoReconnect=$allowAutoReconnect lastMode=$lastConnectionMode")
         if (isReconnecting.compareAndSet(false, true)) {
             reconnectionJob?.cancel()
             reconnectionJob = coroutineScope.launch {
                 try {
-                    delay(2000 + baseRetryDelayMs * (1L shl retryCount.coerceAtMost(5)))
-                    updateConnectionStatus("Reconnexion #${retryCount + 1}…")
-                    when (lastConnectionMode) {
-                        ConnectionMode.HOST -> startAsHost()
-                        ConnectionMode.CLIENT -> startAsClient()
-                        ConnectionMode.NONE -> handleFinalDisconnection()
-                        else -> {}
+                    retryCount++   // increment FIRST so it counts toward maxRetries
+                    val delayMs = 2000 + baseRetryDelayMs * (1L shl (retryCount - 1).coerceAtMost(5))
+                    Log.d(TAG, "initiateReconnection: attente ${delayMs}ms avant tentative #$retryCount")
+                    delay(delayMs)
+                    if (!allowAutoReconnect) {
+                        Log.d(TAG, "initiateReconnection: annulé (allowAutoReconnect=false après délai)")
+                        return@launch
                     }
-                    retryCount++
+                    updateConnectionStatus("Reconnexion #$retryCount…")
+                    when (lastConnectionMode) {
+                        ConnectionMode.HOST   -> { advertiseDiscoverJob = coroutineScope.launch { _advertise() } }
+                        ConnectionMode.CLIENT -> { advertiseDiscoverJob = coroutineScope.launch { _discover() } }
+                        ConnectionMode.NONE   -> handleFinalDisconnection()
+                    }
                 } catch (_: Exception) {
                 } finally {
                     isReconnecting.set(false)
                 }
             }
+        } else {
+            Log.d(TAG, "initiateReconnection: déjà en cours, ignoré")
         }
     }
 
     @SuppressLint("NewApi")
     private fun handleConnectionFailure(reason: String) {
+        Log.d(TAG, "handleConnectionFailure: reason='$reason' allowAutoReconnect=$allowAutoReconnect retryCount=$retryCount isReconnecting=${isReconnecting.get()}")
+        if (!allowAutoReconnect) {
+            Log.d(TAG, "handleConnectionFailure: allowAutoReconnect=false → ignoré (post-reset)")
+            _state.update { it.copy(connectionStatus = "Réinitialisé", error = null) }
+            return
+        }
         if (!isReconnecting.get() && retryCount < maxRetries) initiateReconnection()
         else if (retryCount >= maxRetries) handleFinalDisconnection()
     }

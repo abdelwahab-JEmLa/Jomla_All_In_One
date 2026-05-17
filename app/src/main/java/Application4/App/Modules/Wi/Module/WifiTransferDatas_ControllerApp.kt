@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.gms.nearby.Nearby
@@ -16,7 +17,6 @@ import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
 import com.google.android.gms.nearby.connection.ConnectionResolution
 import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
-import com.google.android.gms.nearby.connection.DiscoveryOptions
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 import com.google.android.gms.nearby.connection.Payload
 import com.google.android.gms.nearby.connection.PayloadCallback
@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import android.util.Log
 import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -77,7 +76,7 @@ class WifiTransferDatas_ControllerApp(
     private val baseRetryDelayMs = 3000L
     private var lastConnectionMode = ConnectionMode.NONE
 
-    private enum class ConnectionMode { HOST, CLIENT, NONE }
+    private enum class ConnectionMode { HOST, NONE }
 
     fun sendOrderToClientDisplayerT(order: Wifi_Messages_Types_NewProto, data: Any? = null) {
         coroutineScope.launch {
@@ -112,28 +111,6 @@ class WifiTransferDatas_ControllerApp(
                 ).addOnSuccessListener {
                     updateConnectionStatus("En attente de connexion...")
                 }.addOnFailureListener { e -> handleConnectionFailure("Erreur hôte: ${e.message}") }
-            } catch (e: Exception) {
-                handleConnectionFailure(e.message ?: "Erreur inconnue")
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsClient() {
-        coroutineScope.launch {
-            if (!checkRequiredPermissions()) {
-                handleError("Permissions manquantes"); return@launch
-            }
-            lastConnectionMode = ConnectionMode.CLIENT
-            _state.update { it.copy(isHostPhone = false) }
-            try {
-                Nearby.getConnectionsClient(context).startDiscovery(
-                    serviceId, endpointDiscoveryCallback,
-                    DiscoveryOptions.Builder().setStrategy(strategy).build()
-                ).addOnSuccessListener {
-                    updateConnectionStatus("Recherche d'appareils...")
-                }
-                    .addOnFailureListener { e -> handleConnectionFailure("Erreur recherche: ${e.message}") }
             } catch (e: Exception) {
                 handleConnectionFailure(e.message ?: "Erreur inconnue")
             }
@@ -344,7 +321,6 @@ class WifiTransferDatas_ControllerApp(
                     updateConnectionStatus("Reconnexion #${retryCount + 1}…")
                     when (lastConnectionMode) {
                         ConnectionMode.HOST -> startAsHost()
-                        ConnectionMode.CLIENT -> startAsClient()
                         ConnectionMode.NONE -> handleFinalDisconnection()
                     }
                     retryCount++

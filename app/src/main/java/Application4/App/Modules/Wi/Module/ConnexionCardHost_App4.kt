@@ -32,7 +32,8 @@ import androidx.compose.ui.unit.dp
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ConnexionCardHost_App4(
-    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp
+    wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
+    on_clear_wifi_classe_cache: () -> Unit,
 ) {
     val state by wifiTransferDatas_ControllerApp.state.collectAsState()
     var isCollapsed by remember { mutableStateOf(true) }
@@ -72,14 +73,26 @@ fun ConnexionCardHost_App4(
                         style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
                 }
 
+                // Hard-reset: kills the Nearby stack entirely, no retry, no cached state.
+                Button(
+                    onClick = { on_clear_wifi_classe_cache() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "⟳ Reset WiFi (force)",
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+
                 if (!state.isConnected) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         if (isHostEnabled) {
                             Button(onClick = { wifiTransferDatas_ControllerApp.startAsHost() }) {
                                 Text("Mode Hôte")
                             }
-                        }            //<--
-                        //TODO(1): ajot un button qui arere tou le wifi c comme si il restart de 0 et forced arret de l app pas de tentative cach corrupted
+                        }
                     }
                 } else {
                     OutlinedTextField(

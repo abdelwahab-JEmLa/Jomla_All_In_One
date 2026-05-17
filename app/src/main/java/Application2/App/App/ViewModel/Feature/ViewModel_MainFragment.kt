@@ -13,7 +13,6 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import EntreApps.Shared.Modules.Base.AppDatabase
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
@@ -123,9 +122,6 @@ class ViewModel_MainFragment(
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) =
         wifi.sendOrderToClientDisplayer(orderName, data)
-
-    fun sendOrderToClientDisplayerT(order: WifiUpdateClientDisplayerStats, data: Any? = null) =
-        wifi.sendOrderToClientDisplayerT(order, data)
 
     init {
         val productsReady    = MutableStateFlow(false)

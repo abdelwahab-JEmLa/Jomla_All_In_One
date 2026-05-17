@@ -17,8 +17,6 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,16 +51,6 @@ class A_ViewModel_NewProtoPatterns(
         SharingStarted.Eagerly,
         ProductDisplayController_NewProto()
     )
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsClient() {
-        wifiTransferDatas_ControllerApp.startAsClient(); wifiTransferDatas_ControllerApp.updateTypePhone(isHost = false)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsHost() {
-        wifiTransferDatas_ControllerApp.startAsHost(); wifiTransferDatas_ControllerApp.updateTypePhone(isHost = true)
-    }
 
     fun disconnect() = wifiTransferDatas_ControllerApp.disconnect()
 

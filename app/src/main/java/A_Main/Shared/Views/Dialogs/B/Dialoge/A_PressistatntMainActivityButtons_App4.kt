@@ -72,6 +72,7 @@ fun PressistatntMainActivityButtons_App4(
         Filter_Affichage_Mode_Proto.Echants_Seulement -> MaterialTheme.colorScheme.primary
         Filter_Affichage_Mode_Proto.Panie,
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> MaterialTheme.colorScheme.tertiary
+
         else -> MaterialTheme.colorScheme.surfaceVariant
     }
 
@@ -79,12 +80,14 @@ fun PressistatntMainActivityButtons_App4(
         Filter_Affichage_Mode_Proto.Echants_Seulement -> Icons.Default.Check
         Filter_Affichage_Mode_Proto.Panie,
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> Icons.Default.ShoppingCart
+
         else -> Icons.Default.FilterList
     }
 
     val fabTint = when (currentMode) {
         Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement,
         Filter_Affichage_Mode_Proto.Tablette_Et_Echants -> MaterialTheme.colorScheme.onSurfaceVariant
+
         else -> Color.White
     }
 
@@ -166,11 +169,11 @@ fun PressistatntMainActivityButtons_App4(
             },
     ) {
 
-     /*   val listM13tarificationinfos = emptyList()
+        /*   val listM13tarificationinfos = emptyList()
 
-        val on_vent_couleurs =
-            activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-        val on_vent_bon = activeDatas.activeOnVent_M8BonVent     */
+           val on_vent_couleurs =
+               activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+           val on_vent_bon = activeDatas.activeOnVent_M8BonVent     */
         Column {
             /*
             PdfBonVentFAB(
@@ -309,7 +312,7 @@ fun PressistatntMainActivityButtons_App4(
                 modifier = Modifier,
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
+            ) {  //row de modes panie..
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -378,8 +381,11 @@ fun PressistatntMainActivityButtons_App4(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-        }
+            But_4_DisconnectFAB(
+                onDisconnect = { viewModelNewProtoPatterns.disconnect() }
+            )
 
+        }
     }
 }
 

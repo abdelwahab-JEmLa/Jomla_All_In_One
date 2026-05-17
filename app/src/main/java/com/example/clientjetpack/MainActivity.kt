@@ -28,9 +28,11 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -138,13 +140,19 @@ class MainActivity : ComponentActivity() {
                                     val list_M3CouleurProduit by appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
                                         .collectAsState(initial = emptyList())
 
-                                    val wifiTransferDatas_ControllerApp = WifiTransferDatas_ControllerApp(
-                                        context = context,
-                                        coroutineScope=scope ,
-                                        list_M1Produit = list_M1Produit,
-                                        list_M3CouleurProduit = list_M3CouleurProduit,
+                                    val wifiTransferDatas_ControllerApp = remember {
+                                        WifiTransferDatas_ControllerApp(
+                                            context = context,
+                                            coroutineScope = scope,
+                                            list_M1Produit = list_M1Produit,
+                                            list_M3CouleurProduit = list_M3CouleurProduit,
+                                        )
+                                    }
 
-                                    )
+                                    SideEffect {
+                                        wifiTransferDatas_ControllerApp.list_M1Produit = list_M1Produit
+                                        wifiTransferDatas_ControllerApp.list_M3CouleurProduit = list_M3CouleurProduit
+                                    }
 
                                     when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
                                         AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
@@ -156,7 +164,15 @@ class MainActivity : ComponentActivity() {
                                                 appDatabase=appDatabase,
                                                 wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
                                                 fragmentNavigationHandler_passed=fragmentNavigationHandler_passed,
-                                                on_update_M13TarificationInfos_par_ecriture= {},
+                                                on_update_M13TarificationInfos_par_ecriture = {},
+                                                on_clear_wifi_classe_cache= {
+                                                    // Hard-reset: kills the Nearby stack entirely (stops advertising,
+                                                    // discovery, all endpoints), cancels any in-flight reconnection
+                                                    // job, and resets retryCount + lastMode to NONE so the
+                                                    // STATUS_RADIO_ERROR retry loop cannot resume on its own.
+                                                    // The user must press "Mode Hôte" again to reconnect.
+                                                    wifiTransferDatas_ControllerApp.cancel()
+                                                },
                                             )
                                         }
 
