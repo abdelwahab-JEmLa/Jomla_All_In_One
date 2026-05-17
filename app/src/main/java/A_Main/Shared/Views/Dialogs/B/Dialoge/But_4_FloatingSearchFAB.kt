@@ -56,13 +56,10 @@ fun But_4_FloatingSearchFAB(
             modifier = Modifier.Companion.size(40.dp),
             onClick = {
                 if (showField) {
-                    // Close: clear text, hide keyboard, then collapse the field
                     onSearchTextChange("")
                     keyboardController?.hide()
                     showField = false
                 } else {
-                    // Open: clear text, show field, then request focus + keyboard after
-                    // composition so the FocusRequester node exists in the tree
                     onSearchTextChange("")
                     showField = true
                     scope.launch {
@@ -80,8 +77,8 @@ fun But_4_FloatingSearchFAB(
                 tint = Color.Companion.White
             )
         }
-
         if (showField) {
+
             OutlinedTextField(
                 value = searchText,
                 onValueChange = onSearchTextChange,
@@ -110,9 +107,9 @@ fun But_4_FloatingSearchFAB(
                     }
                 },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Companion.Done),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Companion.Send),
                 keyboardActions = KeyboardActions(
-                    onDone = { keyboardController?.hide() }
+                    onSend = { onSearchTextChange("") }
                 ),
                 textStyle = MaterialTheme.typography.bodyMedium,
                 colors = OutlinedTextFieldDefaults.colors(
