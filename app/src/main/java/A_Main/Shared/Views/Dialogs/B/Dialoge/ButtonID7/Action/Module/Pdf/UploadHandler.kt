@@ -1,5 +1,6 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFileNamingUtils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -13,7 +14,7 @@ import java.io.File
  * - ParcelFileDescriptor resources are properly released
  * - No resource leaks when sharing files
  */
-class UploadHandler_ProMai {
+class UploadHandler_Mai {
 
     companion object {
         private const val TAG = "UploadHandler"

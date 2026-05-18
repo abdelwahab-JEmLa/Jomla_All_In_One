@@ -1,11 +1,11 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Datas
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.itextpdf.io.image.ImageDataFactory
@@ -29,10 +29,10 @@ import kotlin.math.max
  * - Image creation wrapped in try-catch with cleanup
  * - This eliminates "A resource failed to call end" warnings
  */
-class PdfTableBuilder(
-    private val formatter: PdfFormatterUtils,
-    private val contentBuilder: PdfContentBuilder,
-    private val focusedValuesGetter: FocusedValuesGetter
+class PdfTableBuilder_Mai(
+    private val formatter: PdfFormatterUtils_Mai,
+    private val contentBuilder: PdfContentBuilder_Mai,
+    private val focusedValuesGetter: Datas
 ) {
 
     private companion object {
@@ -48,7 +48,7 @@ class PdfTableBuilder(
         doc: Document,
         operations: List<M10OperationVentCouleur>,
         tarificationRepo: List<M13TarificationInfos>,
-        produitRepo: RepoM1Produit,
+        produitRepo: List<M01Produit>,
         regularFont: PdfFont,
         boldFont: PdfFont,
         relativeBonvent: M8BonVent?
@@ -108,7 +108,7 @@ class PdfTableBuilder(
         table: Table,
         operations: List<M10OperationVentCouleur>,
         tarificationRepo: List<M13TarificationInfos>,
-        produitRepo: RepoM1Produit,
+        produitRepo: List<M01Produit>,
         regularFont: PdfFont,
         boldFont: PdfFont,
         includeImages: Boolean
@@ -118,7 +118,7 @@ class PdfTableBuilder(
         val groupedOps = operations.groupBy { it.parent_M1Produit_KeyId }
 
         val sortedGroupedOps = groupedOps.entries.sortedBy { (produitId, _) ->
-            val produit = produitRepo.datasValue.find { it.keyID == produitId }
+            val produit = produitRepo.find { it.keyID == produitId }
             formatter.cleanAndCapitalizeProductName(produit?.nom ?: "")
         }
 
@@ -127,7 +127,7 @@ class PdfTableBuilder(
                 it.keyID == ops.first().parentM13TarificationKeyID
             }
 
-            val produit = produitRepo.datasValue.find { it.keyID == produitId }
+            val produit = produitRepo.find { it.keyID == produitId }
             val qty = ops.sumOf { it.quantity }
             val rawPrice = tarification?.prixCurrency ?: 0.0
             val subtotal = rawPrice * qty
@@ -251,7 +251,9 @@ class PdfTableBuilder(
     private fun findProductImage(operation: M10OperationVentCouleur): ImageSearchResult {
         try {
             val couleurProduit = operation.parent_M3CouleurProduit_KeyID?.let { keyID ->
-                focusedValuesGetter.find_M3CouleurInfos_By_KeyID(keyID)
+                focusedValuesGetter.relative_couleurs?.find{
+                    it.keyID == keyID
+                }
             }
 
             if (couleurProduit == null) {
@@ -430,7 +432,7 @@ class PdfTableBuilder(
         doc: Document,
         operations: List<M10OperationVentCouleur>,
         tarificationRepo: List<M13TarificationInfos>,
-        produitRepo: RepoM1Produit,
+        produitRepo: List<M01Produit>,
         regularFont: PdfFont,
         boldFont: PdfFont
     ): Double {

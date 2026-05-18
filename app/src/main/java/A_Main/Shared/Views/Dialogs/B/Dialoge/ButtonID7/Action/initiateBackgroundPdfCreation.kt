@@ -1,12 +1,11 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action
 
-import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.PrintReceiptHandler_Proto_Mai
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.A_PrintReceiptHandler_ProMai
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfSaverUtility_Proto2
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler_Mai
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
@@ -43,11 +42,11 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
     context: Context,
     onPdfSaved: ((savedPath: String) -> Unit)? = null,
     on_update_m8_bon: (M8BonVent) -> Unit,
-    list_M13TarificationInfos: List<M13TarificationInfos> =datas.relative_list_tariff,
+    list_M13TarificationInfos: List<M13TarificationInfos> = datas.relative_list_tariff,
     relative_List_M13Vent: List<M10OperationVentCouleur> = datas.on_vent_couleurs,
-    on_vent_client: M2Client? =datas.on_vent_m2client,
-    on_vent_bon: M8BonVent?=datas.on_vent_bon,
-    printInPdf_itextpdf_Handler: PrintInPdf_itextpdf_Handler_Mai,
+    on_vent_client: M2Client? = datas.on_vent_m2client,
+    on_vent_bon: M8BonVent? = datas.on_vent_bon,
+    A_PrintReceiptHandler_ProMai: A_PrintReceiptHandler_ProMai,
     ) {
 
     when {
@@ -61,7 +60,7 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
         delay(300)
 
         val rawResult = withTimeout(30_000L) {
-            PrintReceiptHandler_Proto_Mai(printInPdf_itextpdf_Handler).printPdf(
+            A_PrintReceiptHandler_ProMai.printPdfOnly(
                 context = context,
                 repo13TarificationInfos = list_M13TarificationInfos,
                 repoM1Produit = datas.relative_produits,

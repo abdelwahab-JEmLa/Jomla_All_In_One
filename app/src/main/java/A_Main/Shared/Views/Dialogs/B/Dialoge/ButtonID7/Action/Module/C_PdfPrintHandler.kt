@@ -16,8 +16,8 @@ import java.io.File
  * FIXED: Always uses FileProvider URIs to avoid "file exposed beyond app" errors
  * FIXED: Added shouldOpenFile parameter to control when PDF is opened
  */
-class PdfPrintHandler_ProMai(
-    private val printInPdfHandler: PrintInPdf_itextpdf_Handler_Mai
+class C_PdfPrintHandler(
+    private val b_Generateur_ProMai: B_Generateur_ProMai
 ) {
     companion object {
         private const val TAG = "PdfPrintHandler_ProMai"
@@ -54,7 +54,7 @@ class PdfPrintHandler_ProMai(
                     (relative_bonVent?.demande_Versemet_si_Type_est_regle == true)
 
             val result = if (shouldShowCredit && relative_bonVent != null) {
-                printInPdfHandler.printPdfOnly(
+                b_Generateur_ProMai.generateVentReceiptWithCreditPdf(
                     context,
                     client,
                     operations,
@@ -66,7 +66,7 @@ class PdfPrintHandler_ProMai(
                 )
 
             } else {
-                printInPdfHandler.generateVentReceiptPdf(
+                b_Generateur_ProMai.generateVentReceiptPdf(
                     context,
                     client,
                     operations,
@@ -125,7 +125,7 @@ class PdfPrintHandler_ProMai(
                 currentBill = bonVent.sum_De_Totale_Vents
             )
 
-            val result = printInPdfHandler.generateCreditReceiptPdf(context, creditData)
+            val result = b_Generateur_ProMai.generateCreditReceiptPdf(context, creditData)
 
             result.onSuccess { message ->
                 val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")

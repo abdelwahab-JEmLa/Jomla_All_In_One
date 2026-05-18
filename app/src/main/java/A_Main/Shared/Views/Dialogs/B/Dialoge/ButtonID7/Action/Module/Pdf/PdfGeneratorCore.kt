@@ -1,6 +1,8 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfGenerationParams
 import com.itextpdf.io.font.constants.StandardFonts
+import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.pdf.PdfDocument
@@ -13,13 +15,13 @@ import com.itextpdf.layout.properties.TextAlignment
  * Core PDF generation logic
  * FIXED: Enhanced logging to debug image issues
  */
-class PdfGeneratorCore(
-    private val formatter: PdfFormatterUtils,
-    private val contentBuilder: PdfContentBuilder,
-    private val tableBuilder: PdfTableBuilder
+class PdfGeneratorCore_Mai(
+    private val formatter: PdfFormatterUtils_Mai,
+    private val contentBuilder: PdfContentBuilder_Mai,
+    private val tableBuilder: PdfTableBuilder_Mai
 ) {
 
-    fun generateUnifiedPdf(path: String, params: PdfGenerationParams) {
+    fun generateUnifiedPdf(path: String, params: PdfGenerationParams_Mai) {
         val logTag = "PDF_GENERATOR_CORE"
 
         android.util.Log.d(logTag, "════════════════════════════════════════")
@@ -97,7 +99,7 @@ class PdfGeneratorCore(
 
     private fun addHeaderBasedOnType(
         doc: Document,
-        params: PdfGenerationParams,
+        params: PdfGenerationParams_Mai,
         regularFont: com.itextpdf.kernel.font.PdfFont,
         boldFont: com.itextpdf.kernel.font.PdfFont
     ) {
@@ -130,7 +132,7 @@ class PdfGeneratorCore(
      */
     private fun addProductTableIfNeeded(
         doc: Document,
-        params: PdfGenerationParams,
+        params: PdfGenerationParams_Mai,
         regularFont: com.itextpdf.kernel.font.PdfFont,
         boldFont: com.itextpdf.kernel.font.PdfFont
     ): Double {
@@ -210,9 +212,9 @@ class PdfGeneratorCore(
      */
     private fun addCreditSectionsIfNeeded(
         doc: Document,
-        params: PdfGenerationParams,
-        regularFont: com.itextpdf.kernel.font.PdfFont,
-        boldFont: com.itextpdf.kernel.font.PdfFont,
+        params: PdfGenerationParams_Mai,
+        regularFont: PdfFont,
+        boldFont: PdfFont,
         currentReceiptTotal: Double
     ) {
         if (params.type == PdfType.RECEIPT_WITH_CREDIT || params.type == PdfType.CREDIT_ONLY) {
@@ -261,17 +263,4 @@ class PdfGeneratorCore(
         }
     }
 
-    /**
-     * Helper method to determine if credit section should be shown
-     * FIXED: Uses demande_Versemet_si_Type_est_regle
-     */
-    private fun shouldShowCreditSection(params: PdfGenerationParams): Boolean {
-        if (params.type == PdfType.CREDIT_ONLY) return true
-        if (params.type != PdfType.RECEIPT_WITH_CREDIT) return false
-
-        val shouldShowCreditSection = params.bonVent?.demande_Versemet_si_Type_est_regle == true
-        val hasVersement = params.versement > 0.0
-
-        return shouldShowCreditSection || hasVersement
-    }
 }

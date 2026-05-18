@@ -1,9 +1,6 @@
-package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
+package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module
 
-import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.BluetoothPrintHandler
-import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.PdfPrintHandler_ProMai
-import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.PrintInPdf_itextpdf_Handler_Mai
-import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.WindowsShareHandler
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Datas
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
@@ -20,12 +17,13 @@ import java.io.File
 /**
  * FIXED: Added shouldOpenFile parameter to control when PDFs are opened
  */
-class PrintReceiptHandler_Proto_Mai(
-    private val printInPdfHandler: PrintInPdf_itextpdf_Handler_Mai,
-) {
-    private val bluetoothPrintHandler = BluetoothPrintHandler()
-    private val pdfPrintHandlerProMai = PdfPrintHandler_ProMai(printInPdfHandler)
-    private val windowsShareHandler = WindowsShareHandler()
+class A_PrintReceiptHandler_ProMai(
+    private val b_Generateur_ProMai: B_Generateur_ProMai,
+    datas: Datas,
+    ) {
+    private val bluetoothPrintHandler = D_BluetoothPrintHandler()
+    private val CPdfPrintHandler = C_PdfPrintHandler(b_Generateur_ProMai)
+    private val windowsShareHandler = WindowsShareHandler_Mai()
 
     /**
      * Print via Bluetooth only
@@ -41,7 +39,7 @@ class PrintReceiptHandler_Proto_Mai(
         repo13TarificationInfos: Repo13TarificationInfos,
         bonVent: M8BonVent? = null,
         showCreditSection: Boolean = true,
-        versement: Double = 0.0 ,
+        versement: Double = 0.0,
         companyHeader: String = "Jomla.com"
     ) {
         // FIXED: Use demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
@@ -61,8 +59,17 @@ class PrintReceiptHandler_Proto_Mai(
         )
     }
 
-
-    suspend fun printPdf(
+    /**
+     * Generate PDF only - Returns Result for proper error handling
+     * FIXED: Now checks demande_Versemet_si_Type_est_regle
+     * FIXED: Added shouldOpenFile parameter to control when PDF is opened
+     *
+     * @param shouldOpenFile If false, PDF will be generated but not opened automatically.
+     *                       This is useful when the file will be copied to a different location
+     *                       before opening (e.g., in background PDF creation).
+     *                       Default is true for backward compatibility.
+     */
+    suspend fun printPdfOnly(
         context: Context,
         repoM1Produit: List<M01Produit>?,
         repo3CouleurProduitInfos: List<M13TarificationInfos>,
@@ -76,10 +83,10 @@ class PrintReceiptHandler_Proto_Mai(
         shouldOpenFile: Boolean = true
     ): Result<String> {
         return try {
-            // FIXED: The pdfPrintHandlerProMai will now automatically check demande_Versemet_si_Type_est_regle
+            // FIXED: The CPdfPrintHandler will now automatically check demande_Versemet_si_Type_est_regle
             // No need to override showCreditSection here since the handler checks the bonVent property
             // FIXED: Pass shouldOpenFile to control when PDF is opened
-            pdfPrintHandlerProMai.generateAndOpenPdf(
+            CPdfPrintHandler.generateAndOpenPdf(
                 context,
                 client,
                 relative_ListM10OperationVentCouleur,
@@ -130,7 +137,7 @@ class PrintReceiptHandler_Proto_Mai(
         if (generatePdf || !bluetoothSuccess) {
             scope?.launch {
                 try {
-                    pdfPrintHandlerProMai.generateCreditPdf(
+                    CPdfPrintHandler.generateCreditPdf(
                         context,
                         client,
                         bonVent,
@@ -161,7 +168,7 @@ class PrintReceiptHandler_Proto_Mai(
     ) {
         scope?.launch {
             try {
-                val result = pdfPrintHandlerProMai.generateCreditPdf(
+                val result = CPdfPrintHandler.generateCreditPdf(
                     context,
                     client,
                     bonVent,
@@ -189,5 +196,5 @@ class PrintReceiptHandler_Proto_Mai(
      * NEW: Public accessor to PdfPrintHandler_ProMai for advanced use cases
      * Allows direct access to openPdfFile() method for opening PDFs after custom processing
      */
-    fun getPdfPrintHandler(): PdfPrintHandler_ProMai = pdfPrintHandlerProMai
+    fun getPdfPrintHandler(): C_PdfPrintHandler = CPdfPrintHandler
 }

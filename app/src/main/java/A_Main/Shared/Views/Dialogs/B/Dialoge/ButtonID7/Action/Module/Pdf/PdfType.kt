@@ -1,10 +1,11 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.CreditReceiptData
 import java.io.File
 
 enum class PdfType {
@@ -16,7 +17,7 @@ enum class PdfType {
 /**
  * Data class for credit receipt information
  */
-data class CreditReceiptData(
+data class CreditReceiptData_Mai(
     val client: M2Client?,
     val totalAmount: Double,
     val currentPayment: Double,
@@ -30,12 +31,12 @@ data class CreditReceiptData(
 /**
  * Parameters for PDF generation
  */
-data class PdfGenerationParams(
+data class PdfGenerationParams_Mai(
     val type: PdfType,
     val client: M2Client? = null,
     val operations: List<M10OperationVentCouleur> = emptyList(),
     val tarificationRepo: List<M13TarificationInfos> = emptyList(),
-    val produitRepo: RepoM1Produit? = null,
+    val produitRepo: List<M01Produit>? = null,
     val bonVent: M8BonVent? = null,
     val versement: Double = 0.0,
     val transactionId: String = "",

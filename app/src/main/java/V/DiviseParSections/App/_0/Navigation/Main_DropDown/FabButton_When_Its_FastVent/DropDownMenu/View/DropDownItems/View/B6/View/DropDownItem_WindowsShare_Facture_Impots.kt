@@ -7,7 +7,9 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,6 +63,7 @@ enum class CompanyHeader(val displayName: String) {
     BELFORT("Belfort Gros Confisserie")
 }
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun DropDownItem_ThermiquePrint(
     nomFun: String = "Imprimer Bluetooth",

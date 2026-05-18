@@ -29,7 +29,7 @@ import java.util.Locale
  *
  * Result: Downloads/BonsWhatsApp/MM_DD/keyID.pdf
  */
-object PdfSaverUtility_Proto2 {
+object PdfSaverUtility_Mai {
     private const val TAG = "PdfSaverUtility"
 
     /**

@@ -1,13 +1,14 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action
 
-import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.UploadHandler_ProMai
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.A_PrintReceiptHandler_ProMai
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.B_Generateur_ProMai
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.UploadHandler_Mai
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler_Mai
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -60,16 +61,22 @@ fun But7_Cree_Images_Bons(
     relative_couleurs: List<M3CouleurProduitInfos>?
 ) {
     val uploadHandler = remember {
-        UploadHandler_ProMai()
+        UploadHandler_Mai()
     }
 
     val datas = Datas(
         relative_produits,relative_couleurs,relative_list_tariff,on_vent_couleurs,on_vent_bon,on_vent_m2client
     )
+    val b_Generateur_ProMai = remember {
+        B_Generateur_ProMai(
+            datas ,uploadHandler
+        )
+    }
+
     val printInPdf_itextpdf_Handler = remember {
-        PrintInPdf_itextpdf_Handler_Mai(
-            uploadHandler= uploadHandler,
-            datas=datas,
+        A_PrintReceiptHandler_ProMai(
+            b_Generateur_ProMai=b_Generateur_ProMai,
+            datas = datas,
         )
     }
     val context = LocalContext.current
@@ -162,7 +169,7 @@ fun But7_Cree_Images_Bons(
                     try {
                         initiateBackgroundPdfCreation_ProMai(
                             datas=datas,
-                            printInPdf_itextpdf_Handler=printInPdf_itextpdf_Handler,
+                            A_PrintReceiptHandler_ProMai=printInPdf_itextpdf_Handler,
                             context = context,
                             onPdfSaved = { savedPath ->
                                 onPdfSaved?.invoke(savedPath, activeCount)

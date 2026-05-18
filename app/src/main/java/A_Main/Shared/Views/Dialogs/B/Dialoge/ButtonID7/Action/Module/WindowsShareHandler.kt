@@ -13,7 +13,7 @@ import java.io.File
  * - FileProvider URIs are reused instead of recreated
  * - No resource leaks from ParcelFileDescriptor
  */
-class WindowsShareHandler {
+class WindowsShareHandler_Mai {
 
     companion object {
         private const val TAG = "WindowsShareHandler_V2"

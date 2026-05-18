@@ -1,8 +1,7 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Datas
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -10,7 +9,7 @@ import java.util.Locale
 /**
  * Utility class for PDF formatting operations
  */
-class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter) {
+class PdfFormatterUtils_Mai(private val repositorysMainGetter: Datas) {
 
     fun formatDateWithAmPm(date: Date): String {
         val calendar = Calendar.getInstance().apply { time = date }
@@ -92,8 +91,4 @@ class PdfFormatterUtils(private val repositorysMainGetter: RepositorysMainGetter
 
     fun round(value: Double): Double = kotlin.math.round(value * 10) / 10.0
 
-    private fun findRelativeCategorie(rela_produit: M01Produit): M16CategorieProduit? =
-        rela_produit.idParentCategorie?.let {
-            repositorysMainGetter.find_M16CategorieProduit_By_OldID(it)
-        }
 }

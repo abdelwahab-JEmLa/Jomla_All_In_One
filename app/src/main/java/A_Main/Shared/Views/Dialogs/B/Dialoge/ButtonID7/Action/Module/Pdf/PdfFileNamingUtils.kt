@@ -7,7 +7,7 @@ import java.util.Locale
 /**
  * Utility object for consistent PDF file naming across the application
  */
-object PdfFileNamingUtils {
+object PdfFileNamingUtils_Mai {
 
     /**
      * Generate a PDF filename based on client name and product line count

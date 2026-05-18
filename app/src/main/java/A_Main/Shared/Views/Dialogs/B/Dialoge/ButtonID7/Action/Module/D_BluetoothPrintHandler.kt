@@ -18,7 +18,7 @@ import java.util.Locale
  * Handles Bluetooth receipt printing for sales and credit payments.
  * Supports Arabic-to-Latin transliteration for thermal printer compatibility.
  */
-class BluetoothPrintHandler {
+class D_BluetoothPrintHandler {
     private val PRINT_INTENT = "pe.diegoveloper.printing"
 
     /**

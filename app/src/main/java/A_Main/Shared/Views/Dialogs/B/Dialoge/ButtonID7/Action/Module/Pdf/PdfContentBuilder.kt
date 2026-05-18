@@ -2,6 +2,7 @@ package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.CreditReceiptData
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.Cell
@@ -14,8 +15,8 @@ import java.util.Date
 /**
  * Handles PDF content creation and layout
  */
-class PdfContentBuilder(
-    private val formatter: PdfFormatterUtils
+class PdfContentBuilder_Mai(
+    private val formatter: PdfFormatterUtils_Mai
 ) {
     fun addHeader(
         doc: Document,
