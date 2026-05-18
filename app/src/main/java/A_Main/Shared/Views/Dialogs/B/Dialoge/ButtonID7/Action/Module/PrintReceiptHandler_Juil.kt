@@ -1,10 +1,10 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
+package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module
 
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler_Mai
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
@@ -16,8 +16,8 @@ import java.io.File
 /**
  * FIXED: Added shouldOpenFile parameter to control when PDFs are opened
  */
-class PrintReceiptHandler_Proto_Mai(
-    private val printInPdfHandler: PrintInPdf_itextpdf_Handler_Mai,
+class PrintReceiptHandler_Juil(
+    private val printInPdfHandler: PrintInPdf_itextpdf_Handler,
 ) {
     private val bluetoothPrintHandler = BluetoothPrintHandler()
     private val pdfPrintHandler = PdfPrintHandler(printInPdfHandler)
@@ -57,8 +57,17 @@ class PrintReceiptHandler_Proto_Mai(
         )
     }
 
-   
-    suspend fun printPdf(
+    /**
+     * Generate PDF only - Returns Result for proper error handling
+     * FIXED: Now checks demande_Versemet_si_Type_est_regle
+     * FIXED: Added shouldOpenFile parameter to control when PDF is opened
+     *
+     * @param shouldOpenFile If false, PDF will be generated but not opened automatically.
+     *                       This is useful when the file will be copied to a different location
+     *                       before opening (e.g., in background PDF creation).
+     *                       Default is true for backward compatibility.
+     */
+    suspend fun printPdfOnly(
         context: Context,
         repoM1Produit: RepoM1Produit,
         repo3CouleurProduitInfos: Repo03CouleurProduitInfos,

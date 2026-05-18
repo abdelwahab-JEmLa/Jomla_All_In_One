@@ -42,7 +42,7 @@ suspend fun initiateBackgroundPdfCreation_NewP(
         delay(300)
 
         val rawResult = withTimeout(30_000L) {
-            aCentralFacade.modulesCentral.printReceiptHandler.printPdfOnly(
+            aCentralFacade.modulesCentral.printReceiptHandler.printPdf(
                 context                              = context,
                 repo13TarificationInfos             = list_M13TarificationInfos,
                 repoM1Produit                        = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,

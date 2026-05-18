@@ -1,10 +1,12 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge
 
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.But7_Cree_Images_Bons
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode.Companion.sum_vent_et_benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_vents
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.Button_Click_Send_Stored_Bon_Par_whatsappBuisness
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -169,19 +171,20 @@ fun PressistatntMainActivityButtons_App4(
             },
     ) {
 
-        /*   val listM13tarificationinfos = emptyList()
+           val listM13tarificationinfos = uiState.list_M13TarificationInfos
 
            val on_vent_couleurs =
                activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-           val on_vent_bon = activeDatas.activeOnVent_M8BonVent     */
+           val on_vent_bon = activeDatas.activeOnVent_M8BonVent
         Column {
-            /*
-            PdfBonVentFAB(
+            But7_Cree_Images_Bons(
+                relative_produits=activeDatas.list_M1Produit,
+                relative_couleurs=activeDatas.list_M03CouleurProduitInfos,
+                relative_list_tariff = listM13tarificationinfos,
                 onPdfSaved = { path, count ->
                     sharedPdfPath = path
                     sharedPdfCount = count
                 },
-                listm13 = listM13tarificationinfos,
                 on_vent_bon = on_vent_bon,
                 on_vent_couleurs = on_vent_couleurs
             )
@@ -198,7 +201,8 @@ fun PressistatntMainActivityButtons_App4(
                         it
                     )
                 }
-            )       */
+            )
+
             Text("Period")
             Row {
                 m14VentPeriode_sums?.let { periodSums ->

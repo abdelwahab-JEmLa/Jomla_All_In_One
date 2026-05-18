@@ -166,11 +166,6 @@ class MainActivity : ComponentActivity() {
                                                 fragmentNavigationHandler_passed=fragmentNavigationHandler_passed,
                                                 on_update_M13TarificationInfos_par_ecriture = {},
                                                 on_clear_wifi_classe_cache= {
-                                                    // Hard-reset: kills the Nearby stack entirely (stops advertising,
-                                                    // discovery, all endpoints), cancels any in-flight reconnection
-                                                    // job, and resets retryCount + lastMode to NONE so the
-                                                    // STATUS_RADIO_ERROR retry loop cannot resume on its own.
-                                                    // The user must press "Mode Hôte" again to reconnect.
                                                     wifiTransferDatas_ControllerApp.cancel()
                                                 },
                                             )
