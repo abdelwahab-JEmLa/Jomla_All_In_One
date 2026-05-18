@@ -1,12 +1,13 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge
 
 import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.But7_Cree_Images_Bons
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Datas
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID8.Action.Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode.Companion.sum_vent_et_benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_vents
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.Button_Click_Send_Stored_Bon_Par_whatsappBuisness
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -176,6 +177,14 @@ fun PressistatntMainActivityButtons_App4(
            val on_vent_couleurs =
                activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
            val on_vent_bon = activeDatas.activeOnVent_M8BonVent
+        val datas = Datas(
+            activeDatas.list_M1Produit,
+            activeDatas.list_M03CouleurProduitInfos,
+            listM13tarificationinfos,
+            on_vent_couleurs,
+            on_vent_bon,
+            activeDatas.activeOnVent_M2Client
+        )
         Column {
             But7_Cree_Images_Bons(
                 onPdfSaved = { path, count ->
@@ -184,27 +193,24 @@ fun PressistatntMainActivityButtons_App4(
                 },
                 relative_list_tariff = listM13tarificationinfos,
                 on_vent_bon = on_vent_bon,
-                on_vent_m2client = activeDatas.activeOnVent_M2Client,
                 on_vent_couleurs = on_vent_couleurs,
-                relative_produits=activeDatas.list_M1Produit,
-                relative_couleurs=activeDatas.list_M03CouleurProduitInfos,
                 on_update_m8_bon = {
                     viewModelNewProtoPatterns.update_m8(it)
-                }
+                },
+                datas = datas
             )
-            Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
-                overridePath = sharedPdfPath,
-                overrideCount = sharedPdfCount,
+
+            Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
                 list_M13TarificationInfos = listM13tarificationinfos,
-                activeClient = activeDatas.activeOnVent_M2Client,
-                on_vent_couleurs = on_vent_couleurs,
-                produits = activeDatas.list_M1Produit ?: emptyList(),
-                on_vent_m8 = on_vent_bon ,
-                on_upsert_M2Client={
+                on_upsert_M2Client ={
                     viewModelNewProtoPatterns.update_m2(
                         it
                     )
-                }
+                },
+                client = datas.on_vent_m2client,
+                bon = datas.on_vent_bon,
+                vents = datas.on_vent_couleurs,
+                produits = datas.relative_produits
             )
 
             Text("Period")

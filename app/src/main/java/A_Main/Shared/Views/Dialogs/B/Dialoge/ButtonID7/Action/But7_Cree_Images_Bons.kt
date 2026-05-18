@@ -3,11 +3,8 @@ package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action
 import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.A_PrintReceiptHandler_ProMai
 import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.B_Generateur_ProMai
 import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.UploadHandler_Mai
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
-import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,14 +37,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.abs
 
-data class Datas(
-    val  relative_produits: List<M01Produit>?,
-    val  relative_couleurs: List<M3CouleurProduitInfos>?,
-    val relative_list_tariff: List<M13TarificationInfos>,
-    val  on_vent_couleurs: List<M10OperationVentCouleur>,
-    val on_vent_bon: M8BonVent?,
-    val on_vent_m2client: M2Client?,
-)
 @Composable
 fun But7_Cree_Images_Bons(
     modifier: Modifier = Modifier,
@@ -55,22 +44,17 @@ fun But7_Cree_Images_Bons(
     onPdfSaved: ((savedPath: String, count: Int) -> Unit)? = null,
     relative_list_tariff: List<M13TarificationInfos>,
     on_vent_bon: M8BonVent?,
-    on_vent_m2client: M2Client?,
     on_vent_couleurs: List<M10OperationVentCouleur>,
-    relative_produits: List<M01Produit>?,
-    relative_couleurs: List<M3CouleurProduitInfos>?,
-    on_update_m8_bon: (M8BonVent) -> Unit
+    on_update_m8_bon: (M8BonVent) -> Unit,
+    datas: Datas
 ) {
     val uploadHandler = remember {
         UploadHandler_Mai()
     }
 
-    val datas = Datas(
-        relative_produits,relative_couleurs,relative_list_tariff,on_vent_couleurs,on_vent_bon,on_vent_m2client
-    )
     val b_Generateur_ProMai = remember {
         B_Generateur_ProMai(
-            datas ,uploadHandler
+            datas,uploadHandler
         )
     }
 
@@ -169,7 +153,7 @@ fun But7_Cree_Images_Bons(
                 scope.launch {
                     try {
                         initiateBackgroundPdfCreation_ProMai(
-                            datas=datas,
+                            datas= datas,
                             A_PrintReceiptHandler_ProMai=printInPdf_itextpdf_Handler,
                             context = context,
                             onPdfSaved = { savedPath ->
