@@ -54,7 +54,8 @@ fun A_Compact_Header_App4(
     section_ToggleButton_TagPreiorities__start_Collapsed: Boolean,
     onUpdateTariff: () -> Unit,
     onUpdateProduit: (M01Produit) -> Unit,
-    affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
+    affiche_ProduitDataBaseEdites_ComposableViews: Boolean,      //<--
+    //TODO(1): fait que si 
     shouldShowButtons: Boolean = affiche_ProduitDataBaseEdites_ComposableViews,
     onDelete: (M01Produit) -> Unit,
     catalogueName: String? = null,
@@ -153,6 +154,10 @@ fun A_Compact_Header_App4(
 
                 // FIXED: Update tariff context button as InfoCard - shown first if available
                 if (shouldShowButtons && affiche_ProduitDataBaseEdites_ComposableViews) {
+                    //<--
+//TODO(1): de affiche au row n switcher qui au click update produit its_Carton
+                    //<--
+                    //TODO(1): ajout un autre qui update  premier_Check_Donne
                     ClickableInfoCard(
                         icon = {
                             Icon(

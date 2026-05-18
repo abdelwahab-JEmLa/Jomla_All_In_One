@@ -129,7 +129,14 @@ class PdfTableBuilder_Mai(
 
             val produit = produitRepo.find { it.keyID == produitId }
             val qty = ops.sumOf { it.quantity }
-            val rawPrice = tarification?.prixCurrency ?: 0.0
+            // If no tariff is found, check whether any op in the group has a
+            // directly-entered client price (Edited_Pour_Client) and use it as fallback.
+            val rawPrice = tarification?.prixCurrency
+                ?: ops.firstOrNull {
+                    it.typeTarificationEnumT2 ==
+                            M13TarificationInfos.TypeChoisi.Edited_Pour_Client
+                }?.prix_de_Vent_entre_directement_NewProto
+                ?: 0.0
             val subtotal = rawPrice * qty
             val shouldDisplayPriceAndSubtotal = rawPrice > 0.0
 

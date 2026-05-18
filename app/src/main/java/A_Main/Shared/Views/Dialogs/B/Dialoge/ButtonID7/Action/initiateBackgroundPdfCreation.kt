@@ -52,31 +52,19 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
     when {
         on_vent_client == null -> {
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "Aucun client actif trouvé",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show()
             }; return
         }
 
         on_vent_bon == null -> {
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "Aucun bon de vente actif",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "Aucun bon de vente actif", Toast.LENGTH_SHORT).show()
             }; return
         }
 
         relative_List_M13Vent.isEmpty() -> {
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "Aucun article à traiter",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "Aucun article à traiter", Toast.LENGTH_SHORT).show()
             }; return
         }
     }
@@ -107,11 +95,7 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
 
         if (tempFile == null || !tempFile.exists() || tempFile.length() == 0L) {
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "❌ Génération échouée",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(context, "❌ Génération échouée", Toast.LENGTH_LONG).show()
             }
             return
         }
@@ -149,18 +133,32 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
 
                 onPdfSaved?.invoke(pathToStore)
 
+                // ── TODO(1) FIX ──────────────────────────────────────────────────────────
+                // 1. Delete all old JPG images that belong to this bon before regenerating.
+                // 2. Save new images into a folder named: HH-mm_clientName_total
+                //    e.g. "14-35_Ali_Mokrani_3200"  (colons replaced with dashes for FS safety)
+                val bonKeyPrefix = on_vent_bon.keyID.takeLast(6)
+                deleteOldBonImages(context, bonKeyPrefix)
+
+                val safeClientName = on_vent_client.nom
+                    .replace(Regex("[^A-Za-z0-9_\\-]"), "_")
+                    .take(15)
+                val time = SimpleDateFormat("HH-mm", Locale.getDefault()).format(Date())
+                val bonFolderName = "${bonKeyPrefix}_${time}_${safeClientName}_${activeTotal.toInt()}"
+                // ────────────────────────────────────────────────────────────────────────
+
                 // Convert all PDF pages to styled JPGs via BonJpgConverter.
                 // tempFile is still alive here — Result lambdas are synchronous.
-                val savedJpgs = convertAllPdfPagesToJpgs(context, tempFile, baseName)
+                val savedJpgs = convertAllPdfPagesToJpgs(context, tempFile, baseName, bonFolderName)
                 Log.i(
                     TAG,
-                    "🖼️ ${savedJpgs.count { it != null }}/${savedJpgs.size} JPG(s) saved to Download/BonsWhatsApp"
+                    "🖼️ ${savedJpgs.count { it != null }}/${savedJpgs.size} JPG(s) saved to Download/BonsWhatsApp/$bonFolderName"
                 )
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
-                        "✅ PDF terminé!\n$baseName\nTéléchargements/BonsWhatsApp",
+                        "✅ PDF terminé!\n$baseName\nTéléchargements/BonsWhatsApp/$bonFolderName",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -176,19 +174,11 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
 
     } catch (e: TimeoutCancellationException) {
         withContext(Dispatchers.Main) {
-            Toast.makeText(
-                context,
-                "❌ Timeout (>30s)",
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(context, "❌ Timeout (>30s)", Toast.LENGTH_LONG).show()
         }
     } catch (e: Exception) {
         withContext(Dispatchers.Main) {
-            Toast.makeText(
-                context,
-                "❌ Erreur: ${e.message}",
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(context, "❌ Erreur: ${e.message}", Toast.LENGTH_LONG).show()
         }
     } finally {
         delay(500)
@@ -207,39 +197,81 @@ private const val PAGE_PAD_PX = 48
 /**
  * Maximum drop-shadow displacement in pixels.
  * The shadow is built from [SHADOW_LAYERS] semi-transparent gray layers
- * at increasing offsets to simulate Gaussian blur.
+ * stepped from 0 → SHADOW_OFFSET_MAX so the outermost layer is the lightest.
  */
 private const val SHADOW_OFFSET_MAX = 18
-
-/** Number of translucent layers used to simulate a soft shadow blur. */
 private const val SHADOW_LAYERS = 6
+private const val CORNER_RADIUS = 6f
+private const val BG_COLOR = 0xFFEEEEEE.toInt()
+private const val JPEG_QUALITY = 92
 
-/** Rounded-corner radius (px) applied to the white page rectangle. */
-private const val CORNER_RADIUS = 12f
-
+// ── TODO(1) FIX: Delete old bon images ──────────────────────────────────────
 /**
- * JPEG encoding quality (0–100).
- * 95 keeps text razor-sharp while keeping file sizes reasonable for WhatsApp.
- */
-private const val JPEG_QUALITY = 95
-
-/** Canvas background colour — a clean off-white so the white page pops. */
-private val BG_COLOR = Color.parseColor("#EBEBEB")
-
-/**
- * Renders every page of [pdfFile] to a high-quality JPEG and saves each one
- * via MediaStore to the public `Download/BonsWhatsApp/MM_dd/` folder.
+ * Removes every JPG in `Downloads/BonsWhatsApp/` whose display-name starts
+ * with [bonKeyPrefix] (the last-6 chars of the bon's keyID). This ensures
+ * that stale images from a previous generation are wiped before new ones are
+ * written — even if the article count or total changed.
  *
- * Each image is composited as follows:
+ * On API 29+ uses MediaStore bulk-delete; on older APIs scans the filesystem.
+ */
+private fun deleteOldBonImages(context: Context, bonKeyPrefix: String) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val resolver = context.contentResolver
+        val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        val deleted = resolver.delete(
+            collection,
+            // Match any JPG whose relative path is inside BonsWhatsApp/ AND whose
+            // display name starts with the bon key prefix.
+            "${MediaStore.Downloads.RELATIVE_PATH} LIKE ? AND " +
+                    "${MediaStore.Downloads.DISPLAY_NAME} LIKE ? AND " +
+                    "${MediaStore.Downloads.MIME_TYPE} = ?",
+            arrayOf(
+                "%BonsWhatsApp%",   // anywhere under BonsWhatsApp
+                "$bonKeyPrefix%",   // name starts with the bon key
+                "image/jpeg"
+            )
+        )
+        Log.d(TAG, "🗑️ Deleted $deleted old JPG(s) for bon $bonKeyPrefix (MediaStore)")
+    } else {
+        @Suppress("DEPRECATION")
+        val bonsDir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "BonsWhatsApp"
+        )
+        if (!bonsDir.exists()) return
+        var count = 0
+        // Walk every sub-folder inside BonsWhatsApp/ and delete matching files
+        bonsDir.listFiles()?.forEach { entry ->
+            when {
+                entry.isDirectory -> {
+                    entry.listFiles { f ->
+                        f.name.startsWith(bonKeyPrefix) && f.extension.equals("jpg", ignoreCase = true)
+                    }?.forEach { f -> if (f.delete()) count++ }
+                }
+                entry.isFile && entry.name.startsWith(bonKeyPrefix)
+                        && entry.extension.equals("jpg", ignoreCase = true) -> {
+                    if (entry.delete()) count++
+                }
+            }
+        }
+        Log.d(TAG, "🗑️ Deleted $count old JPG(s) for bon $bonKeyPrefix (legacy FS)")
+    }
+}
+// ────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Converts every page of [pdfFile] into a styled JPEG and saves them under
+ * `Downloads/BonsWhatsApp/[folderName]/`.
+ *
+ * Layout of the composed image (not to scale):
  * ```
- * ┌─ canvas (EBEBEB background) ──────────────────────────────────┐
- * │          ·· soft drop shadow ··                               │
- * │   ┌──────────────────────────────┐                            │
- * │   │  white mat  (PAGE_PAD_PX)    │                            │
- * │   │   ┌────────────────────────┐ │                            │
- * │   │   │  PDF content @ 3× DPI  │ │                            │
- * │   │   └────────────────────────┘ │                            │
- * │   │  white mat                   │                            │
+ * ┌───────────────────────────────────────────────────────────────┐
+ * │  light-gray background  (BG_COLOR)                            │
+ * │   ┌──────────────────────────────┐  ← soft drop shadow        │
+ * │   │  white page (rounded)        │                            │
+ * │   │   ┌──────────────────────┐   │                            │
+ * │   │   │  PDF content         │   │                            │
+ * │   │   └──────────────────────┘   │                            │
  * │   └──────────────────────────────┘                            │
  * └───────────────────────────────────────────────────────────────┘
  * ```
@@ -250,11 +282,15 @@ private val BG_COLOR = Color.parseColor("#EBEBEB")
  *
  * [pdfFile] must be a real absolute filesystem path (not a MediaStore path).
  * Returns one URI per page; null entries mean that page failed to render.
+ *
+ * @param folderName Sub-folder inside `BonsWhatsApp/` to write images into.
+ *                   Callers pass a per-bon name such as `"a1b2c3_14-35_Client_3200"`.
  */
 fun convertAllPdfPagesToJpgs(
     context: Context,
     pdfFile: File,
     baseName: String,
+    folderName: String,         // ← TODO(1) FIX: was hard-coded to MM_dd date
 ): List<Uri?> {
     if (!pdfFile.exists()) {
         Log.e(TAG, "❌ PDF not found: ${pdfFile.absolutePath}")
@@ -277,7 +313,7 @@ fun convertAllPdfPagesToJpgs(
 
                 val composed = renderPageToComposedBitmap(page)
                 val jpgName = if (pageCount == 1) "$baseName.jpg" else "${baseName}_p${i + 1}.jpg"
-                val uri = saveBonJpgToMediaStore(context, composed, jpgName)
+                val uri = saveBonJpgToMediaStore(context, composed, jpgName, folderName)
                 composed.recycle()
 
                 Log.d(
@@ -380,18 +416,21 @@ private fun renderPageToComposedBitmap(page: PdfRenderer.Page): Bitmap {
 }
 
 /**
- * Writes [bitmap] as a JPEG to `Downloads/BonsWhatsApp/MM_dd/[fileName]` via
+ * Writes [bitmap] as a JPEG to `Downloads/BonsWhatsApp/[folderName]/[fileName]` via
  * MediaStore (API 29+) or direct file I/O (API < 29).
  *
  * Any stale file with the same name is replaced atomically using IS_PENDING.
+ *
+ * @param folderName Per-bon sub-folder name (e.g. `"a1b2c3_14-35_Client_3200"`).
+ *                   Previously this was a generic `MM_dd` date string.
  */
 private fun saveBonJpgToMediaStore(
     context: Context,
     bitmap: Bitmap,
     fileName: String,
+    folderName: String,         // ← TODO(1) FIX: replaces the old MM_dd todayFolder
 ): Uri? {
-    val todayFolder = SimpleDateFormat("MM_dd", Locale.getDefault()).format(Date())
-    val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/BonsWhatsApp/$todayFolder/"
+    val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/BonsWhatsApp/$folderName/"
 
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val resolver = context.contentResolver
@@ -429,16 +468,12 @@ private fun saveBonJpgToMediaStore(
         @Suppress("DEPRECATION")
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "BonsWhatsApp/$todayFolder"
+            "BonsWhatsApp/$folderName"
         ).also { it.mkdirs() }
         return try {
             val outFile = File(dir, fileName)
             FileOutputStream(outFile).use {
-                bitmap.compress(
-                    Bitmap.CompressFormat.JPEG,
-                    JPEG_QUALITY,
-                    it
-                )
+                bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it)
             }
             FileProvider.getUriForFile(
                 context, "${context.packageName}.fileprovider", outFile

@@ -55,6 +55,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -71,36 +73,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
-/**
- * Builds the pre-filled WhatsApp caption.
- * Format: "Totale = 12 500,00 DA\n8 Produits\nBon 18 mai 04:00 PM"
- */
-private fun buildBonMessage(
-    vents: List<M10OperationVentCouleur>,
-    tariffs: List<M13TarificationInfos>,
-    pageCount: Int,
-): String {
-    val activeVents = vents.filter {
-        it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0
-    }
-    val total = activeVents.sumOf { vent ->
-        val price = tariffs.find { it.keyID == vent.parentM13TarificationKeyID }?.prixCurrency ?: 0.0
-        price * vent.quantity
-    }
-    val formattedTotal = NumberFormat.getNumberInstance(Locale.FRANCE).apply {
-        minimumFractionDigits = 2
-        maximumFractionDigits = 2
-    }.format(total)
-    val dateStr = SimpleDateFormat("dd MMM hh:mm a", Locale.FRANCE).format(Date())
-    val count   = activeVents.size
-    return buildString {
-        append("Totale = $formattedTotal DA\n")
-        append("$count Produit${if (count > 1) "s" else ""}\n")
-        append("Bon $dateStr\n")
-        if (pageCount > 0) append("$pageCount/$pageCount Page${if (pageCount > 1) "s" else ""}")
-    }.trimEnd('\n')
-}
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
@@ -119,6 +91,10 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
 
     val zeroOrNullPriceProducts = remember(vents) {
         vents.mapNotNull { vent ->
+            // Vents with a directly-entered client price always have a valid price — skip warning.
+            if (vent.typeTarificationEnumT2 ==
+                M13TarificationInfos.TypeChoisi.Edited_Pour_Client
+            ) return@mapNotNull null
             val tariff =
                 list_M13TarificationInfos.find { it.keyID == vent.parentM13TarificationKeyID }
             val produit = produits?.find { it.keyID == vent.parent_M1Produit_KeyId }
@@ -264,7 +240,23 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
+        modifier = modifier.semantics(mergeDescendants = true) {
+            set(value = vents, key = SemanticsPropertyKey("list_M13TarificationInfos"))
+            val keys = vents.map {
+                it.parent_M1Produit_KeyId
+            }
+            set(value = list_M13TarificationInfos.filter {
+                it.parent_M1Produit_KeyId in keys
+            }, key = SemanticsPropertyKey("it.parent_M1Produit_KeyId in keys"))
+
+            set(value = list_M13TarificationInfos.filter {
+                it.parent_M1Produit_KeyId =="-OrwQuC3NvsiLQB-d4_z"
+            }, key = SemanticsPropertyKey("list_M13TarificationInfos. -OrwQuC3NvsiLQB-d4_z"))
+
+            set(value = vents.filter {
+                it.parent_M1Produit_KeyId =="-OrwQuC3NvsiLQB-d4_z"
+            }, key = SemanticsPropertyKey("vents. -OrwQuC3NvsiLQB-d4_z"))
+        }
     ) {
         FloatingActionButton(
             modifier = Modifier.size(40.dp),
@@ -332,6 +324,37 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
             )
         }
     }
+}
+
+/**
+ * Builds the pre-filled WhatsApp caption.
+ * Format: "Totale = 12 500,00 DA\n8 Produits\nBon 18 mai 04:00 PM"
+ */
+private fun buildBonMessage(
+    vents: List<M10OperationVentCouleur>,
+    tariffs: List<M13TarificationInfos>,
+    pageCount: Int,
+): String {
+    val activeVents = vents.filter {
+        it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0
+    }
+    val total = activeVents.sumOf { vent ->
+        val price =
+            tariffs.find { it.keyID == vent.parentM13TarificationKeyID }?.prixCurrency ?: 0.0
+        price * vent.quantity
+    }
+    val formattedTotal = NumberFormat.getNumberInstance(Locale.FRANCE).apply {
+        minimumFractionDigits = 2
+        maximumFractionDigits = 2
+    }.format(total)
+    val dateStr = SimpleDateFormat("dd MMM hh:mm a", Locale.FRANCE).format(Date())
+    val count = activeVents.size
+    return buildString {
+        append("Totale = $formattedTotal DA\n")
+        append("$count Produit${if (count > 1) "s" else ""}\n")
+        append("Bon $dateStr\n")
+        if (pageCount > 0) append("$pageCount/$pageCount Page${if (pageCount > 1) "s" else ""}")
+    }.trimEnd('\n')
 }
 
 fun createAndSaveWelcomeImage(context: Context): Uri? {
@@ -443,9 +466,11 @@ fun PhoneEntryDialog(
     LaunchedEffect(Unit) { focusRequester.requestFocus(); keyboard?.show() }
 
     Dialog(onDismissRequest = onDismiss) {
-        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)) {
+        Card(
+            shape = RoundedCornerShape(16.dp), modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)

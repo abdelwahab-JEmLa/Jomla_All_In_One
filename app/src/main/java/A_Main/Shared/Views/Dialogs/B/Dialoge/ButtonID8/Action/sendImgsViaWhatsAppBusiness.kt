@@ -30,7 +30,7 @@ fun sendImgsViaWhatsAppBusiness(
     phoneNumber: String,
     imageUris: List<Uri>,
     clientName: String,
-    message: String = "",          // ← NEW: bon caption (total, count, date)
+    message: String = "",
     onResult: () -> Unit
 ) {
     try {
@@ -39,7 +39,6 @@ fun sendImgsViaWhatsAppBusiness(
                 .show(); onResult(); return
         }
 
-        // ── Copy message to clipboard so the user can paste it in WhatsApp ──
         if (message.isNotEmpty()) {
             clipboard_copie(context,message)
         }
