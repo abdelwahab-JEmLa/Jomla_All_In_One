@@ -157,6 +157,11 @@ fun But7_Cree_Images_Bons(
                             A_PrintReceiptHandler_ProMai=printInPdf_itextpdf_Handler,
                             context = context,
                             onPdfSaved = { savedPath ->
+                                // Optimistic local update — turns the button green immediately,
+                                // without waiting for on_vent_bon to recompose from the DB.
+                                localSavedPath = savedPath
+                                localSavedCount = activeCount
+                                localSavedTotal = activeTotal
                                 onPdfSaved?.invoke(savedPath, activeCount)
                             },
                             on_update_m8_bon= on_update_m8_bon

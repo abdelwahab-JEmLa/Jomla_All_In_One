@@ -47,12 +47,38 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
     on_vent_client: M2Client? = datas.on_vent_m2client,
     on_vent_bon: M8BonVent? = datas.on_vent_bon,
     A_PrintReceiptHandler_ProMai: A_PrintReceiptHandler_ProMai,
-    ) {
+) {
 
     when {
-        on_vent_client == null -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun client actif trouvé", Toast.LENGTH_SHORT).show() }; return }
-        on_vent_bon == null -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun bon de vente actif",  Toast.LENGTH_SHORT).show() }; return }
-        relative_List_M13Vent.isEmpty() -> { withContext(Dispatchers.Main) { Toast.makeText(context, "Aucun article à traiter",   Toast.LENGTH_SHORT).show() }; return }
+        on_vent_client == null -> {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "Aucun client actif trouvé",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }; return
+        }
+
+        on_vent_bon == null -> {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "Aucun bon de vente actif",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }; return
+        }
+
+        relative_List_M13Vent.isEmpty() -> {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "Aucun article à traiter",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }; return
+        }
     }
 
     try {
@@ -75,11 +101,18 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
             )
         }
 
-        val pdfFilePath = rawResult?.getOrNull()?.substringAfter("PDF saved: ")?.substringBefore("\n")
-        val tempFile    = pdfFilePath?.let { File(it) }
+        val pdfFilePath =
+            rawResult?.getOrNull()?.substringAfter("PDF saved: ")?.substringBefore("\n")
+        val tempFile = pdfFilePath?.let { File(it) }
 
         if (tempFile == null || !tempFile.exists() || tempFile.length() == 0L) {
-            withContext(Dispatchers.Main) { Toast.makeText(context, "❌ Génération échouée", Toast.LENGTH_LONG).show() }
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "❌ Génération échouée",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
             return
         }
 
@@ -96,24 +129,33 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
                     context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
                     "BonsWhatsApp/$fileName"
                 ).absolutePath
-                val pathToStore = if (File(finalAbsPath).exists() && File(finalAbsPath).length() > 0L)
-                    finalAbsPath else savedRelativePath
+                val pathToStore =
+                    if (File(finalAbsPath).exists() && File(finalAbsPath).length() > 0L)
+                        finalAbsPath else savedRelativePath
+
+                // Always persist the updated bon so isPdfUpToDate can turn green,
+                // regardless of whether the caller also wants the path via onPdfSaved.
+                val activeTotal = relative_List_M13Vent.sumOf { vent ->
+                    (list_M13TarificationInfos.find { it.keyID == vent.parentM13TarificationKeyID }
+                        ?.prixCurrency ?: 0.0) * vent.quantity
+                }
+                on_update_m8_bon(
+                    on_vent_bon.copy(
+                        path_pdf_bon_file = pathToStore,
+                        nombre_produits_don_dernier_pdf_stoked = relative_List_M13Vent.size,
+                        last_sort_pdf_locale_totale_a_paye = activeTotal
+                    )
+                )
 
                 onPdfSaved?.invoke(pathToStore)
-
-                if (onPdfSaved == null) {
-                    on_update_m8_bon(
-                        on_vent_bon.copy(
-                            path_pdf_bon_file                      = pathToStore,
-                            nombre_produits_don_dernier_pdf_stoked = relative_List_M13Vent.size
-                        )
-                    )
-                }
 
                 // Convert all PDF pages to styled JPGs via BonJpgConverter.
                 // tempFile is still alive here — Result lambdas are synchronous.
                 val savedJpgs = convertAllPdfPagesToJpgs(context, tempFile, baseName)
-                Log.i(TAG, "🖼️ ${savedJpgs.count { it != null }}/${savedJpgs.size} JPG(s) saved to Download/BonsWhatsApp")
+                Log.i(
+                    TAG,
+                    "🖼️ ${savedJpgs.count { it != null }}/${savedJpgs.size} JPG(s) saved to Download/BonsWhatsApp"
+                )
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -133,14 +175,25 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
         tempFile.delete()
 
     } catch (e: TimeoutCancellationException) {
-        withContext(Dispatchers.Main) { Toast.makeText(context, "❌ Timeout (>30s)", Toast.LENGTH_LONG).show() }
+        withContext(Dispatchers.Main) {
+            Toast.makeText(
+                context,
+                "❌ Timeout (>30s)",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     } catch (e: Exception) {
-        withContext(Dispatchers.Main) { Toast.makeText(context, "❌ Erreur: ${e.message}", Toast.LENGTH_LONG).show() }
+        withContext(Dispatchers.Main) {
+            Toast.makeText(
+                context,
+                "❌ Erreur: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     } finally {
         delay(500)
     }
 }
-
 
 
 private const val RENDER_SCALE = 3
@@ -209,10 +262,10 @@ fun convertAllPdfPagesToJpgs(
     }
 
     var fd: ParcelFileDescriptor? = null
-    var renderer: PdfRenderer?    = null
+    var renderer: PdfRenderer? = null
 
     return try {
-        fd       = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
+        fd = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
         renderer = PdfRenderer(fd)
         val pageCount = renderer.pageCount
         Log.d(TAG, "📄 $pageCount page(s) → converting at ${RENDER_SCALE}× DPI")
@@ -223,11 +276,14 @@ fun convertAllPdfPagesToJpgs(
                 page = renderer.openPage(i)
 
                 val composed = renderPageToComposedBitmap(page)
-                val jpgName  = if (pageCount == 1) "$baseName.jpg" else "${baseName}_p${i + 1}.jpg"
-                val uri      = saveBonJpgToMediaStore(context, composed, jpgName)
+                val jpgName = if (pageCount == 1) "$baseName.jpg" else "${baseName}_p${i + 1}.jpg"
+                val uri = saveBonJpgToMediaStore(context, composed, jpgName)
                 composed.recycle()
 
-                Log.d(TAG, if (uri != null) "✅ p${i + 1}/$pageCount → $jpgName" else "❌ p${i + 1}/$pageCount failed")
+                Log.d(
+                    TAG,
+                    if (uri != null) "✅ p${i + 1}/$pageCount → $jpgName" else "❌ p${i + 1}/$pageCount failed"
+                )
                 uri
             } catch (e: Exception) {
                 Log.e(TAG, "❌ Render page ${i + 1}: ${e.message}", e)
@@ -256,7 +312,7 @@ fun convertAllPdfPagesToJpgs(
  *  2. Composite that bitmap onto the styled frame.
  */
 private fun renderPageToComposedBitmap(page: PdfRenderer.Page): Bitmap {
-    val pageW = page.width  * RENDER_SCALE
+    val pageW = page.width * RENDER_SCALE
     val pageH = page.height * RENDER_SCALE
 
     // ── Pass 1: raw PDF content ───────────────────────────────────────────────
@@ -276,9 +332,9 @@ private fun renderPageToComposedBitmap(page: PdfRenderer.Page): Bitmap {
     // Soft drop shadow — multiple semi-transparent layers at staggered offsets
     val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
     repeat(SHADOW_LAYERS) { layer ->
-        val fraction  = (layer + 1).toFloat() / SHADOW_LAYERS   // 0.17 … 1.0
-        val offset    = SHADOW_OFFSET_MAX * fraction
-        val alpha     = (55 * (1f - fraction * 0.6f)).toInt().coerceIn(8, 55)
+        val fraction = (layer + 1).toFloat() / SHADOW_LAYERS   // 0.17 … 1.0
+        val offset = SHADOW_OFFSET_MAX * fraction
+        val alpha = (55 * (1f - fraction * 0.6f)).toInt().coerceIn(8, 55)
         shadowPaint.color = Color.argb(alpha, 30, 30, 30)
         canvas.drawRoundRect(
             RectF(
@@ -313,8 +369,8 @@ private fun renderPageToComposedBitmap(page: PdfRenderer.Page): Bitmap {
 
     // Hair-line border — separates white page from the gray canvas on low-contrast displays
     val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color       = Color.argb(40, 0, 0, 0)
-        style       = Paint.Style.STROKE
+        color = Color.argb(40, 0, 0, 0)
+        style = Paint.Style.STROKE
         strokeWidth = 1.5f
     }
     canvas.drawRoundRect(pageRect, CORNER_RADIUS, CORNER_RADIUS, borderPaint)
@@ -334,11 +390,11 @@ private fun saveBonJpgToMediaStore(
     bitmap: Bitmap,
     fileName: String,
 ): Uri? {
-    val todayFolder  = SimpleDateFormat("MM_dd", Locale.getDefault()).format(Date())
+    val todayFolder = SimpleDateFormat("MM_dd", Locale.getDefault()).format(Date())
     val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/BonsWhatsApp/$todayFolder/"
 
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val resolver   = context.contentResolver
+        val resolver = context.contentResolver
         val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
 
         // Remove stale entry so the new file always lands fresh
@@ -349,16 +405,17 @@ private fun saveBonJpgToMediaStore(
         )
 
         val values = ContentValues().apply {
-            put(MediaStore.Downloads.DISPLAY_NAME,  fileName)
-            put(MediaStore.Downloads.MIME_TYPE,     "image/jpeg")
+            put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+            put(MediaStore.Downloads.MIME_TYPE, "image/jpeg")
             put(MediaStore.Downloads.RELATIVE_PATH, relativePath)
-            put(MediaStore.Downloads.IS_PENDING,    1)
+            put(MediaStore.Downloads.IS_PENDING, 1)
         }
         val uri = resolver.insert(collection, values) ?: run {
             Log.e(TAG, "❌ MediaStore insert failed: $fileName"); return null
         }
         try {
-            resolver.openOutputStream(uri)?.use { bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it) }
+            resolver.openOutputStream(uri)
+                ?.use { bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it) }
             values.clear()
             values.put(MediaStore.Downloads.IS_PENDING, 0)
             resolver.update(uri, values, null, null)
@@ -376,7 +433,13 @@ private fun saveBonJpgToMediaStore(
         ).also { it.mkdirs() }
         return try {
             val outFile = File(dir, fileName)
-            FileOutputStream(outFile).use { bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it) }
+            FileOutputStream(outFile).use {
+                bitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    JPEG_QUALITY,
+                    it
+                )
+            }
             FileProvider.getUriForFile(
                 context, "${context.packageName}.fileprovider", outFile
             )

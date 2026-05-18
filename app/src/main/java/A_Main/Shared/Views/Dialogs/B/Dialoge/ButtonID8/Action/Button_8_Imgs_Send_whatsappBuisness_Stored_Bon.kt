@@ -66,7 +66,41 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+
+/**
+ * Builds the pre-filled WhatsApp caption.
+ * Format: "Totale = 12 500,00 DA\n8 Produits\nBon 18 mai 04:00 PM"
+ */
+private fun buildBonMessage(
+    vents: List<M10OperationVentCouleur>,
+    tariffs: List<M13TarificationInfos>,
+    pageCount: Int,
+): String {
+    val activeVents = vents.filter {
+        it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0
+    }
+    val total = activeVents.sumOf { vent ->
+        val price = tariffs.find { it.keyID == vent.parentM13TarificationKeyID }?.prixCurrency ?: 0.0
+        price * vent.quantity
+    }
+    val formattedTotal = NumberFormat.getNumberInstance(Locale.FRANCE).apply {
+        minimumFractionDigits = 2
+        maximumFractionDigits = 2
+    }.format(total)
+    val dateStr = SimpleDateFormat("dd MMM hh:mm a", Locale.FRANCE).format(Date())
+    val count   = activeVents.size
+    return buildString {
+        append("Totale = $formattedTotal DA\n")
+        append("$count Produit${if (count > 1) "s" else ""}\n")
+        append("Bon $dateStr\n")
+        if (pageCount > 0) append("$pageCount/$pageCount Page${if (pageCount > 1) "s" else ""}")
+    }.trimEnd('\n')
+}
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
@@ -114,6 +148,12 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
     }
 
     val imagesExist = jpgUris.isNotEmpty()
+
+    // Pre-built bon caption: copied to clipboard + sent as WhatsApp EXTRA_TEXT
+    val bonMessage = remember(vents, list_M13TarificationInfos, jpgUris.size) {
+        buildBonMessage(vents, list_M13TarificationInfos, jpgUris.size)
+    }
+
     var showPhoneDialog by remember { mutableStateOf(false) }
     var isSending by remember { mutableStateOf(false) }
 
@@ -171,7 +211,8 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
                                             context,
                                             phone,
                                             jpgUris,
-                                            client?.nom ?: ""
+                                            client?.nom ?: "",
+                                            bonMessage,
                                         ) { isSending = false }
                                     }
                                 }
@@ -205,7 +246,8 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
                         context,
                         enteredPhone,
                         jpgUris,
-                        client?.nom ?: ""
+                        client?.nom ?: "",
+                        bonMessage,
                     ) { isSending = false }
                 }
             }
@@ -250,7 +292,8 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
                             context,
                             phone,
                             jpgUris,
-                            client?.nom ?: ""
+                            client?.nom ?: "",
+                            bonMessage,
                         ) { isSending = false }
                     }
                 }
@@ -331,7 +374,7 @@ fun createAndSaveWelcomeImage(context: Context): Uri? {
     }
 }
 
- fun buildWelcomeBitmap(): Bitmap {
+fun buildWelcomeBitmap(): Bitmap {
     val W = 900;
     val H = 400
     val bmp = createBitmap(W, H)
@@ -378,7 +421,7 @@ fun createAndSaveWelcomeImage(context: Context): Uri? {
     return bmp
 }
 
- fun formatPhoneForWhatsApp(raw: String): String {
+fun formatPhoneForWhatsApp(raw: String): String {
     var cleaned = raw.replace(Regex("[^0-9]"), "")
     if (!cleaned.startsWith("213")) {
         if (cleaned.startsWith("0")) cleaned = cleaned.drop(1); cleaned = "213$cleaned"
@@ -387,7 +430,7 @@ fun createAndSaveWelcomeImage(context: Context): Uri? {
 }
 
 @Composable
- fun PhoneEntryDialog(
+fun PhoneEntryDialog(
     clientName: String,
     onDismiss: () -> Unit,
     onPhoneConfirmed: (String) -> Unit
