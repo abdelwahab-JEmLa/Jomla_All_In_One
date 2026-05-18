@@ -144,15 +144,9 @@ fun Main_LazyColumnList_App4(
         modifier = modifier
             .semantics(mergeDescendants = true) {
                 set(value = ventCouleurs.firstOrNull()?.toString() ?: "[]", key = SemanticsPropertyKey("ventCouleurs.first().toString()"))      //<--
-                //TODO(2.C Relative Au Todo(1):
-                //... et ventCouleurs_semantic_debug	M10OperationVentCouleur(keyID=-Osm-VRnahLiWy6q2KHk, creationTimestamps=1778955453109, dernierTimeTampsSynchronisationAvecFireBase=1778955453109, its_created_in_working_for_wholesaler=true, commetaire=, prix_de_Vent_entre_directement_NewProto=530.0, its_Linked_To_Autre_Vent_Si_NonDispo=false, linked_To_M10OperationVent_KeyID=, linked_To_M10OperationVent_DebugInfos=, siNonDispoParentM10Vent_it_parent_M3CouleurInfos_KeyId=, siNonDispoParentM10Vent_it_parent_M1Produit_Nom=, parent_M9AppCompt_KeyID=null, parent_M9AppCompt_DebugInfos=null, parent_M14VentPeriod_KeyId=null, parent_M14VentPeriod_DebugInfos=null, parentEPeriodVentStartDate=0, parent_M8BonVent_KeyId=-OslwWCTmrnXSGSAwoPG, parent_M8BonVent_DebugInfos=Bon[p.cli->(M2=test[ROP])) [woPG]), parent_M1Produit_KeyId=-OohnpOhLiEcL6ezu3E0, parent_M1Produit_DebugInfos=par.produit Flach Racha, parent_M1Produit_Nom=, parentProduitInfosOldId=0, parent_M3CouleurProduit_KeyID=-OohnpOhLiEcL6ezu3E-, parent_M3CouleurProduit_DebugInfos=03Coul[{U3E-}
-                // To [{ACHA}
-                //]], parentM13TarificationKeyID=-Osb_07F7nHJSqa0s2qJ, parentM13TarificationDebugInfos=Flach Racha[U3E0] Edited_Pour_Client, etateActuellementEst=CreeSlote, provisoireMonPrix=0.0, etateDelivery=Trouve, lence_pour_check=false, premier_Check_Donne=false, last_update_premier_Check_Donne_TimeTamps=0, non_places_au_depot=false, pas_Dispo_Pour_Aujourduit=false, typeTarificationEnumT2=Edited_Pour_Client, parentClientInfosKeyID=, parentClientName=, type=CommandeDeLui, achatParentBsonIDOld=, quantite_Boit_Par_Carton=1, quantity=1, setIN_Vent_Its_Quantity_Represent=quantity_Par_Boit, affiche_Unite_Au_Printing=true, parent_M2Client_KeyID=-OpS1KwWBzDVzNDuvROP)
 
 
                 set(value = finale_filtred_list, key = SemanticsPropertyKey("finale_filtred_list"))       //<--
-                //TODO(2.C Relative Au Todo(1):
-                //...  ici size == 0 log.d au filter normalemnt car ilya une vent et mode panie ca affiche les couleur avec vent
             }
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),

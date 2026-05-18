@@ -23,6 +23,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
+import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Outbox
 import androidx.compose.material.icons.filled.Sync
@@ -54,14 +57,15 @@ fun A_Compact_Header_App4(
     section_ToggleButton_TagPreiorities__start_Collapsed: Boolean,
     onUpdateTariff: () -> Unit,
     onUpdateProduit: (M01Produit) -> Unit,
-    affiche_ProduitDataBaseEdites_ComposableViews: Boolean,      //<--
-    //TODO(1): fait que si 
+    affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
     shouldShowButtons: Boolean = affiche_ProduitDataBaseEdites_ComposableViews,
     onDelete: (M01Produit) -> Unit,
     catalogueName: String? = null,
     categoryName: String? = null,
     onCategoryClick: (() -> Unit)? = null,
     prix_achat: Double?,
+    // TODO(2) FIX: callback to mark premier_Check_Donne = true on all vent operations of this product
+    onSetPremierCheckDonneForAllVents: (() -> Unit)? = null,
 ) {
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
     val arabicTextSize = if (isExpanded) 12.sp else 9.sp
@@ -70,6 +74,7 @@ fun A_Compact_Header_App4(
     val iconSize = if (isExpanded) 14.dp else 10.dp
     val cardPadding = if (isExpanded) 6.dp else 3.dp
     val itemPadding = if (isExpanded) 4.dp else 2.dp
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -152,12 +157,8 @@ fun A_Compact_Header_App4(
                     )
                 }
 
-                // FIXED: Update tariff context button as InfoCard - shown first if available
+                // Sync tariff button
                 if (shouldShowButtons && affiche_ProduitDataBaseEdites_ComposableViews) {
-                    //<--
-//TODO(1): de affiche au row n switcher qui au click update produit its_Carton
-                    //<--
-                    //TODO(1): ajout un autre qui update  premier_Check_Donne
                     ClickableInfoCard(
                         icon = {
                             Icon(
@@ -174,9 +175,60 @@ fun A_Compact_Header_App4(
                         itemPadding = itemPadding,
                         onClick = onUpdateTariff
                     )
+
+                    // TODO(1) FIX: its_Carton toggle — switches whether the product is sold by carton
+                    ClickableInfoCard(
+                        icon = {
+                            Icon(
+                                imageVector = if (relative_M1produit.its_Carton)
+                                    Icons.Default.CheckBox
+                                else
+                                    Icons.Default.CheckBoxOutlineBlank,
+                                contentDescription = "Toggle Carton",
+                                tint = if (relative_M1produit.its_Carton)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                                modifier = Modifier.size(iconSize)
+                            )
+                        },
+                        value = if (relative_M1produit.its_Carton) "✓" else "○",
+                        label = "Carton",
+                        labelTextSize = labelTextSize,
+                        valueTextSize = valueTextSize,
+                        itemPadding = itemPadding,
+                        onClick = {
+                            onUpdateProduit(
+                                relative_M1produit.copy(
+                                    its_Carton = !relative_M1produit.its_Carton,
+                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                )
+                            )
+                        }
+                    )
+
+                    // TODO(2) FIX: mark premier_Check_Donne = true on all vent operations of this product
+                    onSetPremierCheckDonneForAllVents?.let { callback ->
+                        ClickableInfoCard(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.DoneAll,
+                                    contentDescription = "Marquer premier check",
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(iconSize)
+                                )
+                            },
+                            value = "✔✔",
+                            label = "Check",
+                            labelTextSize = labelTextSize,
+                            valueTextSize = valueTextSize,
+                            itemPadding = itemPadding,
+                            onClick = callback
+                        )
+                    }
                 }
 
-                // Number of units card - admin: InfoCard pill that opens FastInit on click
+                // Number of units card
                 if (relative_M1produit.nombreUniteInt > 1 || affiche_ProduitDataBaseEdites_ComposableViews) {
                     if (affiche_ProduitDataBaseEdites_ComposableViews) {
                         EditableInfoCard(
@@ -197,10 +249,7 @@ fun A_Compact_Header_App4(
                             isExpanded = isExpanded,
                             onUpdate = { new ->
                                 onUpdateProduit(
-                                    relative_M1produit
-                                        .copy(
-                                            nombreUniteInt = new
-                                        )
+                                    relative_M1produit.copy(nombreUniteInt = new)
                                 )
                             }
                         )
@@ -223,7 +272,7 @@ fun A_Compact_Header_App4(
                     }
                 }
 
-                // Carton quantity card - admin: InfoCard pill that opens FastInit on click
+                // Carton quantity card
                 if (relative_M1produit.quantite_Boit_Par_Carton > 1 || affiche_ProduitDataBaseEdites_ComposableViews) {
                     if (affiche_ProduitDataBaseEdites_ComposableViews) {
                         EditableInfoCard(
@@ -244,10 +293,7 @@ fun A_Compact_Header_App4(
                             isExpanded = isExpanded,
                             onUpdate = { new ->
                                 onUpdateProduit(
-                                    relative_M1produit
-                                        .copy(
-                                            quantite_Boit_Par_Carton = new
-                                        )
+                                    relative_M1produit.copy(quantite_Boit_Par_Carton = new)
                                 )
                             }
                         )

@@ -12,6 +12,9 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -20,6 +23,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -54,7 +59,7 @@ fun A_Item_Produit_App4(
             )
         }
 
-    val isEchatillantsMode = centralValues.filterAffichageMode_Proto== Filter_Affichage_Mode_Proto.Echants_Seulement
+    val isEchatillantsMode = centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Echants_Seulement
 
     val relative_ListM3Couleurs = remember(allColorsForProduit, isEchatillantsMode) {
         if (isEchatillantsMode) allColorsForProduit.filter { it.its_in_echantiallants }
@@ -182,17 +187,37 @@ fun A_Item_Produit_App4(
         }
     }
 
+    // TODO(1) FIX: yellow background when any vent operation for this product has premier_Check_Donne = true
+    val hasPremierCheckDonne by remember(
+        viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+        relative_M1produit.keyID
+    ) {
+        derivedStateOf {
+            viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                .any {
+                    it.parent_M1Produit_KeyId == relative_M1produit.keyID &&
+                            it.premier_Check_Donne
+                }
+        }
+    }
+
+    val itemBackgroundColor by animateColorAsState(
+        targetValue = if (hasPremierCheckDonne) Color(0xFFFFFF00).copy(alpha = 0.35f)
+        else Color.Transparent,
+        animationSpec = tween(durationMillis = 400),
+        label = "itemPremierCheckBackground"
+    )
+
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
 
     val isAdmin = centralValues.currentApp_Est_Admin
             && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true
     val categoryClickForHeader: (() -> Unit)? = if (isAdmin) onCategoryClick else null
 
-
-
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .background(itemBackgroundColor, RoundedCornerShape(8.dp))
             .padding(cardPadding)
     ) {
         A_Compact_Header_App4(
@@ -210,12 +235,26 @@ fun A_Item_Produit_App4(
             onDelete = { viewModel.delete_m1Produit(it) },
             modifier = modifier,
             onCategoryClick = categoryClickForHeader,
-            section_ToggleButton_TagPreiorities__start_Collapsed = viewModel.active_Datas.section_ToggleButton_TagPrioriter__start_Collapsed == true
+            section_ToggleButton_TagPreiorities__start_Collapsed = viewModel.active_Datas.section_ToggleButton_TagPrioriter__start_Collapsed == true,
+            onSetPremierCheckDonneForAllVents = {
+                val currentList = viewModel.active_Datas
+                    .listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                val now = System.currentTimeMillis()
+                val updated = currentList.map { op ->
+                    if (op.parent_M1Produit_KeyId == relative_M1produit.keyID)
+                        op.copy(
+                            premier_Check_Donne = true,
+                            dernierTimeTampsSynchronisationAvecFireBase = now
+                        )
+                    else op
+                }
+                viewModel.update_listM10OperationVentCouleur(updated)
+            }
         )
 
         Big_Principale_FragID3(
-            on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
-            uiState_NewProtoPatterns_viewModel=uiState_NewProtoPatterns_viewModel,
+            on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
+            uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
             relative_M1produit = relative_M1produit,
             selectedCouleur = selectedCouleur,
             selectedTariff = selectedTariff,

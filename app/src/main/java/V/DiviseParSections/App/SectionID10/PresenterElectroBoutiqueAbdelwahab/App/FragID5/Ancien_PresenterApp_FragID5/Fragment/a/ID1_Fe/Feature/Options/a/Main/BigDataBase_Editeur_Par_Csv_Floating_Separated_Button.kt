@@ -181,6 +181,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                             color      = Color.White,
                             modifier   = Modifier
                                 .clip(RoundedCornerShape(6.dp))
+
                                 .background(Color(0xFF6A1B9A).copy(alpha = 0.92f))
                                 .padding(horizontal = 10.dp, vertical = 5.dp),
                         )
@@ -188,7 +189,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                             FloatingActionButton(       //<--
                             //TODO(1): ajout une autres section Update_Compt //<--
                             //TODO(1): cotien un switcher qui update affiche_ProduitDataBaseEdites_ComposableViews du current app par on_update_M9(
-                                // 
+                                //
                                 // )
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)

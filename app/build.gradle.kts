@@ -29,9 +29,9 @@ android {
         // JomLaElectroLivreurGrossist_VendeurHost
         // JomLaElectroLivreurGrossist_PresenterScreen
 
-        // Botique_JeMla_All_In_On_Project
+        // Boutique_JeMla_All_In_On_Project
 
-        versionName = "1.13.8.05_18.07:12.Boutique_JeMla_All_In_On_Project"
+        versionName = "1.13.8.05_18.09:41.Boutique_JeMla_All_In_On_Project"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
