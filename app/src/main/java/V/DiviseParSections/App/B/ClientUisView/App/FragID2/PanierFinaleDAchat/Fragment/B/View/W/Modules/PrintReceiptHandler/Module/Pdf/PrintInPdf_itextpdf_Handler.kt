@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf
 
-import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Datas
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
@@ -16,13 +15,10 @@ import android.content.Context
  *
  * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
  */
-class PrintInPdf_itextpdf_Handler_Mai(
-    val repositorysMainGetter: RepositorysMainGetter,   //<--
-    //TODO(1): enleve et utilise
+class PrintInPdf_itextpdf_Handler(
+    val repositorysMainGetter: RepositorysMainGetter,
     val uploadHandler: UploadHandler,
-    focusedValuesGetter: FocusedValuesGetter,//<--
-    //TODO(1): enleve et utilise datas
-    datas: Datas
+    focusedValuesGetter: FocusedValuesGetter
 ) {
 
     // Initialize utility classes

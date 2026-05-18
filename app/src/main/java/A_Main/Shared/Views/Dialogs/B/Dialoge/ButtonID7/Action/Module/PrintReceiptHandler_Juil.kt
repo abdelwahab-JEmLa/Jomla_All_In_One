@@ -16,11 +16,11 @@ import java.io.File
 /**
  * FIXED: Added shouldOpenFile parameter to control when PDFs are opened
  */
-class PrintReceiptHandler_Juil(
+class PrintInPdf_itextpdf_Handler_Mai(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler,
 ) {
     private val bluetoothPrintHandler = BluetoothPrintHandler()
-    private val pdfPrintHandler = PdfPrintHandler(printInPdfHandler)
+    private val pdfPrintHandlerProMai = PdfPrintHandler_ProMai(printInPdfHandler)
     private val windowsShareHandler = WindowsShareHandler()
 
     /**
@@ -81,10 +81,10 @@ class PrintReceiptHandler_Juil(
         shouldOpenFile: Boolean = true
     ): Result<String> {
         return try {
-            // FIXED: The pdfPrintHandler will now automatically check demande_Versemet_si_Type_est_regle
+            // FIXED: The pdfPrintHandlerProMai will now automatically check demande_Versemet_si_Type_est_regle
             // No need to override showCreditSection here since the handler checks the bonVent property
             // FIXED: Pass shouldOpenFile to control when PDF is opened
-            pdfPrintHandler.generateAndOpenPdf(
+            pdfPrintHandlerProMai.generateAndOpenPdf(
                 context,
                 client,
                 relative_ListM10OperationVentCouleur,
@@ -135,7 +135,7 @@ class PrintReceiptHandler_Juil(
         if (generatePdf || !bluetoothSuccess) {
             scope?.launch {
                 try {
-                    pdfPrintHandler.generateCreditPdf(
+                    pdfPrintHandlerProMai.generateCreditPdf(
                         context,
                         client,
                         bonVent,
@@ -166,7 +166,7 @@ class PrintReceiptHandler_Juil(
     ) {
         scope?.launch {
             try {
-                val result = pdfPrintHandler.generateCreditPdf(
+                val result = pdfPrintHandlerProMai.generateCreditPdf(
                     context,
                     client,
                     bonVent,
@@ -191,8 +191,8 @@ class PrintReceiptHandler_Juil(
     }
 
     /**
-     * NEW: Public accessor to PdfPrintHandler for advanced use cases
+     * NEW: Public accessor to PdfPrintHandler_ProMai for advanced use cases
      * Allows direct access to openPdfFile() method for opening PDFs after custom processing
      */
-    fun getPdfPrintHandler(): PdfPrintHandler = pdfPrintHandler
+    fun getPdfPrintHandler(): PdfPrintHandler_ProMai = pdfPrintHandlerProMai
 }

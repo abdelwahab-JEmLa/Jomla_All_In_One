@@ -1,13 +1,12 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action
 
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.PrintReceiptHandler_Proto_Mai
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfSaverUtility_Proto2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler_Mai
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler_Proto_Mai
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
@@ -40,13 +39,14 @@ import java.util.Locale
 private const val TAG = "PdfBonVent"
 
 suspend fun initiateBackgroundPdfCreation_ProMai(
+    datas: Datas,
     context: Context,
-    aCentralFacade: ACentralFacade,
     onPdfSaved: ((savedPath: String) -> Unit)? = null,
-    list_M13TarificationInfos: List<M13TarificationInfos>,
-    relative_List_M13Vent: List<M10OperationVentCouleur>,
-    on_vent_client: M2Client?,
-    on_vent_bon: M8BonVent?,
+    on_update_m8_bon: (M8BonVent) -> Unit,
+    list_M13TarificationInfos: List<M13TarificationInfos> =datas.relative_list_tariff,
+    relative_List_M13Vent: List<M10OperationVentCouleur> = datas.on_vent_couleurs,
+    on_vent_client: M2Client? =datas.on_vent_m2client,
+    on_vent_bon: M8BonVent?=datas.on_vent_bon,
     printInPdf_itextpdf_Handler: PrintInPdf_itextpdf_Handler_Mai,
     ) {
 
@@ -62,18 +62,17 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
 
         val rawResult = withTimeout(30_000L) {
             PrintReceiptHandler_Proto_Mai(printInPdf_itextpdf_Handler).printPdf(
-                context                              = context,
-                repo13TarificationInfos             = list_M13TarificationInfos,
-                repoM1Produit                        = aCentralFacade.repositorysMainGetter.repo1ProduitInfos,//<--
-                //TODO(1): enleve ou il ya repo1ProduitInfos  et repo03CouleurProduitInfos et utilise datas
-                repo3CouleurProduitInfos             = aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos,
-                scope                               = CoroutineScope(currentCoroutineContext()),
+                context = context,
+                repo13TarificationInfos = list_M13TarificationInfos,
+                repoM1Produit = datas.relative_produits,
+                repo3CouleurProduitInfos = datas.relative_list_tariff,
+                scope = CoroutineScope(currentCoroutineContext()),
                 relative_ListM10OperationVentCouleur = relative_List_M13Vent,
-                relative_bonVent                    = on_vent_bon,
-                client                              = on_vent_client,
-                showCreditSection                   = false,
-                versement                           = 0.0,
-                shouldOpenFile                      = false
+                relative_bonVent = on_vent_bon,
+                client = on_vent_client,
+                showCreditSection = false,
+                versement = 0.0,
+                shouldOpenFile = false
             )
         }
 
@@ -104,7 +103,7 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
                 onPdfSaved?.invoke(pathToStore)
 
                 if (onPdfSaved == null) {
-                    aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(
+                    on_update_m8_bon(
                         on_vent_bon.copy(
                             path_pdf_bon_file                      = pathToStore,
                             nombre_produits_don_dernier_pdf_stoked = relative_List_M13Vent.size

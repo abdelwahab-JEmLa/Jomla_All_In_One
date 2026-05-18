@@ -21,7 +21,7 @@ class PdfPrintHandler(
     private val printInPdfHandler: PrintInPdf_itextpdf_Handler
 ) {
     companion object {
-        private const val TAG = "PdfPrintHandler"
+        private const val TAG = "PdfPrintHandler_ProMai"
     }
 
     /**

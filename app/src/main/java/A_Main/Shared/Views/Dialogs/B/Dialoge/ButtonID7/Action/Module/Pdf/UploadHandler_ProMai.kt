@@ -13,7 +13,7 @@ import java.io.File
  * - ParcelFileDescriptor resources are properly released
  * - No resource leaks when sharing files
  */
-class UploadHandler {
+class UploadHandler_ProMai {
 
     companion object {
         private const val TAG = "UploadHandler"

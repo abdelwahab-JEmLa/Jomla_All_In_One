@@ -1,166 +1,193 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.BluetoothPrintHandler
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.PdfPrintHandler_ProMai
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.PrintInPdf_itextpdf_Handler_Mai
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.WindowsShareHandler
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import java.io.File
 
 /**
- * Refactored PDF handler using composition pattern
- * Each component has a single responsibility
- *
- * FIXED: Now uses demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+ * FIXED: Added shouldOpenFile parameter to control when PDFs are opened
  */
-class PrintInPdf_itextpdf_Handler(
-    val repositorysMainGetter: RepositorysMainGetter,
-    val uploadHandler: UploadHandler,
-    focusedValuesGetter: FocusedValuesGetter
+class PrintReceiptHandler_Proto_Mai(
+    private val printInPdfHandler: PrintInPdf_itextpdf_Handler_Mai,
 ) {
-
-    // Initialize utility classes
-    private val formatter = PdfFormatterUtils(repositorysMainGetter)
-    private val contentBuilder = PdfContentBuilder(formatter)
-    private val tableBuilder = PdfTableBuilder(formatter, contentBuilder,focusedValuesGetter)
-    private val pdfGenerator = PdfGeneratorCore(formatter, contentBuilder, tableBuilder)
+    private val bluetoothPrintHandler = BluetoothPrintHandler()
+    private val pdfPrintHandlerProMai = PdfPrintHandler_ProMai(printInPdfHandler)
+    private val windowsShareHandler = WindowsShareHandler()
 
     /**
-     * Share a generated PDF document
+     * Print via Bluetooth only
+     * FIXED: Now checks demande_Versemet_si_Type_est_regle
      */
-    fun sharePdf(context: Context, pdfResult: PdfResult) {
-        uploadHandler.shareDocument(context, pdfResult.file)
+    fun printBluetoothOnly(
+        context: Context,
+        repoM1Produit: RepoM1Produit,
+        repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
+        client: M2Client?,
+        scope: CoroutineScope? = null,
+        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
+        repo13TarificationInfos: Repo13TarificationInfos,
+        bonVent: M8BonVent? = null,
+        showCreditSection: Boolean = true,
+        versement: Double = 0.0 ,
+        companyHeader: String = "Jomla.com"
+    ) {
+        // FIXED: Use demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
+        val shouldShowCreditSection = (showCreditSection && bonVent != null) ||
+                (bonVent?.demande_Versemet_si_Type_est_regle == true)
+
+        bluetoothPrintHandler.printBluetoothReceipt(
+            context,
+            client,
+            relative_ListM10OperationVentCouleur,
+            repo13TarificationInfos,
+            repoM1Produit,
+            bonVent,
+            shouldShowCreditSection,
+            versement,
+            companyHeader
+        )
+    }
+
+
+    suspend fun printPdf(
+        context: Context,
+        repoM1Produit: List<M01Produit>?,
+        repo3CouleurProduitInfos: List<M13TarificationInfos>,
+        client: M2Client?,
+        scope: CoroutineScope? = null,
+        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
+        repo13TarificationInfos: List<M13TarificationInfos>,
+        relative_bonVent: M8BonVent? = null,
+        showCreditSection: Boolean = true,
+        versement: Double = 0.0,
+        shouldOpenFile: Boolean = true
+    ): Result<String> {
+        return try {
+            // FIXED: The pdfPrintHandlerProMai will now automatically check demande_Versemet_si_Type_est_regle
+            // No need to override showCreditSection here since the handler checks the bonVent property
+            // FIXED: Pass shouldOpenFile to control when PDF is opened
+            pdfPrintHandlerProMai.generateAndOpenPdf(
+                context,
+                client,
+                relative_ListM10OperationVentCouleur,
+                repo13TarificationInfos,
+                repoM1Produit,
+                relative_bonVent,
+                showCreditSection,
+                versement,
+                shouldOpenFile
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
     }
 
     /**
-     * Generate a unified PDF based on parameters
+     * NEW: Direct share existing PDF file with Windows apps
      */
-    private fun generatePdfWithParams(path: String, params: PdfGenerationParams) {
-        pdfGenerator.generateUnifiedPdf(path, params)
+    fun sharePdfWithWindowsApps(context: Context, pdfFile: File) {
+        windowsShareHandler.shareWithWindowsApps(context, pdfFile)
     }
 
     /**
-     * Generate a receipt PDF for sales operations
-     *
-     * FIXED: Now checks if bonVent has demande_Versemet_si_Type_est_regle = true
-     * to determine if credit section should be shown
+     * Print credit receipt (both Bluetooth and PDF)
+     * FIXED: Added shouldOpenFile parameter
      */
-    fun generateVentReceiptPdf(
+    fun print_Credit(
         context: Context,
         client: M2Client?,
-        operations: List<M10OperationVentCouleur>,
-        tarificationRepo: List<M13TarificationInfos>,
-        produitRepo: RepoM1Produit,
-        transactionId: String = "",
-        its_GrossistApp: Boolean = true,
-        relative_bonVent: M8BonVent? = null
-    ): Result<String> {
-        if (operations.isEmpty()) {
-            return Result.failure(IllegalArgumentException("No operations to print"))
-        }
-
-        // FIXED: Check demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
-        val shouldShowCreditSection = relative_bonVent?.demande_Versemet_si_Type_est_regle == true
-
-        val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt", transactionId)
-
-        val params = if (shouldShowCreditSection && relative_bonVent != null) {
-            // Generate receipt WITH credit section
-            PdfGenerationParams(
-                type = PdfType.RECEIPT_WITH_CREDIT,
-                client = client,
-                operations = operations,
-                tarificationRepo = tarificationRepo,
-                produitRepo = produitRepo,
-                bonVent = relative_bonVent,
-                versement = relative_bonVent.versement_fait,
-                transactionId = transactionId,
-                its_GrossistApp = its_GrossistApp,
-                relative_bonVent = relative_bonVent
-            )
-        } else {
-            // Generate receipt WITHOUT credit section
-            PdfGenerationParams(
-                type = PdfType.RECEIPT_ONLY,
-                client = client,
-                operations = operations,
-                tarificationRepo = tarificationRepo,
-                produitRepo = produitRepo,
-                transactionId = transactionId,
-                its_GrossistApp = its_GrossistApp,
-                relative_bonVent = relative_bonVent,
-            )
-        }
-
-        generatePdfWithParams(file.absolutePath, params)
-
-        if (!file.exists()) {
-            return Result.failure(IllegalStateException("PDF file creation failed"))
-        }
-
-        return Result.success("PDF saved: ${file.absolutePath}")
-    }
-
-    /**
-     * Generate a receipt PDF with credit information
-     */
-    fun generateVentReceiptWithCreditPdf(
-        context: Context,
-        client: M2Client?,
-        operations: List<M10OperationVentCouleur>,
-        tarificationRepo: List<M13TarificationInfos>,
-        produitRepo: RepoM1Produit,
-        transactionId: String = "",
-        relative_bonVent: M8BonVent,
-        versement: Double,
-        its_GrossistApp: Boolean = true
-    ): Result<String> {
-        if (operations.isEmpty()) {
-            return Result.failure(IllegalArgumentException("No operations to print"))
-        }
-
-        val file = uploadHandler.createLocalFile(context, client?.nom ?: "Client", "receipt_credit", transactionId)
-        val params = PdfGenerationParams(
-            type = PdfType.RECEIPT_WITH_CREDIT,
-            client = client,
-            operations = operations,
-            tarificationRepo = tarificationRepo,
-            produitRepo = produitRepo,
-            bonVent = relative_bonVent,
-            versement = versement,
-            transactionId = transactionId,
-            its_GrossistApp = its_GrossistApp,
-            relative_bonVent = relative_bonVent
+        bonVent: M8BonVent,
+        scope: CoroutineScope? = null,
+        generatePdf: Boolean = false,
+        previousPayments: List<Double> = emptyList(),
+        showPaymentHistory: Boolean = false,
+        shouldOpenFile: Boolean = true
+    ) {
+        // Try Bluetooth printing first
+        val bluetoothSuccess = bluetoothPrintHandler.printCreditBluetoothReceipt(
+            context,
+            client,
+            bonVent,
+            previousPayments,
+            showPaymentHistory
         )
 
-        generatePdfWithParams(file.absolutePath, params)
-
-        if (!file.exists()) {
-            return Result.failure(IllegalStateException("PDF file creation failed"))
+        // Generate PDF if requested or if Bluetooth failed
+        if (generatePdf || !bluetoothSuccess) {
+            scope?.launch {
+                try {
+                    pdfPrintHandlerProMai.generateCreditPdf(
+                        context,
+                        client,
+                        bonVent,
+                        previousPayments,
+                        showPaymentHistory,
+                        shouldOpenFile
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
-
-        return Result.success("PDF saved: ${file.absolutePath}")
     }
 
     /**
-     * Generate a credit receipt PDF
+     * NEW: Credit receipt with Windows app sharing option
+     * FIXED: Added shouldOpenFile parameter
      */
-    fun generateCreditReceiptPdf(
+    fun print_CreditWithWindowsShare(
         context: Context,
-        data: CreditReceiptData
-    ): Result<String> {
-        if (data.totalAmount <= 0) {
-            return Result.failure(IllegalArgumentException("Invalid total amount"))
+        client: M2Client?,
+        bonVent: M8BonVent,
+        scope: CoroutineScope? = null,
+        shareWithWindows: Boolean = false,
+        previousPayments: List<Double> = emptyList(),
+        showPaymentHistory: Boolean = false,
+        shouldOpenFile: Boolean = true
+    ) {
+        scope?.launch {
+            try {
+                val result = pdfPrintHandlerProMai.generateCreditPdf(
+                    context,
+                    client,
+                    bonVent,
+                    previousPayments,
+                    showPaymentHistory,
+                    shouldOpenFile
+                )
+
+                if (shareWithWindows) {
+                    result.onSuccess { message ->
+                        val filePath = message.substringAfter("PDF saved: ").substringBefore("\n")
+                        val pdfFile = File(filePath)
+                        if (pdfFile.exists()) {
+                            windowsShareHandler.shareWithWindowsApps(context, pdfFile)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
-
-        val file = uploadHandler.createLocalFile(context, data.client?.nom ?: "Client", "credit", data.transactionId)
-
-        if (!file.exists()) {
-            return Result.failure(IllegalStateException("PDF file creation failed"))
-        }
-
-        return Result.success("PDF saved: ${file.absolutePath}")
     }
+
+    /**
+     * NEW: Public accessor to PdfPrintHandler_ProMai for advanced use cases
+     * Allows direct access to openPdfFile() method for opening PDFs after custom processing
+     */
+    fun getPdfPrintHandler(): PdfPrintHandler_ProMai = pdfPrintHandlerProMai
 }

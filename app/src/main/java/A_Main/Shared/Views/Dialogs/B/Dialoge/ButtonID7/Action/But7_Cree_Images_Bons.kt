@@ -1,16 +1,13 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action
 
-import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.UploadHandler_ProMai
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler_Mai
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -39,52 +36,43 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 import java.io.File
 import kotlin.math.abs
-data class Datas(     //<--
-//TODO(1): ou il ya aCentralFacade o ces chilied 
-//          comme 
-// et utili datas passed focusedValuesGetter ou repo1 ou RepositorysMainGetter
+
+data class Datas(
     val  relative_produits: List<M01Produit>?,
-    val  relative_couleurs: List<M3CouleurProduitInfos>,
+    val  relative_couleurs: List<M3CouleurProduitInfos>?,
     val relative_list_tariff: List<M13TarificationInfos>,
     val  on_vent_couleurs: List<M10OperationVentCouleur>,
     val on_vent_bon: M8BonVent?,
+    val on_vent_m2client: M2Client?,
 )
 @Composable
 fun But7_Cree_Images_Bons(
-    showLabels: Boolean = true,
     modifier: Modifier = Modifier,
+    showLabels: Boolean = true,
     onPdfSaved: ((savedPath: String, count: Int) -> Unit)? = null,
-    aCentralFacade: ACentralFacade = koinInject(),          //<--
-    //TODO(1): enlev ca
-    appDatabase: AppDatabase = koinInject(),
-    fragmentNavigationHandler: FragmentNavigationHandler_NewProto = koinInject(),      //<--
-    //TODO(2.C Relative Au Todo(1):
-            //... et ca
-    context: Context = LocalContext.current,
     relative_list_tariff: List<M13TarificationInfos>,
     on_vent_bon: M8BonVent?,
+    on_vent_m2client: M2Client?,
     on_vent_couleurs: List<M10OperationVentCouleur>,
     relative_produits: List<M01Produit>?,
     relative_couleurs: List<M3CouleurProduitInfos>?
 ) {
-    
-    val datas = Datas(      //<--
-    //TODO(1): regle 
+    val uploadHandler = remember {
+        UploadHandler_ProMai()
+    }
+
+    val datas = Datas(
+        relative_produits,relative_couleurs,relative_list_tariff,on_vent_couleurs,on_vent_bon,on_vent_m2client
     )
     val printInPdf_itextpdf_Handler = remember {
         PrintInPdf_itextpdf_Handler_Mai(
+            uploadHandler= uploadHandler,
             datas=datas,
-            uploadHandler = TODO(),
-            focusedValuesGetter = TODO(),
         )
     }
     val context = LocalContext.current
-    val focusedValuesGetter: FocusedValuesGetter =    //<--
-    //TODO(1): enleve et utilise  datas
-        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 
     val activeVents = on_vent_couleurs
         .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
@@ -173,28 +161,12 @@ fun But7_Cree_Images_Bons(
                 scope.launch {
                     try {
                         initiateBackgroundPdfCreation_ProMai(
+                            datas=datas,
                             printInPdf_itextpdf_Handler=printInPdf_itextpdf_Handler,
                             context = context,
-                            aCentralFacade = aCentralFacade,
                             onPdfSaved = { savedPath ->
-                                localSavedPath = savedPath
-                                localSavedCount = activeCount
-                                localSavedTotal = activeTotal
                                 onPdfSaved?.invoke(savedPath, activeCount)
-                                on_vent_bon?.let { bon ->
-                                    aCentralFacade.repositorysMainSetter.repo8BonVent.upsert(
-                                        bon.copy(
-                                            path_pdf_bon_file = savedPath,
-                                            nombre_produits_don_dernier_pdf_stoked = activeCount,
-                                            last_sort_pdf_locale_totale_a_paye = activeTotal
-                                        )
-                                    )
-                                }
                             },
-                            list_M13TarificationInfos = relative_list_tariff,
-                            relative_List_M13Vent = relativeListM13vent,
-                            on_vent_client = focusedValuesGetter.activeOnVentM2ClientInfos,
-                            on_vent_bon = focusedValuesGetter.activeOnVent_M8BonVent
                         )
                     } finally {
                         isGenerating = false

@@ -1,12 +1,11 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module
 
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.CreditReceiptData
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PrintInPdf_itextpdf_Handler
-import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -17,11 +16,11 @@ import java.io.File
  * FIXED: Always uses FileProvider URIs to avoid "file exposed beyond app" errors
  * FIXED: Added shouldOpenFile parameter to control when PDF is opened
  */
-class PdfPrintHandler(
-    private val printInPdfHandler: PrintInPdf_itextpdf_Handler
+class PdfPrintHandler_ProMai(
+    private val printInPdfHandler: PrintInPdf_itextpdf_Handler_Mai
 ) {
     companion object {
-        private const val TAG = "PdfPrintHandler"
+        private const val TAG = "PdfPrintHandler_ProMai"
     }
 
     /**
@@ -37,7 +36,7 @@ class PdfPrintHandler(
         client: M2Client?,
         operations: List<M10OperationVentCouleur>,
         repo13TarificationInfos: List<M13TarificationInfos>,
-        repoM1Produit: RepoM1Produit,
+        repoM1Produit: List<M01Produit>?,
         relative_bonVent: M8BonVent? = null,
         showCreditSection: Boolean = false,
         versement: Double = 0.0,
@@ -55,7 +54,7 @@ class PdfPrintHandler(
                     (relative_bonVent?.demande_Versemet_si_Type_est_regle == true)
 
             val result = if (shouldShowCredit && relative_bonVent != null) {
-                printInPdfHandler.generateVentReceiptWithCreditPdf(
+                printInPdfHandler.printPdfOnly(
                     context,
                     client,
                     operations,

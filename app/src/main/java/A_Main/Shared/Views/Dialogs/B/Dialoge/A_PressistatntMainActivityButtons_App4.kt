@@ -178,15 +178,15 @@ fun PressistatntMainActivityButtons_App4(
            val on_vent_bon = activeDatas.activeOnVent_M8BonVent
         Column {
             But7_Cree_Images_Bons(
-                relative_produits=activeDatas.list_M1Produit,
-                relative_couleurs=activeDatas.list_M03CouleurProduitInfos,
-                relative_list_tariff = listM13tarificationinfos,
                 onPdfSaved = { path, count ->
                     sharedPdfPath = path
                     sharedPdfCount = count
                 },
+                relative_list_tariff = listM13tarificationinfos,
                 on_vent_bon = on_vent_bon,
-                on_vent_couleurs = on_vent_couleurs
+                on_vent_couleurs = on_vent_couleurs,
+                relative_produits=activeDatas.list_M1Produit,
+                relative_couleurs=activeDatas.list_M03CouleurProduitInfos
             )
             Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                 overridePath = sharedPdfPath,
