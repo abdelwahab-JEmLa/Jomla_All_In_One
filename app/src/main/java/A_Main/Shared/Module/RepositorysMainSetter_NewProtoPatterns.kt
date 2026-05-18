@@ -8,6 +8,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.Ref_list_Filtred_Keys_M3
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
 import android.widget.Toast
@@ -150,6 +151,44 @@ class RepositorysMainSetter_NewProtoPatterns(
             val updates = mutableMapOf<String, Any>(data.keyID to data.to_Map())
             M3CouleurProduitInfos.Companion.ref.updateChildren(updates).await()
             withContext(Dispatchers.Main) { onSuccess() }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // M8BonVent
+    // -------------------------------------------------------------------------
+
+    fun update_M8BonVent(
+        data: M8BonVent,
+        onSuccess: () -> Unit = {}
+    ) {
+        if (data.keyID.isBlank()) {
+            composScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Erreur : données non disponibles, mise à jour annulée",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            return
+        }
+        composScope.launch {
+            try {
+                appDatabase.dao_M8BonVent().update(data)
+                val updates = mutableMapOf<String, Any>(data.keyID to data.to_Map())
+                M8BonVent.Companion.ref.updateChildren(updates).await()
+                withContext(Dispatchers.Main) { onSuccess() }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Erreur lors de la mise à jour : ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 

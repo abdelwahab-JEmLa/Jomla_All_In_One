@@ -184,9 +184,13 @@ fun PressistatntMainActivityButtons_App4(
                 },
                 relative_list_tariff = listM13tarificationinfos,
                 on_vent_bon = on_vent_bon,
+                on_vent_m2client = activeDatas.activeOnVent_M2Client,
                 on_vent_couleurs = on_vent_couleurs,
                 relative_produits=activeDatas.list_M1Produit,
-                relative_couleurs=activeDatas.list_M03CouleurProduitInfos
+                relative_couleurs=activeDatas.list_M03CouleurProduitInfos,
+                on_update_m8_bon = {
+                    viewModelNewProtoPatterns.update_m8(it)
+                }
             )
             Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
                 overridePath = sharedPdfPath,

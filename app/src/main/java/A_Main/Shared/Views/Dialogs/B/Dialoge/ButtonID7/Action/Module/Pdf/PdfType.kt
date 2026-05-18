@@ -5,7 +5,6 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.CreditReceiptData
 import java.io.File
 
 enum class PdfType {
@@ -41,7 +40,7 @@ data class PdfGenerationParams_Mai(
     val versement: Double = 0.0,
     val transactionId: String = "",
     val its_GrossistApp: Boolean = true,
-    val creditData: CreditReceiptData? = null,
+    val creditData: CreditReceiptData_Mai? = null,
     val relative_bonVent: M8BonVent?
 )
 

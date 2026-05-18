@@ -1,6 +1,5 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfGenerationParams
 import com.itextpdf.io.font.constants.StandardFonts
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
@@ -185,7 +184,7 @@ class PdfGeneratorCore_Mai(
 
     private fun addCreditDisplayForReceiptOnly(
         doc: Document,
-        params: PdfGenerationParams,
+        params: PdfGenerationParams_Mai,
         regularFont: com.itextpdf.kernel.font.PdfFont
     ) {
         // Only show existing credit if negative (client owes money)

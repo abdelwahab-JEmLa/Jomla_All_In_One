@@ -1,6 +1,5 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.PdfFileNamingUtils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -27,7 +26,7 @@ class UploadHandler_Mai {
         val dir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "bonVents_pdf")
         if (!dir.exists()) dir.mkdirs()
 
-        val fileName = PdfFileNamingUtils.generateInternalPdfFileName(clientName, type, id)
+        val fileName = PdfFileNamingUtils_Mai.generateInternalPdfFileName(clientName, type, id)
 
         return File(dir, fileName)
     }

@@ -9,6 +9,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import android.util.Log
 import kotlinx.coroutines.flow.update
 
@@ -64,6 +65,14 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
             data = updated,
             onSuccess = onSuccess
         )
+    }
+
+    // M08 ─────────────────────────────────────────────────────────────────
+
+    fun update_m8(new: M8BonVent) {
+        vm.active_Datas.list_M8BonVent =
+            vm.active_Datas.list_M8BonVent?.map { if (it.keyID == new.keyID) new else it }
+        vm.repositorysMainSetter_NewProtoPatterns.update_M8BonVent(new)
     }
 
     // M09 ─────────────────────────────────────────────────────────────────

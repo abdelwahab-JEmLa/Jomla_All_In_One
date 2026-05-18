@@ -1,6 +1,7 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module
 
 import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Datas
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.CreditReceiptData_Mai
 import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.PdfContentBuilder_Mai
 import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.PdfFormatterUtils_Mai
 import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.PdfGenerationParams_Mai
@@ -13,7 +14,6 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.CreditReceiptData
 import android.content.Context
 
 /**
@@ -152,7 +152,7 @@ class B_Generateur_ProMai(
      */
     fun generateCreditReceiptPdf(
         context: Context,
-        data: CreditReceiptData
+        data: CreditReceiptData_Mai
     ): Result<String> {
         if (data.totalAmount <= 0) {
             return Result.failure(IllegalArgumentException("Invalid total amount"))

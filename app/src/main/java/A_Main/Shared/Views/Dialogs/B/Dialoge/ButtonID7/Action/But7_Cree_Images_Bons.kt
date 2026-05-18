@@ -58,7 +58,8 @@ fun But7_Cree_Images_Bons(
     on_vent_m2client: M2Client?,
     on_vent_couleurs: List<M10OperationVentCouleur>,
     relative_produits: List<M01Produit>?,
-    relative_couleurs: List<M3CouleurProduitInfos>?
+    relative_couleurs: List<M3CouleurProduitInfos>?,
+    on_update_m8_bon: (M8BonVent) -> Unit
 ) {
     val uploadHandler = remember {
         UploadHandler_Mai()
@@ -174,6 +175,7 @@ fun But7_Cree_Images_Bons(
                             onPdfSaved = { savedPath ->
                                 onPdfSaved?.invoke(savedPath, activeCount)
                             },
+                            on_update_m8_bon= on_update_m8_bon
                         )
                     } finally {
                         isGenerating = false

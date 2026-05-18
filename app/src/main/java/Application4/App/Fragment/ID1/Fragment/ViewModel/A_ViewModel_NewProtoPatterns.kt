@@ -14,6 +14,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.annotation.SuppressLint
 import android.content.Context
@@ -184,4 +185,6 @@ class A_ViewModel_NewProtoPatterns(
     fun sendData(prefix: String, data: String) {
         wifiTransferDatas_ControllerApp.sendData("$prefix$data")
     }
+
+    fun update_m8(bonVent: M8BonVent) = updater.update_m8(bonVent)
 }

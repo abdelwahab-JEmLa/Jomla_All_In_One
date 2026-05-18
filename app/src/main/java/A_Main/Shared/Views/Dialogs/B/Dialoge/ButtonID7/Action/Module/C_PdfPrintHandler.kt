@@ -1,11 +1,11 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module
 
+import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf.CreditReceiptData_Mai
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.Pdf.CreditReceiptData
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -114,7 +114,7 @@ class C_PdfPrintHandler(
         return try {
             val transactionId = bonVent.keyID.takeLast(4)
 
-            val creditData = CreditReceiptData(
+            val creditData = CreditReceiptData_Mai(
                 client = client,
                 totalAmount = bonVent.sum_De_Totale_Vents,
                 currentPayment = bonVent.versement,
