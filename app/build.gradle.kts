@@ -31,7 +31,7 @@ android {
 
         // Boutique_JeMla_All_In_On_Project
 
-        versionName = "1.13.8.05_18.09:41.Boutique_JeMla_All_In_On_Project"
+        versionName = "1.13.9.05_19.00:41.Boutique_JeMla_All_In_On_Project"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"

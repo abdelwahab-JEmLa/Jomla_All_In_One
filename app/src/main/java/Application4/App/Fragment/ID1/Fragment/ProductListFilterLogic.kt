@@ -20,11 +20,16 @@ object ProductListFilterLogic {
     fun filterByQuery(
         list: List<M3CouleurProduitInfos>,
         query: String,
+        productMap: Map<String, M01Produit> = emptyMap(),
     ): List<M3CouleurProduitInfos> {
         val q = query.trim().lowercase()
         if (q.isEmpty()) return list
         return list.filter {
-            it.nomCouleurStrSiSonImageDispo.lowercase().contains(q) ||
+            // Check the actual product name from productMap first (most reliable),
+            // then fall back to the debug-name field (may be empty on older records).
+            val productNom = productMap[it.parentBProduitInfosKeyID]?.nom?.lowercase() ?: ""
+            productNom.contains(q) ||
+                    it.nomCouleurStrSiSonImageDispo.lowercase().contains(q) ||
                     it.keyID.lowercase().contains(q) ||
                     it.parentBProduitInfosKeyID.lowercase().contains(q) ||
                     it.parentId1ProduitInfosDebugName.lowercase().contains(q)
@@ -140,16 +145,16 @@ object ProductListFilterLogic {
         val effectiveVentCouleurs = if (isPanieMode && periode != null) {
             ventCouleurs.filter {
                 it.parent_M14VentPeriod_KeyId == periode.keyID ||
-                // Legacy records created before the period field existed have a null /
-                // blank / "null" key; treat them as belonging to the current period so
-                // they are never silently dropped from the Panie view.
-                it.parent_M14VentPeriod_KeyId.isNullOrBlank() ||
-                it.parent_M14VentPeriod_KeyId == "null"
+                        // Legacy records created before the period field existed have a null /
+                        // blank / "null" key; treat them as belonging to the current period so
+                        // they are never silently dropped from the Panie view.
+                        it.parent_M14VentPeriod_KeyId.isNullOrBlank() ||
+                        it.parent_M14VentPeriod_KeyId == "null"
             }
         } else ventCouleurs
 
         val filtered = rawColors
-            ?.let { filterByQuery(it, query) }
+            ?.let { filterByQuery(it, query, productMap) }
             ?.let { filterByMode(it, mode, effectiveVentCouleurs) }
             ?: return emptyList()
 

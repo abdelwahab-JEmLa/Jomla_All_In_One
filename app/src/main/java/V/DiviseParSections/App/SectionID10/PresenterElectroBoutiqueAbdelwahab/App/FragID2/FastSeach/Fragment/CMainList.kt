@@ -45,7 +45,6 @@ fun MainListT1(
     val affiche_Produit_OnGrid = ActiveCentralValues.get_Default().affiche_Produit_OnGrid
 
     if (affiche_Produit_OnGrid) {
-        // Grid layout with 2 columns, RTL direction (right to left)
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),

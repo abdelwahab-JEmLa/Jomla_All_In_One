@@ -81,7 +81,16 @@ fun But_4_FloatingSearchFAB(
 
             OutlinedTextField(
                 value = searchText,
-                onValueChange = onSearchTextChange,
+                onValueChange = { newText ->
+                    val capitalizedText = newText.split(" ").joinToString(" ") { word ->
+                        if (word.isNotEmpty()) {
+                            word.replaceFirstChar {
+                                if (it.isLowerCase()) it.titlecase() else it.toString()
+                            }
+                        } else word
+                    }
+                    onSearchTextChange(capitalizedText)
+                },
                 modifier = Modifier.Companion
                     .width(200.dp)
                     .height(56.dp)

@@ -223,10 +223,10 @@ fun MainFastSearchProduitPourVent(
                     .padding(petitePaddine)
             ) {
                 if (shouldShowTextField) {
-                    OutlinedTextField(
+                    OutlinedTextField(        //<--
+                    //TODO(1): fait utilise cette metode 
                         value = fastSearchProduitPourVent,
                         onValueChange = { newText ->
-                            // Capitalize each word
                             val capitalizedText = newText.split(" ").joinToString(" ") { word ->
                                 if (word.isNotEmpty()) {
                                     word.replaceFirstChar {
