@@ -23,7 +23,8 @@ object ProductListFilterLogic {
         productMap: Map<String, M01Produit> = emptyMap(),
     ): List<M3CouleurProduitInfos> {
         val q = query.trim().lowercase()
-        if (q.length < 3) return list
+        if (q.isEmpty()) return list       // 0 lettres → tout afficher (normal)
+        if (q.length < 3) return emptyList() // 1-2 lettres → rien afficher
         return list.filter {
             val productNom = productMap[it.parentBProduitInfosKeyID]?.nom?.lowercase() ?: ""
             productNom.contains(q) ||
