@@ -5,12 +5,14 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatt
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
+import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.a.ID1_Fe.Feature.Options.a.Main.FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -141,15 +143,27 @@ fun A_Compact_Presentoire_App_Produits_App4(
             }
         ) {
             if (affiche_pub_abdelwahab_electro_gro_store) {
+                // TODO(1) FIXED: on filtre les images dont le ratio est paysage (largeur > hauteur).
+                // Les images portrait (hauteur >= largeur) sont exclues de la mosaïque.
+                val allImageIds = listOf(
+                    R.drawable.imgs__1_,
+                    R.drawable.imgs__2_,
+                    R.drawable.imgs__3_,
+                    R.drawable.imgs__4_,
+                    R.drawable.imgs__5_,
+                )
+                val landscapeImages = remember(allImageIds) {
+                    allImageIds.filter { resId ->
+                        val opts = android.graphics.BitmapFactory.Options().apply {
+                            inJustDecodeBounds = true  // lecture seule des dimensions, sans décode complet
+                        }
+                        BitmapFactory.decodeResource(context.resources, resId, opts)
+                        opts.outWidth > opts.outHeight   // true = paysage
+                    }
+                }
                 PubAbdelwahabElectroGroStore(
                     affiche = true,
-                    images = listOf(
-                        R.drawable.imgs__1_,
-                        R.drawable.imgs__2_,
-                        R.drawable.imgs__3_,
-                        R.drawable.imgs__4_,
-                        R.drawable.imgs__5_,
-                    ),
+                    images  = landscapeImages.ifEmpty { allImageIds },  // fallback si tout est portrait
                     modifier = Modifier.fillMaxSize(),
                 )
             } else {
@@ -173,6 +187,9 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 onClick_Affiche_Pub = {
                     affiche_pub_abdelwahab_electro_gro_store =
                         !affiche_pub_abdelwahab_electro_gro_store
+                    wifiTransferDatas_ControllerApp.sendOrderToClientDisplayerT(
+                        Wifi_Messages_Types_NewProto.Update_affiche_pub_abdelwahab_electro_gro_store
+                        ,true.toString())
                 }
             )
         }

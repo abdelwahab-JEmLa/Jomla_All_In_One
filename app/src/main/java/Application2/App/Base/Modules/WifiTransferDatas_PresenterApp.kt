@@ -60,8 +60,8 @@ data class ProductDisplayController_App2(
     val switchRoles: Boolean = true,
     val testMessageByWifi: String = "",
     val error: String? = null,
+    val affiche_pub_abdelwahab_electro_gro_store: Boolean = false,
 )
-
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas_PresenterApp(
     private val context: Context,
@@ -301,6 +301,13 @@ class WifiTransferDatas_PresenterApp(
                     }
                     // content == enum name for Tablette_Et_Echants, or "null" for any other mode.
                     // Update tabletteDisplayerMode so the ViewModel can mirror it into UiState.filter_des_produits.
+                    Wifi_Messages_Types_NewProto.Update_affiche_pub_abdelwahab_electro_gro_store ->
+                        _state.update {
+                            it.copy(
+                                affiche_pub_abdelwahab_electro_gro_store =
+                                    content.toBooleanStrictOrNull() ?: true
+                            )
+                        }
                     Wifi_Messages_Types_NewProto.Change_Filtered_Produits_Du_TabletteDisplayer -> {
                         val mode = Filter_Affichage_Mode_Proto.entries
                             .find { it.name == content }   // null when content == "null" or unrecognised
