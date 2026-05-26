@@ -33,6 +33,7 @@ android {
 
         versionName = "1.14.0.05_26.00:00.Boutique_JeMla_All_In_On_Project"
 
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
