@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.clientjetpack.R
 import kotlinx.coroutines.delay
 
 @Composable
@@ -68,6 +69,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
     }
 
     var showFabDropdown_Compact_Presentoire_App_Produits_FragID4 by remember { mutableStateOf(false) }
+    var affiche_pub_abdelwahab_electro_gro_store by remember { mutableStateOf(true) }
 
     val active_Datas = viewModelNewProtoPatterns.active_Datas
 
@@ -123,7 +125,10 @@ fun A_Compact_Presentoire_App_Produits_App4(
                     it.keyID == "-OWDMGKsnReAaqOHO5iH"
                 }, key = SemanticsPropertyKey(""))
 
-                set(value = active_Datas.list_M03CouleurProduitInfos?.size, key = SemanticsPropertyKey("size"))
+                set(
+                    value = active_Datas.list_M03CouleurProduitInfos?.size,
+                    key = SemanticsPropertyKey("size")
+                )
 
                 set(
                     value = active_Datas.active_M9Compt?.onVentM8BonVentDebugInfos,
@@ -135,19 +140,40 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 )
             }
         ) {
-            Main_LazyColumnList_App4(
-                modifier = modifier,
-                uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),
-                onProductCategoryClick = { product -> selectedProductForCategoryChange = product },
-                justMovedProductKeyID = justMovedProductKeyID,
-                on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
-                ventCouleurs = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
-            )
+            if (affiche_pub_abdelwahab_electro_gro_store) {
+                PubAbdelwahabElectroGroStore(
+                    affiche = true,
+                    images = listOf(
+                        R.drawable.imgs__1_,
+                        R.drawable.imgs__2_,
+                        R.drawable.imgs__3_,
+                        R.drawable.imgs__4_,
+                        R.drawable.imgs__5_,
+                    ),
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                Main_LazyColumnList_App4(
+                    modifier = modifier,
+                    uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),
+                    onProductCategoryClick = { product ->
+                        selectedProductForCategoryChange = product
+                    },
+                    justMovedProductKeyID = justMovedProductKeyID,
+                    on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
+                    ventCouleurs = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+                )
+            }
 
+            // Floating action buttons are always visible regardless of pub mode
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)
 
             FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
-                appDatabase = viewModelNewProtoPatterns.appDatabase
+                appDatabase = viewModelNewProtoPatterns.appDatabase,
+                onClick_Affiche_Pub = {
+                    affiche_pub_abdelwahab_electro_gro_store =
+                        !affiche_pub_abdelwahab_electro_gro_store
+                }
             )
         }
     }

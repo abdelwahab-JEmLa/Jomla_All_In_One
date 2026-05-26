@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -68,6 +69,7 @@ private enum class DialState { Closed, ChildsVisible, M8Open, M03Open }
 fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     on_vent_key: String = "",
     onClick_Lence_Capture: (() -> Unit)? = null,
+    onClick_Affiche_Pub: () -> Unit ={},
     context: Context = LocalContext.current,
     appDatabase: AppDatabase,
     viewModel: FeatureID1_ViewModel = viewModel(
@@ -124,7 +126,50 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-
+                    // ── M8 BonVent ────────────────────────────────────────────
+                    Row(
+                        verticalAlignment     = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text       = "Affiche Pub",
+                            style      = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color      = Color.White,
+                            modifier   = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0xFF1565C0).copy(alpha = 0.92f))
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                        )
+                        Box {
+                            FloatingActionButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onClick_Affiche_Pub()
+                                },
+                                modifier       = Modifier.size(46.dp),
+                                containerColor = Color(0xFF1565C0),
+                                shape          = CircleShape,
+                                elevation      = FloatingActionButtonDefaults.elevation(4.dp),
+                            ) {
+                                Icon(
+                                    imageVector        = Icons.Default.Public,
+                                    contentDescription = "Public",
+                                    tint               = Color.White,
+                                    modifier           = Modifier.size(22.dp),
+                                )
+                            }
+                            // dropdown ancré sur ce Box
+                            M8Bon_Operations_FragMap_DropdownMenu(
+                                expanded = dialState == DialState.M8Open,
+                                onDismiss = { dialState = DialState.Closed },
+                                on_vent_key = on_vent_key,
+                                onClick_Lence_Capture = onClick_Lence_Capture,
+                                vm = viewModel,
+                            )
+                        }
+                    }
+                    
                     // ── M8 BonVent ────────────────────────────────────────────
                     Row(
                         verticalAlignment     = Alignment.CenterVertically,
@@ -186,11 +231,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                 .padding(horizontal = 10.dp, vertical = 5.dp),
                         )
                         Box {
-                            FloatingActionButton(       //<--
-                            //TODO(1): ajout une autres section Update_Compt //<--
-                            //TODO(1): cotien un switcher qui update affiche_ProduitDataBaseEdites_ComposableViews du current app par on_update_M9(
-                                //
-                                // )
+                            FloatingActionButton(
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     dialState = DialState.M03Open
@@ -207,7 +248,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     modifier           = Modifier.size(22.dp),
                                 )
                             }
-                            // dropdown ancré sur ce Box
+
                             M03_Operations_FragMap_DropdownMenu(
                                 expanded              = dialState == DialState.M03Open,
                                 onDismiss             = { dialState = DialState.Closed },
