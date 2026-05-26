@@ -97,7 +97,7 @@ fun Compact_Presentoire_App_Produits_App2(
                 ConnexionCard_App2(vm = vm)
             }
 
-            if (affiche_pub_abdelwahab_electro_gro_store) {
+            if (affiche_pub_abdelwahab_electro_gro_store && wifiState.isConnected) {
                 val allImageIds = listOf(
                     R.drawable.imgs__1_,
                     R.drawable.imgs__2_,

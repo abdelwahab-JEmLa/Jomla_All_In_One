@@ -62,16 +62,12 @@ fun A_Compact_Presentoire_App_Produits_App4(
             }
         )
 
-    // FIX TODO(1): On every entry to this screen (including navigating back to it),
-    // reset the progress state and reload all data so the ViewModel is always fresh.
-    // Combined with `remember` (not rememberSaveable) for initDone in AppNavHost_App4,
-    // this guarantees a full reload cycle on each navigation.
     LaunchedEffect(Unit) {
         viewModelNewProtoPatterns.retryLoadingData()
     }
 
     var showFabDropdown_Compact_Presentoire_App_Produits_FragID4 by remember { mutableStateOf(false) }
-    var affiche_pub_abdelwahab_electro_gro_store by remember { mutableStateOf(true) }
+    var affiche_pub_abdelwahab_electro_gro_store by remember { mutableStateOf(false) }
 
     val active_Datas = viewModelNewProtoPatterns.active_Datas
 
@@ -143,8 +139,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
             }
         ) {
             if (affiche_pub_abdelwahab_electro_gro_store) {
-                // TODO(1) FIXED: on filtre les images dont le ratio est paysage (largeur > hauteur).
-                // Les images portrait (hauteur >= largeur) sont exclues de la mosaïque.
                 val allImageIds = listOf(
                     R.drawable.imgs__1_,
                     R.drawable.imgs__2_,
@@ -185,11 +179,12 @@ fun A_Compact_Presentoire_App_Produits_App4(
             FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                 appDatabase = viewModelNewProtoPatterns.appDatabase,
                 onClick_Affiche_Pub = {
+                    val bool = !affiche_pub_abdelwahab_electro_gro_store
                     affiche_pub_abdelwahab_electro_gro_store =
-                        !affiche_pub_abdelwahab_electro_gro_store
+                        bool
                     wifiTransferDatas_ControllerApp.sendOrderToClientDisplayerT(
                         Wifi_Messages_Types_NewProto.Update_affiche_pub_abdelwahab_electro_gro_store
-                        ,true.toString())
+                        ,bool.toString())
                 }
             )
         }

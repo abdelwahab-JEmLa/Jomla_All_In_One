@@ -95,7 +95,7 @@ fun PubAbdelwahabElectroGroStore(
 
         // Badge discret en bas
         Text(
-            text  = "✦ Abdelwahab Electro Gro Store ✦",
+            text  = " Abdelwahab Electro Gro Store ",
             style = MaterialTheme.typography.labelMedium,
             color = Color.White.copy(alpha = 0.85f),
             modifier = Modifier
