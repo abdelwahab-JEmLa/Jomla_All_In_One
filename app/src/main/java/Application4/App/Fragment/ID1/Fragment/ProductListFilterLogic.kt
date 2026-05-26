@@ -23,10 +23,8 @@ object ProductListFilterLogic {
         productMap: Map<String, M01Produit> = emptyMap(),
     ): List<M3CouleurProduitInfos> {
         val q = query.trim().lowercase()
-        if (q.isEmpty()) return list
+        if (q.length < 3) return list
         return list.filter {
-            // Check the actual product name from productMap first (most reliable),
-            // then fall back to the debug-name field (may be empty on older records).
             val productNom = productMap[it.parentBProduitInfosKeyID]?.nom?.lowercase() ?: ""
             productNom.contains(q) ||
                     it.nomCouleurStrSiSonImageDispo.lowercase().contains(q) ||
@@ -56,7 +54,6 @@ object ProductListFilterLogic {
         }
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> {
             val activeColorKeys = ventCouleurs
-                .filter { it.quantity > 0 }
                 .map { it.parent_M3CouleurProduit_KeyID }
                 .toSet()
             val activeParentKeys = list
@@ -139,23 +136,15 @@ object ProductListFilterLogic {
         classement: Map<String, Int>,
         sort_Order: Sort_Order = Sort_Order.Produits_Grouped_Par_Categories,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
-        val isPanieMode = mode == Filter_Affichage_Mode_Proto.Panie ||
-                mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
-
-        val effectiveVentCouleurs = if (isPanieMode && periode != null) {
-            ventCouleurs.filter {
-                it.parent_M14VentPeriod_KeyId == periode.keyID ||
-                        // Legacy records created before the period field existed have a null /
-                        // blank / "null" key; treat them as belonging to the current period so
-                        // they are never silently dropped from the Panie view.
-                        it.parent_M14VentPeriod_KeyId.isNullOrBlank() ||
-                        it.parent_M14VentPeriod_KeyId == "null"
-            }
-        } else ventCouleurs
+        // When the user is actively searching in Panie+frères mode, don't restrict the results
+        // to siblings of sold items — let the search query do the filtering instead.
+        val skipModeFilter =
+            mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres &&
+                    query.trim().isNotEmpty()
 
         val filtered = rawColors
             ?.let { filterByQuery(it, query, productMap) }
-            ?.let { filterByMode(it, mode, effectiveVentCouleurs) }
+            ?.let { if (skipModeFilter) it else filterByMode(it, mode, ventCouleurs) }
             ?: return emptyList()
 
         return groupAndSort(
@@ -165,7 +154,7 @@ object ProductListFilterLogic {
             mode = mode,
             echantillantsPurchaseOrder = echantillantsPurchaseOrder,
             classement = classement,
-            ventCouleurs = effectiveVentCouleurs,
+            ventCouleurs = ventCouleurs,
             categories = categories,
             catalogues = catalogues,
         )

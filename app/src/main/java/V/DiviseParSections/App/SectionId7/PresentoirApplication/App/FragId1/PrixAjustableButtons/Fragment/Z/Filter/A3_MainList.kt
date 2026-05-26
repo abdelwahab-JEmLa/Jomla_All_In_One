@@ -6,7 +6,6 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos.TypeCh
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ItsLancedDepuit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixAchatHandler
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixAchatHandler.AutrePrixsAffiche
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.A4_TariffButtonItem.PrixsVents_Handler.PrixsVents_Handler
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -235,20 +234,6 @@ fun MainList(
                         )
                     }
                 }
-
-                TypeChoisi.Historique,
-                TypeChoisi.LeMaxPrixArrive,
-                    -> AutrePrixsAffiche(
-                    produit = relative_M1Produit,
-                    viewModel = viewModel,
-                    typeTarification = centralType,
-                    tariffs = relativeList_Tariff,
-                    showLabels = showLabels,
-                    onClickPrixButton = onClickPrixButton,
-                    context = context,
-                    nombreUnite = relative_M1Produit.nombreUniteInt,
-                )
-
                 else -> {}
             }
             Spacer(modifier = Modifier.height(4.dp))

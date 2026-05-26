@@ -65,6 +65,8 @@ fun PressistatntMainActivityButtons_App4(
         if (resetSearch) activeDatas.filter_echatilaten = ""
         activeDatas.filterAffichageMode_Proto = mode
         activeDatas.filter_relode_tiger += 1
+        // Reload colors from DB so the depot filter is applied/skipped correctly for the new mode.
+        viewModelNewProtoPatterns.retryLoadingData()
     }
 
     var showDropdown by remember { mutableStateOf(false) }

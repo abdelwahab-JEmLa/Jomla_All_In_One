@@ -71,19 +71,22 @@ fun Main_LazyColumnList_App4(
     val isConnected = wifiState.isConnected
     val currentScrollPosition = wifiState.mainGridScrollPosition
     val isScrollEnabled = isHostPhone || !isConnected
+    val currentMode   = activeDatas.filterAffichageMode_Proto
+
+    val listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
+        activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
 
     val finale_filtred_list by remember {
         derivedStateOf {
-            val currentMode   = activeDatas.filterAffichageMode_Proto
             val currentColors = activeDatas.list_M03CouleurProduitInfos
-            val currentVents  = activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-            activeDatas.filter_relode_tiger  // touch to track manual reload trigger
+            activeDatas.filter_relode_tiger
+
             ProductListFilterLogic.compute(
                 rawColors = currentColors,
                 productMap = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
                 query = activeDatas.filter_echatilaten.trim().lowercase(),
                 mode = currentMode,
-                ventCouleurs = currentVents,
+                ventCouleurs = listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
                 categories = activeDatas.list_M16CategorieProduit ?: emptyList(),
                 catalogues = get_ListM21CataloguesCategorie(),
                 echantillantsPurchaseOrder = set_couleursKey_echantilliants_achat,
@@ -108,6 +111,14 @@ fun Main_LazyColumnList_App4(
         activeDatas.parentProduit_Classement = finale_filtred_list
             .mapIndexed { index, (product, _) -> product.keyID to index }
             .toMap()
+    }
+
+    // Scroll to top as soon as the filter activates (query length hits 3).
+    val searchQuery = activeDatas.filter_echatilaten
+    LaunchedEffect(searchQuery) {
+        if (searchQuery.trim().length == 3) {
+            gridState.scrollToItem(0)
+        }
     }
 
     val expanded_M1Produit = wifiState.expanded_M1Produit
@@ -146,7 +157,9 @@ fun Main_LazyColumnList_App4(
                 set(value = ventCouleurs.firstOrNull()?.toString() ?: "[]", key = SemanticsPropertyKey("ventCouleurs.first().toString()"))      //<--
 
 
+                set(value = currentMode, key = SemanticsPropertyKey("currentMode"))       //<--
                 set(value = finale_filtred_list, key = SemanticsPropertyKey("finale_filtred_list"))       //<--
+                set(value = listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state, key = SemanticsPropertyKey("listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state"))
             }
             .fillMaxWidth()
             .background(Color(0xFFFFF0F5)),

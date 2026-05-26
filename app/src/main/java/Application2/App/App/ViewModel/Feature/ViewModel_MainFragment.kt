@@ -82,10 +82,14 @@ class ViewModel_MainFragment(
                         }
                         ?: couleur
                 }
-
-                // Step 2: Re-filter by depot to remove colors with zero depot counts
-                // This ensures the filtered list reflects the updated depot state
-                val filteredColors = ProductListFilterLogic.filterByDepot(updatedColors)
+                
+                val filteredColors = run {
+                    val currentMode = _uiState.value.filter_des_produits
+                    if (currentMode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres)
+                        updatedColors
+                    else
+                        ProductListFilterLogic.filterByDepot(updatedColors)
+                }
 
                 // Step 3: Re-filter products to only include those with visible colors
                 val filteredProducts = _uiState.value.list_M1Produit.filter_passive(
@@ -143,9 +147,15 @@ class ViewModel_MainFragment(
 
             val catalogues = get_ListM21CataloguesCategorie()
             cataloguesReady.value = true
-
-            val filteredColors = dao_M3CouleurProduitInfos.getAll().let {
-                ProductListFilterLogic.filterByDepot(it)
+                            //<--
+            // Skip depot filter entirely for Panie+frères: that mode must show siblings of sold items
+            // even when their own depot count is zero.
+            val currentMode = _uiState.value.filter_des_produits
+            val filteredColors = dao_M3CouleurProduitInfos.getAll().let { allColors ->
+                if (currentMode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres)
+                    allColors
+                else
+                    ProductListFilterLogic.filterByDepot(allColors)
             }
             val products = dao_M1Produit.getAll()
                 .filter_passive(filteredColors.map { it.parentBProduitInfosKeyID }.distinct())

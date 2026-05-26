@@ -11,7 +11,6 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingImageDisplay
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingSecureClickToggleFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.FloatingUpdateAllChecksFAB
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.Button_Click_Send_Stored_Bon_Par_whatsappBuisness
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.PdfBonVentFAB
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.Button_ID2_Menagerie_Telegram
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.CatalogueSelectionDialog
@@ -245,6 +244,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             }
         )
     }
+    val focused_M1ProduitInfos_Pour_PrixDifineur_is_null = focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur == null
 
     CatalogueSelectionDialog(
         showDialog = showCatalogueDialog,
@@ -362,26 +362,27 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             showLabels = showLabels
                         )
                     }
-
-                    if (focusedValuesGetter.activeOnVent_M8BonVent == null ||
-                        focusedValuesGetter.currentApp_Est_Admin
-                        && !itsFragmentProduitFastSearchDialog   && nonActived_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
-                    ) {
-                        ID3RecordingButton(
-                            viewModel,
-                            isRecording,
-                            showLabels,
-                            displayTime
+                    focused_M1ProduitInfos_Pour_PrixDifineur_is_null.ifTrue {
+                        if (focusedValuesGetter.activeOnVent_M8BonVent == null ||
+                            focusedValuesGetter.currentApp_Est_Admin
+                            && !itsFragmentProduitFastSearchDialog && nonActived_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
                         ) {
-                            showAlertDialog = true
-                        }
-                    } else {
+                            ID3RecordingButton(
+                                viewModel,
+                                isRecording,
+                                showLabels,
+                                displayTime
+                            ) {
+                                showAlertDialog = true
+                            }
+                        } else {
 //                        if (travailleChezGrossisst3Ali == false && !cLenceDepuitFragmentsSepecialicteDeVents || false) {
 //                            Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
 //                                aCentralFacade = aCentralFacade,
 //                                focusedValuesGetter = focusedValuesGetter
 //                            )
 //                        }
+                        }
                     }
 
 //                    (activeDialogSearchM1Produit == false && !itsFragmentProduitFastSearchDialog|| false).ifTrue {
@@ -393,8 +394,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 //                        }
 //                    }
 
-                    if (!itsFragmentProduitFastSearchDialog
-                        && nonActived_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
+                    if ((!itsFragmentProduitFastSearchDialog
+                        && nonActived_activeFocuce_TariffPrixDifineur_M1ProduitKeyID) &&  focused_M1ProduitInfos_Pour_PrixDifineur_is_null
                     ) {
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
@@ -456,23 +457,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             on_vent_bon = focusedValuesGetter.activeOnVent_M8BonVent,
                             on_vent_couleurs = focusedValuesGetter
                                 .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                        )
-                        Button_Click_Send_Stored_Bon_Par_whatsappBuisness(
-                            showLabels = showLabels,
-                            overridePath = sharedPdfPath,
-                            overrideCount = sharedPdfCount,
-                            list_M13TarificationInfos = list_M13TarificationInfos,
-                            on_vent_m8 = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M8BonVent,
-                            activeClient = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
-                            on_vent_couleurs = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                                .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent,
-                            produits = repositorysMainGetter.repo1ProduitInfos
-                                .datasValue,
-                            on_upsert_M2Client={
-                                aCentralFacade.repositorysMainSetter.upsert_M2Client(
-                                    it
-                                )
-                            }
                         )
 
                         Button_5_Imgs_Send_whatsappBuisness_Stored_Bon(
