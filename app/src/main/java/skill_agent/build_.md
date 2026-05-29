@@ -1,11 +1,12 @@
 # Skill - Fast Build, Export and Deploy to SD Card
 
-This skill instructs the assistant on how to build the application, automatically update the version name in `app/build.gradle.kts` to use the current date/time and append `.A_AllInOne`, compile the app, and immediately restore the Gradle file to its original state so that no git changes are committed (ignoring changes), before packaging and deploying the ZIP to the connected phone's SD Card.
+This skill instructs the assistant on how to build the application, automatically update the version name in `app/build.gradle.kts` to use the current date/time and append `.A_AllInOne`, compile the app, and immediately restore the Gradle file to its original state so that no git changes are committed (ignoring changes), before packaging and deploying both the ZIP package and the raw extracted folder directly to the connected phone's SD Card.
 
 ---
 
 ## Trigger Phrases
 - "build_"
+- "b_"
 
 ---
 
@@ -45,11 +46,12 @@ Zip the `0.` directory to `0.zip` under the version folder:
 Compress-Archive -Path "C:\Users\Abou Mohamed\Desktop\Playe_Store\<VERSION>\0." -DestinationPath "C:\Users\Abou Mohamed\Desktop\Playe_Store\<VERSION>\0.zip" -Force
 ```
 
-### 7. Create Phone Directory and Push ZIP package via ADB
-Create the destination folder structure on the phone and push the ZIP package to the SD card:
+### 7. Deploy Packages to Phone SD Card via ADB
+Create the destination folder structure on the phone, push the ZIP package, and push the raw extracted folder with its sub-items:
 ```powershell
 & "C:\Users\Abou Mohamed\AppData\Local\Android\Sdk\platform-tools\adb.exe" shell mkdir -p /sdcard/Abdelwahab_jeMla.com/Playe_Store/<VERSION>/
 & "C:\Users\Abou Mohamed\AppData\Local\Android\Sdk\platform-tools\adb.exe" push "C:\Users\Abou Mohamed\Desktop\Playe_Store\<VERSION>\0.zip" "/sdcard/Abdelwahab_jeMla.com/Playe_Store/<VERSION>/"
+& "C:\Users\Abou Mohamed\AppData\Local\Android\Sdk\platform-tools\adb.exe" push "C:\Users\Abou Mohamed\Desktop\Playe_Store\<VERSION>\0." "/sdcard/Abdelwahab_jeMla.com/Playe_Store/<VERSION>/0."
 ```
 
 ### 8. Report Success
@@ -58,5 +60,6 @@ Provide the user with a detailed summary showing:
 - **Version Générée (Temporaire)** : The dynamically generated versionName with the timestamp and suffix.
 - **Chemin de l'export local** : Clickable link to the local folder on Desktop.
 - **Fichier ZIP créé** : Clickable link to the generated zip file.
-- **Chemin de déploiement SD Card** : The destination path on the Android device.
-- **Confirmation de transfert & Nettoyage** : Confirmation that compilation succeeded, file was pushed, and `build.gradle.kts` was successfully reverted to keep Git status clean.
+- **Chemin de déploiement SD Card (ZIP)** : The ZIP destination path on the Android device.
+- **Chemin de déploiement SD Card (Dossier Extrait)** : The raw folder destination path on the Android device.
+- **Confirmation de transfert & Nettoyage** : Confirmation that compilation succeeded, both ZIP and raw folder were pushed, and `build.gradle.kts` was successfully reverted to keep Git status clean.
