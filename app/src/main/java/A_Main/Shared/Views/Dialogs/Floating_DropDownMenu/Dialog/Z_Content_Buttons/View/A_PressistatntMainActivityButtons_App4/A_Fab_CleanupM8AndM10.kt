@@ -239,7 +239,6 @@ fun Fab_CleanupM8AndM10(
 
                     Log.d(TAG_CLEANUP, "launching cleanupOldBonVents_Np …")
                     cleanupOldBonVents_Np(
-
                         repo8BonVent = repositorysMainGetter.repo8BonVent,
                         bonVents = repositorysMainGetter.repo8BonVent.datasValue,
                         on_vent_key = on_vent_key,

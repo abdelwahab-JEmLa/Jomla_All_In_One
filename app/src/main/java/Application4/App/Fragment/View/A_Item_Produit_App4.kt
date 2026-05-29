@@ -187,7 +187,6 @@ fun A_Item_Produit_App4(
         }
     }
 
-    // TODO(1) FIX: yellow background when any vent operation for this product has premier_Check_Donne = true
     val hasPremierCheckDonne by remember(
         viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
         relative_M1produit.keyID
