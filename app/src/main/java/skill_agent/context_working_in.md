@@ -27,7 +27,7 @@ This skill instructs the assistant on how to isolate the AI's working context so
 ### When "c_w_a", "cwa_" or "agy_context_unique_workingIn_active" is triggered:
 
 #### 1. Create .antigravityignore in Project Root
-Create or overwrite the `.antigravityignore` file at the root of the project (`C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\.antigravityignore`) with the following content:
+Create or overwrite the `.antigravityignore` file at the root of the project (`C:\Users\Abou Mohamed\AndroidStudioProjects\ClientJetPack\.antigravityignore`) with the following content:
 ```text
 # Ignore everything by default
 *
@@ -52,7 +52,7 @@ Create or overwrite the `.geminiignore` file at the root of the project with ide
 #### 3. Report Activation Success
 Provide the user with a detailed confirmation showing:
 - A clear message stating that the workspace context is now focused exclusively on `Working_IN.Feature`.
-- Direct clickable markdown links to [.antigravityignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/Light_App_Controles/.antigravityignore) and [.geminiignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/Light_App_Controles/.geminiignore).
+- Direct clickable markdown links to [.antigravityignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/.antigravityignore) and [.geminiignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/.geminiignore).
 
 ---
 
@@ -74,7 +74,7 @@ Check if the `.antigravityignore` and/or `.geminiignore` files exist in the proj
 #### 2. Report Current Status
 - **If active**: Confirm that context restriction is **ACTIF** (only `Working_IN.Feature` and other explicitly allowed packages/files are visible). List any individually allowed files along with their full package names or directory paths for clarity.
 - **If inactive**: Confirm that context restriction is **INACTIF / DÉSACTIVÉ** (the full workspace context is visible).
-- Show clickable links to [.antigravityignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/Light_App_Controles/.antigravityignore) and [.geminiignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/Light_App_Controles/.geminiignore).
+- Show clickable links to [.antigravityignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/.antigravityignore) and [.geminiignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/.geminiignore).
 
 ---
 
@@ -103,10 +103,10 @@ For `com.example.light_app_controles.Modules.Base.SQL.Daos`, generate:
 Open `.antigravityignore` and `.geminiignore` (create them with the base template if they do not exist). Check if these package rules already exist; if not, append them to the bottom of both files.
 
 #### 3. Update Skill Configuration's Mapped Packages List
-Extract the last segment of the package name (e.g. `Daos`). Save the mapping `<short_name> = <package>` under the **Mapped Packages** section at the bottom of the skill files `C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\context_working_in.md` and `C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\app\src\main\java\skill_agent\context_working_in.md`.
+Extract the last segment of the package name (e.g. `Daos`). Save the mapping `<short_name> = <package>` under the **Mapped Packages** section at the bottom of the skill files `C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\context_working_in.md` and `C:\Users\Abou Mohamed\AndroidStudioProjects\ClientJetPack\app\src\main\java\skill_agent\context_working_in.md`.
 
 #### 4. Report Success
-Confirm to the user that the package has been added and mapped, and show direct links to [.antigravityignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/Light_App_Controles/.antigravityignore) and [.geminiignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/Light_App_Controles/.geminiignore).
+Confirm to the user that the package has been added and mapped, and show direct links to [.antigravityignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/.antigravityignore) and [.geminiignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/.geminiignore).
 
 ---
 
@@ -154,7 +154,7 @@ Search in the **Mapped Packages** list at the bottom of this file. If `<short_na
 Scan `.antigravityignore` and `.geminiignore`. Locate the block of comments and folder rules associated with the package (e.g. lines starting with `# Added via cwa_add_package` or individual rules matching the package directory pattern). Delete these rules and save both files.
 
 #### 3. Report Success
-Confirm to the user that the package has been successfully removed from the active context, and provide direct clickable links to [.antigravityignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/Light_App_Controles/.antigravityignore) and [.geminiignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/Light_App_Controles/.geminiignore).
+Confirm to the user that the package has been successfully removed from the active context, and provide direct clickable links to [.antigravityignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/.antigravityignore) and [.geminiignore](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/.geminiignore).
 
 ---
 

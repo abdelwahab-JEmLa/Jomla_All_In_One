@@ -13,7 +13,7 @@ This skill instructs the assistant on how to quickly compile, install, and launc
 ## Steps to Execute
 
 ### 1. Configure the Preview Screen as Launcher
-Ensure the app boots directly to the correct preview screen. Open `C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\app\src\main\java\com\example\light_app_controles\B\Screens\MainScreen.kt` and set:
+Ensure the app boots directly to the correct preview screen. Open `C:\Users\Abou Mohamed\AndroidStudioProjects\ClientJetPack\app\src\main\java\com\example\light_app_controles\B\Screens\MainScreen.kt` and set:
 ```kotlin
 val its_dev_bigDatas = false
 ```
@@ -36,4 +36,4 @@ Wait 2 seconds, then capture a screen screenshot to visually verify that the pre
 ```powershell
 android screen capture -a -o screen.png
 ```
-Immediately read and display the screenshot to the user using the `view_file` tool on `C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\screen.png`.
+Immediately read and display the screenshot to the user using the `view_file` tool on `C:\Users\Abou Mohamed\AndroidStudioProjects\ClientJetPack\screen.png`.

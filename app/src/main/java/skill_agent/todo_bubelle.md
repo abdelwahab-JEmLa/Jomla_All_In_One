@@ -19,7 +19,7 @@ First, take a screenshot of the connected Android device or emulator with access
 android screen capture -a -o screen.png
 ```
 Immediately read and display the screenshot to analyze the user interface using the `view_file` tool:
-- Path: `C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\screen.png`
+- Path: `C:\Users\Abou Mohamed\AndroidStudioProjects\ClientJetPack\screen.png`
 
 ### 2. Read and Analyze the Bubble / Tooltip
 - Scan the annotated screenshot for any tooltips or bubbles (especially red or highlighted ones).
@@ -47,4 +47,4 @@ Verify the result by capturing a new screen with annotations to confirm the bubb
 android screen capture -a -o screen_after.png
 ```
 Read the new screenshot using `view_file`:
-- Path: `C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\screen_after.png`
+- Path: `C:\Users\Abou Mohamed\AndroidStudioProjects\ClientJetPack\screen_after.png`

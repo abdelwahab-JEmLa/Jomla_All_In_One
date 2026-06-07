@@ -12,7 +12,7 @@ This skill instructs the assistant on how to automatically compile the Android a
 ## Steps to Execute
 
 ### 1. Execute the Gradle Install Task
-Run the Gradle wrapper script `gradlew.bat` with the `installDebug` task in the project root directory (`C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles`):
+Run the Gradle wrapper script `gradlew.bat` with the `installDebug` task in the project root directory (`C:\Users\Abou Mohamed\AndroidStudioProjects\ClientJetPack`):
 ```powershell
 .\gradlew.bat installDebug --offline --parallel --build-cache --configuration-cache
 ```

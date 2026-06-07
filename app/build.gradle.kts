@@ -25,13 +25,13 @@ android {
         targetSdk = 34
         versionCode = 1
         //Dev
-        // AllInOne
-        // JomLaElectroLivreurGrossist_VendeurHost
-        // JomLaElectroLivreurGrossist_PresenterScreen
+        // a_AllInOne
+        // b_JomLaElectroLivreurGrossist_VendeurHost
+        // c_JomLaElectroLivreurGrossist_PresenterScreen
 
         // Boutique_JeMla_All_In_On_Project
 
-        versionName = "1.14.0.05_26.08:46.Boutique_JeMla_All_In_On_Project"
+        versionName = "1.14.0.05_26.08:46.c_JomLaElectroLivreurGrossist_PresenterScreen"
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

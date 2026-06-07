@@ -2,18 +2,34 @@
 
 This skill instructs the assistant on how to automatically make the code of context files as concise as possible by removing all unnecessary comments, log statements, and redundant semantics (such as Jetpack Compose modifiers or custom tags that don't affect core application logic), while strictly preserving the functional behavior of the code.
 
+Additionally, this skill supports batch concising via the `con_c` trigger, which recursively identifies all sibling files and subfiles of the package containing the `TODO: con_c` comment and applies concising to all of them.
+
 ---
 
 ## Trigger Phrases
 - "consize_commants"
 - "co_"
+- "con_"
+- "con_c"
+- "TODO: con_c"
 
 ---
 
 ## Steps to Execute
 
-### 1. Identify Target Files
-Identify the target Kotlin/Java/XML files in the current context or open editors that require minimization.
+### 1. Locate and Concise Files with `TODO` Comments containing `co_` or `con_c`
+When triggered, the assistant should automatically:
+- Search the codebase (within `app/src/main/java`) using a `grep_search` query for:
+  - `co_` (specifically looking for `TODO` comments like `//TODO(1): co_` or `TODO` containing `co_`).
+  - `con_c` (specifically looking for `TODO` comments like `//TODO(1): con_c` or `TODO` containing `con_c`).
+- **If `TODO: con_c` is triggered**:
+  - Find the directory (package) containing the file where the `TODO: con_c` comment is located.
+  - Recursively locate all sibling files and subfiles in that package directory (all `.kt` or `.java` files).
+  - Apply the code concising process to **all** these sibling and subfiles.
+  - Remove the triggering `TODO: con_c` comment from the file.
+- **If `TODO: co_` is triggered**:
+  - Apply the code concising process to that specific file only, and remove the triggering `TODO` comment.
+- If no files are flagged with a `co_` or `con_c` comment, fall back to identifying target files in the active context or open editors that require minimization.
 
 ### 2. Strip Comments
 Locate and remove all unnecessary comments:

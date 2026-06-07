@@ -19,7 +19,7 @@ android screen capture -a -o screen.png
 
 ### 2. View/Display the Screenshot
 Immediately read and display the screenshot to the user using the `view_file` tool:
-- Path: `C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\screen.png`
+- Path: `C:\Users\Abou Mohamed\AndroidStudioProjects\ClientJetPack\screen.png`
 
 ### 3. Report Success
 Provide the user with a direct markdown link to the screenshot file and describe the screen content if needed.
