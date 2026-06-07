@@ -42,6 +42,7 @@ class A_ViewModel_NewProtoPatterns(
         RepositorysMainSetter_NewProtoPatterns(
             appDatabase,
             context
+
         )
     }
 
