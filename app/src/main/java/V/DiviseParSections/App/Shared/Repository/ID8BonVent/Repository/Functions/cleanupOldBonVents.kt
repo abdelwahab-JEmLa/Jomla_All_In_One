@@ -5,8 +5,6 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import kotlinx.coroutines.launch
 
-//<--
-//TODO(1): fait ignore o leur parent on vent est on vent bon vent
 fun cleanupOldBonVents(
     repo8BonVent: Repo8BonVent,
     bonVents: List<M8BonVent>

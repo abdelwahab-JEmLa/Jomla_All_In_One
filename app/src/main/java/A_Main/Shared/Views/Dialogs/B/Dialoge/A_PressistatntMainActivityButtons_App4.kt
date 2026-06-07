@@ -53,7 +53,9 @@ import kotlin.math.roundToInt
 @Composable
 fun PressistatntMainActivityButtons_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
-) {
+) {                         //<--
+//TODO(2.C Relative Au Todo(1): 
+        //... ca
     val activeDatas = viewModelNewProtoPatterns.active_Datas
     var sharedPdfPath by remember { mutableStateOf("") }
     var sharedPdfCount by remember { mutableStateOf(0) }
@@ -107,7 +109,9 @@ fun PressistatntMainActivityButtons_App4(
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
     val listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state =
         activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-    val tariffs = uiState.list_M13TarificationInfos
+    val repo13TarificationInfos =
+        org.koin.compose.koinInject<V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos>()
+    val tariffs = repo13TarificationInfos.datasValue
 
     val current_OnVent_M14VentPeriode_KeyID =
         activeDatas.active_M9Compt?.current_OnVent_M14VentPeriode_KeyID

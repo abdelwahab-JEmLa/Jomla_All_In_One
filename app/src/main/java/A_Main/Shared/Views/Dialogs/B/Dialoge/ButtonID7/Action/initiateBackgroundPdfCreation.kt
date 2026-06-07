@@ -133,7 +133,6 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
 
                 onPdfSaved?.invoke(pathToStore)
 
-                // ── TODO(1) FIX ──────────────────────────────────────────────────────────
                 // 1. Delete all old JPG images that belong to this bon before regenerating.
                 // 2. Save new images into a folder named: HH-mm_clientName_total
                 //    e.g. "14-35_Ali_Mokrani_3200"  (colons replaced with dashes for FS safety)
@@ -205,7 +204,6 @@ private const val CORNER_RADIUS = 6f
 private const val BG_COLOR = 0xFFEEEEEE.toInt()
 private const val JPEG_QUALITY = 92
 
-// ── TODO(1) FIX: Delete old bon images ──────────────────────────────────────
 /**
  * Removes every JPG in `Downloads/BonsWhatsApp/` whose display-name starts
  * with [bonKeyPrefix] (the last-6 chars of the bon's keyID). This ensures
@@ -290,7 +288,7 @@ fun convertAllPdfPagesToJpgs(
     context: Context,
     pdfFile: File,
     baseName: String,
-    folderName: String,         // ← TODO(1) FIX: was hard-coded to MM_dd date
+    folderName: String,
 ): List<Uri?> {
     if (!pdfFile.exists()) {
         Log.e(TAG, "❌ PDF not found: ${pdfFile.absolutePath}")
@@ -428,7 +426,7 @@ private fun saveBonJpgToMediaStore(
     context: Context,
     bitmap: Bitmap,
     fileName: String,
-    folderName: String,         // ← TODO(1) FIX: replaces the old MM_dd todayFolder
+    folderName: String,
 ): Uri? {
     val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/BonsWhatsApp/$folderName/"
 

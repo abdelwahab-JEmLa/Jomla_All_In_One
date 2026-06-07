@@ -93,8 +93,7 @@ fun View_MainItem(
     printReceiptHandler: PrintReceiptHandler_Juil = aCentralFacade.modulesCentral.printReceiptHandler,
     relative_M8BonVent: M8BonVent,
     relative_list_Vent: List<M10OperationVentCouleur>,
-    max_height: Dp = 100.dp   //<--
-    //TODO(1): fait que le max hight soi ca
+    max_height: Dp = 100.dp
 ) {
     // State for delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }

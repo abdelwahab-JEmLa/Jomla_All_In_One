@@ -132,6 +132,8 @@ class MainActivity : ComponentActivity() {
                                     val appDatabase = koinInject<AppDatabase>()
                                     val fragmentNavigationHandler_passed =
                                         koinInject<FragmentNavigationHandler_NewProto>()
+                                    val repo13TarificationInfos =
+                                        koinInject<V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos>()
 
                                     val scope = rememberCoroutineScope()
 
@@ -164,7 +166,9 @@ class MainActivity : ComponentActivity() {
                                                 appDatabase=appDatabase,
                                                 wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
                                                 fragmentNavigationHandler_passed=fragmentNavigationHandler_passed,
-                                                on_update_M13TarificationInfos_par_ecriture = {},
+                                                on_update_M13TarificationInfos_par_ecriture = {
+                                                    repo13TarificationInfos.upsert(it)
+                                                },
                                                 on_clear_wifi_classe_cache= {
                                                     wifiTransferDatas_ControllerApp.cancel()
                                                 },
@@ -185,6 +189,7 @@ class MainActivity : ComponentActivity() {
                                                                 context = context,
                                                                 appDatabase = appDatabase,
                                                                 fragmentNavigationHandler = fragmentNavigationHandler,
+                                                                repo13TarificationInfos = repo13TarificationInfos,
                                                             )
                                                         }
                                                     }
@@ -194,7 +199,9 @@ class MainActivity : ComponentActivity() {
                                                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                                                 wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
                                                 appDatabase=appDatabase,
-                                                on_update_M13TarificationInfos_par_ecriture={}
+                                                on_update_M13TarificationInfos_par_ecriture = {
+                                                    viewModelNewProtoPatterns.update_M13TarificationInfos(it)
+                                                }
                                             )
                                         }
                                     }

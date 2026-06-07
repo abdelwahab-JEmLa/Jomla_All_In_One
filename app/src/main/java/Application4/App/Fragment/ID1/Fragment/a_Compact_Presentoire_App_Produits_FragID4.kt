@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import org.koin.compose.koinInject
 import com.example.clientjetpack.R
 import kotlinx.coroutines.delay
 
@@ -49,6 +50,9 @@ fun A_Compact_Presentoire_App_Produits_App4(
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
 ) {
     val context = LocalContext.current
+    val repo13TarificationInfos =
+        koinInject<V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos>()
+
     val viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns =
         viewModel(
             factory = viewModelFactory {
@@ -58,6 +62,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
                         context = context,
                         appDatabase = appDatabase,
                         fragmentNavigationHandler = fragmentNavigationHandler,
+                        repo13TarificationInfos = repo13TarificationInfos,
                     )
                 }
             }

@@ -15,5 +15,3 @@ enum class LottieJsonGetterR_Raw_Icons(val resourceId: Int) {
     alimentation(R.raw.alimentation),
     atay(R.raw.atay)
 }
-    //<--
-    //TODO(1): 

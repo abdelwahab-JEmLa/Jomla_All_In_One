@@ -22,8 +22,7 @@ class Repo13TarificationInfos(
     val repoScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M13TarificationInfos>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }         //<--
-    //TODO(2.C Relative Au Todo(1): 
-            //... par add ou update le tariff ui
+    var on_update_M13TarificationInfos_par_ecriture: ((M13TarificationInfos) -> Unit)? = null
 
 
     init {
@@ -98,6 +97,7 @@ class Repo13TarificationInfos(
             }
         }
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
+        on_update_M13TarificationInfos_par_ecriture?.invoke(dataUpdate)
     }
 
 
@@ -137,6 +137,7 @@ class Repo13TarificationInfos(
         }
 
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
+        on_update_M13TarificationInfos_par_ecriture?.invoke(dataUpdate)
     }
 
     private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: M13TarificationInfos) {

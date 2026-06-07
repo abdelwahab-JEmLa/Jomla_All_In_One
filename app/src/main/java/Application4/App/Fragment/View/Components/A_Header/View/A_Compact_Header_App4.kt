@@ -64,7 +64,6 @@ fun A_Compact_Header_App4(
     categoryName: String? = null,
     onCategoryClick: (() -> Unit)? = null,
     prix_achat: Double?,
-    // TODO(2) FIX: callback to mark premier_Check_Donne = true on all vent operations of this product
     onSetPremierCheckDonneForAllVents: (() -> Unit)? = null,
 ) {
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
@@ -176,7 +175,6 @@ fun A_Compact_Header_App4(
                         onClick = onUpdateTariff
                     )
 
-                    // TODO(1) FIX: its_Carton toggle — switches whether the product is sold by carton
                     ClickableInfoCard(
                         icon = {
                             Icon(
@@ -207,7 +205,6 @@ fun A_Compact_Header_App4(
                         }
                     )
 
-                    // TODO(2) FIX: mark premier_Check_Donne = true on all vent operations of this product
                     onSetPremierCheckDonneForAllVents?.let { callback ->
                         ClickableInfoCard(
                             icon = {

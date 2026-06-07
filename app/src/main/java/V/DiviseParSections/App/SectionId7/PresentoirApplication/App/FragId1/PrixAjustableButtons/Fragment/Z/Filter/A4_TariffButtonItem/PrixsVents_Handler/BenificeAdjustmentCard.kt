@@ -76,7 +76,6 @@ fun BenificeAdjustmentButtons(
         return timeDifferenceSeconds > 20
     }
 
-    // FIX TODO(1a): update tariff price directly in the repo, not just through UI callback
     fun persistPriceToRepo(newSellingPrice: Double, shouldCreateNew: Boolean) {
         val now = System.currentTimeMillis()
         if (shouldCreateNew) {
@@ -135,7 +134,6 @@ fun BenificeAdjustmentButtons(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // FIX TODO(1b): init value to "" so that label shows old value and auto-focus works
                 if (isEditingTotalBenefit) {
                     OutlinedTextField(
                         value = totalBenefitText,
@@ -175,7 +173,6 @@ fun BenificeAdjustmentButtons(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // FIX TODO(1b): init value to "" on click so label shows old value
                     if (isEditingUnitBenefit) {
                         OutlinedTextField(
                             value = unitBenefitText,

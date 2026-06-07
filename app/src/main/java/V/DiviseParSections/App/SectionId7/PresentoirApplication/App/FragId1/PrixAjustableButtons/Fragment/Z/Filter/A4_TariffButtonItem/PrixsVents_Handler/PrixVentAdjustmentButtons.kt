@@ -89,8 +89,6 @@ fun PrixVentAdjustmentButtons(
     val tariffColor = relative_Tariff.typeChoisi.couleur
     val tariffTextColor = relative_Tariff.typeChoisi.couleur_Text
 
-    // FIX TODO(1): was always returning `true`, now correctly uses the 20-second threshold
-    // so that rapid edits update the same tariff instead of endlessly creating new ones.
     fun shouldCreateNewTariff(): Boolean {
         val timeDifferenceSeconds =
             (System.currentTimeMillis() - relative_Tariff.creationTimestamps) / 1000
@@ -155,8 +153,6 @@ fun PrixVentAdjustmentButtons(
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 if (relative_Tariff.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService) {
-                                    // FIX TODO(1): newPrice is now correctly applied to the repo
-                                    // (both update and create paths are handled below)
                                     val newPrice = totalPriceText.toDoubleOrNull() ?: prixVente
 
                                     val existing =

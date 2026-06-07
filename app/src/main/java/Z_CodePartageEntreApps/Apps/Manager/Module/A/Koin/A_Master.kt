@@ -196,7 +196,7 @@ val classesHandlersModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { A_ViewModel_NewProtoPatterns(androidContext(), get(), get(),get(),  ) }
+    viewModel { A_ViewModel_NewProtoPatterns(androidContext(), get(), get(),get(), get() ) }
     viewModel { ViewModel_M9AppCompt(get(),  ) }
 
     viewModel { Preview_DataBaseInitFactory_15Grossist(get(),  ) }

@@ -79,8 +79,6 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
         onClick = {
         /*    (relative_Etate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME) .ifTrue {
                 viewModel.update_list_M3(
-                                            //<--
-                                            //TODO(1): ici trouve le relative m3 et copy son dernien achat a current
                     aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.map {
                         it.dernierTimeTampsSynchronisationAvecFireBase
                     }

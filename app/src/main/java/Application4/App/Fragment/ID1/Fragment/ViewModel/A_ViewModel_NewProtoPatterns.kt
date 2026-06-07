@@ -16,7 +16,6 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,12 +24,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 
-@SuppressLint("StaticFieldLeak")
 class A_ViewModel_NewProtoPatterns(
     private val context: Context,
     val appDatabase: AppDatabase,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     val wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
+    val repo13TarificationInfos: V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos,
 ) : ViewModel() {
     val active_Datas = ActiveDatasFragNewProto()
     private val updater = Setter_ViewModel_NewProtoPatterns(this)
@@ -70,6 +69,9 @@ class A_ViewModel_NewProtoPatterns(
     init {
         fragmentNavigationHandler.closeAllActiveFragments()
         Initializer_ViewModel(this@A_ViewModel_NewProtoPatterns).run()
+        repo13TarificationInfos.on_update_M13TarificationInfos_par_ecriture = {
+            update_M13TarificationInfos(it)
+        }
     }
 
     fun retryLoadingData() {
@@ -167,6 +169,7 @@ class A_ViewModel_NewProtoPatterns(
 
     override fun onCleared() {
         super.onCleared()
+        repo13TarificationInfos.on_update_M13TarificationInfos_par_ecriture = null
     }
 
     /**

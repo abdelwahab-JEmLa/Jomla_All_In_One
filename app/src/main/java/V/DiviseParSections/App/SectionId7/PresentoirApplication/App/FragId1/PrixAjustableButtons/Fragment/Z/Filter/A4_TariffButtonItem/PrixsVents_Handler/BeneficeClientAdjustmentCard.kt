@@ -71,7 +71,6 @@ fun BeneficeClientAdjustmentCard(
     val colorTotal = Color(0xFF1976D2)          // bleu = client
     val colorUnit = colorTotal.copy(alpha = 0.5f)
 
-    // Card always renders — no external condition should hide it (see TODO note above)
     ElevatedCard {
         Column(modifier = Modifier.padding(2.dp)) {
 

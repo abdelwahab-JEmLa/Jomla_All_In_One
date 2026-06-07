@@ -60,8 +60,6 @@ class FeatureID1_ViewModel(
     }
 
     fun update_m9() {
-          //<--
-          //TODO(1):
     }
 
     fun add_New_M8BonVent(bon: M8BonVent) {
