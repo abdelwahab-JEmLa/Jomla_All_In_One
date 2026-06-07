@@ -1,11 +1,11 @@
-package Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive
+package Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components
 
+import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
-import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
-import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 
 data class UiState_NewProtoPatterns(
     val list_Datas: List_Datas? = null,

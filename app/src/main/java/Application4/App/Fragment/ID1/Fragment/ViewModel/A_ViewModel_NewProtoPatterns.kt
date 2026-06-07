@@ -1,8 +1,8 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import A_Main.Shared.Module.RepositorysMainSetter_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.Setter_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
@@ -45,8 +45,6 @@ class A_ViewModel_NewProtoPatterns(
         )
     }
 
-
-
     val wifiState = wifiTransferDatas_ControllerApp.state.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
@@ -74,16 +72,9 @@ class A_ViewModel_NewProtoPatterns(
     }
 
     fun retryLoadingData() {
-        // Use reload() — not run() — so we never spawn a second startPeriodicComptKeyCheck()
-        // loop. The periodic watcher is started exactly once inside init { … }.
         Initializer_ViewModel(this@A_ViewModel_NewProtoPatterns).reload()
     }
 
-    /**
-     * Attempts to persist a one-off [Edited_Pour_Client] tariff for [produit] on the
-     * current bon-vent.  Returns the newly created tariff on success, null otherwise
-     * (grossist mode, no active bon-vent, one already exists, bon too old, etc.).
-     */
     fun maybeCreateEditedPourClientTariff(
         produit: M01Produit,
         synthetic: M13TarificationInfos?,

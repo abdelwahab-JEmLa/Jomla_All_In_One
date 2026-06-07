@@ -1,6 +1,6 @@
 package Application2.App.Base.Modules
 
-import Application2.App.App.ViewModel.Feature.ViewModel_MainFragment
+import Application2.App.Fragment.ViewModel.ViewModel_MainFragment
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize

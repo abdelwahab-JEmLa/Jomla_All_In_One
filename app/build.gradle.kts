@@ -31,7 +31,7 @@ android {
 
         // Boutique_JeMla_All_In_On_Project
 
-        versionName = "1.14.0.05_26.08:46.c_JomLaElectroLivreurGrossist_PresenterScreen"
+        versionName = "1.14.0.05_26.08:46.Dev"
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

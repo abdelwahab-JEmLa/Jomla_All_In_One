@@ -1,4 +1,4 @@
-package Application4.App.Fragment.Z.Components
+package Application2.App.Fragment.Ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -33,7 +33,7 @@ import kotlinx.coroutines.delay
 fun ScrolleAdBanner(
     modifier: Modifier = Modifier,
     onBannerClick: (Int) -> Unit = {}, // Default empty handler
-    onClickImageToShowControles: () -> Unit = {}, // Default empty handler
+    onClickImageToShowControles: () -> Unit
 ) {
     var currentBannerIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()

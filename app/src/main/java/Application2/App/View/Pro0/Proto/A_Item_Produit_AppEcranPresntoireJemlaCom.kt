@@ -1,7 +1,7 @@
 package Application2.App.View.Pro0.Proto
 
-import Application2.App.App.ViewModel.Feature.ViewModel_MainFragment
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
+import Application2.App.Fragment.ViewModel.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.Components.Big_Principale_AppEcranPresntoireJemlaCom
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import Application2.App.View.Pro0.Proto.Components.SubColorCard_WithButton_app2

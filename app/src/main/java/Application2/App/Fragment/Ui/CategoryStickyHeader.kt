@@ -1,4 +1,4 @@
-package Application2.App.Fragment.Z.Components
+package Application2.App.Fragment.Ui
 
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit

@@ -1,4 +1,4 @@
-package Application2.App.Fragment.Z.Components.Dialogs
+package Application2.App.Fragment.Ui.Dialogs
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit

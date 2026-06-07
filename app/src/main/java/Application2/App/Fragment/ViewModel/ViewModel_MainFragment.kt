@@ -1,4 +1,4 @@
-package Application2.App.App.ViewModel.Feature
+package Application2.App.Fragment.ViewModel
 
 import Application2.App.Base.Modules.ProductDisplayController_App2
 import Application2.App.Base.Modules.WifiTransferDatas_PresenterApp
@@ -147,9 +147,6 @@ class ViewModel_MainFragment(
 
             val catalogues = get_ListM21CataloguesCategorie()
             cataloguesReady.value = true
-                            //<--
-            // Skip depot filter entirely for Panie+frères: that mode must show siblings of sold items
-            // even when their own depot count is zero.
             val currentMode = _uiState.value.filter_des_produits
             val filteredColors = dao_M3CouleurProduitInfos.getAll().let { allColors ->
                 if (currentMode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres)

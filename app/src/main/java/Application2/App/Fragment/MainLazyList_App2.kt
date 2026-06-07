@@ -1,6 +1,7 @@
 package Application2.App.Fragment
 
-import Application2.App.App.ViewModel.Feature.ViewModel_MainFragment
+import Application2.App.Fragment.Modules.HandlePresenterClientScroll_app2
+import Application2.App.Fragment.ViewModel.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.Item_Produit_AppEcranPresntoireJemlaCom
 import Application4.App.Fragment.ID1.Fragment.ProductListFilterLogic
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto

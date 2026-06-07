@@ -1,4 +1,4 @@
-package Application4.App.Fragment.ID1.Fragment
+package Application4.App.Fragment.Ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image

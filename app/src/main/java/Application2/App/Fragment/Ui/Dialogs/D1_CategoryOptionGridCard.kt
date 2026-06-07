@@ -1,4 +1,4 @@
-package Application2.App.Fragment.Z.Components.Dialogs
+package Application2.App.Fragment.Ui.Dialogs
 
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit

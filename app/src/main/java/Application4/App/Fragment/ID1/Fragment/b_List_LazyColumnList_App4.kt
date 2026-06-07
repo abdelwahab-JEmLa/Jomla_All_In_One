@@ -2,7 +2,7 @@ package Application4.App.Fragment.ID1.Fragment
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
@@ -99,7 +99,6 @@ fun Main_LazyColumnList_App4(
 
     val gridColumns by remember {
         derivedStateOf {
-            // Same fix: read from activeDatas, not from the captured `mode` parameter.
             when (activeDatas.filterAffichageMode_Proto) {
                 Filter_Affichage_Mode_Proto.Echants_Seulement -> 4
                 else -> 2

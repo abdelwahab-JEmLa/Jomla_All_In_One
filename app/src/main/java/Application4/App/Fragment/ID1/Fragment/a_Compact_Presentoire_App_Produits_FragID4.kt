@@ -2,6 +2,7 @@ package Application4.App.Fragment.ID1.Fragment
 
 import A_Main.Shared.Views.Dialogs.B.Dialoge.PressistatntMainActivityButtons_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import Application4.App.Fragment.Ui.PubAbdelwahabElectroGroStore
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
@@ -157,7 +158,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 }
                 PubAbdelwahabElectroGroStore(
                     affiche = true,
-                    images  = landscapeImages.ifEmpty { allImageIds },  // fallback si tout est portrait
+                    images = landscapeImages.ifEmpty { allImageIds },  // fallback si tout est portrait
                     modifier = Modifier.fillMaxSize(),
                 )
             } else {

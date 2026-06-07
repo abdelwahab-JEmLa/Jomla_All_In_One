@@ -1,9 +1,9 @@
 package Application2.App.Fragment
 
-import Application2.App.App.ViewModel.Feature.ViewModel_MainFragment
 import Application2.App.Base.Modules.ConnexionCard_App2
 import Application2.App.Base.Repository.RepositorysMainGetter_app2
-import Application4.App.Fragment.ID1.Fragment.PubAbdelwahabElectroGroStore
+import Application2.App.Fragment.ViewModel.ViewModel_MainFragment
+import Application4.App.Fragment.Ui.PubAbdelwahabElectroGroStore
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.ifTrue
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.app.Activity
