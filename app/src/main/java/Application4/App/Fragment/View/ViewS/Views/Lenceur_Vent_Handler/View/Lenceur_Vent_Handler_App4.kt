@@ -42,6 +42,8 @@ fun Lenceur_Vent_Handler_App4(
     compactMode: Boolean = false,
     listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>?,
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    mode_selection_parent_couleur: M3CouleurProduitInfos? = null,
+    on_pour_update_mode_selection_parent_couleur: (M3CouleurProduitInfos?) -> Unit = {},
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
@@ -256,6 +258,19 @@ fun Lenceur_Vent_Handler_App4(
                 add_spacing_between_depot_and_sale = isAdmin,
                 affiche_ProduitDataBaseEdites = viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
                 affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                c_unite_couleur_de_couleurKey = selectedCouleur.c_unite_couleur_de_couleurKey,
+                mode_selection_parent_couleur_key = mode_selection_parent_couleur?.keyID ?: "",
+                is_this_color_selected_as_parent_for_link = mode_selection_parent_couleur?.keyID == selectedCouleur.keyID,
+                on_pour_mode_selection_parent_couleur = { on_pour_update_mode_selection_parent_couleur(selectedCouleur) },
+                on_set_c_unite_key = { key ->
+                    val parentColor = mode_selection_parent_couleur
+                    if (parentColor != null) {
+                        viewModel.update_m3couleur(parentColor.copy(c_unite_couleur_de_couleurKey = selectedCouleur.keyID))
+                        on_pour_update_mode_selection_parent_couleur(null)
+                    } else {
+                        viewModel.update_m3couleur(selectedCouleur.copy(c_unite_couleur_de_couleurKey = key))
+                    }
+                },
                 on_admin_depot_update = { newDepotCount ->
                     viewModel.update_depot_count(selectedCouleur, newDepotCount)
                 },

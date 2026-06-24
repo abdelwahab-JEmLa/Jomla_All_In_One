@@ -89,6 +89,9 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     c_unite_couleur_de_couleurKey: String = "",
     on_set_c_unite_key: (String) -> Unit = {},
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    mode_selection_parent_couleur_key: String = "",
+    is_this_color_selected_as_parent_for_link: Boolean = false,
+    on_pour_mode_selection_parent_couleur: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -96,7 +99,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     var quantityInput by remember(start_count) { mutableStateOf("") }
     var isEditDepotMode by remember { mutableStateOf(false) }
     var depotInput by remember(au_depot) { mutableStateOf("") }
-    var mode_c_unite_actif by remember { mutableStateOf(c_unite_couleur_de_couleurKey.isNotEmpty()) }
+    val mode_c_unite_actif = c_unite_couleur_de_couleurKey.isNotEmpty() || is_this_color_selected_as_parent_for_link
     val focusRequester = remember { FocusRequester() }
     val depotFocusRequester = remember { FocusRequester() }
 
@@ -202,12 +205,15 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                 verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 maxItemsInEachRow = 2
             ) {
-                if (affiche_buttons_lien_unite_couleur_au_couleut_parent && is_admin) {
+                if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
                     Card(
                         modifier = Modifier
                             .clickable {
-                                mode_c_unite_actif = !mode_c_unite_actif
-                                if (!mode_c_unite_actif) on_set_c_unite_key("")
+                                if (c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                                    on_set_c_unite_key("")
+                                } else {
+                                    on_pour_mode_selection_parent_couleur()
+                                }
                             }
                             .semantics(mergeDescendants = true) {
                                 set(value = affiche_buttons_lien_unite_couleur_au_couleut_parent, key = SemanticsPropertyKey("affiche_buttons_lien_unite_couleur_au_couleut_parent"))
@@ -221,6 +227,10 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                                 MaterialTheme.colorScheme.surfaceVariant
                         )
                     ) {
+                        // En activant mode_c_unite_actif, toutes les couleurs du même produit
+                        // s'affichent comme «prêtes» — comportement voulu : l'utilisateur peut
+                        // cliquer sur une autre couleur pour la lier comme 2ème image-unité de
+                        // celle-ci, reliée via c_unite_couleur_de_couleurKey (M3 update).
                         Text(
                             text = if (mode_c_unite_actif) "⛓ cé" else "⛓",
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
@@ -234,11 +244,16 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                     }
                 }
 
-                // Bouton gauche de validation quand mode_c_unite_actif
-                if (mode_c_unite_actif) {
+                // Bouton gauche de validation quand mode_c_unite_actif ou mode sélection actif
+                val showValidationButton = mode_c_unite_actif || (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link)
+                if (showValidationButton && is_admin) {
                     Card(
                         modifier = Modifier.clickable {
-                            on_set_c_unite_key(c_unite_couleur_de_couleurKey)
+                            if (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link) {
+                                on_set_c_unite_key(mode_selection_parent_couleur_key)
+                            } else {
+                                on_set_c_unite_key(c_unite_couleur_de_couleurKey)
+                            }
                         },
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(

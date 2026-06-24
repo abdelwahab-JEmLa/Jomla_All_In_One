@@ -13,8 +13,16 @@ object ProductListFilterLogic {
     // ── Step 1 ───────────────────────────────────────────────────────────────
     fun filterByDepot(
         list: List<M3CouleurProduitInfos>,
-    ): List<M3CouleurProduitInfos> =
-        list.filter { it.count_Don_Depot > 0 }
+    ): List<M3CouleurProduitInfos> {
+        val counts = list.associate { it.keyID to it.count_Don_Depot }
+        return list.filter {
+            if (it.c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                (counts[it.c_unite_couleur_de_couleurKey] ?: 0) > 0
+            } else {
+                it.count_Don_Depot > 0
+            }
+        }
+    }
 
     // ── Step 2 ───────────────────────────────────────────────────────────────
     fun filterByQuery(
@@ -123,6 +131,19 @@ object ProductListFilterLogic {
         }
     }
 
+    fun filterLinkedColors(
+        list: List<M3CouleurProduitInfos>,
+    ): List<M3CouleurProduitInfos> {
+        val counts = list.associate { it.keyID to it.count_Don_Depot }
+        return list.filter {
+            if (it.c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                (counts[it.c_unite_couleur_de_couleurKey] ?: 0) > 0
+            } else {
+                true
+            }
+        }
+    }
+
     // ── Main entry-point ─────────────────────────────────────────────────────
     fun compute(
         rawColors: List<M3CouleurProduitInfos>?,
@@ -143,7 +164,9 @@ object ProductListFilterLogic {
             mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres &&
                     query.trim().isNotEmpty()
 
-        val filtered = rawColors
+        val cleanColors = rawColors?.let { filterLinkedColors(it) }
+
+        val filtered = cleanColors
             ?.let { filterByQuery(it, query, productMap) }
             ?.let { if (skipModeFilter) it else filterByMode(it, mode, ventCouleurs) }
             ?: return emptyList()

@@ -79,15 +79,10 @@ fun Main_LazyColumnList_App4(
 
     val finale_filtred_list by remember {
         derivedStateOf {
-            val currentColors = activeDatas.list_M03CouleurProduitInfos
-                ?.filter { couleur ->
-                    // Exclure les couleurs liées (c_unite) sans stock au dépôt
-                    !(couleur.c_unite_couleur_de_couleurKey.isNotEmpty() && couleur.count_Don_Depot == 0)
-                }
             activeDatas.filter_relode_tiger
 
             ProductListFilterLogic.compute(
-                rawColors = currentColors,
+                rawColors = activeDatas.list_M03CouleurProduitInfos,
                 productMap = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
                 query = activeDatas.filter_echatilaten.trim().lowercase(),
                 mode = currentMode,

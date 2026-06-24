@@ -90,7 +90,8 @@ fun A_Item_Produit_App4(
     var big_presenter_couleur_produit by remember(initialColorIndex) {
         mutableStateOf(initialColorIndex)
     }
-
+    val m3 = relative_ListM3Couleurs.getOrNull(big_presenter_couleur_produit)
+    var mode_selection_parent_couleur by remember { mutableStateOf<M3CouleurProduitInfos?>(null) }
     LaunchedEffect(expanded_M3CouleurProduitInfos, relative_ListM3Couleurs) {
         expanded_M3CouleurProduitInfos?.let { expandedColor ->
             if (expandedColor.parentBProduitOldID == relative_M1produit.id) {
@@ -215,7 +216,8 @@ fun A_Item_Produit_App4(
     val categoryClickForHeader: (() -> Unit)? = if (isAdmin) onCategoryClick else null
 
     Column(
-        modifier = modifier
+        modifier = modifier       //<--
+        //TODO(1): sem_ m1
             .fillMaxWidth()
             .background(itemBackgroundColor, RoundedCornerShape(8.dp))
             .padding(cardPadding)
@@ -299,6 +301,14 @@ fun A_Item_Produit_App4(
             isThisProductExpanded = isThisProductExpanded,
             shouldShowButtons = shouldShowButtons,
             affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+            mode_selection_parent_couleur = mode_selection_parent_couleur,
+            on_pour_update_mode_selection_parent_couleur = { clickedColor ->
+                if (mode_selection_parent_couleur?.keyID == clickedColor?.keyID) {
+                    mode_selection_parent_couleur = null
+                } else {
+                    mode_selection_parent_couleur = clickedColor
+                }
+            },
         )
 
         if (relative_ListM3Couleurs.size > 1) {
@@ -322,6 +332,14 @@ fun A_Item_Produit_App4(
                                 modifier = Modifier.weight(1f, fill = false),
                                 shouldShowButtons = shouldShowButtons,
                                 affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                                mode_selection_parent_couleur = mode_selection_parent_couleur,
+                                on_pour_update_mode_selection_parent_couleur = { clickedColor ->
+                                    if (mode_selection_parent_couleur?.keyID == clickedColor?.keyID) {
+                                        mode_selection_parent_couleur = null
+                                    } else {
+                                        mode_selection_parent_couleur = clickedColor
+                                    }
+                                },
                             )
                         }
                     }
@@ -342,6 +360,14 @@ fun A_Item_Produit_App4(
                                 isExpanded = false,
                                 modifier = Modifier.fillMaxWidth(),
                                 affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                                mode_selection_parent_couleur = mode_selection_parent_couleur,
+                                on_pour_update_mode_selection_parent_couleur = { clickedColor ->
+                                    if (mode_selection_parent_couleur?.keyID == clickedColor?.keyID) {
+                                        mode_selection_parent_couleur = null
+                                    } else {
+                                        mode_selection_parent_couleur = clickedColor
+                                    }
+                                },
                             )
                         }
                     }
