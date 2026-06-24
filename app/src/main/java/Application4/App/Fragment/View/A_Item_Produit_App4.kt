@@ -46,6 +46,7 @@ fun A_Item_Produit_App4(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     relative_ListM3Couleurs_override: List<M3CouleurProduitInfos>? = null,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
@@ -297,6 +298,7 @@ fun A_Item_Produit_App4(
             tariffsList = datasValue_distinct_type,
             isThisProductExpanded = isThisProductExpanded,
             shouldShowButtons = shouldShowButtons,
+            affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
         )
 
         if (relative_ListM3Couleurs.size > 1) {
@@ -319,6 +321,7 @@ fun A_Item_Produit_App4(
                                 isExpanded = true,
                                 modifier = Modifier.weight(1f, fill = false),
                                 shouldShowButtons = shouldShowButtons,
+                                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                             )
                         }
                     }
@@ -337,7 +340,8 @@ fun A_Item_Produit_App4(
                                 selectedTariff = selectedTariff,
                                 shouldShowButtons = shouldShowButtons,
                                 isExpanded = false,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                             )
                         }
                     }

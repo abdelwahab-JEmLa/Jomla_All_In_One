@@ -1,6 +1,5 @@
 package EntreApps.Shared.Models.Relative_Produits.Models
 
-import Application4.App.Fragment.ID1.Fragment.ProductListFilterLogic
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_Local_storageLink
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
@@ -32,6 +31,7 @@ data class M3CouleurProduitInfos(
     //-------------------------------Filters---------------------------------------------------------------------------------------------------------------------------------
     var its_pour_affiche_au_presenter: Boolean = false,
     var its_in_echantiallants: Boolean = false,
+    var c_unite_couleur_de_couleurKey: String = "",
 
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
     var parentProduit_Classement: Int? = null,
@@ -62,6 +62,7 @@ data class M3CouleurProduitInfos(
         "nomImageFichieSansEtansion" to nomImageFichieSansEtansion,
         "telephone_Prise_depuit" to telephone_Prise_depuit,
         "count_Don_Depot" to count_Don_Depot,
+        "c_unite_couleur_de_couleurKey" to c_unite_couleur_de_couleurKey,
         "a_cammende_depuit_grossist" to a_cammende_depuit_grossist,
         "nomCouleurStrSiSonImageDispo" to nomCouleurStrSiSonImageDispo,
         "parentBProduitInfosKeyID" to parentBProduitInfosKeyID,

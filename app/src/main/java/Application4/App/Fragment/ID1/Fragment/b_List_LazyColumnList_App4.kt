@@ -51,6 +51,7 @@ fun Main_LazyColumnList_App4(
     justMovedProductKeyID: String?,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     ventCouleurs: List<M10OperationVentCouleur>,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
@@ -79,6 +80,10 @@ fun Main_LazyColumnList_App4(
     val finale_filtred_list by remember {
         derivedStateOf {
             val currentColors = activeDatas.list_M03CouleurProduitInfos
+                ?.filter { couleur ->
+                    // Exclure les couleurs liées (c_unite) sans stock au dépôt
+                    !(couleur.c_unite_couleur_de_couleurKey.isNotEmpty() && couleur.count_Don_Depot == 0)
+                }
             activeDatas.filter_relode_tiger
 
             ProductListFilterLogic.compute(
@@ -179,6 +184,7 @@ fun Main_LazyColumnList_App4(
                     justMoved = product.keyID == justMovedProductKeyID,
                     uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                     on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
+                    affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                 )
             }
         }
@@ -193,7 +199,8 @@ fun LazyStigerList_Produits_FragID4(
     onCategoryClick: (() -> Unit)? = null,
     justMoved: Boolean = false,
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
-    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit
+    on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
 ) {
     val backgroundColor by animateColorAsState(
         targetValue = if (justMoved) Color(0xFF4CAF50).copy(alpha = 0.3f) else Color.Transparent,
@@ -220,6 +227,7 @@ fun LazyStigerList_Produits_FragID4(
             uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
             relative_ListM3Couleurs_override = colors,
             on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
+            affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
         )
     }
 }

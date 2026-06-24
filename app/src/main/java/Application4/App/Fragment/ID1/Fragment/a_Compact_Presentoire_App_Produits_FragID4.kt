@@ -37,9 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import org.koin.compose.koinInject
 import com.example.clientjetpack.R
 import kotlinx.coroutines.delay
+import org.koin.compose.koinInject
 
 @Composable
 fun A_Compact_Presentoire_App_Produits_App4(
@@ -48,6 +48,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
     appDatabase: AppDatabase,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
 ) {
     val context = LocalContext.current
     val repo13TarificationInfos =
@@ -72,7 +73,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
         viewModelNewProtoPatterns.retryLoadingData()
     }
 
-    var showFabDropdown_Compact_Presentoire_App_Produits_FragID4 by remember { mutableStateOf(false) }
+    val showFabDropdown_Compact_Presentoire_App_Produits_FragID4 by fragmentNavigationHandler.showFabDropdown_Compact_Presentoire.collectAsState()
     var affiche_pub_abdelwahab_electro_gro_store by remember { mutableStateOf(false) }
 
     val active_Datas = viewModelNewProtoPatterns.active_Datas
@@ -176,6 +177,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
                     justMovedProductKeyID = justMovedProductKeyID,
                     on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
                     ventCouleurs = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+                    affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent
                 )
             }
 
@@ -244,7 +246,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
         FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
             viewModelNewProtoPatterns = viewModelNewProtoPatterns,
             onDismissDropdown = {
-                showFabDropdown_Compact_Presentoire_App_Produits_FragID4 = false
+                fragmentNavigationHandler.setShowFabDropdown_Compact_Presentoire(false)
             },
         )
     }

@@ -40,6 +40,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -83,6 +85,10 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     modifier: Modifier = Modifier,
     on_Data_Update: (Int) -> Unit,
     startCouleur: Color = Color(0xFF3F51B5),
+    affiche_ProduitDataBaseEdites: Boolean = false,
+    c_unite_couleur_de_couleurKey: String = "",
+    on_set_c_unite_key: (String) -> Unit = {},
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
 ) {
     val context = LocalContext.current
 
@@ -90,6 +96,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     var quantityInput by remember(start_count) { mutableStateOf("") }
     var isEditDepotMode by remember { mutableStateOf(false) }
     var depotInput by remember(au_depot) { mutableStateOf("") }
+    var mode_c_unite_actif by remember { mutableStateOf(c_unite_couleur_de_couleurKey.isNotEmpty()) }
     val focusRequester = remember { FocusRequester() }
     val depotFocusRequester = remember { FocusRequester() }
 
@@ -195,6 +202,59 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                 verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 maxItemsInEachRow = 2
             ) {
+                if (affiche_buttons_lien_unite_couleur_au_couleut_parent && is_admin) {
+                    Card(
+                        modifier = Modifier
+                            .clickable {
+                                mode_c_unite_actif = !mode_c_unite_actif
+                                if (!mode_c_unite_actif) on_set_c_unite_key("")
+                            }
+                            .semantics(mergeDescendants = true) {
+                                set(value = affiche_buttons_lien_unite_couleur_au_couleut_parent, key = SemanticsPropertyKey("affiche_buttons_lien_unite_couleur_au_couleut_parent"))
+                            },
+
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (mode_c_unite_actif)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Text(
+                            text = if (mode_c_unite_actif) "⛓ cé" else "⛓",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = textStyle,
+                            fontWeight = FontWeight.Bold,
+                            color = if (mode_c_unite_actif)
+                                MaterialTheme.colorScheme.onPrimary
+                            else
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                // Bouton gauche de validation quand mode_c_unite_actif
+                if (mode_c_unite_actif) {
+                    Card(
+                        modifier = Modifier.clickable {
+                            on_set_c_unite_key(c_unite_couleur_de_couleurKey)
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Text(
+                            text = "✓",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = textStyle,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                    }
+                }
+
                 if (au_depot > 0 || affichable_mem_si_zero_depot) {
                     Card(
                         modifier = Modifier
@@ -224,12 +284,15 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                                 tint = Color.Black,
                                 modifier = Modifier.size((iconSize.value * 0.7f).dp)
                             )
-                            Text(
-                                text = au_depot.toString(),
-                                style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f),
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
-                            )
+                            // N'afficher le count que si la couleur n'est pas liée (mode c_unite)
+                            if (c_unite_couleur_de_couleurKey.isEmpty()) {
+                                Text(
+                                    text = au_depot.toString(),
+                                    style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f),
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
                         }
                     }
                 }

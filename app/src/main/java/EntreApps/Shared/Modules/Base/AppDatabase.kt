@@ -116,7 +116,7 @@ import java.util.Date
 
         M09AppCompt::class,
     ],
-    version = 4, // Bumped from 3 → 4 to register the new AppTypeConverter
+    version = 5, // Bumped from 4 → 5: added active_DropDown_FabButton to M09AppCompt + c_unite_couleur_de_couleurKey to M3CouleurProduitInfos
     exportSchema = false
 )
 @TypeConverters(

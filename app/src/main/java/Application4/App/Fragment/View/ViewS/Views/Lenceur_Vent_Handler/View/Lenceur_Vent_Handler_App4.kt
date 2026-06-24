@@ -41,6 +41,7 @@ fun Lenceur_Vent_Handler_App4(
     selectedTariff: M13TarificationInfos,
     compactMode: Boolean = false,
     listM10OperationVentCouleur_FilteredBy_activeM8BonVent: List<M10OperationVentCouleur>?,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
@@ -253,6 +254,8 @@ fun Lenceur_Vent_Handler_App4(
                 show_depot_card_on_top_in_flow_row = true,
                 is_admin = isAdmin,
                 add_spacing_between_depot_and_sale = isAdmin,
+                affiche_ProduitDataBaseEdites = viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
+                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                 on_admin_depot_update = { newDepotCount ->
                     viewModel.update_depot_count(selectedCouleur, newDepotCount)
                 },

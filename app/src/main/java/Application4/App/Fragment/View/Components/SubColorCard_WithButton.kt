@@ -23,7 +23,8 @@ fun SubColorCard_WithButton(
     isExpanded: Boolean,
     modifier: Modifier = Modifier,
     shouldShowButtons: Boolean,
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
@@ -48,7 +49,8 @@ fun SubColorCard_WithButton(
                 selectedTariff = selectedTariff,
                 compactMode = !isExpanded,
                 listM10OperationVentCouleur_FilteredBy_activeM8BonVent =
-                    viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                    viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent
             )
         }
     }

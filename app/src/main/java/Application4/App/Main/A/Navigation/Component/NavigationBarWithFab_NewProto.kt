@@ -1,7 +1,5 @@
 package Application4.App.Main.A.Navigation.Component
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.FabDropdownMenu
 import V.DiviseParSections.App._0.Navigation.Main_DropDown.Panie.FabDropdownMenu_WhenIts_Frag_Panie
@@ -46,6 +44,10 @@ fun NavigationBarWithFab_NewProto(
     showWarningState: Boolean = true,
     onClickImageToShowControles: () -> Unit = {},
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
+    fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
+    affiche_ProduitDataBaseEdites: Boolean = false,
+    onToggleProduitDataBaseEdites: (Boolean) -> Unit,
+    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit = {},
 ) {
     val its_Panier = currentRoute == Screen_NewProtoPattern.Panier.route
     val its_A_Clients_LocationGps =
@@ -54,7 +56,6 @@ fun NavigationBarWithFab_NewProto(
         currentRoute == Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route
 
     var showFabDropdown_Panier by remember { mutableStateOf(false) }
-    var showFabDropdown_Compact_Presentoire_App_Produits_FragID4 by remember { mutableStateOf(false) }
 
     var affiche_Win_La_Generation_Pdf_Est_Termine_du_Bon by remember { mutableStateOf(false) }
     var snoozeActive by remember { mutableStateOf(false) }
@@ -124,27 +125,36 @@ fun NavigationBarWithFab_NewProto(
                 showWarningState = showWarningState,
                 isFabVisible = isFabVisible,
                 its_Targeted_Frag = true,   // routes click through onShowDropdown
+                affiche_ProduitDataBaseEdites = affiche_ProduitDataBaseEdites,
                 onToggleFabVisibility = {},
-                onShowDropdown = { showFabDropdown_Compact_Presentoire_App_Produits_FragID4 = true }
+                onShowDropdown = { fragmentNavigationHandler.setShowFabDropdown_Compact_Presentoire(true) },
+                onToggleProduitDataBaseEdites = onToggleProduitDataBaseEdites,
+                on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent
             )
 
             its_Panier -> FabButton_newProto(
                 showWarningState = showWarningState, isFabVisible = isFabVisible,
                 its_Targeted_Frag = true,
+                affiche_ProduitDataBaseEdites = affiche_ProduitDataBaseEdites,
                 onToggleFabVisibility = {
                     showFabDropdown_Panier = true
                 },
                 onShowDropdown = {
                     showFabDropdown_Panier = true
-                }
+                },
+                onToggleProduitDataBaseEdites = onToggleProduitDataBaseEdites,
+                on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent
             )
 
             else -> FabButton_newProto(
                 showWarningState = showWarningState,
                 isFabVisible = isFabVisible,
                 its_Targeted_Frag = its_A_Clients_LocationGps,
+                affiche_ProduitDataBaseEdites = affiche_ProduitDataBaseEdites,
                 onToggleFabVisibility = onToggleFabVisibility,
-                onShowDropdown = { showFabDropdown_Gps = true }
+                onShowDropdown = { showFabDropdown_Gps = true },
+                onToggleProduitDataBaseEdites = onToggleProduitDataBaseEdites,
+                on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent
             )
         }
 

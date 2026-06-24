@@ -43,6 +43,7 @@ fun Big_Principale_FragID3(
     isThisProductExpanded: Boolean,
     shouldShowButtons: Boolean,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
@@ -95,6 +96,7 @@ fun Big_Principale_FragID3(
                 selectedTariff = selectedTariff,
                 compactMode = !isThisProductExpanded,
                 listM10OperationVentCouleur_FilteredBy_activeM8BonVent = viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
             )
 
             Pricipale_Tariffs_Vendeurs_FragID3(

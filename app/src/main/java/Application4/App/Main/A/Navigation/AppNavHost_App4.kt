@@ -55,6 +55,7 @@ fun  AppNavHost_App4(
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
     appDatabase: AppDatabase,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
@@ -108,6 +109,7 @@ fun  AppNavHost_App4(
                             wifiTransferDatas_ControllerApp = wifiTransferDatas_ControllerApp,
                             appDatabase = appDatabase,
                             fragmentNavigationHandler = fragmentNavigationHandler,
+                            affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                             on_update_M13TarificationInfos_par_ecriture = { updated ->
                                 on_update_M13TarificationInfos_par_ecriture(updated)
                                 list_M13TarificationInfos = list_M13TarificationInfos

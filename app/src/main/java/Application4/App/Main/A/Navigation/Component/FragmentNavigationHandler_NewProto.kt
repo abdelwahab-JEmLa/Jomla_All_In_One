@@ -18,6 +18,13 @@ class FragmentNavigationHandler_NewProto {
     private val _currentFragment = MutableStateFlow<Screen_NewProtoPattern?>(null)
     val currentFragment: StateFlow<Screen_NewProtoPattern?> = _currentFragment.asStateFlow()
 
+    private val _showFabDropdown_Compact_Presentoire = MutableStateFlow(false)
+    val showFabDropdown_Compact_Presentoire: StateFlow<Boolean> = _showFabDropdown_Compact_Presentoire.asStateFlow()
+
+    fun setShowFabDropdown_Compact_Presentoire(show: Boolean) {
+        _showFabDropdown_Compact_Presentoire.value = show
+    }
+
     private val _activeFragments = mutableSetOf<Screen_NewProtoPattern>()
 
     fun setNavController(navController: NavController) { _navController = navController }
