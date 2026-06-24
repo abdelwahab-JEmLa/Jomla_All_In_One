@@ -33,7 +33,9 @@ android {
 
         // Boutique_JeMla_All_In_On_Project
 
-        versionName = "1.14.0.06_18.08:47.Dev"
+        versionName = "1.14.0.08_24.20:22.Client_JetPack.A_AllInOne"  //<--
+        //TODO(2.C Relative Au Todo(1): 
+                //... n oublie pas de update chaqe Client_JetPack.A_AllInOne par le corespondont b_JomLaElectroLivreurGrossist_VendeurHost ou a_AllInOne ou c_JomLaElectroLivreurGrossist_PresenterScreen
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
