@@ -20,6 +20,9 @@
 - Le mot-clé/déclencheur `ref_json` ou `references` correspond à la configuration globale des chemins de projet dans [references.json](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/references.json).
 - Utilisez toujours les chemins définis dans ce fichier pour cibler les opérations sur d'autres applications.
 
+## Résolution des Noms de Skills Globaux
+- Toute référence à `h_` (ou `help_skill`/`help_skills`) ou `b_c` (ou `build_client`) désigne respectivement les répertoires de skills globaux [h_](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/h_) et [build_client](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/build_client).
+
 ## Conventions de Compilation & Déploiement (`build_client`)
 - Pour compiler la version cliente, utilisez le skill global `build_client` (`b_c`, `bc_` ou `b_c_all`).
 - **Conservation de l'horodatage** : L'incrémentation de build dans [build.gradle.kts](file:///D:/AndroidStudioProjects/ClientJetPack/app/build.gradle.kts) doit conserver le timestamp existant (ex : `_24.20:22`) et ne pas le remplacer par l'heure de compilation active.
