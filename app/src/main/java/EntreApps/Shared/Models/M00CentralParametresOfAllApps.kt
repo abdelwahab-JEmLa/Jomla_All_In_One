@@ -54,7 +54,7 @@ data class M00CentralParametresOfAllApps(
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val itsDevMode: Boolean = false,
 
-    val chose_ref_test_For_Datas_Car_C_DevMode: Boolean = true,
+    val chose_ref_test_For_Datas_Car_C_DevMode: Boolean = false,
 
     val force_next_start_DeleteInsertAll: Boolean = false,
     val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
@@ -63,7 +63,7 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.JomLaElectroLivreurGrossist_VendeurHost
         } else {
-            AppType.AllInOne
+            AppType.JomLaElectroLivreurGrossist_VendeurHost
 
            // AppType.AllInOne
            // AppType.JomLaElectroLivreurGrossist_VendeurHost

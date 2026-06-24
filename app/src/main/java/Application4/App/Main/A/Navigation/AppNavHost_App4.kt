@@ -47,7 +47,7 @@ private val heavyModulesLoaded = AtomicBoolean(false)
 
 @SuppressLint("RememberReturnType")
 @Composable
-fun AppNavHost_App4(
+fun  AppNavHost_App4(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     innerPadding: PaddingValues = PaddingValues(),
@@ -83,38 +83,42 @@ fun AppNavHost_App4(
         ) {
             composable(route = Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4.route) {
                 LaunchedEffect(Unit) {
-                    if (heavyModulesLoaded.get()) {
-                        runCatching { GlobalContext.get().unloadModules(heavyModules) }
+                    if (!heavyModulesLoaded.get()) {
+                        runCatching { GlobalContext.get().loadModules(heavyModules) }
                             .onSuccess {
-                                heavyModulesLoaded.set(false)
-                                heavyReady.value = false
+                                heavyModulesLoaded.set(true)
+                                heavyReady.value = true
                             }
+                    } else {
+                        heavyReady.value = true
                     }
                 }
 
-                var initDone by remember { mutableStateOf(false) }
+                if (heavyReady.value) {
+                    var initDone by rememberSaveable { mutableStateOf(false) }
 
-                if (!initDone) {
-                    A_LoadingApp4_Init_Screen(
-                        innerPadding = PaddingValues(),
-                        onInitDone = { initDone = true },
-                        appDatabase = appDatabase
-                    )
-                } else {
-                    A_Compact_Presentoire_App_Produits_App4(
-                        wifiTransferDatas_ControllerApp = wifiTransferDatas_ControllerApp,
-                        appDatabase = appDatabase,
-                        fragmentNavigationHandler = fragmentNavigationHandler,
-                        on_update_M13TarificationInfos_par_ecriture = { updated ->
-                            on_update_M13TarificationInfos_par_ecriture(updated)
-                            list_M13TarificationInfos = list_M13TarificationInfos
-                                .toMutableList()
-                                .apply {
-                                    val index = indexOfFirst { it.keyID == updated.keyID }
-                                    if (index >= 0) set(index, updated) else add(updated)
-                                }
-                        },
-                    )
+                    if (!initDone) {
+                        A_LoadingApp4_Init_Screen(
+                            innerPadding = PaddingValues(),
+                            onInitDone = { initDone = true },
+                            appDatabase = appDatabase
+                        )
+                    } else {
+                        A_Compact_Presentoire_App_Produits_App4(
+                            wifiTransferDatas_ControllerApp = wifiTransferDatas_ControllerApp,
+                            appDatabase = appDatabase,
+                            fragmentNavigationHandler = fragmentNavigationHandler,
+                            on_update_M13TarificationInfos_par_ecriture = { updated ->
+                                on_update_M13TarificationInfos_par_ecriture(updated)
+                                list_M13TarificationInfos = list_M13TarificationInfos
+                                    .toMutableList()
+                                    .apply {
+                                        val index = indexOfFirst { it.keyID == updated.keyID }
+                                        if (index >= 0) set(index, updated) else add(updated)
+                                    }
+                            },
+                        )
+                    }
                 }
             }
 
