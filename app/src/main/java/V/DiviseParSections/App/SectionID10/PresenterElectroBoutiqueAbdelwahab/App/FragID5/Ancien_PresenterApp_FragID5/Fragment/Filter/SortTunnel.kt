@@ -15,22 +15,41 @@ fun SortTunnel(
     enableCategoryGrouping: Boolean,
     repositorysMainGetter: RepositorysMainGetter,
     prioritiseProduitsEnVente: Boolean = false,
-    onVentProduitKeyIDs: Set<String> = emptySet()
+    onVentProduitKeyIDs: Set<String> = emptySet(),
+    onVentProduitOldIDs: Set<Long> = emptySet()
 ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
                                             //<--
-    // ── helper: float en-vente products to the top of every category ──────────
+    // ── helper: float en-vente products to the top of every category, and their parent categories/catalogues to the top ──────────
     fun floatEnVente(
         result: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>
-    ) = result.map { (catalogue, categories) ->
-        catalogue to categories.map { (category, products) ->
-            val (enVente, rest) = products.partition { (product, _) ->
-                product.keyID in onVentProduitKeyIDs
+    ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
+        val sortedCatalogues = result.sortedByDescending { (_, categories) ->
+            categories.any { (_, products) ->
+                products.any { (product, _) ->
+                    product.keyID in onVentProduitKeyIDs || product.id in onVentProduitOldIDs
+                }
             }
-            category to (enVente + rest)
+        }
+
+        return sortedCatalogues.map { (catalogue, categories) ->
+            val sortedCategories = categories.sortedByDescending { (_, products) ->
+                products.any { (product, _) ->
+                    product.keyID in onVentProduitKeyIDs || product.id in onVentProduitOldIDs
+                }
+            }
+
+            val floatedCategories = sortedCategories.map { (category, products) ->
+                val (enVente, rest) = products.partition { (product, _) ->
+                    product.keyID in onVentProduitKeyIDs || product.id in onVentProduitOldIDs
+                }
+                category to (enVente + rest)
+            }
+
+            catalogue to floatedCategories
         }
     }
 
-    val shouldFloat = prioritiseProduitsEnVente && onVentProduitKeyIDs.isNotEmpty()
+    val shouldFloat = false
 
     // ── no grouping: flatten → sort → optional float ───────────────────────────
     if (!enableCategoryGrouping) {

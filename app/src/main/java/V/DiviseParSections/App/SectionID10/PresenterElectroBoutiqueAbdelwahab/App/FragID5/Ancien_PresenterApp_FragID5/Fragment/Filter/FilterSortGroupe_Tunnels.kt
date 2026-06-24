@@ -32,10 +32,39 @@ fun FilterSortGroupe_Tunnels(
     isWifiClientConnected_1: Boolean
 ) {
     val currentAppCompt = focusedValuesGetter.currentActive_M9AppCompt
+    val activeOnVentBon = focusedValuesGetter.activeOnVent_M8BonVent
     val filterState = focusedValuesGetter.active_Central_Values.filterState_Facad_Boutique_FragId5
-        ?: FilterState_Facad_Boutique_FragId5()
+        ?: FilterState_Facad_Boutique_FragId5(prioritiseProduitsEnVente = activeOnVentBon != null)
 
     val catalogueFilter = currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+
+    // ── En-vente key IDs ──────────────────────────────────────────────────────
+    val onVentProduitKeyIDs = focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        .mapNotNull { op ->
+            if (op.parent_M1Produit_KeyId != "null" && op.parent_M1Produit_KeyId.isNotBlank()) {
+                op.parent_M1Produit_KeyId
+            } else {
+                val colorProdKey = repositorysMainGetter.repo3CouleurProduit.datasValue
+                    .find { it.keyID == op.parent_M3CouleurProduit_KeyID }
+                    ?.parentBProduitInfosKeyID
+                if (colorProdKey != null && colorProdKey != "null" && colorProdKey.isNotBlank()) {
+                    colorProdKey
+                } else {
+                    repositorysMainGetter.repoM1Produit.datasValue
+                        .find { it.id == op.parentProduitInfosOldId }
+                        ?.keyID
+                }
+            }
+        }
+        .filter { it != "null" && it.isNotBlank() }
+        .toSet()
+
+    val onVentProduitOldIDs = focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        .map { it.parentProduitInfosOldId }
+        .filter { it > 0 }
+        .toSet()
 
     // ── Filter ────────────────────────────────────────────────────────────────
     val filteredProducts = remember(
@@ -46,34 +75,28 @@ fun FilterSortGroupe_Tunnels(
         filterState.hidePrixVenteZero, filterState.hidePrixVentePositif,
         filterState.hideHeldPrioriteDemandAuGrossist, filterState.hideNonHeldPrioriteDemandAuGrossist,
         filterState.searchText, filterState.prixAchatTimeFilterDays, filterState.enablePrixAchatTimeFilter,
-        filterState.produit_a_Une_Couleur_Ac_Image
+        filterState.produit_a_Une_Couleur_Ac_Image,
+        filterState.prioritiseProduitsEnVente,
+        onVentProduitKeyIDs,
+        onVentProduitOldIDs
     ) {
         FilterTunnel(
             groupe_Par_Catalogue = groupe_Par_Catalogue,
             catalogueFilter = catalogueFilter,
-            filterState = filterState
+            filterState = filterState,
+            onVentProduitKeyIDs = onVentProduitKeyIDs,
+            onVentProduitOldIDs = onVentProduitOldIDs
         )
     }
 
-    // ── En-vente key IDs ──────────────────────────────────────────────────────
-    // FIXED: No longer wrapped in remember() — computed inline so its freshest
-    // value is always visible to the sortedProducts remember() key below.
-    val onVentProduitKeyIDs = focusedValuesGetter
-        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-        .map { it.parent_M1Produit_KeyId }
-        .toSet()
-
     // ── Sort + en-vente float ─────────────────────────────────────────────────
-    // FIXED: remember lives here, not inside SortTunnel (which is now a plain
-    // function). All keys that can change the output are listed, including
-    // prioritiseProduitsEnVente and onVentProduitKeyIDs, so the cache is
-    // invalidated as soon as the en-vente set or the toggle changes.
     val sortedProducts = remember(
         filteredProducts,
         filterState.sortOrderFacadeBoutique,
         filterState.enableCategoryGrouping,
         filterState.prioritiseProduitsEnVente,
-        onVentProduitKeyIDs
+        onVentProduitKeyIDs,
+        onVentProduitOldIDs
     ) {
         SortTunnel(
             filteredProducts = filteredProducts,
@@ -81,7 +104,8 @@ fun FilterSortGroupe_Tunnels(
             enableCategoryGrouping = filterState.enableCategoryGrouping,
             repositorysMainGetter = repositorysMainGetter,
             prioritiseProduitsEnVente = filterState.prioritiseProduitsEnVente,
-            onVentProduitKeyIDs = onVentProduitKeyIDs
+            onVentProduitKeyIDs = onVentProduitKeyIDs,
+            onVentProduitOldIDs = onVentProduitOldIDs
         )
     }
 

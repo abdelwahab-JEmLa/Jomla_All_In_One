@@ -99,6 +99,11 @@ fun Compact_Header_FragID3(
                         overflow = TextOverflow.Ellipsis,
                         lineHeight = if (isExpanded) 16.sp else 12.sp
                     )
+                    Text(
+                        text = "ID: ${relative_M1produit.id}",
+                        fontSize = if (isExpanded) 10.sp else 8.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
                     if (relative_M1produit.nomArab.isNotBlank() && isExpanded) {
                         Text(
                             text = relative_M1produit.nomArab,

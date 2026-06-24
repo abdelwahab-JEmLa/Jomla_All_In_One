@@ -17,7 +17,9 @@ import java.util.concurrent.TimeUnit
  fun FilterTunnel(
     groupe_Par_Catalogue: List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>>,
     catalogueFilter: String?,
-    filterState: FilterState_Facad_Boutique_FragId5
+    filterState: FilterState_Facad_Boutique_FragId5,
+    onVentProduitKeyIDs: Set<String> = emptySet(),
+    onVentProduitOldIDs: Set<Long> = emptySet()
 ): List<Pair<M21CataloguesCategorie, List<Pair<M16CategorieProduit, List<Pair<M01Produit, List<M3CouleurProduitInfos>>>>>>> {
     fun matchesCatalogue(catalogue: M21CataloguesCategorie, filter: String): Boolean {
         return catalogue.keyID == filter
@@ -35,6 +37,11 @@ import java.util.concurrent.TimeUnit
         product: M01Produit,
         colors: List<M3CouleurProduitInfos>
     ): Boolean {
+        // En vente active filter
+        if (filterState.prioritiseProduitsEnVente) {
+            if (product.keyID !in onVentProduitKeyIDs && product.id !in onVentProduitOldIDs) return false
+        }
+
         // Search text filter
         if (filterState.searchText.isNotEmpty()) {
             if (!product.nom.contains(filterState.searchText, ignoreCase = true) &&

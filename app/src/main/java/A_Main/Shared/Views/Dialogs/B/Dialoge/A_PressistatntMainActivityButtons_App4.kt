@@ -53,9 +53,7 @@ import kotlin.math.roundToInt
 @Composable
 fun PressistatntMainActivityButtons_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
-) {                         //<--
-//TODO(2.C Relative Au Todo(1): 
-        //... ca
+) {
     val activeDatas = viewModelNewProtoPatterns.active_Datas
     var sharedPdfPath by remember { mutableStateOf("") }
     var sharedPdfCount by remember { mutableStateOf(0) }

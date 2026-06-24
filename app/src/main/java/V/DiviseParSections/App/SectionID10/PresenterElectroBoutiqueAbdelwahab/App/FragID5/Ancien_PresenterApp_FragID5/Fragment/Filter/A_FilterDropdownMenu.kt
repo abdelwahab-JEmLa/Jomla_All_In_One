@@ -43,7 +43,9 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
     focusedValuesGetter: FocusedValuesGetter = koinInject()
 ) {
     val activeCentralValues = focusedValuesGetter.active_Central_Values
-    val currentFilterState = activeCentralValues.filterState_Facad_Boutique_FragId5 ?: FilterState_Facad_Boutique_FragId5()
+    val activeOnVentBon = focusedValuesGetter.activeOnVent_M8BonVent
+    val currentFilterState = activeCentralValues.filterState_Facad_Boutique_FragId5 
+        ?: FilterState_Facad_Boutique_FragId5(prioritiseProduitsEnVente = activeOnVentBon != null)
     val onFilterChanged: (FilterState_Facad_Boutique_FragId5) -> Unit = { newFilterState ->
         focusedValuesGetter.update_activeCentralValues(
             activeCentralValues.copy(filterState_Facad_Boutique_FragId5 = newFilterState)
@@ -193,7 +195,7 @@ fun FilterDropdownMenu_Its_FacadeElectroBoutique(
             }
             item {
                 FilterOption(
-                    label = "🛒 Produits en vente active en premier",
+                    label = "🛒 N'afficher que les produits en vente active",
                     checked = currentFilterState.prioritiseProduitsEnVente,
                     onCheckedChange = {
                         onFilterChanged(currentFilterState.copy(prioritiseProduitsEnVente = it))

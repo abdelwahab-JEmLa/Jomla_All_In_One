@@ -6,6 +6,8 @@ val localProps = Properties().apply {
     if (f.exists()) load(f.inputStream())
 }
 
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -31,7 +33,7 @@ android {
 
         // Boutique_JeMla_All_In_On_Project
 
-        versionName = "1.14.0.05_26.08:46.Dev"
+        versionName = "1.14.0.06_18.08:47.Dev"
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

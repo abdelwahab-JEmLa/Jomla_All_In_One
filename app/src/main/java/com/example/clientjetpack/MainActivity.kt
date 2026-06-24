@@ -72,7 +72,8 @@ class MainActivity : ComponentActivity() {
                         modules(appModule) else
                         modules(appModule_App2_ac_app1)
 
-                AppType.JomLaElectroLivreurGrossist_VendeurHost -> {}
+                AppType.JomLaElectroLivreurGrossist_VendeurHost ->
+                    modules(appModule)
                 else ->
                     modules(appModule)
             }
