@@ -25,6 +25,7 @@
 
 ## Conventions de Compilation & Déploiement (`build_client`)
 - Pour compiler la version cliente, utilisez le skill global `build_client` (`b_c`, `bc_` ou `b_c_all`).
+- **Comportement Ciblé** : Si l'utilisateur cite spécifiquement l'une des applications (ex: `b_c_all`/`AllInOne`, `b_c_host`/`VendeurHost`, `b_c_presenter`/`PresenterScreen`), ne compiler que l'application demandée. Si aucune n'est citée explicitement, compiler séquentiellement les 3 applications.
 - **Conservation de l'horodatage** : L'incrémentation de build dans [build.gradle.kts](file:///D:/AndroidStudioProjects/ClientJetPack/app/build.gradle.kts) doit conserver le timestamp existant (ex : `_24.20:22`) et ne pas le remplacer par l'heure de compilation active.
 - **Nom de l'archive ZIP** : Compressez toujours l'export sous le nom de fichier `Client_V_<VERSION>.zip` (où `<VERSION>` est la version propre sans timestamp).
 - **Restauration de configuration** : Assurez-vous de restaurer immédiatement [M00CentralParametresOfAllApps.kt](file:///D:/AndroidStudioProjects/ClientJetPack/app/src/main/java/EntreApps/Shared/Models/M00CentralParametresOfAllApps.kt) après le build pour garder Git propre.
