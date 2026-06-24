@@ -34,6 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -216,8 +218,10 @@ fun A_Item_Produit_App4(
     val categoryClickForHeader: (() -> Unit)? = if (isAdmin) onCategoryClick else null
 
     Column(
-        modifier = modifier       //<--
-        //TODO(1): sem_ m1
+        modifier = modifier
+            .semantics(mergeDescendants = true) {
+                set(value = relative_M1produit, key = SemanticsPropertyKey("m1"))
+            }
             .fillMaxWidth()
             .background(itemBackgroundColor, RoundedCornerShape(8.dp))
             .padding(cardPadding)

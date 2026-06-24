@@ -246,7 +246,7 @@ enum class Utilisateur(
          * Find utilisateur by comp ID
          */
         fun fromCompId(compId: String): Utilisateur? {
-            return values().find { it.comp == compId }
+            return Utilisateur.entries.find { it.comp == compId }
         }
 
     }

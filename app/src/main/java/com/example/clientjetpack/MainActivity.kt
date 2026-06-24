@@ -131,31 +131,7 @@ class MainActivity : ComponentActivity() {
                                 } else {
                                     val context = LocalContext.current
                                     val appDatabase = koinInject<AppDatabase>()
-                                    val fragmentNavigationHandler_passed =
-                                        koinInject<FragmentNavigationHandler_NewProto>()
-                                    val repo13TarificationInfos =
-                                        koinInject<V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos>()
-
                                     val scope = rememberCoroutineScope()
-
-                                    val list_M1Produit by appDatabase.dao_M1Produit().getAllFlow()
-                                        .collectAsState(initial = emptyList())
-                                    val list_M3CouleurProduit by appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
-                                        .collectAsState(initial = emptyList())
-
-                                    val wifiTransferDatas_ControllerApp = remember {
-                                        WifiTransferDatas_ControllerApp(
-                                            context = context,
-                                            coroutineScope = scope,
-                                            list_M1Produit = list_M1Produit,
-                                            list_M3CouleurProduit = list_M3CouleurProduit,
-                                        )
-                                    }
-
-                                    SideEffect {
-                                        wifiTransferDatas_ControllerApp.list_M1Produit = list_M1Produit
-                                        wifiTransferDatas_ControllerApp.list_M3CouleurProduit = list_M3CouleurProduit
-                                    }
 
                                     when (M00CentralParametresOfAllApps.get_Default().its_AppType) {
                                         AppType.JomLaElectroLivreurGrossist_PresenterScreen -> {
@@ -163,6 +139,30 @@ class MainActivity : ComponentActivity() {
                                         }
 
                                         AppType.JomLaElectroLivreurGrossist_VendeurHost -> {
+                                            val fragmentNavigationHandler_passed =
+                                                koinInject<FragmentNavigationHandler_NewProto>()
+                                            val repo13TarificationInfos =
+                                                koinInject<V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos>()
+
+                                            val list_M1Produit by appDatabase.dao_M1Produit().getAllFlow()
+                                                .collectAsState(initial = emptyList())
+                                            val list_M3CouleurProduit by appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
+                                                .collectAsState(initial = emptyList())
+
+                                            val wifiTransferDatas_ControllerApp = remember {
+                                                WifiTransferDatas_ControllerApp(
+                                                    context = context,
+                                                    coroutineScope = scope,
+                                                    list_M1Produit = list_M1Produit,
+                                                    list_M3CouleurProduit = list_M3CouleurProduit,
+                                                )
+                                            }
+
+                                            SideEffect {
+                                                wifiTransferDatas_ControllerApp.list_M1Produit = list_M1Produit
+                                                wifiTransferDatas_ControllerApp.list_M3CouleurProduit = list_M3CouleurProduit
+                                            }
+
                                             MainScreen_NewProtoPattern(
                                                 appDatabase=appDatabase,
                                                 wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
@@ -177,9 +177,29 @@ class MainActivity : ComponentActivity() {
                                         }
 
                                         else -> {
-                                            val appDatabase = koinInject<AppDatabase>()
                                             val fragmentNavigationHandler =
                                                 koinInject<FragmentNavigationHandler_NewProto>()
+                                            val repo13TarificationInfos =
+                                                koinInject<V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos>()
+
+                                            val list_M1Produit by appDatabase.dao_M1Produit().getAllFlow()
+                                                .collectAsState(initial = emptyList())
+                                            val list_M3CouleurProduit by appDatabase.dao_M03CouleurProduitInfos().getAllFlow()
+                                                .collectAsState(initial = emptyList())
+
+                                            val wifiTransferDatas_ControllerApp = remember {
+                                                WifiTransferDatas_ControllerApp(
+                                                    context = context,
+                                                    coroutineScope = scope,
+                                                    list_M1Produit = list_M1Produit,
+                                                    list_M3CouleurProduit = list_M3CouleurProduit,
+                                                )
+                                            }
+
+                                            SideEffect {
+                                                wifiTransferDatas_ControllerApp.list_M1Produit = list_M1Produit
+                                                wifiTransferDatas_ControllerApp.list_M3CouleurProduit = list_M3CouleurProduit
+                                            }
 
                                             val viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns =
                                                 viewModel(
