@@ -223,7 +223,7 @@ fun MainFastSearchProduitPourVent(
                     .padding(petitePaddine)
             ) {
                 if (shouldShowTextField) {
-                    OutlinedTextField(
+                    OutlinedTextField(             //<--
                         value = fastSearchProduitPourVent,
                         onValueChange = { newText ->
                             val capitalizedText = newText.split(" ").joinToString(" ") { word ->

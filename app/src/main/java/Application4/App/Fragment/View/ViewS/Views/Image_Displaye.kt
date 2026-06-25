@@ -26,7 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -63,7 +68,7 @@ fun Image_Displaye(
     val effectiveQuality: pourcentage = when {
         isExpandedProduct -> pourcentage.max_possible
         isAnyExpanded     -> pourcentage.min_possible
-        else              -> if (viewModel.active_Datas.filterAffichageMode_Proto== Filter_Affichage_Mode_Proto.Echants_Seulement) pourcentage.min_possible
+        else              -> if (viewModel.active_Datas.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Echants_Seulement) pourcentage.min_possible
         else image_pourcetage_qualite
     }
 
@@ -115,28 +120,51 @@ fun Image_Displaye(
                     if (isSameProductExpanded && isSameColor) {
                         viewModel.updateExpandedProduitEtCouleur(null, null)
                     } else {
-                        viewModel.updateExpandedProduitEtCouleur(parentProduct, relative_M3CouleurProduitInfos)
+                        viewModel.updateExpandedProduitEtCouleur(
+                            parentProduct,
+                            relative_M3CouleurProduitInfos
+                        )
                     }
                 }
             )
 
         if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
+            // ── GIF (vidéo convertie) ─────────────────────────────────────────
+            // Expanded  → Coil + GifDecoder : animation GIF fluide, boucle infinie
+            // Compact   → Glide dontAnimate() : 1ère frame comme vignette + icône play
             if (isExpandedProduct) {
-                // Expanded: play the GIF — do NOT use dontAnimate()
-                GlideImage(
-                    model = imageFile,
-                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color video presentation as GIF" },
-                    modifier = completeModifier,
-                    contentScale = contentScale
-                ) {
-                    it.applyAnimatedGifOptions(relative_M3CouleurProduitInfos)
+                val context = LocalContext.current
+                val gifLoader = remember(context) {
+                    ImageLoader.Builder(context)
+                        .components { add(GifDecoder.Factory()) }
+                        .build()
                 }
+                val gifRequest = remember(
+                    imageFile,
+                    relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase
+                ) {
+                    ImageRequest.Builder(context)                      //<--
+                    //TODO(1): fait que si a un vid que si expand playe le utilise le lib le pplus facile et concervateur des ressources phone 
+                        .data(imageFile)
+                        .memoryCacheKey("${relative_M3CouleurProduitInfos.keyID}_gif_${relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase}")
+                        .crossfade(false)
+                        .build()
+                }
+                AsyncImage(
+                    model          = gifRequest,
+                    imageLoader    = gifLoader,
+                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
+                        .ifBlank { "Color video presentation as GIF" },
+                    modifier       = completeModifier,
+                    contentScale   = contentScale,
+                )
             } else {
-                // Compact: show first frame as thumbnail + play icon overlay
+                // Compact: Glide extrait la 1ère frame (dontAnimate) + icône play
                 Box(modifier = completeModifier) {
                     GlideImage(
                         model = imageFile,
-                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color video thumbnail" },
+                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
+                            .ifBlank { "Color video thumbnail" },
                         modifier = Modifier.fillMaxSize(),
                         contentScale = contentScale
                     ) {
@@ -158,9 +186,11 @@ fun Image_Displaye(
                 }
             }
         } else {
+            // ── Image statique → Glide uniquement ────────────────────────────
             GlideImage(
                 model = imageFile,
-                contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
+                contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
+                    .ifBlank { "Color image" },
                 modifier = completeModifier,
                 contentScale = contentScale
             ) {
@@ -172,7 +202,7 @@ fun Image_Displaye(
     }
 }
 
-/** For static images: suppress animation, apply quality/size overrides. */
+/** Images statiques : animation supprimée, priorité et qualité selon pourcentage. */
 private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     couleur: M3CouleurProduitInfos,
     qualite: pourcentage
@@ -203,16 +233,3 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
         pourcentage.min_possible -> 20
     })
     .skipMemoryCache(qualite == pourcentage.min_possible)
-
-/** For animated GIFs in expanded mode: allow looping animation, full quality. */
-private fun RequestBuilder<Drawable>.applyAnimatedGifOptions(
-    couleur: M3CouleurProduitInfos
-) = this
-    // Do NOT call dontAnimate() here — animation must run
-    .diskCacheStrategy(DiskCacheStrategy.DATA)
-    .priority(Priority.HIGH)
-    .signature(ObjectKey("${couleur.keyID}_gif_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
-    .override(800)
-    .disallowHardwareConfig()
-    .format(DecodeFormat.PREFER_ARGB_8888)
-    .skipMemoryCache(false)

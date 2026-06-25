@@ -8,6 +8,7 @@ import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
@@ -38,7 +39,6 @@ fun MainScreen_NewProtoPattern(
     fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     on_clear_wifi_classe_cache: () -> Unit,
-    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit = {},
 ) {
     val wifiState = wifiTransferDatas_ControllerApp.state.collectAsState()
 
@@ -63,7 +63,6 @@ fun MainScreen_NewProtoPattern(
         appDatabase = appDatabase,
         on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
         on_clear_wifi_classe_cache = on_clear_wifi_classe_cache,
-        on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent
     )
 }
 
@@ -80,10 +79,10 @@ private fun MainScaffold(
     appDatabase: AppDatabase,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     on_clear_wifi_classe_cache: () -> Unit,
-    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit,
 ) {
     var affiche_ProduitDataBaseEdites by remember { mutableStateOf(false) }
-    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(false) }
+    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(
+        M00CentralParametresOfAllApps.get_Default().itsDevMode) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -102,7 +101,6 @@ private fun MainScaffold(
                 onToggleProduitDataBaseEdites = { newVal -> affiche_ProduitDataBaseEdites = newVal },
                 on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = { newVal ->
                     affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
-                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent(newVal)
                 }
             )
         }

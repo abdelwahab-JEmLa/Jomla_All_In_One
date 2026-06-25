@@ -122,6 +122,7 @@ dependencies {
 
     // Image loading
     implementation(libs.coil.compose)
+    implementation("io.coil-kt:coil-gif:2.6.0")   // GifDecoder.Factory() pour GIFs animés
     implementation(libs.glide)
     kapt(libs.compiler)
     implementation(libs.compose.v100beta01)

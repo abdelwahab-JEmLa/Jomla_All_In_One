@@ -17,6 +17,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +26,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +42,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -45,6 +52,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun Screen_Panie_FragID2(
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
@@ -203,16 +211,36 @@ fun MainFastSearchProduitPourVent_App4(
                     .padding(petitePaddine)
             ) {
                 if (shouldShowTextField) {
-                    Text(
-                        text = fastSearchProduitPourVent.ifEmpty { "Rechercher un produit... (min. 3 caractères)" },
+                    OutlinedTextField(
+                        value = fastSearchProduitPourVent,
+                        onValueChange = { newText ->
+                            val capitalizedText = newText.split(" ").joinToString(" ") { word ->
+                                if (word.isNotEmpty()) {
+                                    word.replaceFirstChar {
+                                        if (it.isLowerCase()) it.titlecase() else it.toString()
+                                    }
+                                } else {
+                                    word
+                                }
+                            }
+                            update_activeCentralValuesfastSearchProduitPourVent(capitalizedText)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(petitePaddine),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = if (fastSearchProduitPourVent.isEmpty())
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                        else
-                            MaterialTheme.colorScheme.onSurface
+                            .focusRequester(focusRequester),
+                        placeholder = {
+                            Text("Rechercher un produit... (min. 3 caractères)")
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                searchJob?.cancel()
+                                update_activeCentralValuesfastSearchProduitPourVent("")
+                            }
+                        )
                     )
                     Spacer(Modifier.height(petitePaddine))
                 }

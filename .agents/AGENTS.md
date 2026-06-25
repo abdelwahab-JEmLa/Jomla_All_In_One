@@ -31,10 +31,21 @@
 - **Restauration de configuration** : Assurez-vous de restaurer immédiatement [M00CentralParametresOfAllApps.kt](file:///D:/AndroidStudioProjects/ClientJetPack/app/src/main/java/EntreApps/Shared/Models/M00CentralParametresOfAllApps.kt) après le build pour garder Git propre.
 - **Résolution de ADB** : Si la commande `adb` n'est pas reconnue globalement, utilisez le chemin absolu de l'exécutable sous `$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe` pour effectuer les opérations de push.
 - **PowerShell Argument Quoting** : Lorsque vous passez des arguments contenant des préfixes de points (ex: `-PappSuffix=.a_AllInOne`) dans PowerShell, enveloppez toujours l'argument entier de double guillemets (ex: `"-PappSuffix=.a_AllInOne"`) pour éviter que PowerShell n'interprète mal la chaîne de caractères.
-- **Enchaînement Git** : À la fin du processus de compilation et déploiement de `build_client` (`b_c`), lancez automatiquement le skill global `p_v` pour commiter la version, recréer le tag `par_version_instaled` et tout pousser.
+- **Enchaînement Git** : À la fin du processus de compilation et déploiement de `build_client` (`b_c`), lancez automatiquement le skill global `p_v` pour commiter la version, créer/écraser le tag de version spécifique (ex : `v1.14.0.12`) en y incluant la description des changements depuis la version précédente (`version - 1`), mettre à jour le tag `par_version_instaled` et tout pousser vers les dépôts distants (`github` et `origin`).
 
 
 ## Color Media Presentations & GIF Conversion
 - **Adding Colors**: Adding a new color/variant should be a simple text-only creation operation (Type.Nom), without launching a file picker immediately.
 - **Media Picking & Cleanup**: In edit panels, provide separate options for image (🖼) and video (🎥) gallery pickers. When a new file is picked, delete/erase any existing files under the previous media extension to prevent stale files, update `extensionDisponible`, and update `il_a_une_video_presentaion` accordingly.
 - **GIF Conversion & Playback**: Instead of playing heavy raw video files using video players (like ExoPlayer) in presentation screens, convert the picked videos to GIFs (or render them as GIF) to display them using lightweight GIF loaders (e.g., Glide or looping animations). This limits memory footprint and avoids native media player crashes.
+
+## Fast File Deployment (zip_colle / z_)
+- **History Mapping Lookup**: When the user triggers the file copy skill (`z_` or `zip_colle`), always prioritize using the local mapping file `.zip_colle_history.json` at the root of the workspace. If the filename exists as a key, use its absolute path immediately.
+- **Search Optimization**: If the file path is not found in the history mapping, restrict any recursive file searches strictly to the `app/src/` subdirectory of the workspace to avoid scanning heavy generated folders (like `.gradle`, `.git`, or `build`), which reduces search times from 20s to <0.2s.
+- **History Update**: Upon successfully copying or updating a file, update or create the `.zip_colle_history.json` file in the workspace root with the new mapping `{"FileName.kt": "Absolute/Path/To/FileName.kt"}`.
+
+## Customizations & /learn Workflow
+- **Mandatory Proposal**: Whenever a `/learn` command is run or rules/skills modifications are proposed, always create a `learning_proposal.md` artifact detailing the changes.
+- **Explicit Consent**: Never write, overwrite, or edit any configuration files (such as project rules, global rules, or skill Markdown files) without displaying the proposal first and obtaining the user's explicit approval to proceed.
+
+

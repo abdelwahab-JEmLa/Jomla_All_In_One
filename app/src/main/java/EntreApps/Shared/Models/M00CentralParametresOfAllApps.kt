@@ -52,7 +52,7 @@ data class M00CentralParametresOfAllApps(
     val time_tamp_all_tariffs: Boolean = false,     //Fait Gaffe updateTariffsWithZeroTimestamps!!!!!!!!!!
 
 //───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    val itsDevMode: Boolean = false,
+    val itsDevMode: Boolean = true,
 
     val chose_ref_test_For_Datas_Car_C_DevMode: Boolean = false,
 
@@ -63,7 +63,7 @@ data class M00CentralParametresOfAllApps(
         if (itsDevMode) {
             AppType.JomLaElectroLivreurGrossist_VendeurHost
         } else {
-            AppType.JomLaElectroLivreurGrossist_VendeurHost
+            AppType.AllInOne
            // AppType.AllInOne
            // AppType.JomLaElectroLivreurGrossist_VendeurHost
         }
