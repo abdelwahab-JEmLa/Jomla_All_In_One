@@ -116,7 +116,7 @@ import java.util.Date
 
         M09AppCompt::class,
     ],
-    version = 5, // Bumped from 4 → 5: added active_DropDown_FabButton to M09AppCompt + c_unite_couleur_de_couleurKey to M3CouleurProduitInfos
+    version = 6, // Bumped from 5 → 6: added il_a_une_video_presentaion to M3CouleurProduitInfos
     exportSchema = false
 )
 @TypeConverters(

@@ -1,5 +1,6 @@
 package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
+import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.convertVideoToGif
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.CatronAdd.CartonVentHandler_App4
@@ -8,6 +9,10 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Utils.M1.Module.Views.FastInit_Outlined_Int_Edite_Modulable_Proto4
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +37,14 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 
 @Composable
 fun Lenceur_Vent_Handler_App4(
@@ -65,6 +79,135 @@ fun Lenceur_Vent_Handler_App4(
 
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+    val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->                       //<--
+        if (uri != null) {
+            scope.launch {
+                try {
+                    val fileNameWithoutExtension = if (selectedCouleur.nomImageFichieSansEtansion.isNotBlank() && selectedCouleur.nomImageFichieSansEtansion != "Non Dispo") {
+                        selectedCouleur.nomImageFichieSansEtansion
+                    } else {
+                        "${relative_M1produit.id}_${selectedCouleur.indexCouleurDansAncienProto}"
+                    }
+
+                    if (selectedCouleur.extensionDisponible.isNotBlank()) {
+                        val oldFile = File(localPath, "${fileNameWithoutExtension}.${selectedCouleur.extensionDisponible}")
+                        if (oldFile.exists()) {
+                            oldFile.delete()
+                        }
+                    }
+
+                    val contentResolver = context.contentResolver
+                    val imageBytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                    if (imageBytes != null) {
+                        val newFile = File(localPath, "${fileNameWithoutExtension}.webp")
+                        withContext(Dispatchers.IO) {
+                            FileOutputStream(newFile).use { it.write(imageBytes) }
+                            try {
+                                storageRef.child("${fileNameWithoutExtension}.webp").putBytes(imageBytes).await()
+                            } catch (e: Exception) {
+                                // silent upload error
+                            }
+                        }
+
+                        viewModel.update_m3couleur(selectedCouleur.copy(
+                            aAffiche = M3CouleurProduitInfos.Type.Image,
+                            nomImageFichieSansEtansion = fileNameWithoutExtension,
+                            extensionDisponible = "webp",
+                            il_a_une_video_presentaion = false,
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        ))
+
+                        viewModel.update_m1Produit(relative_M1produit.copy(
+                            actualiseSonImage = relative_M1produit.actualiseSonImage + 1,
+                            actualiseSonImageTest2 = relative_M1produit.actualiseSonImageTest2 + 1,
+                            dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                        ))
+
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Image de couleur mise à jour !", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+    val videoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            scope.launch {
+                try {
+                    val fileNameWithoutExtension = if (selectedCouleur.nomImageFichieSansEtansion.isNotBlank() && selectedCouleur.nomImageFichieSansEtansion != "Non Dispo") {
+                        selectedCouleur.nomImageFichieSansEtansion
+                    } else {
+                        "${relative_M1produit.id}_${selectedCouleur.indexCouleurDansAncienProto}"
+                    }
+
+                    if (selectedCouleur.extensionDisponible.isNotBlank()) {
+                        val oldFile = File(localPath, "${fileNameWithoutExtension}.${selectedCouleur.extensionDisponible}")
+                        if (oldFile.exists()) {
+                            oldFile.delete()
+                        }
+                    }
+
+                    val newFile = File(localPath, "${fileNameWithoutExtension}.gif")
+                    val success = withContext(Dispatchers.IO) {
+                        val converted = convertVideoToGif(context, uri, newFile, maxDurationMs = 5000)
+                        if (converted && newFile.exists()) {
+                            try {
+                                val gifBytes = newFile.readBytes()
+                                storageRef.child("${fileNameWithoutExtension}.gif").putBytes(gifBytes).await()
+                            } catch (e: Exception) {
+                                // silent upload error
+                            }
+                            true
+                        } else {
+                            false
+                        }
+                    }
+
+                    if (success) {
+                        viewModel.update_m3couleur(selectedCouleur.copy(
+                            aAffiche = M3CouleurProduitInfos.Type.Image,
+                            nomImageFichieSansEtansion = fileNameWithoutExtension,
+                            extensionDisponible = "gif",
+                            il_a_une_video_presentaion = true,
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        ))
+
+                        viewModel.update_m1Produit(relative_M1produit.copy(
+                            actualiseSonImage = relative_M1produit.actualiseSonImage + 1,
+                            actualiseSonImageTest2 = relative_M1produit.actualiseSonImageTest2 + 1,
+                            dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                        ))
+
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Vidéo convertie en GIF et mise à jour !", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Erreur de conversion de la vidéo !", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
 
     val au_depot by remember(
         selectedCouleur.keyID,
@@ -262,6 +405,8 @@ fun Lenceur_Vent_Handler_App4(
                 mode_selection_parent_couleur_key = mode_selection_parent_couleur?.keyID ?: "",
                 is_this_color_selected_as_parent_for_link = mode_selection_parent_couleur?.keyID == selectedCouleur.keyID,
                 on_pour_mode_selection_parent_couleur = { on_pour_update_mode_selection_parent_couleur(selectedCouleur) },
+                onPickImage = { imagePickerLauncher.launch("image/*") },
+                onPickVideo = { videoPickerLauncher.launch("video/*") },
                 on_set_c_unite_key = { key ->
                     val parentColor = mode_selection_parent_couleur
                     if (parentColor != null) {

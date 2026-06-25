@@ -29,3 +29,12 @@
 - **Conservation de l'horodatage** : L'incrémentation de build dans [build.gradle.kts](file:///D:/AndroidStudioProjects/ClientJetPack/app/build.gradle.kts) doit conserver le timestamp existant (ex : `_24.20:22`) et ne pas le remplacer par l'heure de compilation active.
 - **Nom de l'archive ZIP** : Compressez toujours l'export sous le nom de fichier `Client_V_<VERSION>.zip` (où `<VERSION>` est la version propre sans timestamp).
 - **Restauration de configuration** : Assurez-vous de restaurer immédiatement [M00CentralParametresOfAllApps.kt](file:///D:/AndroidStudioProjects/ClientJetPack/app/src/main/java/EntreApps/Shared/Models/M00CentralParametresOfAllApps.kt) après le build pour garder Git propre.
+- **Résolution de ADB** : Si la commande `adb` n'est pas reconnue globalement, utilisez le chemin absolu de l'exécutable sous `$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe` pour effectuer les opérations de push.
+- **PowerShell Argument Quoting** : Lorsque vous passez des arguments contenant des préfixes de points (ex: `-PappSuffix=.a_AllInOne`) dans PowerShell, enveloppez toujours l'argument entier de double guillemets (ex: `"-PappSuffix=.a_AllInOne"`) pour éviter que PowerShell n'interprète mal la chaîne de caractères.
+- **Enchaînement Git** : À la fin du processus de compilation et déploiement de `build_client` (`b_c`), lancez automatiquement le skill global `p_v` pour commiter la version, recréer le tag `par_version_instaled` et tout pousser.
+
+
+## Color Media Presentations & GIF Conversion
+- **Adding Colors**: Adding a new color/variant should be a simple text-only creation operation (Type.Nom), without launching a file picker immediately.
+- **Media Picking & Cleanup**: In edit panels, provide separate options for image (🖼) and video (🎥) gallery pickers. When a new file is picked, delete/erase any existing files under the previous media extension to prevent stale files, update `extensionDisponible`, and update `il_a_une_video_presentaion` accordingly.
+- **GIF Conversion & Playback**: Instead of playing heavy raw video files using video players (like ExoPlayer) in presentation screens, convert the picked videos to GIFs (or render them as GIF) to display them using lightweight GIF loaders (e.g., Glide or looping animations). This limits memory footprint and avoids native media player crashes.

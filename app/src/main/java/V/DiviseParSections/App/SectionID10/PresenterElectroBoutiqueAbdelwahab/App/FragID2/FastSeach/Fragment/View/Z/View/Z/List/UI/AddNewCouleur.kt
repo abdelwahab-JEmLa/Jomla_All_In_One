@@ -1,17 +1,18 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI
 
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.ViewVentCouleur_T1.View.ColorNameDropdownTextField
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Repo03CouleurProduitInfos.Repository.Repo03CouleurProduitInfos
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraXDialog
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.filled.Collections
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -228,19 +229,107 @@ fun AddNewCouleur(
         }
     }
 
-    fun handleAddCameraColor() {
-        showCameraDialog = true
-        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+    suspend fun handleVideoPick(uri: Uri) {
+        if (isProcessing) return
+        isProcessing = true
+
+        try {
+            val colorIndex = getNextColorIndex()
+            val contentResolver = context.contentResolver
+            val type = contentResolver.getType(uri)
+            val extension = type?.substringAfter("/") ?: "mp4"
+            val fileName = "${produit.id}_$colorIndex.$extension"
+            val localDir = File(localPath).apply { if (!exists()) mkdirs() }
+            val localFile = File(localDir, fileName)
+
+            contentResolver.openInputStream(uri)?.use { input ->
+                val videoBytes = input.readBytes()
+
+                withContext(Dispatchers.IO) {
+                    FileOutputStream(localFile).use { output ->
+                        output.write(videoBytes)
+                        output.flush()
+                    }
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            storageRef.child(fileName).putBytes(videoBytes).await()
+                        } catch (e: Exception) {
+                            // silent upload error
+                        }
+                    }
+                }
+
+                val newCouleur = M3CouleurProduitInfos.get_default().copy(
+                    aAffiche = M3CouleurProduitInfos.Type.Image,
+                    nomCouleurStrSiSonImageDispo = "",
+                    nomImageFichieSansEtansion = "${produit.id}_$colorIndex",
+                    extensionDisponible = extension,
+                    il_a_une_video_presentaion = true,
+                    indexCouleurDansAncienProto = colorIndex,
+                    parentBProduitOldID = produit.id,
+                    parentBProduitInfosKeyID = produit.keyID,
+                    parentId1ProduitInfosDebugName = produit.nom,
+                    processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
+                )
+
+                viewModel.aCentralFacade.repositorysMainGetter.repo03CouleurProduitInfos.addOrUpdateData(
+                    newCouleur
+                )
+
+                val updatedProduit = when (colorIndex) {
+                    1 -> produit.copy(couleur1 = newCouleur.keyID)
+                    2 -> produit.copy(couleur2 = newCouleur.keyID)
+                    3 -> produit.copy(couleur3 = newCouleur.keyID)
+                    4 -> produit.copy(couleur4 = newCouleur.keyID)
+                    5 -> produit.copy(couleur5 = newCouleur.keyID)
+                    6 -> produit.copy(couleur6 = newCouleur.keyID)
+                    7 -> produit.copy(couleur7 = newCouleur.keyID)
+                    8 -> produit.copy(couleur8 = newCouleur.keyID)
+                    9 -> produit.copy(couleur9 = newCouleur.keyID)
+                    else -> produit
+                }.copy(
+                    actualiseSonImage = produit.actualiseSonImage + 1,
+                    actualiseSonImageTest2 = produit.actualiseSonImageTest2 + 1,
+                    dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                )
+
+                repositorysMainSetter.upsert_M1Produit(updatedProduit)
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Nouvelle vidéo de couleur ajoutée pour ${produit.nom}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "Erreur lors de l'ajout de la vidéo: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } finally {
+            isProcessing = false
+        }
     }
 
-    // Camera permission launcher
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            handleAddCameraColor()
-        } else {
-            Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            scope.launch {
+                val mimeType = context.contentResolver.getType(uri)
+                if (mimeType?.startsWith("video/") == true) {
+                    handleVideoPick(uri)
+                } else {
+                    handleImageCapture(uri)
+                }
+            }
         }
     }
 
@@ -272,12 +361,12 @@ fun AddNewCouleur(
                 .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
-            // Camera button at top start
+            // File picker button at top start
             if (!isEditing) {
                 IconButton(
                     onClick = {
                         if (!isProcessing) {
-                            permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                            filePickerLauncher.launch("*/*")
                         }
                     },
                     modifier = Modifier
@@ -286,8 +375,8 @@ fun AddNewCouleur(
                         .size(24.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Camera,
-                        contentDescription = "Ajouter couleur par photo",
+                        imageVector = Icons.Default.Collections,
+                        contentDescription = "Ajouter couleur (photo/vidéo)",
                         tint = if (isProcessing) {
                             MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                         } else {

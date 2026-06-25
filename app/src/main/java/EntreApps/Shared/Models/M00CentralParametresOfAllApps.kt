@@ -39,7 +39,9 @@ data class M00CentralParametresOfAllApps(
     val kissm_intikali_madrasa_Compt_KeyId: String = "-OTmoNn0cljrRuhVR2s9",
 
 //────────────────────────────au_Lence_Set_Compt_Ac_KeyId──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    val au_Lence_Set_Compt_Ac_KeyId: String = Compts.Telephone_de_presentation.keyId,
+    val au_Lence_Set_Compt_Ac_KeyId: String = Compts.AbdelwahabTravailleChezGros_KeyId.keyId,
+    //  AbdelwahabTravailleChezGros_KeyId
+    //  Telephone_de_presentation
 
 //──────────────────────────────Dimine Rapid────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     val au_Lence_Diminue_DatasFB: Boolean = false,     //Dimine Delete Fait Gaffe!!!!!!!!!!    //Ca M11AchatOperation.remove_ref() et  cleanupp Vents Operation et cleanupp Bon Vents
@@ -62,6 +64,8 @@ data class M00CentralParametresOfAllApps(
             AppType.JomLaElectroLivreurGrossist_VendeurHost
         } else {
             AppType.JomLaElectroLivreurGrossist_VendeurHost
+           // AppType.AllInOne
+           // AppType.JomLaElectroLivreurGrossist_VendeurHost
         }
     },
 

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package Application4.App.Fragment.View.ViewS.Views
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
@@ -6,15 +8,25 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_New
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -23,6 +35,7 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import java.io.File
+
 enum class pourcentage {
     max_possible,
     standart,
@@ -107,19 +120,59 @@ fun Image_Displaye(
                 }
             )
 
-        GlideImage(
-            model = imageFile,
-            contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
-            modifier = completeModifier,
-            contentScale = contentScale
-        ) {
-            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, effectiveQuality)
+        if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
+            if (isExpandedProduct) {
+                // Expanded: play the GIF — do NOT use dontAnimate()
+                GlideImage(
+                    model = imageFile,
+                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color video presentation as GIF" },
+                    modifier = completeModifier,
+                    contentScale = contentScale
+                ) {
+                    it.applyAnimatedGifOptions(relative_M3CouleurProduitInfos)
+                }
+            } else {
+                // Compact: show first frame as thumbnail + play icon overlay
+                Box(modifier = completeModifier) {
+                    GlideImage(
+                        model = imageFile,
+                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color video thumbnail" },
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = contentScale
+                    ) {
+                        it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, pourcentage.min_possible)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                            .padding(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Video",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+            }
+        } else {
+            GlideImage(
+                model = imageFile,
+                contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
+                modifier = completeModifier,
+                contentScale = contentScale
+            ) {
+                it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, effectiveQuality)
+            }
         }
     } else {
         Box(modifier = modifier.fillMaxSize())
     }
 }
 
+/** For static images: suppress animation, apply quality/size overrides. */
 private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     couleur: M3CouleurProduitInfos,
     qualite: pourcentage
@@ -150,3 +203,16 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
         pourcentage.min_possible -> 20
     })
     .skipMemoryCache(qualite == pourcentage.min_possible)
+
+/** For animated GIFs in expanded mode: allow looping animation, full quality. */
+private fun RequestBuilder<Drawable>.applyAnimatedGifOptions(
+    couleur: M3CouleurProduitInfos
+) = this
+    // Do NOT call dontAnimate() here — animation must run
+    .diskCacheStrategy(DiskCacheStrategy.DATA)
+    .priority(Priority.HIGH)
+    .signature(ObjectKey("${couleur.keyID}_gif_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
+    .override(800)
+    .disallowHardwareConfig()
+    .format(DecodeFormat.PREFER_ARGB_8888)
+    .skipMemoryCache(false)

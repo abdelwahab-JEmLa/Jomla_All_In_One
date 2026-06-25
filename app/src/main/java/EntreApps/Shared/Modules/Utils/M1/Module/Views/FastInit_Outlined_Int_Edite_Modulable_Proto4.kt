@@ -92,6 +92,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     mode_selection_parent_couleur_key: String = "",
     is_this_color_selected_as_parent_for_link: Boolean = false,
     on_pour_mode_selection_parent_couleur: () -> Unit = {},
+    onPickImage: (() -> Unit)? = null,
+    onPickVideo: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
 
@@ -241,6 +243,40 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                             else
                                 MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+
+                    if (onPickImage != null) {
+                        Card(
+                            modifier = Modifier.clickable { onPickImage() },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = "🖼",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = textStyle,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    if (onPickVideo != null) {
+                        Card(
+                            modifier = Modifier.clickable { onPickVideo() },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = "🎥",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = textStyle,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
 

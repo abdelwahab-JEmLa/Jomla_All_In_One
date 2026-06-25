@@ -4,15 +4,25 @@ import Application2.App.Fragment.ViewModel.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -37,6 +47,7 @@ private fun resolveQualite(expandState: ProduitExpandState) = when {
     else -> ImageQualite.standart
 }
 
+/** For static images: suppress animation, apply quality/size overrides. */
 private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     couleur: M3CouleurProduitInfos,
     qualite: ImageQualite,
@@ -76,6 +87,19 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     )
     .skipMemoryCache(qualite == ImageQualite.min_possible)
 
+/** For animated GIFs in expanded mode: allow looping animation, full quality. */
+private fun RequestBuilder<Drawable>.applyAnimatedGifOptions(
+    couleur: M3CouleurProduitInfos
+) = this
+    // Do NOT call dontAnimate() here — animation must run
+    .diskCacheStrategy(DiskCacheStrategy.DATA)
+    .priority(Priority.HIGH)
+    .signature(ObjectKey("${couleur.keyID}_gif_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
+    .override(800)
+    .disallowHardwareConfig()
+    .format(DecodeFormat.PREFER_ARGB_8888)
+    .skipMemoryCache(false)
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye_app2(
@@ -104,22 +128,59 @@ fun Image_Displaye_app2(
     }
 
     if (imageFile != null && imageFile.exists()) {
-        GlideImage(
-            model = imageFile,
-            contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
-            modifier = modifier
-                .fillMaxSize()
-                .then(
-                    if (canInteract) {
-                        Modifier.clickable {
-                            viewModel.wifi.toggleExpandedCouleur(relative_M3CouleurProduitInfos)
-                        }
-                    } else {
-                        Modifier
+        val completeModifier = modifier
+            .fillMaxSize()
+            .then(
+                if (canInteract) {
+                    Modifier.clickable {
+                        viewModel.wifi.toggleExpandedCouleur(relative_M3CouleurProduitInfos)
                     }
-                ),
-            contentScale = contentScale
-        ) { it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, qualite) }
+                } else {
+                    Modifier
+                }
+            )
+
+        if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
+            if (expandState.isExpanded) {
+                // Expanded: play the GIF — do NOT use dontAnimate()
+                GlideImage(
+                    model = imageFile,
+                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color GIF" },
+                    modifier = completeModifier,
+                    contentScale = contentScale
+                ) { it.applyAnimatedGifOptions(relative_M3CouleurProduitInfos) }
+            } else {
+                // Compact: static first frame + play icon
+                Box(modifier = completeModifier) {
+                    GlideImage(
+                        model = imageFile,
+                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color thumbnail" },
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = contentScale
+                    ) { it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, ImageQualite.min_possible) }
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                            .padding(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Video",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+            }
+        } else {
+            GlideImage(
+                model = imageFile,
+                contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
+                modifier = completeModifier,
+                contentScale = contentScale
+            ) { it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, qualite) }
+        }
     } else {
         Box(modifier = modifier.fillMaxSize())
     }

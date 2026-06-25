@@ -24,15 +24,33 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.R
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
+
 @Composable
 fun FabButton(
     showWarningState: Boolean,
     isFabVisible: Boolean,
     its_Targeted_Frag: Boolean,
+    affiche_ProduitDataBaseEdites: Boolean,
     onToggleFabVisibility: () -> Unit,
     onShowDropdown: () -> Unit,
+    onToggleProduitDataBaseEdites: (Boolean) -> Unit,
+    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var dropdownExpanded by remember { mutableStateOf(false) }
     Surface(
         modifier = modifier
             .offset(y = (-28).dp)
@@ -55,9 +73,12 @@ fun FabButton(
                         )
                         .clickable {
                             when (its_Targeted_Frag) {
-                                false -> onToggleFabVisibility()
+                                false -> dropdownExpanded = true
                                 true -> onShowDropdown()
                             }
+                        }
+                        .semantics(mergeDescendants = true) {
+                            set(value = affiche_ProduitDataBaseEdites, key = SemanticsPropertyKey("affiche_ProduitDataBaseEdites"))
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -75,7 +96,7 @@ fun FabButton(
                         .fillMaxSize()
                         .clickable {
                             when (its_Targeted_Frag) {
-                                false -> onToggleFabVisibility()
+                                false -> dropdownExpanded = true
                                 true -> onShowDropdown()
                             }
                         },
@@ -88,6 +109,34 @@ fun FabButton(
                     contentDescription = "Toggle FAB",
                     modifier = Modifier.align(Alignment.Center),
                     tint = Color.White
+                )
+            }
+
+            DropdownMenu(
+                expanded = dropdownExpanded,
+                onDismissRequest = { dropdownExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "Affiche édition produits")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Switch(
+                                checked = affiche_ProduitDataBaseEdites,
+                                onCheckedChange = { newVal ->
+                                    onToggleProduitDataBaseEdites(newVal)
+                                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent(newVal)
+                                    dropdownExpanded = false
+                                }
+                            )
+                        }
+                    },
+                    onClick = {
+                        val newVal = !affiche_ProduitDataBaseEdites
+                        onToggleProduitDataBaseEdites(newVal)
+                        on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent(newVal)
+                        dropdownExpanded = false
+                    }
                 )
             }
         }

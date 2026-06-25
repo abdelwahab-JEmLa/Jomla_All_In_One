@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Outbox
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -58,14 +59,17 @@ fun A_Compact_Header_App4(
     onUpdateTariff: () -> Unit,
     onUpdateProduit: (M01Produit) -> Unit,
     affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
-    shouldShowButtons: Boolean = affiche_ProduitDataBaseEdites_ComposableViews,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    shouldShowButtons: Boolean = affiche_ProduitDataBaseEdites_ComposableViews || affiche_buttons_lien_unite_couleur_au_couleut_parent,
     onDelete: (M01Produit) -> Unit,
     catalogueName: String? = null,
     categoryName: String? = null,
     onCategoryClick: (() -> Unit)? = null,
     prix_achat: Double?,
     onSetPremierCheckDonneForAllVents: (() -> Unit)? = null,
+    onAddNewColor: (() -> Unit)? = null,             //<--
 ) {
+    val isEditMode = affiche_ProduitDataBaseEdites_ComposableViews || affiche_buttons_lien_unite_couleur_au_couleut_parent
     val nameTextSize = if (isExpanded) 14.sp else 10.sp
     val arabicTextSize = if (isExpanded) 12.sp else 9.sp
     val labelTextSize = if (isExpanded) 10.sp else 7.sp
@@ -147,7 +151,7 @@ fun A_Compact_Header_App4(
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
             ) {
                 // Delete button - only visible for admin users
-                if (shouldShowButtons && affiche_ProduitDataBaseEdites_ComposableViews) {
+                if (shouldShowButtons && isEditMode) {
                     DeleteProductHeader(
                         productName = relative_M1produit.nom,
                         onDelete = {
@@ -157,8 +161,30 @@ fun A_Compact_Header_App4(
                 }
 
                 // Sync tariff button
-                if (shouldShowButtons && affiche_ProduitDataBaseEdites_ComposableViews) {
+                // Add color button
+                if (shouldShowButtons && isEditMode && onAddNewColor != null) {
                     ClickableInfoCard(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Videocam,
+                                contentDescription = "Add Color",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(iconSize)
+                            )
+                        },
+                        value = "+🎨",
+                        label = "Couleur",
+                        labelTextSize = labelTextSize,
+                        valueTextSize = valueTextSize,
+                        itemPadding = itemPadding,
+                        onClick = {
+                            onAddNewColor()
+                        }
+                    )
+                }
+
+                if (shouldShowButtons && isEditMode) {
+                    ClickableInfoCard(    //<--
                         icon = {
                             Icon(
                                 imageVector = Icons.Default.Sync,
@@ -226,8 +252,8 @@ fun A_Compact_Header_App4(
                 }
 
                 // Number of units card
-                if (relative_M1produit.nombreUniteInt > 1 || affiche_ProduitDataBaseEdites_ComposableViews) {
-                    if (affiche_ProduitDataBaseEdites_ComposableViews) {
+                if (relative_M1produit.nombreUniteInt > 1 || isEditMode) {
+                    if (isEditMode) {
                         EditableInfoCard(
                             icon = {
                                 Icon(
@@ -270,8 +296,8 @@ fun A_Compact_Header_App4(
                 }
 
                 // Carton quantity card
-                if (relative_M1produit.quantite_Boit_Par_Carton > 1 || affiche_ProduitDataBaseEdites_ComposableViews) {
-                    if (affiche_ProduitDataBaseEdites_ComposableViews) {
+                if (relative_M1produit.quantite_Boit_Par_Carton > 1 || isEditMode) {
+                    if (isEditMode) {
                         EditableInfoCard(
                             icon = {
                                 Icon(
@@ -432,7 +458,7 @@ private fun ClickableInfoCard(
     itemPadding: Dp,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
-) {
+) {             
     Card(
         modifier = modifier
             .clickable(onClick = onClick),

@@ -32,6 +32,7 @@ data class M3CouleurProduitInfos(
     var its_pour_affiche_au_presenter: Boolean = false,
     var its_in_echantiallants: Boolean = false,
     var c_unite_couleur_de_couleurKey: String = "",
+    var il_a_une_video_presentaion: Boolean = false,
 
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
     var parentProduit_Classement: Int? = null,
@@ -63,6 +64,7 @@ data class M3CouleurProduitInfos(
         "telephone_Prise_depuit" to telephone_Prise_depuit,
         "count_Don_Depot" to count_Don_Depot,
         "c_unite_couleur_de_couleurKey" to c_unite_couleur_de_couleurKey,
+        "il_a_une_video_presentaion" to il_a_une_video_presentaion,
         "a_cammende_depuit_grossist" to a_cammende_depuit_grossist,
         "nomCouleurStrSiSonImageDispo" to nomCouleurStrSiSonImageDispo,
         "parentBProduitInfosKeyID" to parentBProduitInfosKeyID,

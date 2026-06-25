@@ -1,6 +1,7 @@
 package Application4.App.Fragment.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.toastLogIfErr
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
@@ -37,6 +38,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import android.net.Uri
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
+import java.io.File
+import java.io.FileOutputStream
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.tasks.await
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)
@@ -53,6 +67,8 @@ fun A_Item_Produit_App4(
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
     val centralValues = viewModel.active_Datas
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val allColorsForProduit = relative_ListM3Couleurs_override
         ?: remember(viewModel.active_Datas.list_M03CouleurProduitInfos) {
@@ -238,6 +254,7 @@ fun A_Item_Produit_App4(
             onUpdateProduit = { viewModel.update_m1Produit(it) },
             affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin
                     && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
+            affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
             onDelete = { viewModel.delete_m1Produit(it) },
             modifier = modifier,
             onCategoryClick = categoryClickForHeader,
@@ -255,6 +272,66 @@ fun A_Item_Produit_App4(
                     else op
                 }
                 viewModel.update_listM10OperationVentCouleur(updated)
+            },
+            onAddNewColor = {
+                scope.launch {
+                    try {
+                        val colorIndex = run {
+                            val existingColors = viewModel.active_Datas.list_M03CouleurProduitInfos ?: emptyList()
+                            val prodColors = existingColors.filter { it.parentBProduitOldID == relative_M1produit.id }
+                            var nextIdx = 1
+                            for (i in 1..9) {
+                                if (prodColors.none { it.indexCouleurDansAncienProto == i }) {
+                                    nextIdx = i
+                                    break
+                                }
+                            }
+                            if (nextIdx == 1 && prodColors.isNotEmpty()) prodColors.size + 1 else nextIdx
+                        }
+
+                        val newCouleur = M3CouleurProduitInfos.get_default().copy(
+                            aAffiche = M3CouleurProduitInfos.Type.Nom,
+                            nomCouleurStrSiSonImageDispo = "Couleur $colorIndex",
+                            nomImageFichieSansEtansion = "Non Dispo",
+                            indexCouleurDansAncienProto = colorIndex,
+                            parentBProduitOldID = relative_M1produit.id,
+                            parentBProduitInfosKeyID = relative_M1produit.keyID,
+                            parentId1ProduitInfosDebugName = relative_M1produit.nom,
+                            processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
+                        )
+
+                        viewModel.update_m3couleur(newCouleur)
+
+                        val updatedProduit = when (colorIndex) {
+                            1 -> relative_M1produit.copy(couleur1 = newCouleur.keyID)
+                            2 -> relative_M1produit.copy(couleur2 = newCouleur.keyID)
+                            3 -> relative_M1produit.copy(couleur3 = newCouleur.keyID)
+                            4 -> relative_M1produit.copy(couleur4 = newCouleur.keyID)
+                            5 -> relative_M1produit.copy(couleur5 = newCouleur.keyID)
+                            6 -> relative_M1produit.copy(couleur6 = newCouleur.keyID)
+                            7 -> relative_M1produit.copy(couleur7 = newCouleur.keyID)
+                            8 -> relative_M1produit.copy(couleur8 = newCouleur.keyID)
+                            9 -> relative_M1produit.copy(couleur9 = newCouleur.keyID)
+                            else -> relative_M1produit
+                        }.copy(
+                            actualiseSonImage = relative_M1produit.actualiseSonImage + 1,
+                            actualiseSonImageTest2 = relative_M1produit.actualiseSonImageTest2 + 1,
+                            dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                        )
+
+                        viewModel.update_m1Produit(updatedProduit)
+
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "Nouvelle couleur ajoutée !",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } catch (e: Exception) {
+                        toastLogIfErr("Erreur lors de l'ajout de la couleur: ${e.message}", "A_Item_Produit_App4", context, isError = true)
+                    }
+                }
             }
         )
 
