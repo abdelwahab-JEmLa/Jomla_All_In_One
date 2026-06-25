@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
@@ -91,6 +92,7 @@ fun DropDownItem_ThermiquePrint(
     // State for showing the warning dialog
     var showWarningDialog by remember { mutableStateOf(false) }
     var productsWithoutPrice by remember { mutableStateOf<List<String>>(emptyList()) }
+    var printWithoutProductsState by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -141,9 +143,75 @@ fun DropDownItem_ThermiquePrint(
                             tint = Color.White
                         )
                     }
+
+                    Spacer(modifier = Modifier.size(8.dp))
+
+                    FloatingActionButton(
+                        onClick = {
+                            printWithoutProductsState = true
+                            if (activeVents.isEmpty()) {
+                                Toast.makeText(
+                                    context,
+                                    "Aucun article à imprimer",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@FloatingActionButton
+                            }
+
+                            val tarificationRepo = aCentralFacade.repositorysMainGetter.repo13TarificationInfos
+                            val produitRepo = aCentralFacade.repositorysMainGetter.repo1ProduitInfos
+
+                            val invalidPriceProducts = mutableListOf<String>()
+
+                            activeVents.forEach { vent ->
+                                val tariff = tarificationRepo.datasValue.find {
+                                    it.keyID == vent.parentM13TarificationKeyID
+                                }
+                                val product = produitRepo.datasValue.find {
+                                    it.keyID == vent.parent_M1Produit_KeyId
+                                }
+
+                                // Check if price is 0.0 or null
+                                if (tariff?.prixCurrency == null || tariff.prixCurrency == 0.0) {
+                                    invalidPriceProducts.add(product?.nom ?: "Produit inconnu")
+                                }
+                            }
+
+                            // Show warning dialog if products without valid prices exist
+                            if (invalidPriceProducts.isNotEmpty()) {
+                                productsWithoutPrice = invalidPriceProducts
+                                showWarningDialog = true
+                                return@FloatingActionButton
+                            }
+
+                            // Proceed with printing if all prices are valid
+                            proceedWithPrinting(
+                                scope = scope,
+                                aCentralFacade = aCentralFacade,
+                                focusedValuesGetter = focusedValuesGetter,
+                                context = context,
+                                activeVents = activeVents,
+                                printHandler = printHandler,
+                                selectedHeader = selectedHeader,
+                                onDismissDropdown = onDismissDropdown,
+                                printWithoutProducts = true
+                            )
+                        },
+                        modifier = Modifier.size(32.dp),
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Description,
+                            contentDescription = "Imprimer sans produits",
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White
+                        )
+                    }
                 }
             },
             onClick = {
+                printWithoutProductsState = false
                 if (activeVents.isEmpty()) {
                     Toast.makeText(
                         context,
@@ -188,7 +256,8 @@ fun DropDownItem_ThermiquePrint(
                     activeVents = activeVents,
                     printHandler = printHandler,
                     selectedHeader = selectedHeader,
-                    onDismissDropdown = onDismissDropdown
+                    onDismissDropdown = onDismissDropdown,
+                    printWithoutProducts = false
                 )
             }
         )
@@ -395,7 +464,8 @@ fun DropDownItem_ThermiquePrint(
                                         activeVents = activeVents,
                                         printHandler = printHandler,
                                         selectedHeader = selectedHeader,
-                                        onDismissDropdown = onDismissDropdown
+                                        onDismissDropdown = onDismissDropdown,
+                                        printWithoutProducts = printWithoutProductsState
                                     )
                                 },
                                 modifier = Modifier.weight(1f)
@@ -445,7 +515,8 @@ private fun proceedWithPrinting(
     printHandler: PrintReceiptHandler_Juil,
     selectedHeader: CompanyHeader,
     onDismissDropdown: () -> Unit,
-    repositorysMainSetter: RepositorysMainSetter=aCentralFacade.repositorysMainSetter
+    repositorysMainSetter: RepositorysMainSetter=aCentralFacade.repositorysMainSetter,
+    printWithoutProducts: Boolean = false
 ) {
     scope.launch {
         try {
@@ -478,7 +549,8 @@ private fun proceedWithPrinting(
                 scope = scope,
                 relative_ListM10OperationVentCouleur = activeVents,
                 bonVent = focusedValuesGetter.activeOnVent_M8BonVent,
-                companyHeader = selectedHeader.displayName
+                companyHeader = selectedHeader.displayName,
+                printWithoutProducts = printWithoutProducts
             )
 
         //   repositorysMainSetter.refresh_Datas_M8BonVent()

@@ -38,7 +38,8 @@ class PrintReceiptHandler_Juil(
         bonVent: M8BonVent? = null,
         showCreditSection: Boolean = true,
         versement: Double = 0.0 ,
-        companyHeader: String = "Jomla.com"
+        companyHeader: String = "Jomla.com",
+        printWithoutProducts: Boolean = false
     ) {
         // FIXED: Use demande_Versemet_si_Type_est_regle instead of affiche_le_verssement_au_prochen_print
         val shouldShowCreditSection = (showCreditSection && bonVent != null) ||
@@ -53,7 +54,8 @@ class PrintReceiptHandler_Juil(
             bonVent,
             shouldShowCreditSection,
             versement,
-            companyHeader
+            companyHeader,
+            printWithoutProducts
         )
     }
 

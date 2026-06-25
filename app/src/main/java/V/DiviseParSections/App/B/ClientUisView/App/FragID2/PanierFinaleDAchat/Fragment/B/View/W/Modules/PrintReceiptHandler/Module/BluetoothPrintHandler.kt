@@ -34,7 +34,8 @@ class BluetoothPrintHandler {
         bonVent: M8BonVent? = null,
         showCreditSection: Boolean = false,
         versement: Double = 0.0,
-        companyHeader: String = "Jomla.com"
+        companyHeader: String = "Jomla.com",
+        printWithoutProducts: Boolean = false
     ): Boolean {
         if (!isBluetoothAvailable()) {
             return false
@@ -55,7 +56,8 @@ class BluetoothPrintHandler {
                 client?.currentCreditBalance ?: 0.0,
                 repo13TarificationInfos,
                 repoM1Produit,
-                companyHeader
+                companyHeader,
+                printWithoutProducts
             )
 
             handleBluetoothPrint(context, texteImprimable.toString())
@@ -170,7 +172,8 @@ class BluetoothPrintHandler {
         ancienCredits: Double,
         repo13TarificationInfos: Repo13TarificationInfos,
         repoM1Produit: RepoM1Produit,
-        companyHeader: String
+        companyHeader: String,
+        printWithoutProducts: Boolean = false
     ): Pair<StringBuilder, Double> {
         val groupe_Produit = operations.groupBy { it.parent_M1Produit_KeyId }.toList()
 
@@ -189,8 +192,10 @@ class BluetoothPrintHandler {
             append("<SMALL><CENTER>$dateString")
             append("<BR>")
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-            append("<SMALL><BOLD>   Quantité      Tariff        <NORMAL>Sous-total<BR>")
-            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+            if (!printWithoutProducts) {
+                append("<SMALL><BOLD>   Quantité      Tariff        <NORMAL>Sous-total<BR>")
+                append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+            }
         }
 
         groupe_Produit.forEachIndexed { index, produit_vent ->
@@ -226,24 +231,26 @@ class BluetoothPrintHandler {
             val subtotal = vent_prix * vent_quantity
 
             if (subtotal != 0.0) {
-                texteImprimable.apply {
-                    append("<MEDIUM1><LEFT>${relative_M1Produit?.nom}<BR>")
-                    append(" <MEDIUM1><LEFT>${quantityDisplay}x ")
-                    append("<MEDIUM1><LEFT>${vent_prix}Da ")
-                    append("<SMALL>$subtotal<BR>")
+                if (!printWithoutProducts) {
+                    texteImprimable.apply {
+                        append("<MEDIUM1><LEFT>${relative_M1Produit?.nom}<BR>")
+                        append(" <MEDIUM1><LEFT>${quantityDisplay}x ")
+                        append("<MEDIUM1><LEFT>${vent_prix}Da ")
+                        append("<SMALL>$subtotal<BR>")
 
-                    val productComment = getProductComment(operations_du_produit)
-                    if (productComment.isNotBlank()) {
-                        val formattedComment = formatCommentForPrinting(productComment)
-                        append("$formattedComment<BR>")
+                        val productComment = getProductComment(operations_du_produit)
+                        if (productComment.isNotBlank()) {
+                            val formattedComment = formatCommentForPrinting(productComment)
+                            append("$formattedComment<BR>")
+                        }
+
+                        append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
                     }
-
-                    append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
                 }
                 totaleBon += subtotal
                 itemCount++  // FIXED: Increment item count
 
-                if ((index + 1) % 15 == 0) {
+                if (!printWithoutProducts && (index + 1) % 15 == 0) {
                     pageCounter++
                     texteImprimable.append("<BR><CENTER>PAGE $pageCounter<BR><BR><BR>")
                 }

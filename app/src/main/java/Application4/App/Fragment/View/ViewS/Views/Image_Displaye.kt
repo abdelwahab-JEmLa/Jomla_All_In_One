@@ -8,6 +8,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_New
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -28,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
@@ -39,6 +42,10 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ui.PlayerView
 import java.io.File
 
 enum class pourcentage {
@@ -129,37 +136,68 @@ fun Image_Displaye(
             )
 
         if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
-            // ── GIF (vidéo convertie) ─────────────────────────────────────────
-            // Expanded  → Coil + GifDecoder : animation GIF fluide, boucle infinie
-            // Compact   → Glide dontAnimate() : 1ère frame comme vignette + icône play
+            // ── Vidéo : expanded vs compact ──────────────────────────────────────
             if (isExpandedProduct) {
                 val context = LocalContext.current
-                val gifLoader = remember(context) {
-                    ImageLoader.Builder(context)
-                        .components { add(GifDecoder.Factory()) }
-                        .build()
+                val isLegacyGif = relative_M3CouleurProduitInfos.extensionDisponible
+                    .equals("gif", ignoreCase = true)
+
+                if (isLegacyGif) {
+                    // ── Legacy GIF (ancien format) → Coil + GifDecoder ──────────
+                    // Conservé pour la compatibilité avec les entrées existantes.
+                    val gifLoader = remember(context) {
+                        ImageLoader.Builder(context)
+                            .components { add(GifDecoder.Factory()) }
+                            .build()
+                    }
+                    val gifRequest = remember(
+                        imageFile,
+                        relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase
+                    ) {
+                        ImageRequest.Builder(context)
+                            .data(imageFile)
+                            .memoryCacheKey("${relative_M3CouleurProduitInfos.keyID}_gif_${relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase}")
+                            .crossfade(false)
+                            .build()
+                    }
+                    AsyncImage(
+                        model              = gifRequest,
+                        imageLoader        = gifLoader,
+                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
+                            .ifBlank { "Color video presentation" },
+                        modifier           = completeModifier,
+                        contentScale       = contentScale,
+                    )
+                } else {
+                    // ── Nouveau format MP4 → ExoPlayer ────────────────────────────
+                    // Décodage hardware-accéléré, boucle infinie, sans contrôles.
+                    // C'est la lib la plus légère et la plus économe en ressources
+                    // pour lire de la vidéo sur Android.
+                    val exoPlayer = remember(imageFile) {
+                        ExoPlayer.Builder(context).build().apply {
+                            setMediaItem(MediaItem.fromUri(Uri.fromFile(imageFile)))
+                            prepare()
+                            playWhenReady = true
+                            repeatMode = Player.REPEAT_MODE_ONE
+                            volume = 0f   // lecture muette pour un aperçu produit
+                        }
+                    }
+                    DisposableEffect(imageFile) {
+                        onDispose { exoPlayer.release() }
+                    }
+                    AndroidView(
+                        factory = { ctx ->
+                            PlayerView(ctx).apply {
+                                player = exoPlayer
+                                useController = false
+                            }
+                        },
+                        modifier = completeModifier
+                    )
                 }
-                val gifRequest = remember(
-                    imageFile,
-                    relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase
-                ) {
-                    ImageRequest.Builder(context)                      //<--
-                    //TODO(1): fait que si a un vid que si expand playe le utilise le lib le pplus facile et concervateur des ressources phone 
-                        .data(imageFile)
-                        .memoryCacheKey("${relative_M3CouleurProduitInfos.keyID}_gif_${relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase}")
-                        .crossfade(false)
-                        .build()
-                }
-                AsyncImage(
-                    model          = gifRequest,
-                    imageLoader    = gifLoader,
-                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
-                        .ifBlank { "Color video presentation as GIF" },
-                    modifier       = completeModifier,
-                    contentScale   = contentScale,
-                )
             } else {
-                // Compact: Glide extrait la 1ère frame (dontAnimate) + icône play
+                // ── Compact : Glide extrait la 1ère frame + icône play ────────────
+                // Fonctionne pour GIF (dontAnimate → 1ère frame) et MP4 (VideoDecoder).
                 Box(modifier = completeModifier) {
                     GlideImage(
                         model = imageFile,

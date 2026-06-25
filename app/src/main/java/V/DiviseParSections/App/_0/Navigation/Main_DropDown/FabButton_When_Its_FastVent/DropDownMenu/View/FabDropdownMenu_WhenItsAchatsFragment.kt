@@ -111,7 +111,6 @@ fun FabDropdownMenu_WhenIts_FragFastVent (
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
             Fab_Stigns(onClickImageToShowControles, onDismissDropdown)
-
             DropDownItem_ThermiquePrint(
                 nomFun = "ThermiquePrint ",
                 onDismissDropdown = onDismissDropdown

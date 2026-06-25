@@ -8,10 +8,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Utils.M1.Module.Views.FastInit_Outlined_Int_Edite_Modulable_Proto4
-import android.graphics.Bitmap
-import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -156,6 +153,7 @@ fun Lenceur_Vent_Handler_App4(
                         "${relative_M1produit.id}_${selectedCouleur.indexCouleurDansAncienProto}"
                     }
 
+                    // Supprimer l'ancien fichier s'il existe
                     if (selectedCouleur.extensionDisponible.isNotBlank()) {
                         val oldFile = File(localPath, "${fileNameWithoutExtension}.${selectedCouleur.extensionDisponible}")
                         if (oldFile.exists()) {
@@ -163,44 +161,24 @@ fun Lenceur_Vent_Handler_App4(
                         }
                     }
 
-                    val newFile = File(localPath, "${fileNameWithoutExtension}.gif")
+                    val newFile = File(localPath, "${fileNameWithoutExtension}.mp4")
 
-                    // Conversion vidéo → GIF via MediaMetadataRetriever (Android intégré, minSdk 26+).
-                    // On extrait ~10 frames sur les 5 premières secondes et on les encode
-                    // dans un GIF animé avec AnimatedGifEncoder (classe utilitaire inline ci-dessous).     //<--
-                    //TODO(1): enlve le converti au gif et uplod le mp4 fichie directement 
-                    val success = withContext(Dispatchers.IO) {        //<--
-                    //TODO(1): unleve l uolode au storage fib de image 
-                        Log.d("GifConvert", "▶ Début conversion : $fileNameWithoutExtension")
-                        val converted = convertVideoToGifInline(
-                            context = context,
-                            videoUri = uri,
-                            outputFile = newFile,
-                            maxDurationMs = 5_000L,
-                            frameCount = 10,
-                            targetWidth = 480
-                        )
-                        if (converted) Log.d("GifConvert", "✅ Conversion réussie → ${newFile.absolutePath} (${newFile.length() / 1024} Ko)")
-                        else Log.w("GifConvert", "⚠️ Échec conversion GIF pour $fileNameWithoutExtension")
-
-                        if (converted && newFile.exists()) {
-                            try {
-                                val gifBytes = newFile.readBytes()
-                                storageRef.child("${fileNameWithoutExtension}.gif").putBytes(gifBytes).await()
-                            } catch (e: Exception) {
-                                // silent upload error
+                    // Copie directe du fichier MP4 sélectionné → stockage local uniquement.
+                    // Pas de conversion GIF, pas d'upload Firebase.
+                    val success = withContext(Dispatchers.IO) {
+                        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                            FileOutputStream(newFile).use { outputStream ->
+                                inputStream.copyTo(outputStream)
                             }
-                            true
-                        } else {
-                            false
-                        }
+                            newFile.exists()
+                        } ?: false
                     }
 
                     if (success) {
                         viewModel.update_m3couleur(selectedCouleur.copy(
                             aAffiche = M3CouleurProduitInfos.Type.Image,
                             nomImageFichieSansEtansion = fileNameWithoutExtension,
-                            extensionDisponible = "gif",
+                            extensionDisponible = "mp4",
                             il_a_une_video_presentaion = true,
                             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                         ))
@@ -212,11 +190,11 @@ fun Lenceur_Vent_Handler_App4(
                         ))
 
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "Vidéo convertie en GIF et mise à jour !", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Vidéo mise à jour !", Toast.LENGTH_SHORT).show()
                         }
                     } else {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "Erreur de conversion de la vidéo !", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Erreur : impossible de sauvegarder la vidéo !", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } catch (e: Exception) {
@@ -442,336 +420,4 @@ fun Lenceur_Vent_Handler_App4(
             )
         }
     } // end Column
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// convertVideoToGifInline
-//
-// Remplace l'ancienne dépendance externe (convertVideoToGif).
-// Utilise uniquement des API Android intégrées (minSdk 26+) :
-//   • MediaMetadataRetriever  → extraction de frames Bitmap
-//   • AnimatedGifEncoder      → encodage GIF animé (implémentation inline ci-dessous)
-//
-// Paramètres :
-//   maxDurationMs  – durée max à encoder (ms, défaut 5 000)
-//   frameCount     – nombre de frames à extraire sur cette durée (défaut 10)
-//   targetWidth    – largeur cible du GIF ; hauteur déduite du ratio (défaut 480)
-//
-// Retourne true si le fichier GIF a été créé avec succès.
-// ─────────────────────────────────────────────────────────────────────────────
-private fun convertVideoToGifInline(
-    context: android.content.Context,
-    videoUri: android.net.Uri,
-    outputFile: File,
-    maxDurationMs: Long = 5_000L,
-    frameCount: Int = 10,
-    targetWidth: Int = 480,
-): Boolean {
-    val retriever = MediaMetadataRetriever()
-    return try {
-        retriever.setDataSource(context, videoUri)
-
-        val durationMs = retriever
-            .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-            ?.toLongOrNull() ?: 0L
-        val capMs = minOf(durationMs, maxDurationMs).takeIf { it > 0 } ?: maxDurationMs
-
-        // Calcul du ratio hauteur/largeur à partir de la première frame
-        val probe = retriever.getFrameAtTime(0)
-        val aspectRatio = if (probe != null && probe.width > 0)
-            probe.height.toFloat() / probe.width.toFloat() else 1f
-        val targetHeight = (targetWidth * aspectRatio).toInt()
-        probe?.recycle()
-
-        val stepUs = (capMs * 1_000L) / frameCount      // pas en microsecondes
-        val delayCs = (capMs / frameCount / 10).toInt() // délai inter-frames en centièmes de sec (GIF)
-
-        val encoder = AnimatedGifEncoder()
-        encoder.start(java.io.FileOutputStream(outputFile))
-        encoder.setDelay(delayCs * 10)                  // ms
-        encoder.setRepeat(0)                            // boucle infinie
-        encoder.setSize(targetWidth, targetHeight)
-        encoder.setQuality(10)                          // 1 (meilleur) … 20 (rapide)
-
-        var framesEncoded = 0
-        for (i in 0 until frameCount) {
-            val timeUs = i * stepUs
-            val raw = retriever.getFrameAtTime(
-                timeUs,
-                MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-            ) ?: continue
-            val scaled = Bitmap.createScaledBitmap(raw, targetWidth, targetHeight, true)
-            raw.recycle()
-            encoder.addFrame(scaled)
-            scaled.recycle()
-            framesEncoded++
-            Log.v("GifConvert", "  frame $framesEncoded/$frameCount à ${timeUs / 1_000} ms")
-        }
-
-        encoder.finish()
-        Log.d("GifConvert", "✅ $framesEncoded frames encodées → ${outputFile.length() / 1024} Ko")
-        framesEncoded > 0 && outputFile.exists()
-    } catch (e: Exception) {
-        Log.e("GifConvert", "❌ Erreur conversion GIF", e)
-        false
-    } finally {
-        retriever.release()
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// AnimatedGifEncoder – encodeur GIF animé minimal, 100 % Kotlin/JVM.
-// Adapté du domaine public (Kevin Weiner / FMS), sans dépendance externe.
-// ─────────────────────────────────────────────────────────────────────────────
-private class AnimatedGifEncoder {
-
-    private var width = 0
-    private var height = 0
-    private var delay = 0         // ms
-    private var repeat = -1       // -1 = pas de répétition, 0 = infini
-    private var quality = 10
-    private var out: java.io.OutputStream? = null
-    private var firstFrame = true
-
-    fun setSize(w: Int, h: Int) { width = w; height = h }
-    fun setDelay(ms: Int)       { delay = ms }
-    fun setRepeat(count: Int)   { repeat = count }
-    fun setQuality(q: Int)      { quality = q.coerceIn(1, 20) }
-
-    fun start(os: java.io.OutputStream): Boolean {
-        out = os
-        return try {
-            writeString("GIF89a")
-            true
-        } catch (e: Exception) { false }
-    }
-
-    fun addFrame(bitmap: Bitmap): Boolean {
-        val os = out ?: return false
-        return try {
-            val pixels = quantize(bitmap)
-            if (firstFrame) {
-                writeLSD()
-                writePalette()
-                if (repeat >= 0) writeNetscapeExt()
-                firstFrame = false
-            }
-            writeGraphicCtrlExt()
-            writeImageDesc()
-            writePixels(pixels)
-            true
-        } catch (e: Exception) { false }
-    }
-
-    fun finish(): Boolean {
-        val os = out ?: return false
-        return try {
-            os.write(0x3B)   // GIF trailer
-            os.flush()
-            os.close()
-            true
-        } catch (e: Exception) { false }
-    }
-
-    // ── internals ─────────────────────────────────────────────────────────────
-
-    private var colorTab  = ByteArray(768)   // palette RGB × 256
-    private var indexedPixels = ByteArray(0) // indices palette par pixel
-
-    /** Quantifie le bitmap → palette 256 couleurs + tableau d'indices. */
-    private fun quantize(bitmap: Bitmap): ByteArray {
-        val w = bitmap.width
-        val h = bitmap.height
-        val argb = IntArray(w * h)
-        bitmap.getPixels(argb, 0, w, 0, 0, w, h)
-
-        // NeuQuant simplified : on prend les 256 premières couleurs uniques
-        // puis on mappe chaque pixel sur l'entrée la plus proche.
-        val palette = LinkedHashMap<Int, Int>(256)
-        for (px in argb) {
-            val rgb = px and 0xFFFFFF
-            if (palette.size < 256) palette.putIfAbsent(rgb, palette.size)
-        }
-        // Remplir colorTab
-        colorTab.fill(0)
-        for ((rgb, idx) in palette) {
-            colorTab[idx * 3 + 0] = ((rgb shr 16) and 0xFF).toByte()
-            colorTab[idx * 3 + 1] = ((rgb shr 8)  and 0xFF).toByte()
-            colorTab[idx * 3 + 2] = ( rgb          and 0xFF).toByte()
-        }
-        // Mapper les pixels
-        val pixels = ByteArray(w * h)
-        for (i in argb.indices) {
-            val rgb = argb[i] and 0xFFFFFF
-            pixels[i] = (palette[rgb] ?: closestPaletteIndex(rgb, palette.size)).toByte()
-        }
-        return pixels
-    }
-
-    private fun closestPaletteIndex(rgb: Int, size: Int): Int {
-        val r = (rgb shr 16) and 0xFF
-        val g = (rgb shr 8)  and 0xFF
-        val b =  rgb         and 0xFF
-        var best = 0; var bestDist = Int.MAX_VALUE
-        for (i in 0 until size) {
-            val dr = r - (colorTab[i * 3]     .toInt() and 0xFF)
-            val dg = g - (colorTab[i * 3 + 1] .toInt() and 0xFF)
-            val db = b - (colorTab[i * 3 + 2] .toInt() and 0xFF)
-            val dist = dr * dr + dg * dg + db * db
-            if (dist < bestDist) { bestDist = dist; best = i }
-        }
-        return best
-    }
-
-    // ── bloc GIF helpers ──────────────────────────────────────────────────────
-
-    private fun writeLSD() {
-        writeShort(width)
-        writeShort(height)
-        // Packed : palette globale présente, résolution couleur 8 bits, taille palette 256
-        out!!.write(0xF7)   // 1_111_0_111
-        out!!.write(0)      // index couleur de fond
-        out!!.write(0)      // ratio pixel (0 = non défini)
-    }
-
-    private fun writePalette() {
-        out!!.write(colorTab)
-        // padding pour compléter 256 × 3 si la palette est plus petite
-        val n = 768 - colorTab.size
-        if (n > 0) out!!.write(ByteArray(n))
-    }
-
-    private fun writeNetscapeExt() {
-        out!!.write(0x21); out!!.write(0xFF); out!!.write(11)
-        writeString("NETSCAPE2.0")
-        out!!.write(3); out!!.write(1)
-        writeShort(repeat)
-        out!!.write(0)
-    }
-
-    private fun writeGraphicCtrlExt() {
-        out!!.write(0x21); out!!.write(0xF9); out!!.write(4)
-        out!!.write(0)              // packed (pas de transparence)
-        writeShort(delay / 10)     // délai en centièmes de secondes
-        out!!.write(0)             // indice transparent (ignoré)
-        out!!.write(0)             // block terminator
-    }
-
-    private fun writeImageDesc() {
-        out!!.write(0x2C)
-        writeShort(0); writeShort(0)   // left, top
-        writeShort(width); writeShort(height)
-        out!!.write(0)                 // pas de palette locale
-    }
-
-    private fun writePixels(pixels: ByteArray) {
-        val encoder = LzwEncoder(width, height, pixels, 8)
-        encoder.encode(out!!)
-    }
-
-    private fun writeShort(v: Int) {
-        out!!.write(v and 0xFF)
-        out!!.write((v shr 8) and 0xFF)
-    }
-    private fun writeString(s: String) = s.forEach { out!!.write(it.code) }
-}
-
-/** Encodeur LZW minimal pour GIF (domaine public). */
-private class LzwEncoder(
-    private val imgW: Int,
-    private val imgH: Int,
-    private val pixAry: ByteArray,
-    private val colorDepth: Int
-) {
-    private val EOF = -1
-    private var initCodeSize = maxOf(2, colorDepth)
-    private var remaining = 0
-    private var curPixel = 0
-
-    fun encode(os: java.io.OutputStream) {
-        os.write(initCodeSize)
-        remaining = imgW * imgH
-        curPixel  = 0
-        compress(initCodeSize + 1, os)
-        os.write(0)
-    }
-
-    private fun compress(initBits: Int, oos: java.io.OutputStream) {
-        val HSIZE = 5003
-        val htab   = IntArray(HSIZE) { -1 }
-        val codetab = IntArray(HSIZE)
-
-        var nBits       = initBits
-        val maxBits     = 12
-        var maxCode     = 1 shl nBits
-        val clearCode   = 1 shl (initBits - 1)
-        val eofCode     = clearCode + 1
-        var freeEnt     = clearCode + 2
-        var clearFlag   = false
-
-        var curAccum = 0; var curBits = 0
-        val masks = intArrayOf(0,1,3,7,0xF,0x1F,0x3F,0x7F,0xFF,0x1FF,0x3FF,0x7FF,0xFFF)
-
-        val accum = ByteArray(256)
-        var aCount = 0
-
-        fun writeCode(code: Int) {
-            curAccum = curAccum or (code shl curBits)
-            curBits += nBits
-            while (curBits >= 8) {
-                accum[aCount++] = (curAccum and 0xFF).toByte()
-                if (aCount >= 254) { oos.write(aCount); oos.write(accum, 0, aCount); aCount = 0 }
-                curAccum = curAccum ushr 8; curBits -= 8
-            }
-        }
-
-        fun flushPacket() {
-            if (curBits > 0) { accum[aCount++] = (curAccum and 0xFF).toByte() }
-            if (aCount > 0) { oos.write(aCount); oos.write(accum, 0, aCount); aCount = 0 }
-        }
-
-        fun clearTable() {
-            htab.fill(-1); freeEnt = clearCode + 2; clearFlag = true; writeCode(clearCode)
-        }
-
-        fun nextPixel(): Int {
-            if (remaining == 0) return EOF
-            remaining--
-            return pixAry[curPixel++].toInt() and 0xFF
-        }
-
-        writeCode(clearCode)
-        var ent = nextPixel()
-        if (ent == EOF) { writeCode(eofCode); flushPacket(); return }
-
-        outer@ while (true) {
-            val c = nextPixel()
-            if (c == EOF) break
-            val fcode = (c shl maxBits) + ent
-            var i = (c shl (maxBits - 8)) xor ent
-            var disp = if (i == 0) 1 else HSIZE - i
-            while (true) {
-                if (htab[i] == fcode) { ent = codetab[i]; continue@outer }
-                if (htab[i] < 0) break
-                i -= disp; if (i < 0) i += HSIZE
-            }
-            writeCode(ent)
-            ent = c
-            if (freeEnt < (1 shl maxBits)) {
-                codetab[i] = freeEnt++; htab[i] = fcode
-            } else {
-                clearTable()
-            }
-            if (clearFlag) {
-                clearFlag = false; nBits = initBits
-                maxCode = 1 shl nBits
-            } else if (freeEnt > maxCode) {
-                nBits++
-                if (nBits == maxBits) maxCode = 1 shl maxBits else maxCode = 1 shl nBits
-            }
-        }
-        writeCode(ent)
-        writeCode(eofCode)
-        flushPacket()
-    }
 }
