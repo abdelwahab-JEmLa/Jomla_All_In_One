@@ -21,7 +21,12 @@
 - Utilisez toujours les chemins définis dans ce fichier pour cibler les opérations sur d'autres applications.
 
 ## Résolution des Noms de Skills Globaux
-- Toute référence à `h_` (ou `help_skill`/`help_skills`) ou `b_c` (ou `build_client`) désigne respectivement les répertoires de skills globaux [h_](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/h_) et [build_client](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/build_client).
+- Toute référence à `h_` (ou `help_skill`/`help_skills`), `b_c` (ou `build_client`) ou `lit_patterns` (ou `read_c_p`/`c_p`) désigne respectivement les répertoires de skills globaux [h_](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/h_), [build_client](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/build_client) et [lit_patterns](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/lit_patterns).
+
+## Thermal Print Customizations (Print Without Products)
+- When printing receipts or tickets, the Bluetooth printing module supports printing a summary receipt without listing individual products (useful for credit payments or quick totals).
+- Pass `printWithoutProducts = true` to `printBluetoothReceipt` or `printBluetoothOnly` to omit detailed product lines while keeping the totals, count of items, client name, and credit details intact.
+
 
 ## Conventions de Compilation & Déploiement (`build_client`)
 - Pour compiler la version cliente, utilisez le skill global `build_client` (`b_c`, `bc_` ou `b_c_all`).
