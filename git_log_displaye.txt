@@ -1,0 +1,1572 @@
+commit 6d7ff403c376c749167b5a6f6df6b5e36685022c
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Thu Jun 25 23:09:44 2026 +0100
+
+    1.14.0.13
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 949827108..47134de48 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -8,6 +8,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_New
+ import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
++import android.net.Uri
+ import androidx.compose.foundation.background
+ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.Box
+@@ -19,6 +20,7 @@ import androidx.compose.material.icons.Icons
+ import androidx.compose.material.icons.filled.PlayArrow
+ import androidx.compose.material3.Icon
+ import androidx.compose.runtime.Composable
++import androidx.compose.runtime.DisposableEffect
+ import androidx.compose.runtime.collectAsState
+ import androidx.compose.runtime.getValue
+ import androidx.compose.runtime.remember
+@@ -28,6 +30,7 @@ import androidx.compose.ui.graphics.Color
+ import androidx.compose.ui.layout.ContentScale
+ import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.unit.dp
++import androidx.compose.ui.viewinterop.AndroidView
+ import coil.ImageLoader
+ import coil.compose.AsyncImage
+ import coil.decode.GifDecoder
+@@ -39,6 +42,10 @@ import com.bumptech.glide.integration.compose.GlideImage
+ import com.bumptech.glide.load.DecodeFormat
+ import com.bumptech.glide.load.engine.DiskCacheStrategy
+ import com.bumptech.glide.signature.ObjectKey
++import com.google.android.exoplayer2.ExoPlayer
++import com.google.android.exoplayer2.MediaItem
++import com.google.android.exoplayer2.Player
++import com.google.android.exoplayer2.ui.PlayerView
+ import java.io.File
+ 
+ enum class pourcentage {
+@@ -129,37 +136,68 @@ fun Image_Displaye(
+             )
+ 
+         if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
+-            // ── GIF (vidéo convertie) ─────────────────────────────────────────
+-            // Expanded  → Coil + GifDecoder : animation GIF fluide, boucle infinie
+-            // Compact   → Glide dontAnimate() : 1ère frame comme vignette + icône play
++            // ── Vidéo : expanded vs compact ──────────────────────────────────────
+             if (isExpandedProduct) {
+                 val context = LocalContext.current
+-                val gifLoader = remember(context) {
+-                    ImageLoader.Builder(context)
+-                        .components { add(GifDecoder.Factory()) }
+-                        .build()
+-                }
+-                val gifRequest = remember(
+-                    imageFile,
+-                    relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase
+-                ) {
+-                    ImageRequest.Builder(context)                      //<--
+-                    //TODO(1): fait que si a un vid que si expand playe le utilise le lib le pplus facile et concervateur des ressources phone 
+-                        .data(imageFile)
+-                        .memoryCacheKey("${relative_M3CouleurProduitInfos.keyID}_gif_${relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase}")
+-                        .crossfade(false)
+-                        .build()
++                val isLegacyGif = relative_M3CouleurProduitInfos.extensionDisponible
++                    .equals("gif", ignoreCase = true)
++
++                if (isLegacyGif) {
++                    // ── Legacy GIF (ancien format) → Coil + GifDecoder ──────────
++                    // Conservé pour la compatibilité avec les entrées existantes.
++                    val gifLoader = remember(context) {
++                        ImageLoader.Builder(context)
++                            .components { add(GifDecoder.Factory()) }
++                            .build()
++                    }
++                    val gifRequest = remember(
++                        imageFile,
++                        relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase
++                    ) {
++                        ImageRequest.Builder(context)
++                            .data(imageFile)
++                            .memoryCacheKey("${relative_M3CouleurProduitInfos.keyID}_gif_${relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase}")
++                            .crossfade(false)
++                            .build()
++                    }
++                    AsyncImage(
++                        model              = gifRequest,
++                        imageLoader        = gifLoader,
++                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
++                            .ifBlank { "Color video presentation" },
++                        modifier           = completeModifier,
++                        contentScale       = contentScale,
++                    )
++                } else {
++                    // ── Nouveau format MP4 → ExoPlayer ────────────────────────────
++                    // Décodage hardware-accéléré, boucle infinie, sans contrôles.
++                    // C'est la lib la plus légère et la plus économe en ressources
++                    // pour lire de la vidéo sur Android.
++                    val exoPlayer = remember(imageFile) {
++                        ExoPlayer.Builder(context).build().apply {
++                            setMediaItem(MediaItem.fromUri(Uri.fromFile(imageFile)))
++                            prepare()
++                            playWhenReady = true
++                            repeatMode = Player.REPEAT_MODE_ONE
++                            volume = 0f   // lecture muette pour un aperçu produit
++                        }
++                    }
++                    DisposableEffect(imageFile) {
++                        onDispose { exoPlayer.release() }
++                    }
++                    AndroidView(
++                        factory = { ctx ->
++                            PlayerView(ctx).apply {
++                                player = exoPlayer
++                                useController = false
++                            }
++                        },
++                        modifier = completeModifier
++                    )
+                 }
+-                AsyncImage(
+-                    model          = gifRequest,
+-                    imageLoader    = gifLoader,
+-                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
+-                        .ifBlank { "Color video presentation as GIF" },
+-                    modifier       = completeModifier,
+-                    contentScale   = contentScale,
+-                )
+             } else {
+-                // Compact: Glide extrait la 1ère frame (dontAnimate) + icône play
++                // ── Compact : Glide extrait la 1ère frame + icône play ────────────
++                // Fonctionne pour GIF (dontAnimate → 1ère frame) et MP4 (VideoDecoder).
+                 Box(modifier = completeModifier) {
+                     GlideImage(
+                         model = imageFile,
+
+commit 525e6fc18367adfe263ac3852a63cc376356639d
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Thu Jun 25 21:58:59 2026 +0100
+
+    feat: implement GIF presentation playback & update zip_colle and learn rules
+    
+    - Implement local GIF encoding and presentation playback using Coil and GifDecoder to reduce ExoPlayer memory overhead.
+    - Add OutlinedTextField with capitalized search query in Screen_Panie_FragID2.
+    - Update project rules (.agents/AGENTS.md) with guidelines for zip_colle mapping and learning_proposal.md.
+    - Maintain local .zip_colle_history.json.
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 0cc69c2ee..949827108 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -26,7 +26,12 @@ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.graphics.Color
+ import androidx.compose.ui.layout.ContentScale
++import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.unit.dp
++import coil.ImageLoader
++import coil.compose.AsyncImage
++import coil.decode.GifDecoder
++import coil.request.ImageRequest
+ import com.bumptech.glide.Priority
+ import com.bumptech.glide.RequestBuilder
+ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+@@ -63,7 +68,7 @@ fun Image_Displaye(
+     val effectiveQuality: pourcentage = when {
+         isExpandedProduct -> pourcentage.max_possible
+         isAnyExpanded     -> pourcentage.min_possible
+-        else              -> if (viewModel.active_Datas.filterAffichageMode_Proto== Filter_Affichage_Mode_Proto.Echants_Seulement) pourcentage.min_possible
++        else              -> if (viewModel.active_Datas.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Echants_Seulement) pourcentage.min_possible
+         else image_pourcetage_qualite
+     }
+ 
+@@ -115,28 +120,51 @@ fun Image_Displaye(
+                     if (isSameProductExpanded && isSameColor) {
+                         viewModel.updateExpandedProduitEtCouleur(null, null)
+                     } else {
+-                        viewModel.updateExpandedProduitEtCouleur(parentProduct, relative_M3CouleurProduitInfos)
++                        viewModel.updateExpandedProduitEtCouleur(
++                            parentProduct,
++                            relative_M3CouleurProduitInfos
++                        )
+                     }
+                 }
+             )
+ 
+         if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
++            // ── GIF (vidéo convertie) ─────────────────────────────────────────
++            // Expanded  → Coil + GifDecoder : animation GIF fluide, boucle infinie
++            // Compact   → Glide dontAnimate() : 1ère frame comme vignette + icône play
+             if (isExpandedProduct) {
+-                // Expanded: play the GIF — do NOT use dontAnimate()
+-                GlideImage(
+-                    model = imageFile,
+-                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color video presentation as GIF" },
+-                    modifier = completeModifier,
+-                    contentScale = contentScale
++                val context = LocalContext.current
++                val gifLoader = remember(context) {
++                    ImageLoader.Builder(context)
++                        .components { add(GifDecoder.Factory()) }
++                        .build()
++                }
++                val gifRequest = remember(
++                    imageFile,
++                    relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase
+                 ) {
+-                    it.applyAnimatedGifOptions(relative_M3CouleurProduitInfos)
++                    ImageRequest.Builder(context)                      //<--
++                    //TODO(1): fait que si a un vid que si expand playe le utilise le lib le pplus facile et concervateur des ressources phone 
++                        .data(imageFile)
++                        .memoryCacheKey("${relative_M3CouleurProduitInfos.keyID}_gif_${relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase}")
++                        .crossfade(false)
++                        .build()
+                 }
++                AsyncImage(
++                    model          = gifRequest,
++                    imageLoader    = gifLoader,
++                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
++                        .ifBlank { "Color video presentation as GIF" },
++                    modifier       = completeModifier,
++                    contentScale   = contentScale,
++                )
+             } else {
+-                // Compact: show first frame as thumbnail + play icon overlay
++                // Compact: Glide extrait la 1ère frame (dontAnimate) + icône play
+                 Box(modifier = completeModifier) {
+                     GlideImage(
+                         model = imageFile,
+-                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color video thumbnail" },
++                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
++                            .ifBlank { "Color video thumbnail" },
+                         modifier = Modifier.fillMaxSize(),
+                         contentScale = contentScale
+                     ) {
+@@ -158,9 +186,11 @@ fun Image_Displaye(
+                 }
+             }
+         } else {
++            // ── Image statique → Glide uniquement ────────────────────────────
+             GlideImage(
+                 model = imageFile,
+-                contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
++                contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
++                    .ifBlank { "Color image" },
+                 modifier = completeModifier,
+                 contentScale = contentScale
+             ) {
+@@ -172,7 +202,7 @@ fun Image_Displaye(
+     }
+ }
+ 
+-/** For static images: suppress animation, apply quality/size overrides. */
++/** Images statiques : animation supprimée, priorité et qualité selon pourcentage. */
+ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
+     couleur: M3CouleurProduitInfos,
+     qualite: pourcentage
+@@ -203,16 +233,3 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
+         pourcentage.min_possible -> 20
+     })
+     .skipMemoryCache(qualite == pourcentage.min_possible)
+-
+-/** For animated GIFs in expanded mode: allow looping animation, full quality. */
+-private fun RequestBuilder<Drawable>.applyAnimatedGifOptions(
+-    couleur: M3CouleurProduitInfos
+-) = this
+-    // Do NOT call dontAnimate() here — animation must run
+-    .diskCacheStrategy(DiskCacheStrategy.DATA)
+-    .priority(Priority.HIGH)
+-    .signature(ObjectKey("${couleur.keyID}_gif_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
+-    .override(800)
+-    .disallowHardwareConfig()
+-    .format(DecodeFormat.PREFER_ARGB_8888)
+-    .skipMemoryCache(false)
+
+commit a9e9acbebede8fc1b1fb76f9b8e7bf637607570a
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Thu Jun 25 20:50:22 2026 +0100
+
+    1.14.0.12
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 64aa21b06..0cc69c2ee 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -1,3 +1,5 @@
++@file:Suppress("DEPRECATION")
++
+ package Application4.App.Fragment.View.ViewS.Views
+ 
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+@@ -6,15 +8,25 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_New
+ import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
++import androidx.compose.foundation.background
+ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.Box
+ import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.size
++import androidx.compose.foundation.shape.CircleShape
++import androidx.compose.material.icons.Icons
++import androidx.compose.material.icons.filled.PlayArrow
++import androidx.compose.material3.Icon
+ import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.collectAsState
+ import androidx.compose.runtime.getValue
+ import androidx.compose.runtime.remember
++import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
++import androidx.compose.ui.graphics.Color
+ import androidx.compose.ui.layout.ContentScale
++import androidx.compose.ui.unit.dp
+ import com.bumptech.glide.Priority
+ import com.bumptech.glide.RequestBuilder
+ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+@@ -23,6 +35,7 @@ import com.bumptech.glide.load.DecodeFormat
+ import com.bumptech.glide.load.engine.DiskCacheStrategy
+ import com.bumptech.glide.signature.ObjectKey
+ import java.io.File
++
+ enum class pourcentage {
+     max_possible,
+     standart,
+@@ -107,19 +120,59 @@ fun Image_Displaye(
+                 }
+             )
+ 
+-        GlideImage(
+-            model = imageFile,
+-            contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
+-            modifier = completeModifier,
+-            contentScale = contentScale
+-        ) {
+-            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, effectiveQuality)
++        if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
++            if (isExpandedProduct) {
++                // Expanded: play the GIF — do NOT use dontAnimate()
++                GlideImage(
++                    model = imageFile,
++                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color video presentation as GIF" },
++                    modifier = completeModifier,
++                    contentScale = contentScale
++                ) {
++                    it.applyAnimatedGifOptions(relative_M3CouleurProduitInfos)
++                }
++            } else {
++                // Compact: show first frame as thumbnail + play icon overlay
++                Box(modifier = completeModifier) {
++                    GlideImage(
++                        model = imageFile,
++                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color video thumbnail" },
++                        modifier = Modifier.fillMaxSize(),
++                        contentScale = contentScale
++                    ) {
++                        it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, pourcentage.min_possible)
++                    }
++                    Box(
++                        modifier = Modifier
++                            .align(Alignment.Center)
++                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
++                            .padding(8.dp)
++                    ) {
++                        Icon(
++                            imageVector = Icons.Default.PlayArrow,
++                            contentDescription = "Video",
++                            tint = Color.White,
++                            modifier = Modifier.size(24.dp)
++                        )
++                    }
++                }
++            }
++        } else {
++            GlideImage(
++                model = imageFile,
++                contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
++                modifier = completeModifier,
++                contentScale = contentScale
++            ) {
++                it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, effectiveQuality)
++            }
+         }
+     } else {
+         Box(modifier = modifier.fillMaxSize())
+     }
+ }
+ 
++/** For static images: suppress animation, apply quality/size overrides. */
+ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
+     couleur: M3CouleurProduitInfos,
+     qualite: pourcentage
+@@ -150,3 +203,16 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
+         pourcentage.min_possible -> 20
+     })
+     .skipMemoryCache(qualite == pourcentage.min_possible)
++
++/** For animated GIFs in expanded mode: allow looping animation, full quality. */
++private fun RequestBuilder<Drawable>.applyAnimatedGifOptions(
++    couleur: M3CouleurProduitInfos
++) = this
++    // Do NOT call dontAnimate() here — animation must run
++    .diskCacheStrategy(DiskCacheStrategy.DATA)
++    .priority(Priority.HIGH)
++    .signature(ObjectKey("${couleur.keyID}_gif_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
++    .override(800)
++    .disallowHardwareConfig()
++    .format(DecodeFormat.PREFER_ARGB_8888)
++    .skipMemoryCache(false)
+
+commit de2c5aa3c09d616b9917174f48edae688b2c9b5b
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Sun Jun 7 14:03:47 2026 +0100
+
+    SAVE
+            versionName = "1.14.0.05_26.00:00.Boutique_JeMla_All_In_On_Project"
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 71b526a0b..64aa21b06 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -2,7 +2,7 @@ package Application4.App.Fragment.View.ViewS.Views
+ 
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
+-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
++import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
+ import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
+
+commit d932f690ac26a88baf5d045ba2bc07a6309a2858
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue May 12 20:54:32 2026 +0100
+
+    SAVE
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 9c438a158..71b526a0b 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -1,6 +1,7 @@
+ package Application4.App.Fragment.View.ViewS.Views
+ 
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
++import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+ import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+@@ -49,7 +50,7 @@ fun Image_Displaye(
+     val effectiveQuality: pourcentage = when {
+         isExpandedProduct -> pourcentage.max_possible
+         isAnyExpanded     -> pourcentage.min_possible
+-        else              -> if (viewModel.active_Datas.isEchatillantsMode) pourcentage.min_possible
++        else              -> if (viewModel.active_Datas.filterAffichageMode_Proto== Filter_Affichage_Mode_Proto.Echants_Seulement) pourcentage.min_possible
+         else image_pourcetage_qualite
+     }
+ 
+
+commit b8ec5385d28d192d8a7ec60a8484ad5c4dc86b0f
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Thu Apr 30 17:25:00 2026 +0100
+
+    SAVE
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 32f7e0e37..9c438a158 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -27,10 +27,7 @@ enum class pourcentage {
+     standart,
+     min_possible
+ }
+-                                         //<--
+-                                         // nomImageFichieSansEtansion is preferred.
+-                                         // Fallback: parentBProduitOldID + indexCouleurDansAncienProto
+-                                         //   e.g. parentBProduitOldID=4117, indexCouleurDansAncienProto=1 → "4117_1"
++
+ @OptIn(ExperimentalGlideComposeApi::class)
+ @Composable
+ fun Image_Displaye(
+@@ -65,7 +62,6 @@ fun Image_Displaye(
+         val baseDir = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+ 
+         if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo") {
+-            // Preferred path: new-proto explicit file name
+             val fileName =
+                 "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
+             File(baseDir, fileName)
+
+commit 06c2c3c3fa85f10771985d25c2d785a0030e0758
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Apr 14 21:59:35 2026 +0100
+
+    Image_Displaye.kt
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 20ee8eca0..32f7e0e37 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -28,9 +28,9 @@ enum class pourcentage {
+     min_possible
+ }
+                                          //<--
+-                                         //TODO(1): nomImageFichieSansEtansion	parentBProduitOldID	4117    
+-                                         // 
+-                                         // indexCouleurDansAncienProto	1
++                                         // nomImageFichieSansEtansion is preferred.
++                                         // Fallback: parentBProduitOldID + indexCouleurDansAncienProto
++                                         //   e.g. parentBProduitOldID=4117, indexCouleurDansAncienProto=1 → "4117_1"
+ @OptIn(ExperimentalGlideComposeApi::class)
+ @Composable
+ fun Image_Displaye(
+@@ -58,14 +58,28 @@ fun Image_Displaye(
+ 
+     val imageFile = remember(
+         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
+-        relative_M3CouleurProduitInfos.extensionDisponible
++        relative_M3CouleurProduitInfos.extensionDisponible,
++        relative_M3CouleurProduitInfos.parentBProduitOldID,
++        relative_M3CouleurProduitInfos.indexCouleurDansAncienProto,
+     ) {
++        val baseDir = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
++
+         if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo") {
++            // Preferred path: new-proto explicit file name
+             val fileName =
+                 "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
+-            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
++            File(baseDir, fileName)
+         } else {
+-            null
++            // Fallback: old-proto naming → "<parentBProduitOldID>_<indexCouleurDansAncienProto>.<ext>"
++            val oldId    = relative_M3CouleurProduitInfos.parentBProduitOldID
++            val colorIdx = relative_M3CouleurProduitInfos.indexCouleurDansAncienProto
++            if (oldId > 0) {
++                listOf("jpg", "png", "webp").map { ext ->
++                    File(baseDir, "${oldId}_${colorIdx}.$ext")
++                }.firstOrNull { it.exists() }
++            } else {
++                null
++            }
+         }
+     }
+ 
+
+commit 5306cd7222615520992336cec6c8a6c2ad02ea56
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Apr 14 12:09:18 2026 +0100
+
+    Image_Displaye.kt
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 925cb038e..20ee8eca0 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -27,7 +27,10 @@ enum class pourcentage {
+     standart,
+     min_possible
+ }
+-
++                                         //<--
++                                         //TODO(1): nomImageFichieSansEtansion	parentBProduitOldID	4117    
++                                         // 
++                                         // indexCouleurDansAncienProto	1
+ @OptIn(ExperimentalGlideComposeApi::class)
+ @Composable
+ fun Image_Displaye(
+
+commit b89adfd64f52bcd2f201d0dd7db2e1aeb26c2eb8
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Mon Apr 6 13:45:18 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 4eb04df7d..925cb038e 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -2,8 +2,8 @@ package Application4.App.Fragment.View.ViewS.Views
+ 
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+-import EntreApps.Shared.Models.M01Produit
+-import EntreApps.Shared.Models.M3CouleurProduitInfos
++import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
++import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
+ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.Box
+
+commit 2c9a148aa4652592f69d1c0913cc9de8e56f7508
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Thu Apr 2 13:11:11 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 397a6da50..4eb04df7d 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -2,7 +2,6 @@ package Application4.App.Fragment.View.ViewS.Views
+ 
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+-import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+ import EntreApps.Shared.Models.M01Produit
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
+@@ -86,11 +85,6 @@ fun Image_Displaye(
+                     val isSameColor =
+                         centralValues.expanded_M3CouleurProduitInfos?.keyID == relative_M3CouleurProduitInfos.keyID
+ 
+-                    viewModel.sendOrderToClientDisplayerT(
+-                        WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+-                        relative_M3CouleurProduitInfos.keyID
+-                    )
+-
+                     if (isSameProductExpanded && isSameColor) {
+                         viewModel.updateExpandedProduitEtCouleur(null, null)
+                     } else {
+
+commit f946066b9d840d1d93373cc00249912247b73d12
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Thu Apr 2 09:48:32 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 6cdc8c96e..397a6da50 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -23,9 +23,6 @@ import com.bumptech.glide.load.DecodeFormat
+ import com.bumptech.glide.load.engine.DiskCacheStrategy
+ import com.bumptech.glide.signature.ObjectKey
+ import java.io.File
+-        //<--
+-        //TODO(1):   //<--
+-        ////TODO(1): fait que si its mode echang et its ecpanded produit de affiche ces couleur masx 
+ enum class pourcentage {
+     max_possible,
+     standart,
+@@ -46,12 +43,15 @@ fun Image_Displaye(
+     val wifiState by viewModel.wifiState.collectAsState()
+     val centralValues = wifiState
+ 
+-    val effectiveQuality: pourcentage = if (viewModel.active_Datas.isEchatillantsMode) {
+-        val isExpandedProduct =
+-            centralValues.expanded_M1Produit?.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
+-        if (isExpandedProduct) pourcentage.max_possible else pourcentage.min_possible
+-    } else {
+-        image_pourcetage_qualite
++    val isExpandedProduct =
++        centralValues.expanded_M1Produit?.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
++    val isAnyExpanded = centralValues.expanded_M1Produit != null
++
++    val effectiveQuality: pourcentage = when {
++        isExpandedProduct -> pourcentage.max_possible
++        isAnyExpanded     -> pourcentage.min_possible
++        else              -> if (viewModel.active_Datas.isEchatillantsMode) pourcentage.min_possible
++        else image_pourcetage_qualite
+     }
+ 
+     val imageFile = remember(
+
+commit c6986813579fb9ca995960c385618b2aeb5af998
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Wed Apr 1 15:07:42 2026 +0100
+
+    ²
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 58e59b59e..6cdc8c96e 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -23,7 +23,9 @@ import com.bumptech.glide.load.DecodeFormat
+ import com.bumptech.glide.load.engine.DiskCacheStrategy
+ import com.bumptech.glide.signature.ObjectKey
+ import java.io.File
+-
++        //<--
++        //TODO(1):   //<--
++        ////TODO(1): fait que si its mode echang et its ecpanded produit de affiche ces couleur masx 
+ enum class pourcentage {
+     max_possible,
+     standart,
+
+commit 7f225f89841c01e111a6c49ea9094f58acda7194
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Mar 31 20:29:14 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index c57392a3d..58e59b59e 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -6,12 +6,10 @@ import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProt
+ import EntreApps.Shared.Models.M01Produit
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
+-import android.util.Log
+ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.Box
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.runtime.Composable
+-import androidx.compose.runtime.SideEffect
+ import androidx.compose.runtime.collectAsState
+ import androidx.compose.runtime.getValue
+ import androidx.compose.runtime.remember
+@@ -41,14 +39,11 @@ fun Image_Displaye(
+     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+     list_M1Produit: List<M01Produit>?,
+     image_pourcetage_qualite: pourcentage = pourcentage.min_possible
+-) {       //<--
+-//TODO(1): enleve les commantaire et logs et sementics  pour but de consise le max possible  tallie du code sans change le foctionemen
++) {
+     val (_, viewModel) = uiState_NewProtoPatterns_viewModel
+     val wifiState by viewModel.wifiState.collectAsState()
+     val centralValues = wifiState
+ 
+-    // In échantillons mode: expanded product's colors → max quality; all others → min.
+-    // Outside échantillons mode the caller-supplied quality is respected as-is.
+     val effectiveQuality: pourcentage = if (viewModel.active_Datas.isEchatillantsMode) {
+         val isExpandedProduct =
+             centralValues.expanded_M1Produit?.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
+@@ -70,27 +65,6 @@ fun Image_Displaye(
+         }
+     }
+ 
+-    // Log every composition — shows produit name, whether the image file exists, and
+-    // effective quality. Use this to confirm that "wassim"-type products reach this
+-    // composable and to see why they are invisible (image missing = empty Box).
+-    SideEffect {
+-        val parentNom = list_M1Produit
+-            ?.find { it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID }
+-            ?.nom ?: "?"
+-        val fileStatus = when {
+-            imageFile == null          -> "Non Dispo (pas de fichier)"
+-            !imageFile.exists()        -> "⚠️ FICHIER ABSENT → Box vide invisible (${imageFile.name})"
+-            else                       -> "OK (${imageFile.name})"
+-        }
+-        Log.d(
+-            "Image_Displaye",
+-            "produit=$parentNom" +
+-                    " | couleur=${relative_M3CouleurProduitInfos.keyID.take(8)}" +
+-                    " | qualite=$effectiveQuality" +
+-                    " | image=$fileStatus"
+-        )
+-    }
+-
+     if (imageFile != null && imageFile.exists()) {
+         val parentProduct = remember(
+             relative_M3CouleurProduitInfos.parentBProduitInfosKeyID,
+
+commit 55f4b62ca662aeb960007fe6457ffcc4fe0ad49f
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Mar 31 20:25:41 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 2807a956b..c57392a3d 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -41,7 +41,8 @@ fun Image_Displaye(
+     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+     list_M1Produit: List<M01Produit>?,
+     image_pourcetage_qualite: pourcentage = pourcentage.min_possible
+-) {
++) {       //<--
++//TODO(1): enleve les commantaire et logs et sementics  pour but de consise le max possible  tallie du code sans change le foctionemen
+     val (_, viewModel) = uiState_NewProtoPatterns_viewModel
+     val wifiState by viewModel.wifiState.collectAsState()
+     val centralValues = wifiState
+
+commit 527a9b5f49caaa08652f8c2ea54068fa5cece430
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Mar 31 20:13:40 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 89acf5ca3..2807a956b 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -6,10 +6,12 @@ import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProt
+ import EntreApps.Shared.Models.M01Produit
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
++import android.util.Log
+ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.Box
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.runtime.Composable
++import androidx.compose.runtime.SideEffect
+ import androidx.compose.runtime.collectAsState
+ import androidx.compose.runtime.getValue
+ import androidx.compose.runtime.remember
+@@ -23,12 +25,13 @@ import com.bumptech.glide.load.DecodeFormat
+ import com.bumptech.glide.load.engine.DiskCacheStrategy
+ import com.bumptech.glide.signature.ObjectKey
+ import java.io.File
+-enum class pourcentage{
++
++enum class pourcentage {
+     max_possible,
+     standart,
+     min_possible
+-}             //<--
+-//TODO(1): fait que si its mode echang et its ecpanded produit de affiche ces couleur max et les atres couleurs min
++}
++
+ @OptIn(ExperimentalGlideComposeApi::class)
+ @Composable
+ fun Image_Displaye(
+@@ -39,10 +42,20 @@ fun Image_Displaye(
+     list_M1Produit: List<M01Produit>?,
+     image_pourcetage_qualite: pourcentage = pourcentage.min_possible
+ ) {
+-    val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
++    val (_, viewModel) = uiState_NewProtoPatterns_viewModel
+     val wifiState by viewModel.wifiState.collectAsState()
+     val centralValues = wifiState
+ 
++    // In échantillons mode: expanded product's colors → max quality; all others → min.
++    // Outside échantillons mode the caller-supplied quality is respected as-is.
++    val effectiveQuality: pourcentage = if (viewModel.active_Datas.isEchatillantsMode) {
++        val isExpandedProduct =
++            centralValues.expanded_M1Produit?.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
++        if (isExpandedProduct) pourcentage.max_possible else pourcentage.min_possible
++    } else {
++        image_pourcetage_qualite
++    }
++
+     val imageFile = remember(
+         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
+         relative_M3CouleurProduitInfos.extensionDisponible
+@@ -56,6 +69,27 @@ fun Image_Displaye(
+         }
+     }
+ 
++    // Log every composition — shows produit name, whether the image file exists, and
++    // effective quality. Use this to confirm that "wassim"-type products reach this
++    // composable and to see why they are invisible (image missing = empty Box).
++    SideEffect {
++        val parentNom = list_M1Produit
++            ?.find { it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID }
++            ?.nom ?: "?"
++        val fileStatus = when {
++            imageFile == null          -> "Non Dispo (pas de fichier)"
++            !imageFile.exists()        -> "⚠️ FICHIER ABSENT → Box vide invisible (${imageFile.name})"
++            else                       -> "OK (${imageFile.name})"
++        }
++        Log.d(
++            "Image_Displaye",
++            "produit=$parentNom" +
++                    " | couleur=${relative_M3CouleurProduitInfos.keyID.take(8)}" +
++                    " | qualite=$effectiveQuality" +
++                    " | image=$fileStatus"
++        )
++    }
++
+     if (imageFile != null && imageFile.exists()) {
+         val parentProduct = remember(
+             relative_M3CouleurProduitInfos.parentBProduitInfosKeyID,
+@@ -94,7 +128,7 @@ fun Image_Displaye(
+             modifier = completeModifier,
+             contentScale = contentScale
+         ) {
+-            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, image_pourcetage_qualite)
++            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, effectiveQuality)
+         }
+     } else {
+         Box(modifier = modifier.fillMaxSize())
+
+commit 8cd966d2060e912e50bdf6691bf769e0c853004c
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Mar 31 17:59:19 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 8620b0036..89acf5ca3 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -2,6 +2,7 @@ package Application4.App.Fragment.View.ViewS.Views
+ 
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
++import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+ import EntreApps.Shared.Models.M01Produit
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
+@@ -26,13 +27,14 @@ enum class pourcentage{
+     max_possible,
+     standart,
+     min_possible
+-}
++}             //<--
++//TODO(1): fait que si its mode echang et its ecpanded produit de affiche ces couleur max et les atres couleurs min
+ @OptIn(ExperimentalGlideComposeApi::class)
+ @Composable
+ fun Image_Displaye(
++    modifier: Modifier = Modifier,
+     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
+     contentScale: ContentScale = ContentScale.Fit,
+-    modifier: Modifier = Modifier,
+     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+     list_M1Produit: List<M01Produit>?,
+     image_pourcetage_qualite: pourcentage = pourcentage.min_possible
+@@ -73,11 +75,14 @@ fun Image_Displaye(
+                     val isSameColor =
+                         centralValues.expanded_M3CouleurProduitInfos?.keyID == relative_M3CouleurProduitInfos.keyID
+ 
++                    viewModel.sendOrderToClientDisplayerT(
++                        WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
++                        relative_M3CouleurProduitInfos.keyID
++                    )
++
+                     if (isSameProductExpanded && isSameColor) {
+-                        // Même produit, même couleur → fermer
+                         viewModel.updateExpandedProduitEtCouleur(null, null)
+                     } else {
+-                        // Nouveau produit OU nouvelle couleur → ouvrir/switcher
+                         viewModel.updateExpandedProduitEtCouleur(parentProduct, relative_M3CouleurProduitInfos)
+                     }
+                 }
+
+commit 99e93dee1a340b8b1899232ae7fa43d2c28849e7
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Mon Mar 30 02:10:34 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 82646b1f0..8620b0036 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -33,7 +33,6 @@ fun Image_Displaye(
+     relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
+     contentScale: ContentScale = ContentScale.Fit,
+     modifier: Modifier = Modifier,
+-    on_pour_send_data: (String, String) -> Unit,
+     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+     list_M1Produit: List<M01Produit>?,
+     image_pourcetage_qualite: pourcentage = pourcentage.min_possible
+
+commit f22208c43d7e67673039e39b01c3fd4ef8e4cc85
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Mon Mar 30 01:45:50 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index c62b7ddc9..82646b1f0 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -2,7 +2,6 @@ package Application4.App.Fragment.View.ViewS.Views
+ 
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+-import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+ import EntreApps.Shared.Models.M01Produit
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
+@@ -70,47 +69,18 @@ fun Image_Displaye(
+             .fillMaxSize()
+             .then(
+                 Modifier.clickable {
+-
+-                    val currentExpandedProduct = centralValues.expanded_M1Produit
+-                    val currentExpandedColor = centralValues.expanded_M3CouleurProduitInfos
+-
+                     val isSameProductExpanded =
+-                        currentExpandedProduct?.keyID == parentProduct?.keyID
+-                    val isDifferentColor =
+-                        currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
++                        centralValues.expanded_M1Produit?.keyID == parentProduct?.keyID
++                    val isSameColor =
++                        centralValues.expanded_M3CouleurProduitInfos?.keyID == relative_M3CouleurProduitInfos.keyID
+ 
+-                    if (isSameProductExpanded && isDifferentColor) {
+-                        viewModel.sendOrderToClientDisplayerT(
+-                            WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+-                            relative_M3CouleurProduitInfos.keyID
+-                        )
++                    if (isSameProductExpanded && isSameColor) {
++                        // Même produit, même couleur → fermer
++                        viewModel.updateExpandedProduitEtCouleur(null, null)
+                     } else {
+-                        // CASE 2: Different product OR same color → Toggle product expansion.
+-                        val newProductValue =
+-                            if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
+-                                // Same product, same color → Collapse
+-                                null
+-                            } else {
+-                                // Different product → Expand it
+-                                parentProduct
+-                            }
+-
+-
+-                        val colorKeyToSend = if (newProductValue == null) {
+-                            currentExpandedColor?.keyID ?: relative_M3CouleurProduitInfos.keyID
+-                        } else {
+-                            relative_M3CouleurProduitInfos.keyID
+-                        }
+-                        viewModel.sendOrderToClientDisplayerT(
+-                            WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
+-                            colorKeyToSend
+-                        )
++                        // Nouveau produit OU nouvelle couleur → ouvrir/switcher
++                        viewModel.updateExpandedProduitEtCouleur(parentProduct, relative_M3CouleurProduitInfos)
+                     }
+-
+-                    viewModel.sendOrderToClientDisplayer(
+-                        WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
+-                        relative_M3CouleurProduitInfos.keyID
+-                    )
+                 }
+             )
+ 
+
+commit 6e734683c1565c6586a495490a75aad0dbc70308
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Sun Mar 29 13:26:53 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 5e1576c9a..c62b7ddc9 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -23,7 +23,11 @@ import com.bumptech.glide.load.DecodeFormat
+ import com.bumptech.glide.load.engine.DiskCacheStrategy
+ import com.bumptech.glide.signature.ObjectKey
+ import java.io.File
+-
++enum class pourcentage{
++    max_possible,
++    standart,
++    min_possible
++}
+ @OptIn(ExperimentalGlideComposeApi::class)
+ @Composable
+ fun Image_Displaye(
+@@ -33,6 +37,7 @@ fun Image_Displaye(
+     on_pour_send_data: (String, String) -> Unit,
+     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+     list_M1Produit: List<M01Produit>?,
++    image_pourcetage_qualite: pourcentage = pourcentage.min_possible
+ ) {
+     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
+     val wifiState by viewModel.wifiState.collectAsState()
+@@ -115,7 +120,7 @@ fun Image_Displaye(
+             modifier = completeModifier,
+             contentScale = contentScale
+         ) {
+-            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos)
++            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, image_pourcetage_qualite)
+         }
+     } else {
+         Box(modifier = modifier.fillMaxSize())
+@@ -123,15 +128,32 @@ fun Image_Displaye(
+ }
+ 
+ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
+-    couleur: M3CouleurProduitInfos
++    couleur: M3CouleurProduitInfos,
++    qualite: pourcentage
+ ) = this
+     .dontAnimate()
+     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+-    .priority(Priority.NORMAL)
++    .priority(when (qualite) {
++        pourcentage.max_possible -> Priority.HIGH
++        pourcentage.standart     -> Priority.NORMAL
++        pourcentage.min_possible -> Priority.LOW
++    })
+     .dontTransform()
+     .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
+-    .override(400, 400)
++    .override(when (qualite) {
++        pourcentage.max_possible -> 800
++        pourcentage.standart     -> 300
++        pourcentage.min_possible -> 150
++    })
+     .disallowHardwareConfig()
+-    .format(DecodeFormat.PREFER_RGB_565)
+-    .encodeQuality(70)
+-    .skipMemoryCache(false)
++    .format(when (qualite) {
++        pourcentage.max_possible -> DecodeFormat.PREFER_ARGB_8888
++        pourcentage.standart     -> DecodeFormat.PREFER_RGB_565
++        pourcentage.min_possible -> DecodeFormat.PREFER_RGB_565
++    })
++    .encodeQuality(when (qualite) {
++        pourcentage.max_possible -> 100
++        pourcentage.standart     -> 50
++        pourcentage.min_possible -> 20
++    })
++    .skipMemoryCache(qualite == pourcentage.min_possible)
+
+commit 9c2811b630f5bbe8ebbfe5f86b9b9a5549c99e92
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Sun Mar 29 10:13:18 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 73dd79483..5e1576c9a 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -1,7 +1,7 @@
+ package Application4.App.Fragment.View.ViewS.Views
+ 
+-import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
++import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+ import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+ import EntreApps.Shared.Models.M01Produit
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+@@ -10,6 +10,8 @@ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.Box
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.runtime.Composable
++import androidx.compose.runtime.collectAsState
++import androidx.compose.runtime.getValue
+ import androidx.compose.runtime.remember
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.layout.ContentScale
+@@ -33,7 +35,8 @@ fun Image_Displaye(
+     list_M1Produit: List<M01Produit>?,
+ ) {
+     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
+-    val centralValues = uiState.active_Central_Values
++    val wifiState by viewModel.wifiState.collectAsState()
++    val centralValues = wifiState
+ 
+     val imageFile = remember(
+         relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
+@@ -49,7 +52,6 @@ fun Image_Displaye(
+     }
+ 
+     if (imageFile != null && imageFile.exists()) {
+-        // Sourced from uiState — no direct repository injection needed
+         val parentProduct = remember(
+             relative_M3CouleurProduitInfos.parentBProduitInfosKeyID,
+             list_M1Produit
+@@ -73,15 +75,12 @@ fun Image_Displaye(
+                         currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
+ 
+                     if (isSameProductExpanded && isDifferentColor) {
+-                        // CASE 1: Same product, different color → Update only the selected color
+-                        viewModel.update_activeCentralValues(
+-                            centralValues.copy(
+-                                expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
+-                                // Keep expanded_M1Produit unchanged
+-                            )
++                        viewModel.sendOrderToClientDisplayerT(
++                            WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
++                            relative_M3CouleurProduitInfos.keyID
+                         )
+                     } else {
+-                        // CASE 2: Different product OR same color → Toggle product expansion
++                        // CASE 2: Different product OR same color → Toggle product expansion.
+                         val newProductValue =
+                             if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
+                                 // Same product, same color → Collapse
+@@ -91,15 +90,15 @@ fun Image_Displaye(
+                                 parentProduct
+                             }
+ 
+-                        viewModel.update_activeCentralValues(
+-                            centralValues.copy(
+-                                expanded_M1Produit = newProductValue,
+-                                expanded_M3CouleurProduitInfos = if (newProductValue != null) {
+-                                    relative_M3CouleurProduitInfos
+-                                } else {
+-                                    null
+-                                }
+-                            )
++
++                        val colorKeyToSend = if (newProductValue == null) {
++                            currentExpandedColor?.keyID ?: relative_M3CouleurProduitInfos.keyID
++                        } else {
++                            relative_M3CouleurProduitInfos.keyID
++                        }
++                        viewModel.sendOrderToClientDisplayerT(
++                            WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran,
++                            colorKeyToSend
+                         )
+                     }
+ 
+
+commit 2176f79b23d39a957802dc0daace3e7590755b59
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Mar 24 18:33:58 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index d762c1b57..73dd79483 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -1,6 +1,6 @@
+ package Application4.App.Fragment.View.ViewS.Views
+ 
+-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
++import Application4.App.Fragment.ID1.Fragment.ViewModel.Z.Archive.UiState_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+ import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+ import EntreApps.Shared.Models.M01Produit
+
+commit af470ec173f4f80408204128df94c78081f3e4b7
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Mar 24 17:59:05 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 237eda487..d762c1b57 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -1,7 +1,7 @@
+ package Application4.App.Fragment.View.ViewS.Views
+ 
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
+-import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
++import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
+ import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+ import EntreApps.Shared.Models.M01Produit
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+@@ -29,7 +29,7 @@ fun Image_Displaye(
+     contentScale: ContentScale = ContentScale.Fit,
+     modifier: Modifier = Modifier,
+     on_pour_send_data: (String, String) -> Unit,
+-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
++    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+     list_M1Produit: List<M01Produit>?,
+ ) {
+     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
+
+commit 43969e5ab9af182278590cc74932174d10c1a4c8
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Mar 24 17:50:42 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 754383f65..237eda487 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -1,6 +1,6 @@
+ package Application4.App.Fragment.View.ViewS.Views
+ 
+-import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
++import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.Archive.UiState_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+ import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+ import EntreApps.Shared.Models.M01Produit
+
+commit e3041d563d80e3ae87d2cbb38f2aa31e55b38d85
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Tue Mar 24 14:19:17 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 376808a44..754383f65 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -1,8 +1,9 @@
+ package Application4.App.Fragment.View.ViewS.Views
+ 
+-import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
++import Application4.App.Fragment.ID1.Fragment.ViewModel.Model.UiState_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+ import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
++import EntreApps.Shared.Models.M01Produit
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+ import android.graphics.drawable.Drawable
+ import androidx.compose.foundation.clickable
+@@ -28,7 +29,8 @@ fun Image_Displaye(
+     contentScale: ContentScale = ContentScale.Fit,
+     modifier: Modifier = Modifier,
+     on_pour_send_data: (String, String) -> Unit,
+-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
++    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>,
++    list_M1Produit: List<M01Produit>?,
+ ) {
+     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
+     val centralValues = uiState.active_Central_Values
+@@ -50,9 +52,9 @@ fun Image_Displaye(
+         // Sourced from uiState — no direct repository injection needed
+         val parentProduct = remember(
+             relative_M3CouleurProduitInfos.parentBProduitInfosKeyID,
+-            uiState.list_M1Produit
++            list_M1Produit
+         ) {
+-            uiState.list_M1Produit.find {
++            list_M1Produit?.find {
+                 it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
+             }
+         }
+@@ -65,8 +67,10 @@ fun Image_Displaye(
+                     val currentExpandedProduct = centralValues.expanded_M1Produit
+                     val currentExpandedColor = centralValues.expanded_M3CouleurProduitInfos
+ 
+-                    val isSameProductExpanded = currentExpandedProduct?.keyID == parentProduct?.keyID
+-                    val isDifferentColor = currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
++                    val isSameProductExpanded =
++                        currentExpandedProduct?.keyID == parentProduct?.keyID
++                    val isDifferentColor =
++                        currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
+ 
+                     if (isSameProductExpanded && isDifferentColor) {
+                         // CASE 1: Same product, different color → Update only the selected color
+@@ -78,13 +82,14 @@ fun Image_Displaye(
+                         )
+                     } else {
+                         // CASE 2: Different product OR same color → Toggle product expansion
+-                        val newProductValue = if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
+-                            // Same product, same color → Collapse
+-                            null
+-                        } else {
+-                            // Different product → Expand it
+-                            parentProduct
+-                        }
++                        val newProductValue =
++                            if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
++                                // Same product, same color → Collapse
++                                null
++                            } else {
++                                // Different product → Expand it
++                                parentProduct
++                            }
+ 
+                         viewModel.update_activeCentralValues(
+                             centralValues.copy(
+
+commit e2c7aa454183d774df0b6220c22bb9863af0f72a
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Sat Mar 21 13:27:58 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 10a2f2a11..376808a44 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -2,8 +2,8 @@ package Application4.App.Fragment.View.ViewS.Views
+ 
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
+ import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
++import Application4.App.Modules.Wi.Module.WifiUpdateClientDisplayerStats_NewProto
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
+ import android.graphics.drawable.Drawable
+ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.Box
+@@ -99,7 +99,7 @@ fun Image_Displaye(
+                     }
+ 
+                     viewModel.sendOrderToClientDisplayer(
+-                        WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
++                        WifiUpdateClientDisplayerStats_NewProto.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
+                         relative_M3CouleurProduitInfos.keyID
+                     )
+                 }
+
+commit 1e009623948bea8ec31be5adbf18de25540e92c5
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Sat Mar 21 12:41:49 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 3576f99d5..10a2f2a11 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -61,6 +61,7 @@ fun Image_Displaye(
+             .fillMaxSize()
+             .then(
+                 Modifier.clickable {
++
+                     val currentExpandedProduct = centralValues.expanded_M1Produit
+                     val currentExpandedColor = centralValues.expanded_M3CouleurProduitInfos
+ 
+@@ -97,8 +98,7 @@ fun Image_Displaye(
+                         )
+                     }
+ 
+-                    // Send the data update
+-                    on_pour_send_data(
++                    viewModel.sendOrderToClientDisplayer(
+                         WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
+                         relative_M3CouleurProduitInfos.keyID
+                     )
+
+commit 66d583a996b2e36cbbcb3a3b9f892f1494943ce8
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Wed Mar 11 10:31:17 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+index 9200923e0..3576f99d5 100644
+--- a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -1,7 +1,7 @@
+ package Application4.App.Fragment.View.ViewS.Views
+ 
+-import Application4.App.Fragment.A.ViewModel.UiState_NewProtoPatterns
+-import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
++import Application4.App.Fragment.ID1.Fragment.ViewModel.UiState_NewProtoPatterns
++import Application4.App.Fragment.ID1.Fragment.ViewModel.ViewModel_NewProtoPatterns
+ import EntreApps.Shared.Models.M3CouleurProduitInfos
+ import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
+ import android.graphics.drawable.Drawable
+
+commit b6195392f7c6aeffadac2a58cb6afd42494b17e0
+Author: abdelwahab-JEmLa <156733337+abdelwahab-JEmLa@users.noreply.github.com>
+Date:   Thu Mar 5 14:44:36 2026 +0100
+
+    save
+
+diff --git a/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+new file mode 100644
+index 000000000..9200923e0
+--- /dev/null
++++ b/app/src/main/java/Application4/App/Fragment/View/ViewS/Views/Image_Displaye.kt
+@@ -0,0 +1,133 @@
++package Application4.App.Fragment.View.ViewS.Views
++
++import Application4.App.Fragment.A.ViewModel.UiState_NewProtoPatterns
++import Application4.App.Fragment.A.ViewModel.ViewModel_NewProtoPatterns
++import EntreApps.Shared.Models.M3CouleurProduitInfos
++import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
++import android.graphics.drawable.Drawable
++import androidx.compose.foundation.clickable
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.runtime.Composable
++import androidx.compose.runtime.remember
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.layout.ContentScale
++import com.bumptech.glide.Priority
++import com.bumptech.glide.RequestBuilder
++import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
++import com.bumptech.glide.integration.compose.GlideImage
++import com.bumptech.glide.load.DecodeFormat
++import com.bumptech.glide.load.engine.DiskCacheStrategy
++import com.bumptech.glide.signature.ObjectKey
++import java.io.File
++
++@OptIn(ExperimentalGlideComposeApi::class)
++@Composable
++fun Image_Displaye(
++    relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
++    contentScale: ContentScale = ContentScale.Fit,
++    modifier: Modifier = Modifier,
++    on_pour_send_data: (String, String) -> Unit,
++    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, ViewModel_NewProtoPatterns>
++) {
++    val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
++    val centralValues = uiState.active_Central_Values
++
++    val imageFile = remember(
++        relative_M3CouleurProduitInfos.nomImageFichieSansEtansion,
++        relative_M3CouleurProduitInfos.extensionDisponible
++    ) {
++        if (relative_M3CouleurProduitInfos.nomImageFichieSansEtansion != "Non Dispo") {
++            val fileName =
++                "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
++            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
++        } else {
++            null
++        }
++    }
++
++    if (imageFile != null && imageFile.exists()) {
++        // Sourced from uiState — no direct repository injection needed
++        val parentProduct = remember(
++            relative_M3CouleurProduitInfos.parentBProduitInfosKeyID,
++            uiState.list_M1Produit
++        ) {
++            uiState.list_M1Produit.find {
++                it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
++            }
++        }
++
++        val completeModifier = modifier
++            .fillMaxSize()
++            .then(
++                Modifier.clickable {
++                    val currentExpandedProduct = centralValues.expanded_M1Produit
++                    val currentExpandedColor = centralValues.expanded_M3CouleurProduitInfos
++
++                    val isSameProductExpanded = currentExpandedProduct?.keyID == parentProduct?.keyID
++                    val isDifferentColor = currentExpandedColor?.keyID != relative_M3CouleurProduitInfos.keyID
++
++                    if (isSameProductExpanded && isDifferentColor) {
++                        // CASE 1: Same product, different color → Update only the selected color
++                        viewModel.update_activeCentralValues(
++                            centralValues.copy(
++                                expanded_M3CouleurProduitInfos = relative_M3CouleurProduitInfos
++                                // Keep expanded_M1Produit unchanged
++                            )
++                        )
++                    } else {
++                        // CASE 2: Different product OR same color → Toggle product expansion
++                        val newProductValue = if (currentExpandedProduct?.keyID == parentProduct?.keyID) {
++                            // Same product, same color → Collapse
++                            null
++                        } else {
++                            // Different product → Expand it
++                            parentProduct
++                        }
++
++                        viewModel.update_activeCentralValues(
++                            centralValues.copy(
++                                expanded_M1Produit = newProductValue,
++                                expanded_M3CouleurProduitInfos = if (newProductValue != null) {
++                                    relative_M3CouleurProduitInfos
++                                } else {
++                                    null
++                                }
++                            )
++                        )
++                    }
++
++                    // Send the data update
++                    on_pour_send_data(
++                        WifiUpdateClientDisplayerStats.Update_ActiveCompt_active_ProduitKeyID_Au_DroopDown_PresenterEcran.prefix,
++                        relative_M3CouleurProduitInfos.keyID
++                    )
++                }
++            )
++
++        GlideImage(
++            model = imageFile,
++            contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color image" },
++            modifier = completeModifier,
++            contentScale = contentScale
++        ) {
++            it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos)
++        }
++    } else {
++        Box(modifier = modifier.fillMaxSize())
++    }
++}
++
++private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
++    couleur: M3CouleurProduitInfos
++) = this
++    .dontAnimate()
++    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
++    .priority(Priority.NORMAL)
++    .dontTransform()
++    .signature(ObjectKey("${couleur.keyID}_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
++    .override(400, 400)
++    .disallowHardwareConfig()
++    .format(DecodeFormat.PREFER_RGB_565)
++    .encodeQuality(70)
++    .skipMemoryCache(false)

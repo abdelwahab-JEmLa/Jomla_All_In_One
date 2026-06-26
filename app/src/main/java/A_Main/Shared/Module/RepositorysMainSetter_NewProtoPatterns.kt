@@ -61,7 +61,7 @@ class RepositorysMainSetter_NewProtoPatterns(
 
     fun update_M1Produit(data: M01Produit) {
         composScope.launch {
-            appDatabase.dao_M1Produit().update(data)
+            appDatabase.dao_M1Produit().upsertData(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.toFirebaseMap())
             M01Produit.Companion.ref.updateChildren(updates).await()
         }

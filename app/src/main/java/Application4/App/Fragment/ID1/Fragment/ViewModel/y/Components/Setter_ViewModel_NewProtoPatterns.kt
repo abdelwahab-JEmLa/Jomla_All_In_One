@@ -17,8 +17,13 @@ private const val TAG_SETTER = "Setter_ViewModel"
 class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatterns) {
     // M01 ─────────────────────────────────────────────────────────────────
     fun update_m1Produit(new: M01Produit) {
-        vm.active_Datas.list_M1Produit =
-            vm.active_Datas.list_M1Produit?.map { if (it.keyID == new.keyID) new else it }
+        val currentList = vm.active_Datas.list_M1Produit ?: emptyList()
+        val exists = currentList.any { it.keyID == new.keyID }
+        vm.active_Datas.list_M1Produit = if (exists) {
+            currentList.map { if (it.keyID == new.keyID) new else it }
+        } else {
+            currentList + new
+        }
         vm.repositorysMainSetter_NewProtoPatterns.update_M1Produit(new)
     }
 

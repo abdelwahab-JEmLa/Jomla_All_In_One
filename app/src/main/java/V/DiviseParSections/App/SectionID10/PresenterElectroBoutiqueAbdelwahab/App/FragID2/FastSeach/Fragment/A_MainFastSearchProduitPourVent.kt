@@ -290,6 +290,7 @@ fun MainFastSearchProduitPourVent(
 
                                     Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT)
                                         .show()
+                                    update_activeCentralValuesfastSearchProduitPourVent("")
                                 },
                             ) {
                                 Icon(

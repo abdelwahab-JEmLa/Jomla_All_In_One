@@ -1,6 +1,14 @@
 package A_Main.Shared.Views.Dialogs.B.Dialoge
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -9,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
@@ -29,11 +38,54 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+
+fun get_New_Datas(
+    searchQuery: String,
+    aCentralFacade: ACentralFacade,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
+): Pair<M01Produit?, M3CouleurProduitInfos?> {
+    val catalogues = get_ListM21CataloguesCategorie().sortedBy { it.position }
+    val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
+    val idParentCategorie = catalogues.find {
+        it.keyID == "t1"
+    }?.premierCategorieId
+
+    val keyIDM3CouleurProduitInfos = getPushFireBase(M3CouleurProduitInfos.ref)
+    val keyID = getPushFireBase(M01Produit.ref)
+
+    val newProduit = idParentCategorie?.let {
+        M01Produit.get_Default().copy(
+            keyID = keyID,
+            id = newOldId,
+            creationTimestamp = System.currentTimeMillis(),
+            nom = searchQuery,
+            couleur1 = keyIDM3CouleurProduitInfos,
+            idParentCategorie = it,
+            disponibilityEtates = DisponibilityEtates.NON_DISPO
+        )
+    }
+
+    val newCouleurP = newProduit?.let {
+        M3CouleurProduitInfos.get_default().copy(
+            keyID = keyIDM3CouleurProduitInfos,
+            creationTimestamp = System.currentTimeMillis(),
+            parentBProduitInfosKeyID = it.keyID,
+            parentId1ProduitInfosDebugName = newProduit.nom,
+            parentBProduitOldID = newProduit.id,
+        )
+    }
+
+    return Pair(newProduit, newCouleurP)
+}
 
 @Composable
 fun But_4_FloatingSearchFAB(
@@ -41,11 +93,14 @@ fun But_4_FloatingSearchFAB(
     onSearchTextChange: (String) -> Unit,
     currentMode: Filter_Affichage_Mode_Proto,
     modifier: Modifier = Modifier.Companion,
+    aCentralFacade: ACentralFacade = koinInject(),
+    onProductCreated: (M01Produit, M3CouleurProduitInfos) -> Unit,
 ) {
     var showField by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Row(
         verticalAlignment = Alignment.Companion.CenterVertically,
@@ -100,6 +155,45 @@ fun But_4_FloatingSearchFAB(
                         "Rechercher...",
                         style = MaterialTheme.typography.bodyMedium
                     )
+                },
+                leadingIcon = {
+                    if (searchText.isNotEmpty()) {
+                        val newDatas = get_New_Datas(
+                            searchQuery = searchText,
+                            aCentralFacade = aCentralFacade,
+                        )
+                        IconButton(
+                            onClick = {
+                                val newProduit = newDatas.first
+                                val newCouleur = newDatas.second
+                                if (newProduit != null && newCouleur != null) {
+                                    onProductCreated(newProduit, newCouleur)
+                                    val statusMessage =
+                                        if (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values.active_EtateDispoNonDifinieAuAddNew) {
+                                            "Produit créé (état non défini): ${newProduit.nom}"
+                                        } else {
+                                            "Produit WebP créé: ${newProduit.nom}"
+                                        }
+                                    Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT).show()
+                                    onSearchTextChange("")
+                                }
+                            },
+                            modifier = Modifier.Companion
+                                .size(24.dp)
+                                .semantics(mergeDescendants = true) {
+                                    set(
+                                        value = newDatas,
+                                        key = SemanticsPropertyKey("newDatas")
+                                    )
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Créer nouveau produit",
+                                modifier = Modifier.Companion.size(18.dp)
+                            )
+                        }
+                    }
                 },
                 trailingIcon = {
                     if (searchText.isNotEmpty()) {

@@ -388,6 +388,10 @@ fun PressistatntMainActivityButtons_App4(
                         viewModelNewProtoPatterns.active_Datas.filter_echatilaten = it
                     },
                     currentMode = currentMode,
+                    onProductCreated = { newProduit, newCouleur ->
+                        viewModelNewProtoPatterns.update_m1Produit(newProduit)
+                        viewModelNewProtoPatterns.update_m3couleur(newCouleur)
+                    }
                 )
 
                 Text(
