@@ -97,8 +97,7 @@ fun Item_Produit_AppEcranPresntoireJemlaCom(
 
                 Big_Principale_AppEcranPresntoireJemlaCom(
                     viewModel   =viewModel,
-
-                            big_presenter_couleur_produit = expandState.bigPresenterCouleur,
+                    big_presenter_couleur_produit = expandState.bigPresenterCouleur,
                     expandState = expandState,
                 )
 

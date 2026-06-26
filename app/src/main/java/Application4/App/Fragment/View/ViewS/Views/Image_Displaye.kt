@@ -70,6 +70,8 @@ fun Image_Displaye(
 
     val isExpandedProduct =
         centralValues.expanded_M1Produit?.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
+    val isMainExpandedColor =
+        centralValues.expanded_M3CouleurProduitInfos?.keyID == relative_M3CouleurProduitInfos.keyID
     val isAnyExpanded = centralValues.expanded_M1Produit != null
 
     val effectiveQuality: pourcentage = when {
@@ -137,11 +139,10 @@ fun Image_Displaye(
 
         if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
             // ── Vidéo : expanded vs compact ──────────────────────────────────────
-            if (isExpandedProduct) {
+            if (isExpandedProduct && isMainExpandedColor) {
                 val context = LocalContext.current
                 val isLegacyGif = relative_M3CouleurProduitInfos.extensionDisponible
                     .equals("gif", ignoreCase = true)
-
                 if (isLegacyGif) {
                     // ── Legacy GIF (ancien format) → Coil + GifDecoder ──────────
                     // Conservé pour la compatibilité avec les entrées existantes.
@@ -196,8 +197,7 @@ fun Image_Displaye(
                     )
                 }
             } else {
-                // ── Compact : Glide extrait la 1ère frame + icône play ────────────
-                // Fonctionne pour GIF (dontAnimate → 1ère frame) et MP4 (VideoDecoder).
+                // ── Non-playing thumbnail (either compact, or expanded but not main selected color) ──
                 Box(modifier = completeModifier) {
                     GlideImage(
                         model = imageFile,
@@ -206,20 +206,40 @@ fun Image_Displaye(
                         modifier = Modifier.fillMaxSize(),
                         contentScale = contentScale
                     ) {
-                        it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, pourcentage.min_possible)
+                        it.applyOptimizedImageOptions(relative_M3CouleurProduitInfos, effectiveQuality)
                     }
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
-                            .padding(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = "Video",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
+
+                    if (isExpandedProduct) {
+                        // Affiche l'icône play au top end petite
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(6.dp)
+                                .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                                .padding(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = "Video available",
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    } else {
+                        // Compact : grand icône play au centre
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                                .padding(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = "Video",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
             }

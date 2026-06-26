@@ -1,25 +1,18 @@
 package Application4.App.Fragment.View.Components.A_Header.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
-import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
-import Application4.App.Fragment.View.ViewS.Views.Image_Displaye
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.CategoryBadge
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS.DeleteProductHeader
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
@@ -41,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -495,40 +487,3 @@ private fun ClickableInfoCard(
     }
 }
 
-@Composable
-fun ColorImageCard_FragID3(
-    relative_M3CouleurProduitInfos: M3CouleurProduitInfos,
-    isSelected: Boolean,
-    modifier: Modifier = Modifier.Companion,
-    roundedCorners: RoundedCornerShape = RoundedCornerShape(12.dp),
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
-) {
-    val elevation = if (isSelected) 4.dp else 2.dp
-
-    Card(
-        modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
-        shape = roundedCorners
-    ) {
-        Box(
-            modifier = if (isSelected) {
-                Modifier.Companion
-                    .fillMaxWidth()
-                    .aspectRatio(370.dp / 500.dp)
-            } else {
-                Modifier.Companion
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-            }
-        ) {
-            Image_Displaye(
-                modifier = Modifier.Companion,
-                relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
-                contentScale = if (isSelected) ContentScale.Companion.Fit else ContentScale.Companion.Crop,
-                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                list_M1Produit = uiState_NewProtoPatterns_viewModel.second.active_Datas
-                    .list_M1Produit
-            )
-        }
-    }
-}

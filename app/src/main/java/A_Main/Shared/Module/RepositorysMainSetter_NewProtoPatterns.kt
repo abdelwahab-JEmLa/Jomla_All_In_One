@@ -147,7 +147,7 @@ class RepositorysMainSetter_NewProtoPatterns(
             return
         }
         composScope.launch {
-            appDatabase.dao_M03CouleurProduitInfos().update(data)
+            appDatabase.dao_M03CouleurProduitInfos().upsert(data)
             val updates = mutableMapOf<String, Any>(data.keyID to data.to_Map())
             M3CouleurProduitInfos.Companion.ref.updateChildren(updates).await()
             withContext(Dispatchers.Main) { onSuccess() }

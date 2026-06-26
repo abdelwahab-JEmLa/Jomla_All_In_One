@@ -3,7 +3,7 @@ package Application4.App.Fragment.View.Components
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
-import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_FragID3
+import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_App4
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Pricipale_Tariffs_Vendeurs_FragID3
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
@@ -66,7 +66,7 @@ fun Big_Principale_FragID3(
     )
 
 
-    ColorImageCard_FragID3(
+    ColorImageCard_App4(
         relative_M3CouleurProduitInfos = selectedCouleur,
         isSelected = true,
 

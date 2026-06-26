@@ -38,8 +38,13 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
     }
 
     fun update_m3couleur(couleur: M3CouleurProduitInfos) {
-        vm.active_Datas.list_M03CouleurProduitInfos =
-            vm.active_Datas.list_M03CouleurProduitInfos?.map { if (it.keyID == couleur.keyID) couleur else it }
+        val currentList = vm.active_Datas.list_M03CouleurProduitInfos ?: emptyList()
+        val exists = currentList.any { it.keyID == couleur.keyID }
+        vm.active_Datas.list_M03CouleurProduitInfos = if (exists) {
+            currentList.map { if (it.keyID == couleur.keyID) couleur else it }
+        } else {
+            currentList + couleur
+        }
         vm.repositorysMainSetter_NewProtoPatterns.update_M3CouleurProduitInfos(couleur)
     }
 
@@ -88,11 +93,14 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
         updatedList: List<M10OperationVentCouleur>?,
     ) {
         if (!updatedList.isNullOrEmpty()) {
-            val existingKeys = vm.active_Datas.list_M10OperationVentCouleur
-                ?.map { it.keyID }?.toSet() ?: emptySet()
+            val currentList = vm.active_Datas.list_M10OperationVentCouleur ?: emptyList()
+            val updatedMap = updatedList.associateBy { it.keyID }
+            val updatedExisting = currentList.map { existing ->
+                updatedMap[existing.keyID] ?: existing
+            }
+            val existingKeys = currentList.map { it.keyID }.toSet()
             val newOnly = updatedList.filter { it.keyID !in existingKeys }
-            vm.active_Datas.list_M10OperationVentCouleur =
-                (vm.active_Datas.list_M10OperationVentCouleur ?: emptyList()) + newOnly
+            vm.active_Datas.list_M10OperationVentCouleur = updatedExisting + newOnly
         }
         upsert_M10OperationVentCouleur(updatedList)
     }

@@ -300,6 +300,7 @@ fun A_Item_Produit_App4(
                             processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
                         )
 
+                        android.util.Log.d("M03Couleur", "Click Add Color: prodId=${relative_M1produit.id}, colorIndex=$colorIndex, newKeyID=${newCouleur.keyID}")
                         viewModel.update_m3couleur(newCouleur)
 
                         val updatedProduit = when (colorIndex) {

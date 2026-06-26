@@ -24,9 +24,10 @@ fun SubColorCard_WithButton_app2(
         ColorImageCard_AppEcranPresntoireJemlaCom(
             relative_M3CouleurProduitInfos = couleur,
             expandState = expandState,
-            modifier = Modifier.fillMaxWidth().height(if (isExpanded) 80.dp else 40.dp),
-            viewModel   =viewModel,
-
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(if (isExpanded) 80.dp else 40.dp),
+            viewModel = viewModel,
+        )
     }
 }

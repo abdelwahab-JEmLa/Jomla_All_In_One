@@ -18,7 +18,6 @@ fun Big_Principale_AppEcranPresntoireJemlaCom(
         expandState = expandState,
         isSelected = true,
         modifier = Modifier.fillMaxWidth(),
-        viewModel   =viewModel,
-
-        )
+        viewModel = viewModel,
+    )
 }
