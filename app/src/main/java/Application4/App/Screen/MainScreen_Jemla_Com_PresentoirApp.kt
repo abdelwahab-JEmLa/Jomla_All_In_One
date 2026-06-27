@@ -80,9 +80,8 @@ private fun MainScaffold(
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     on_clear_wifi_classe_cache: () -> Unit,
 ) {
-    var affiche_ProduitDataBaseEdites by remember { mutableStateOf(false) }
-    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(
-        M00CentralParametresOfAllApps.get_Default().itsDevMode) }
+    var affiche_ProduitDataBaseEdites by remember { mutableStateOf(true) }
+    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(true) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),

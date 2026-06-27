@@ -129,9 +129,6 @@ fun FabButton_newProto(
                             }
                         },
                         onClick = {
-                            val newVal = !affiche_ProduitDataBaseEdites
-                            onToggleProduitDataBaseEdites(newVal)
-                            on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent(newVal)
                             dropdownExpanded = false
                         }
                     )
