@@ -45,8 +45,7 @@ fun ColorImageCard_App4(
                         .wrapContentHeight()
                 }
             ) {
-                Image_Displaye(              //<--
-                //TODO(1): pk quand une couleur est epaande et le video ce playe et je click sur une autre couleur avec video le video de clicked ne ce lance pas 
+                Image_Displaye(
                     modifier = Modifier.Companion,
                     relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
                     contentScale = if (isSelected) ContentScale.Companion.Fit else ContentScale.Companion.Crop,

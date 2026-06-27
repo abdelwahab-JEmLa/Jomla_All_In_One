@@ -144,8 +144,6 @@ fun Image_Displaye(
                 val isLegacyGif = relative_M3CouleurProduitInfos.extensionDisponible
                     .equals("gif", ignoreCase = true)
                 if (isLegacyGif) {
-                    // ── Legacy GIF (ancien format) → Coil + GifDecoder ──────────
-                    // Conservé pour la compatibilité avec les entrées existantes.
                     val gifLoader = remember(context) {
                         ImageLoader.Builder(context)
                             .components { add(GifDecoder.Factory()) }
@@ -170,17 +168,13 @@ fun Image_Displaye(
                         contentScale       = contentScale,
                     )
                 } else {
-                    // ── Nouveau format MP4 → ExoPlayer ────────────────────────────
-                    // Décodage hardware-accéléré, boucle infinie, sans contrôles.
-                    // C'est la lib la plus légère et la plus économe en ressources
-                    // pour lire de la vidéo sur Android.
                     val exoPlayer = remember(imageFile) {
                         ExoPlayer.Builder(context).build().apply {
                             setMediaItem(MediaItem.fromUri(Uri.fromFile(imageFile)))
                             prepare()
                             playWhenReady = true
                             repeatMode = Player.REPEAT_MODE_ONE
-                            volume = 0f   // lecture muette pour un aperçu produit
+                            volume = 0f
                         }
                     }
                     DisposableEffect(imageFile) {
@@ -192,6 +186,9 @@ fun Image_Displaye(
                                 player = exoPlayer
                                 useController = false
                             }
+                        },
+                        update = { view ->
+                            view.player = exoPlayer
                         },
                         modifier = completeModifier
                     )
