@@ -60,13 +60,9 @@ data class M00CentralParametresOfAllApps(
     val its_AppType: AppType = if (au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId) {
         AppType.JomLaElectroLivreurGrossist_PresenterScreen
     } else {
-        if (itsDevMode) {
-            AppType.AllInOne
-        } else {
-            AppType.AllInOne
-           // AppType.AllInOne
-           // AppType.JomLaElectroLivreurGrossist_VendeurHost
-        }
+        AppType.JomLaElectroLivreurGrossist_VendeurHost
+        // AppType.AllInOne
+        // AppType.JomLaElectroLivreurGrossist_VendeurHost
     },
 
     //---------------------------------App Settings----------------------------------------------------------------------------------------------------------------------------------
@@ -102,7 +98,7 @@ data class M00CentralParametresOfAllApps(
             append("/storage/emulated/0/Abdelwahab_jeMla.com")
         }
 
-        val central_Local_Csv= File(central_Local_storageLink, "CSV_Export")
+        val central_Local_Csv = File(central_Local_storageLink, "CSV_Export")
 
 //─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 

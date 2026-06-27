@@ -40,8 +40,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,7 +56,6 @@ private fun vibrateOnUpdate(context: Context) {
         @Suppress("DEPRECATION")
         context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         vibrator.vibrate(VibrationEffect.createOneShot(600L, VibrationEffect.DEFAULT_AMPLITUDE))
     } else {
@@ -66,11 +64,46 @@ private fun vibrateOnUpdate(context: Context) {
     }
 }
 
+@Composable
+private fun MediaPickerBar(
+    onPickImage: (() -> Unit)?,
+    onPickVideo: (() -> Unit)?,
+    textStyle: TextStyle
+) {
+    if (onPickImage != null) {
+        Card(
+            modifier = Modifier.clickable { onPickImage() },
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Text(
+                text = "🖼",
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                style = textStyle,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+    if (onPickVideo != null) {
+        Card(
+            modifier = Modifier.clickable { onPickVideo() },
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Text(
+                text = "🎥",
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                style = textStyle,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     start_count: Int,
-    /** When true, the depot card and edit-field hint are shown even when [au_depot] == 0. */
     affichable_mem_si_zero_depot: Boolean = true,
     au_depot: Int = 0,
     standard_count: Int = 1,
@@ -105,52 +138,26 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     val focusRequester = remember { FocusRequester() }
     val depotFocusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(isEditMode) {
-        if (isEditMode) {
-            focusRequester.requestFocus()
-        }
-    }
-
-    LaunchedEffect(isEditDepotMode) {
-        if (isEditDepotMode) {
-            depotFocusRequester.requestFocus()
-        }
-    }
+    LaunchedEffect(isEditMode) { if (isEditMode) focusRequester.requestFocus() }
+    LaunchedEffect(isEditDepotMode) { if (isEditDepotMode) depotFocusRequester.requestFocus() }
 
     val horizontalPadding = if (compact_taille) 8.dp else 12.dp
     val verticalPadding = if (compact_taille) 4.dp else 6.dp
     val iconSize = if (compact_taille) 14.dp else 16.dp
-    val textStyle = if (compact_taille) {
-        MaterialTheme.typography.labelMedium
-    } else {
-        MaterialTheme.typography.labelLarge
-    }
-
+    val textStyle = if (compact_taille) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge
     val spacingBetweenCards = if (add_spacing_between_depot_and_sale) 8.dp else 4.dp
 
     if (isEditDepotMode) {
         OutlinedTextField(
             value = depotInput,
-            onValueChange = { newValue ->
-                if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                    depotInput = newValue
-                }
-            },
-            modifier = modifier
-                .width(80.dp)
-                .focusRequester(depotFocusRequester),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    val newDepotCount = depotInput.toIntOrNull() ?: 0
-                    vibrateOnUpdate(context)
-                    on_admin_depot_update(newDepotCount)
-                    isEditDepotMode = false
-                }
-            ),
+            onValueChange = { newValue -> if (newValue.isEmpty() || newValue.all { it.isDigit() }) depotInput = newValue },
+            modifier = modifier.width(80.dp).focusRequester(depotFocusRequester),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = {
+                vibrateOnUpdate(context)
+                on_admin_depot_update(depotInput.toIntOrNull() ?: 0)
+                isEditDepotMode = false
+            }),
             singleLine = true,
             textStyle = textStyle.copy(fontWeight = FontWeight.Bold),
             label = { Text("Dépôt") }
@@ -158,26 +165,14 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     } else if (isEditMode) {
         OutlinedTextField(
             value = quantityInput,
-            onValueChange = { newValue ->
-                if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                    quantityInput = newValue
-                }
-            },
-            modifier = modifier
-                .width(80.dp)
-                .focusRequester(focusRequester),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    val newQuantity = quantityInput.toIntOrNull() ?: 0
-                    vibrateOnUpdate(context)
-                    on_Data_Update(newQuantity)
-                    isEditMode = false
-                }
-            ),
+            onValueChange = { newValue -> if (newValue.isEmpty() || newValue.all { it.isDigit() }) quantityInput = newValue },
+            modifier = modifier.width(80.dp).focusRequester(focusRequester),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = {
+                vibrateOnUpdate(context)
+                on_Data_Update(quantityInput.toIntOrNull() ?: 0)
+                isEditMode = false
+            }),
             singleLine = true,
             textStyle = textStyle.copy(fontWeight = FontWeight.Bold),
             enabled = isAvailable,
@@ -186,19 +181,11 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
             } else null
         )
     } else {
-        val containerColor = if (!isAvailable) {
-            MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-        } else if (start_count > 0) {
-            MaterialTheme.colorScheme.tertiary
-        } else {
-            startCouleur
-        }
-
-        val contentColor = if (!isAvailable) {
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        } else {
-            MaterialTheme.colorScheme.onPrimary
-        }
+        val containerColor = if (!isAvailable) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            else if (start_count > 0) MaterialTheme.colorScheme.tertiary
+            else startCouleur
+        val contentColor = if (!isAvailable) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            else MaterialTheme.colorScheme.onPrimary
 
         if (show_depot_card_on_top_in_flow_row) {
             FlowRow(
@@ -209,78 +196,26 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
             ) {
                 if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
                     Card(
-                        modifier = Modifier
-                            .clickable {
-                                if (c_unite_couleur_de_couleurKey.isNotEmpty()) {
-                                    on_set_c_unite_key("")
-                                } else {
-                                    on_pour_mode_selection_parent_couleur()
-                                }
-                            }
-                            .semantics(mergeDescendants = true) {
-                                set(value = affiche_buttons_lien_unite_couleur_au_couleut_parent, key = SemanticsPropertyKey("affiche_buttons_lien_unite_couleur_au_couleut_parent"))
-                            },
-
+                        modifier = Modifier.clickable {
+                            if (c_unite_couleur_de_couleurKey.isNotEmpty()) on_set_c_unite_key("") else on_pour_mode_selection_parent_couleur()
+                        },
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (mode_c_unite_actif)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = if (mode_c_unite_actif) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
                         )
                     ) {
-                        // En activant mode_c_unite_actif, toutes les couleurs du même produit
-                        // s'affichent comme «prêtes» — comportement voulu : l'utilisateur peut
-                        // cliquer sur une autre couleur pour la lier comme 2ème image-unité de
-                        // celle-ci, reliée via c_unite_couleur_de_couleurKey (M3 update).
                         Text(
                             text = if (mode_c_unite_actif) "⛓ cé" else "⛓",
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                             style = textStyle,
                             fontWeight = FontWeight.Bold,
-                            color = if (mode_c_unite_actif)
-                                MaterialTheme.colorScheme.onPrimary
-                            else
-                                MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (mode_c_unite_actif) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
-                    if (onPickImage != null) {
-                        Card(
-                            modifier = Modifier.clickable { onPickImage() },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Text(
-                                text = "🖼",
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                style = textStyle,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-
-                    if (onPickVideo != null) {
-                        Card(
-                            modifier = Modifier.clickable { onPickVideo() },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Text(
-                                text = "🎥",
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                style = textStyle,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
+                    MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
                 }
 
-                // Bouton gauche de validation quand mode_c_unite_actif ou mode sélection actif
                 val showValidationButton = mode_c_unite_actif || (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link)
                 if (showValidationButton && is_admin) {
                     Card(
@@ -292,9 +227,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                             }
                         },
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
-                        )
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
                     ) {
                         Text(
                             text = "✓",
@@ -308,90 +241,43 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
 
                 if (au_depot > 0 || affichable_mem_si_zero_depot) {
                     Card(
-                        modifier = Modifier
-                            .clickable(enabled = is_admin) {
-                                isEditDepotMode = true
-                            },
+                        modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Red
-                        )
+                        colors = CardDefaults.cardColors(containerColor = Color.Red)
                     ) {
                         Row(
-                            // Two independent callbacks: on_admin_depot_update persists the new
-                            // depot count (M3CouleurProduitInfos.count_Don_Depot) via the ViewModel,
-                            // while on_Data_Update handles sale quantity (M10OperationVentCouleur).
-                            // They are kept separate so each can be wired independently by the caller.
-                            modifier = Modifier.padding(
-                                horizontal = horizontalPadding * 0.7f,
-                                vertical = verticalPadding * 0.7f
-                            ),
+                            modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Warehouse,
-                                contentDescription = "Dépôt",
-                                tint = Color.Black,
-                                modifier = Modifier.size((iconSize.value * 0.7f).dp)
-                            )
-                            // N'afficher le count que si la couleur n'est pas liée (mode c_unite)
+                            Icon(imageVector = Icons.Default.Warehouse, contentDescription = "Dépôt", tint = Color.Black, modifier = Modifier.size((iconSize.value * 0.7f).dp))
                             if (c_unite_couleur_de_couleurKey.isEmpty()) {
-                                Text(
-                                    text = au_depot.toString(),
-                                    style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f),
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black
-                                )
+                                Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
                             }
                         }
                     }
                 }
 
                 Card(
-                    modifier = Modifier
-                        .clickable(enabled = isAvailable) {
-                            when {
-                                start_count == 0 -> {
-                                    if (start_au_premier_click_par_add_outlined) {
-                                        isEditMode = true
-                                    } else {
-                                        vibrateOnUpdate(context)
-                                        on_Data_Update(standard_count)
-                                    }
-                                }
-
-                                else -> {
-                                    // Covers both start_count < standard_count and start_count >= standard_count
-                                    isEditMode = true
-                                }
+                    modifier = Modifier.clickable(enabled = isAvailable) {
+                        when {
+                            start_count == 0 -> {
+                                if (start_au_premier_click_par_add_outlined) isEditMode = true
+                                else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
                             }
-                        },
+                            else -> isEditMode = true
+                        }
+                    },
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = containerColor)
                 ) {
                     Row(
-                        modifier = Modifier.padding(
-                            horizontal = horizontalPadding,
-                            vertical = verticalPadding
-                        ),
+                        modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        icon?.let {
-                            Icon(
-                                imageVector = it,
-                                contentDescription = "Quantity",
-                                tint = contentColor,
-                                modifier = Modifier.size(iconSize)
-                            )
-                        }
-                        Text(
-                            text = start_count.toString(),
-                            style = textStyle,
-                            fontWeight = FontWeight.Bold,
-                            color = contentColor
-                        )
+                        icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
+                        Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
                     }
                 }
             }
@@ -403,77 +289,40 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
             ) {
                 if (au_depot > 0 || affichable_mem_si_zero_depot) {
                     Card(
-                        modifier = Modifier
-                            .clickable(enabled = is_admin) {
-                                isEditDepotMode = true
-                            },
+                        modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Red
-                        )
+                        colors = CardDefaults.cardColors(containerColor = Color.Red)
                     ) {
                         Row(
-                            modifier = Modifier.padding(
-                                horizontal = horizontalPadding * 0.7f,
-                                vertical = verticalPadding * 0.7f
-                            ),
+                            modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = au_depot.toString(),
-                                style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f),
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
-                            )
+                            Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                     }
                 }
 
                 Card(
-                    modifier = Modifier
-                        .clickable(enabled = isAvailable) {
-                            when {
-                                start_count == 0 -> {
-                                    if (start_au_premier_click_par_add_outlined) {
-                                        isEditMode = true
-                                    } else {
-                                        vibrateOnUpdate(context)
-                                        on_Data_Update(standard_count)
-                                    }
-                                }
-
-                                else -> {
-                                    // Covers both start_count < standard_count and start_count >= standard_count
-                                    isEditMode = true
-                                }
+                    modifier = Modifier.clickable(enabled = isAvailable) {
+                        when {
+                            start_count == 0 -> {
+                                if (start_au_premier_click_par_add_outlined) isEditMode = true
+                                else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
                             }
-                        },
+                            else -> isEditMode = true
+                        }
+                    },
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = containerColor)
                 ) {
                     Row(
-                        modifier = Modifier.padding(
-                            horizontal = horizontalPadding,
-                            vertical = verticalPadding
-                        ),
+                        modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        icon?.let {
-                            Icon(
-                                imageVector = it,
-                                contentDescription = "Quantity",
-                                tint = contentColor,
-                                modifier = Modifier.size(iconSize)
-                            )
-                        }
-                        Text(
-                            text = start_count.toString(),
-                            style = textStyle,
-                            fontWeight = FontWeight.Bold,
-                            color = contentColor
-                        )
+                        icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
+                        Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
                     }
                 }
             }

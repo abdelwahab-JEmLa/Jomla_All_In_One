@@ -176,7 +176,7 @@ fun A_Compact_Header_App4(
                 }
 
                 if (shouldShowButtons && isEditMode) {
-                    ClickableInfoCard(    //<--
+                    ClickableInfoCard(
                         icon = {
                             Icon(
                                 imageVector = Icons.Default.Sync,
@@ -449,8 +449,9 @@ private fun ClickableInfoCard(
     valueTextSize: TextUnit,
     itemPadding: Dp,
     onClick: () -> Unit,
+    showLabelAndValue: Boolean = true,
     modifier: Modifier = Modifier
-) {             
+) {
     Card(
         modifier = modifier
             .clickable(onClick = onClick),
@@ -465,25 +466,28 @@ private fun ClickableInfoCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             icon()
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = label,
-                    fontSize = labelTextSize,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.9f),
-                    fontWeight = FontWeight.Medium,
-                    lineHeight = labelTextSize
-                )
-                Text(
-                    text = value,
-                    fontSize = valueTextSize,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = valueTextSize
-                )
+            if (showLabelAndValue) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = label,
+                        fontSize = labelTextSize,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.9f),
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = labelTextSize,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = value,
+                        fontSize = valueTextSize,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = valueTextSize
+                    )
+                }
             }
         }
     }
 }
-

@@ -22,7 +22,8 @@ fun ColorImageCard_App4(
     isSelected: Boolean,
     modifier: Modifier = Modifier.Companion,
     roundedCorners: RoundedCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>
+    uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
+    header: @Composable () -> Unit = {}
 ) {
     val elevation = if (isSelected) 4.dp else 2.dp
 
@@ -31,25 +32,29 @@ fun ColorImageCard_App4(
         elevation = CardDefaults.cardElevation(defaultElevation = elevation),
         shape = roundedCorners
     ) {
-        Box(
-            modifier = if (isSelected) {
-                Modifier.Companion
-                    .fillMaxWidth()
-                    .aspectRatio(370.dp / 500.dp)
-            } else {
-                Modifier.Companion
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+        androidx.compose.foundation.layout.Column {
+            header()
+            Box(
+                modifier = if (isSelected) {
+                    Modifier.Companion
+                        .fillMaxWidth()
+                        .aspectRatio(370.dp / 500.dp)
+                } else {
+                    Modifier.Companion
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                }
+            ) {
+                Image_Displaye(              //<--
+                //TODO(1): pk quand une couleur est epaande et le video ce playe et je click sur une autre couleur avec video le video de clicked ne ce lance pas 
+                    modifier = Modifier.Companion,
+                    relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
+                    contentScale = if (isSelected) ContentScale.Companion.Fit else ContentScale.Companion.Crop,
+                    uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+                    list_M1Produit = uiState_NewProtoPatterns_viewModel.second.active_Datas
+                        .list_M1Produit,
+                )
             }
-        ) {
-            Image_Displaye(
-                modifier = Modifier.Companion,
-                relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
-                contentScale = if (isSelected) ContentScale.Companion.Fit else ContentScale.Companion.Crop,
-                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                list_M1Produit = uiState_NewProtoPatterns_viewModel.second.active_Datas
-                    .list_M1Produit,
-            )
         }
     }
 }

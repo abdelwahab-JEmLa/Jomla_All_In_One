@@ -54,7 +54,7 @@ fun get_New_Datas(
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
 ): Pair<M01Produit?, M3CouleurProduitInfos?> {
     val catalogues = get_ListM21CataloguesCategorie().sortedBy { it.position }
-    val newOldId = repositorysMainGetter.repo1ProduitInfos.datasValue.maxOf { it.id } + 1
+    val newOldId = (repositorysMainGetter.repo1ProduitInfos.datasValue.maxOfOrNull { it.id } ?: 0) + 1
     val idParentCategorie = catalogues.find {
         it.keyID == "t1"
     }?.premierCategorieId

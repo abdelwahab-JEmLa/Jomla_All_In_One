@@ -70,4 +70,6 @@
 
 - **Search Query Clearing after Item Creation**: When implementing inline creation actions directly inside a search component (like the "Add" button icon inside an `OutlinedTextField` or search bar), always ensure that the search input query is reset/cleared (e.g. calling `onSearchTextChange("")` or the corresponding active values setter like `update_activeCentralValuesfastSearchProduitPourVent("")`) immediately upon successful insertion.
 
-
+## Skill Triggers in TODOs
+- Si le déclencheur d'un skill (ex: `t_copie_compos_et_fit`, `zip_colle`, etc.) est présent dans un commentaire `TODO`, l'agent doit automatiquement lancer ce skill.
+- L'agent doit également lire les instructions du skill `t_` (qui gère les TODOs) pour adopter le même comportement de résolution, et analyser/apprendre du contexte fourni pour exécuter la tâche.
