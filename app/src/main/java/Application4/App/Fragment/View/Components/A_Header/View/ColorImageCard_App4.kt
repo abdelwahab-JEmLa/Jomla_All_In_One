@@ -1,5 +1,6 @@
 package Application4.App.Fragment.View.Components.A_Header.View
 
+import Application2.App.View.Pro0.Proto.ViewS.getPrixDrawables
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.ViewS.Views.Image_Displaye
@@ -8,13 +9,16 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -28,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.firebase.Firebase
@@ -36,11 +41,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.offset
-import androidx.compose.ui.res.painterResource
-import Application2.App.View.Pro0.Proto.ViewS.getPrixDrawables
 import java.io.File
 import java.io.FileOutputStream
 
@@ -219,7 +219,7 @@ fun ColorImageCard_App4(
                     if (drawables.isNotEmpty()) {
                         Box(
                             modifier = Modifier
-                                .align(if (isEditMode) Alignment.Companion.TopStart else Alignment.Companion.TopEnd)
+                                .align(if (isEditMode) Alignment.Companion.BottomStart else Alignment.Companion.BottomEnd)
                                 .padding(6.dp),
                             contentAlignment = Alignment.Center
                         ) {
