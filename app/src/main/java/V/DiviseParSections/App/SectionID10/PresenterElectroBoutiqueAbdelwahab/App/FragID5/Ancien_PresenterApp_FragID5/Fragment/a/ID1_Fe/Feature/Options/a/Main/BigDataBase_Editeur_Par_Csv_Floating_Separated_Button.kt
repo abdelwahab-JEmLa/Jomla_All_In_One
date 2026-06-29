@@ -71,7 +71,7 @@ private enum class DialState { Closed, ChildsVisible, M8Open, M03Open }
 fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     on_vent_key: String = "",
     onClick_Lence_Capture: (() -> Unit)? = null,
-    onClick_Affiche_Pub: () -> Unit ={},
+    onClick_Affiche_Pub: () -> Unit = {},
     context: Context = LocalContext.current,
     appDatabase: AppDatabase,
     viewModel: FeatureID1_ViewModel = viewModel(
@@ -81,26 +81,26 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     val haptic = LocalHapticFeedback.current
     var dialState by remember { mutableStateOf(DialState.Closed) }
 
-    val configuration  = LocalConfiguration.current
-    val density        = LocalDensity.current
-    val screenWidthPx  = with(density) { configuration.screenWidthDp.dp.toPx() }
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
     val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
-    val fabSizePx      = with(density) { 58.dp.toPx() }
-    val paddingPx      = with(density) { 16.dp.toPx() }
+    val fabSizePx = with(density) { 58.dp.toPx() }
+    val paddingPx = with(density) { 16.dp.toPx() }
 
     // Initial position: bottom-right corner (mirrors A_FastAdd_FloatingSeparated_Button_1)
-    var offsetX by remember { mutableFloatStateOf(screenWidthPx  - fabSizePx - paddingPx) }
+    var offsetX by remember { mutableFloatStateOf(screenWidthPx - fabSizePx - paddingPx) }
     var offsetY by remember { mutableFloatStateOf(screenHeightPx - fabSizePx * 5f) }
 
     val logoRotation by animateFloatAsState(
-        targetValue   = if (dialState != DialState.Closed) 45f else 0f,
+        targetValue = if (dialState != DialState.Closed) 45f else 0f,
         animationSpec = tween(250),
-        label         = "logoRot",
+        label = "logoRot",
     )
 
     // ── Overlay plein écran, FAB draggable ───────────────────────────────────
     Box(
-        modifier         = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopStart,
     ) {
         Column(
@@ -109,8 +109,14 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consume()
-                        offsetX = (offsetX + dragAmount.x).coerceIn(0f, screenWidthPx  - fabSizePx - paddingPx)
-                        offsetY = (offsetY + dragAmount.y).coerceIn(0f, screenHeightPx - fabSizePx - paddingPx)
+                        offsetX = (offsetX + dragAmount.x).coerceIn(
+                            0f,
+                            screenWidthPx - fabSizePx - paddingPx
+                        )
+                        offsetY = (offsetY + dragAmount.y).coerceIn(
+                            0f,
+                            screenHeightPx - fabSizePx - paddingPx
+                        )
                     }
                 }
                 .padding(end = 16.dp, bottom = 16.dp),
@@ -121,8 +127,8 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
             // ── Boutons enfants — apparaissent au-dessus du FAB principal ─────
             AnimatedVisibility(
                 visible = dialState != DialState.Closed,
-                enter   = fadeIn(tween(200)) + slideInVertically(tween(220)) { it },
-                exit    = fadeOut(tween(150)) + slideOutVertically(tween(150)) { it },
+                enter = fadeIn(tween(200)) + slideInVertically(tween(220)) { it },
+                exit = fadeOut(tween(150)) + slideOutVertically(tween(150)) { it },
             ) {
                 val showEditedProducts = remember { mutableStateOf(false) }
 
@@ -132,15 +138,15 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                 ) {
                     // ── Afficher les édités ────────────────────────────────────
                     Row(
-                        verticalAlignment     = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(
-                            text       = "Afficher édités",
-                            style      = MaterialTheme.typography.labelMedium,
+                            text = "Afficher édités",
+                            style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color      = Color.White,
-                            modifier   = Modifier
+                            color = Color.White,
+                            modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(Color(0xFFE91E63).copy(alpha = 0.92f))
                                 .padding(horizontal = 10.dp, vertical = 5.dp),
@@ -151,16 +157,18 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     showEditedProducts.value = !showEditedProducts.value
                                 },
-                                modifier       = Modifier.size(46.dp),
-                                containerColor = if (showEditedProducts.value) Color(0xFFE91E63) else Color(0xFF757575),
-                                shape          = CircleShape,
-                                elevation      = FloatingActionButtonDefaults.elevation(4.dp),
+                                modifier = Modifier.size(46.dp),
+                                containerColor = if (showEditedProducts.value) Color(0xFFE91E63) else Color(
+                                    0xFF757575
+                                ),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(4.dp),
                             ) {
                                 Icon(
-                                    imageVector        = if (showEditedProducts.value) Icons.Default.Edit else Icons.Default.EditOff,
+                                    imageVector = if (showEditedProducts.value) Icons.Default.Edit else Icons.Default.EditOff,
                                     contentDescription = "Edit Switch",
-                                    tint               = Color.White,
-                                    modifier           = Modifier.size(22.dp),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp),
                                 )
                             }
                         }
@@ -168,15 +176,15 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
 
                     // ── M8 BonVent ────────────────────────────────────────────
                     Row(
-                        verticalAlignment     = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(
-                            text       = "Affiche Pub",
-                            style      = MaterialTheme.typography.labelMedium,
+                            text = "Affiche Pub",
+                            style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color      = Color.White,
-                            modifier   = Modifier
+                            color = Color.White,
+                            modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(Color(0xFF1565C0).copy(alpha = 0.92f))
                                 .padding(horizontal = 10.dp, vertical = 5.dp),
@@ -187,16 +195,16 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     onClick_Affiche_Pub()
                                 },
-                                modifier       = Modifier.size(46.dp),
+                                modifier = Modifier.size(46.dp),
                                 containerColor = Color(0xFF1565C0),
-                                shape          = CircleShape,
-                                elevation      = FloatingActionButtonDefaults.elevation(4.dp),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(4.dp),
                             ) {
                                 Icon(
-                                    imageVector        = Icons.Default.Public,
+                                    imageVector = Icons.Default.Public,
                                     contentDescription = "Public",
-                                    tint               = Color.White,
-                                    modifier           = Modifier.size(22.dp),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp),
                                 )
                             }
                             // dropdown ancré sur ce Box
@@ -209,18 +217,18 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                             )
                         }
                     }
-                    
+
                     // ── M8 BonVent ────────────────────────────────────────────
                     Row(
-                        verticalAlignment     = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(
-                            text       = "M8 BonVent",
-                            style      = MaterialTheme.typography.labelMedium,
+                            text = "M8 BonVent",
+                            style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color      = Color.White,
-                            modifier   = Modifier
+                            color = Color.White,
+                            modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(Color(0xFF1565C0).copy(alpha = 0.92f))
                                 .padding(horizontal = 10.dp, vertical = 5.dp),
@@ -231,16 +239,16 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     dialState = DialState.M8Open
                                 },
-                                modifier       = Modifier.size(46.dp),
+                                modifier = Modifier.size(46.dp),
                                 containerColor = Color(0xFF1565C0),
-                                shape          = CircleShape,
-                                elevation      = FloatingActionButtonDefaults.elevation(4.dp),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(4.dp),
                             ) {
                                 Icon(
-                                    imageVector        = Icons.Default.AllInbox,
+                                    imageVector = Icons.Default.AllInbox,
                                     contentDescription = "M8",
-                                    tint               = Color.White,
-                                    modifier           = Modifier.size(22.dp),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp),
                                 )
                             }
                             // dropdown ancré sur ce Box
@@ -256,15 +264,15 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
 
                     // ── M03 Couleur ───────────────────────────────────────────
                     Row(
-                        verticalAlignment     = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(
-                            text       = "M03 Couleur",
-                            style      = MaterialTheme.typography.labelMedium,
+                            text = "M03 Couleur",
+                            style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color      = Color.White,
-                            modifier   = Modifier
+                            color = Color.White,
+                            modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
 
                                 .background(Color(0xFF6A1B9A).copy(alpha = 0.92f))
@@ -276,25 +284,25 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     dialState = DialState.M03Open
                                 },
-                                modifier       = Modifier.size(46.dp),
+                                modifier = Modifier.size(46.dp),
                                 containerColor = Color(0xFF6A1B9A),
-                                shape          = CircleShape,
-                                elevation      = FloatingActionButtonDefaults.elevation(4.dp),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(4.dp),
                             ) {
                                 Icon(
-                                    imageVector        = Icons.Default.Palette,
+                                    imageVector = Icons.Default.Palette,
                                     contentDescription = "M03",
-                                    tint               = Color.White,
-                                    modifier           = Modifier.size(22.dp),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp),
                                 )
                             }
 
                             M03_Operations_FragMap_DropdownMenu(
-                                expanded              = dialState == DialState.M03Open,
-                                onDismiss             = { dialState = DialState.Closed },
-                                on_vent_key           = on_vent_key,
+                                expanded = dialState == DialState.M03Open,
+                                onDismiss = { dialState = DialState.Closed },
+                                on_vent_key = on_vent_key,
                                 onClick_Lence_Capture = onClick_Lence_Capture,
-                                vm                    = viewModel,
+                                vm = viewModel,
                             )
                         }
                     }
@@ -310,34 +318,34 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                     else
                         DialState.Closed
                 },
-                modifier       = Modifier.size(58.dp),
+                modifier = Modifier.size(58.dp),
                 containerColor = Color.Transparent,
-                elevation      = FloatingActionButtonDefaults.elevation(6.dp, 6.dp),
-                shape          = CircleShape,
+                elevation = FloatingActionButtonDefaults.elevation(6.dp, 6.dp),
+                shape = CircleShape,
             ) {
                 if (dialState != DialState.Closed) {
                     Box(
-                        modifier         = Modifier
+                        modifier = Modifier
                             .size(58.dp)
                             .clip(CircleShape)
                             .background(Color(0xFF37474F)),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
-                            imageVector        = Icons.Default.Close,
+                            imageVector = Icons.Default.Close,
                             contentDescription = "Fermer",
-                            tint               = Color.White,
-                            modifier           = Modifier
+                            tint = Color.White,
+                            modifier = Modifier
                                 .size(26.dp)
                                 .rotate(logoRotation),
                         )
                     }
                 } else {
                     Image(
-                        painter            = painterResource(id = R.drawable.logo),
+                        painter = painterResource(id = R.drawable.logo),
                         contentDescription = "Menu",
-                        contentScale       = ContentScale.Crop,
-                        modifier           = Modifier
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
                             .size(58.dp)
                             .clip(CircleShape),
                     )
