@@ -109,7 +109,6 @@ fun Image_Displaye_app2(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_MainFragment,
 ) {         //<--
-//TODO(1): pk le video ne ce playe pas quen expanded big couleur
     val qualite = resolveQualite(expandState)
 
     // Get WiFi state to determine if user can interact with images
@@ -142,7 +141,8 @@ fun Image_Displaye_app2(
             )
 
         if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
-            if (expandState.isExpanded) {
+            val isMainExpandedColor = expandState.isExpanded && relative_M3CouleurProduitInfos.keyID == expandState.bigPresenterCouleur.keyID
+            if (isMainExpandedColor) {
                 // Expanded: play the GIF — do NOT use dontAnimate()
                 GlideImage(
                     model = imageFile,
