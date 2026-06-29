@@ -106,8 +106,7 @@ fun Image_Displaye_app2(
     expandState: ProduitExpandState,
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
-    viewModel: ViewModel_MainFragment,
-) {
+    viewModel: ViewModel_MainFragment) {
     val qualite = resolveQualite(expandState)
 
     // Get WiFi state to determine if user can interact with images
@@ -143,58 +142,30 @@ fun Image_Displaye_app2(
             val isMainExpandedColor = expandState.isExpanded && relative_M3CouleurProduitInfos.keyID == expandState.bigPresenterCouleur.keyID
             if (isMainExpandedColor) {
                 val context = LocalContext.current
-                val isLegacyGif = relative_M3CouleurProduitInfos.extensionDisponible
-                    .equals("gif", ignoreCase = true)
-                if (isLegacyGif) {
-                    val gifLoader = remember(context) {
-                        ImageLoader.Builder(context)
-                            .components { add(GifDecoder.Factory()) }
-                            .build()
+                val exoPlayer = remember(imageFile) {
+                    ExoPlayer.Builder(context).build().apply {
+                        setMediaItem(MediaItem.fromUri(Uri.fromFile(imageFile)))
+                        prepare()
+                        playWhenReady = true
+                        repeatMode = Player.REPEAT_MODE_ONE
+                        volume = 0f
                     }
-                    val gifRequest = remember(
-                        imageFile,
-                        relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase
-                    ) {
-                        ImageRequest.Builder(context)
-                            .data(imageFile)
-                            .memoryCacheKey("${relative_M3CouleurProduitInfos.keyID}_gif_${relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase}")
-                            .crossfade(false)
-                            .build()
-                    }
-                    AsyncImage(
-                        model              = gifRequest,
-                        imageLoader        = gifLoader,
-                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
-                            .ifBlank { "Color video presentation" },
-                        modifier           = completeModifier,
-                        contentScale       = contentScale,
-                    )
-                } else {
-                    val exoPlayer = remember(imageFile) {
-                        ExoPlayer.Builder(context).build().apply {
-                            setMediaItem(MediaItem.fromUri(Uri.fromFile(imageFile)))
-                            prepare()
-                            playWhenReady = true
-                            repeatMode = Player.REPEAT_MODE_ONE
-                            volume = 0f
-                        }
-                    }
-                    DisposableEffect(imageFile) {
-                        onDispose { exoPlayer.release() }
-                    }
-                    AndroidView(
-                        factory = { ctx ->
-                            PlayerView(ctx).apply {
-                                player = exoPlayer
-                                useController = false
-                            }
-                        },
-                        update = { view ->
-                            view.player = exoPlayer
-                        },
-                        modifier = completeModifier
-                    )
                 }
+                DisposableEffect(imageFile) {
+                    onDispose { exoPlayer.release() }
+                }
+                AndroidView(
+                    factory = { ctx ->
+                        PlayerView(ctx).apply {
+                            player = exoPlayer
+                            useController = false
+                        }
+                    },
+                    update = { view ->
+                        view.player = exoPlayer
+                    },
+                    modifier = completeModifier
+                )
             } else {
                 // Compact: static first frame + play icon
                 Box(modifier = completeModifier) {

@@ -33,7 +33,7 @@ fun A_MapClients_A2FragID_1(
     var isTimeout by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        delay(3000)
+        delay(2000)
         isTimeout = true
     }
 
