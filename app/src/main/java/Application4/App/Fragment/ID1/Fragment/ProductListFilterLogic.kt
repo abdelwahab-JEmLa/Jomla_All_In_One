@@ -133,7 +133,11 @@ object ProductListFilterLogic {
 
     fun filterLinkedColors(
         list: List<M3CouleurProduitInfos>,
+        mode: Filter_Affichage_Mode_Proto,
     ): List<M3CouleurProduitInfos> {
+        if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) {
+            return list
+        }
         val counts = list.associate { it.keyID to it.count_Don_Depot }
         return list.filter {
             if (it.c_unite_couleur_de_couleurKey.isNotEmpty()) {
@@ -164,7 +168,7 @@ object ProductListFilterLogic {
             mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres &&
                     query.trim().isNotEmpty()
 
-        val cleanColors = rawColors?.let { filterLinkedColors(it) }
+        val cleanColors = rawColors?.let { filterLinkedColors(it, mode) }
 
         val filtered = cleanColors
             ?.let { filterByQuery(it, query, productMap) }

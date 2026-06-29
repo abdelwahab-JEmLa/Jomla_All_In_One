@@ -8,7 +8,6 @@ import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import Application4.App.Modules.Wi.Module.ConnexionCardHost_App4
 import Application4.App.Modules.Wi.Module.ProductDisplayController_NewProto
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
-import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
@@ -81,8 +80,7 @@ private fun MainScaffold(
     on_clear_wifi_classe_cache: () -> Unit,
 ) {
     var affiche_ProduitDataBaseEdites by remember { mutableStateOf(true) }
-    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(true) }
-
+    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(true) }          //<--
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {

@@ -36,6 +36,7 @@ class FeatureID1_ViewModel(
         viewModelScope.launch {
             active_Datas.list_M8bon = (appDatabase.dao_M8BonVent().getAll())
             active_Datas.list_M03 = (appDatabase.dao_M03CouleurProduitInfos().getAll())
+            active_Datas.active_M9Compt = appDatabase.dao_M9AppCompt().getBy_M00_Lence_Key()
         }
     }
 
@@ -47,6 +48,7 @@ class FeatureID1_ViewModel(
         viewModelScope.launch {
             active_Datas.list_M8bon = appDatabase.dao_M8BonVent().getAll()
             active_Datas.list_M03 = appDatabase.dao_M03CouleurProduitInfos().getAll()
+            active_Datas.active_M9Compt = appDatabase.dao_M9AppCompt().getBy_M00_Lence_Key()
         }
     }
 
@@ -59,7 +61,11 @@ class FeatureID1_ViewModel(
         }
     }
 
-    fun update_m9() {
+    fun update_m9(it: M09AppCompt) {
+        active_Datas.active_M9Compt = it
+        viewModelScope.launch {
+            appDatabase.dao_M9AppCompt().upsert(it)
+        }
     }
 
     fun add_New_M8BonVent(bon: M8BonVent) {

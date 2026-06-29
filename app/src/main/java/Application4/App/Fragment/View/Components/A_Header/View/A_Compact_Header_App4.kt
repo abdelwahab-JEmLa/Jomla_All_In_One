@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Outbox
 import androidx.compose.material.icons.filled.Sync
@@ -28,8 +29,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -113,15 +119,81 @@ fun A_Compact_Header_App4(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(1.dp)
                 ) {
-                    Text(
-                        text = relative_M1produit.nom,
-                        fontSize = nameTextSize,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        lineHeight = if (isExpanded) 16.sp else 12.sp
-                    )
+                    var isEditingName by remember { mutableStateOf(false) }
+                    var editedName by remember(relative_M1produit.nom) { mutableStateOf(relative_M1produit.nom) }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = relative_M1produit.nom,
+                            fontSize = nameTextSize,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            lineHeight = if (isExpanded) 16.sp else 12.sp,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                        if (isEditMode) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Modifier le nom",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .clickable { isEditingName = true }
+                            )
+                        }
+                    }
+
+                    if (isEditingName) {
+                        androidx.compose.material3.AlertDialog(
+                            onDismissRequest = {
+                                editedName = relative_M1produit.nom
+                                isEditingName = false
+                            },
+                            title = { Text("Modifier le nom") },
+                            text = {
+                                OutlinedTextField(
+                                    value = editedName,
+                                    onValueChange = { editedName = it },
+                                    label = { Text("Nom du produit", fontSize = 10.sp) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textStyle = MaterialTheme.typography.bodyMedium,
+                                    singleLine = true
+                                )
+                            },
+                            confirmButton = {
+                                androidx.compose.material3.TextButton(
+                                    onClick = {
+                                        if (editedName.isNotBlank()) {
+                                            onUpdateProduit(
+                                                relative_M1produit.copy(
+                                                    nom = editedName,
+                                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                                )
+                                            )
+                                        }
+                                        isEditingName = false
+                                    }
+                                ) {
+                                    Text("Confirmer")
+                                }
+                            },
+                            dismissButton = {
+                                androidx.compose.material3.TextButton(
+                                    onClick = {
+                                        editedName = relative_M1produit.nom
+                                        isEditingName = false
+                                    }
+                                ) {
+                                    Text("Annuler")
+                                }
+                            }
+                        )
+                    }
 
                     if (relative_M1produit.nomArab.isNotBlank() && isExpanded) {
                         Text(

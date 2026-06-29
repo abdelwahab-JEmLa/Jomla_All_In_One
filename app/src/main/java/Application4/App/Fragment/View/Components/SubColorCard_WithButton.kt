@@ -40,6 +40,7 @@ fun SubColorCard_WithButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(if (isExpanded) 80.dp else 40.dp),
+            affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent
         )
 
         shouldShowButtons.ifTrue {

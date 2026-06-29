@@ -40,7 +40,8 @@ fun ColorImageCard_AppEcranPresntoireJemlaCom(
             } else {
                 Modifier.fillMaxSize()
             }
-        ) {
+        ) {     //<--
+        //TODO(1): ajout au top end un floting image de drawble da_10.png si prix vent u == 10 et si c 5  da_5.png
             Image_Displaye_app2(
                 relative_M3CouleurProduitInfos = relative_M3CouleurProduitInfos,
                 expandState = expandState,

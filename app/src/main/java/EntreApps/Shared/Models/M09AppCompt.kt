@@ -78,7 +78,7 @@ data class M09AppCompt(
 
     val affiche_Dialog_Fast_Affiche_Panie_App4: Boolean = false,
 
-    val affiche_ProduitDataBaseEdites_ComposableViews: Boolean = true,
+    val affiche_ProduitDataBaseEdites_ComposableViews: Boolean = true,      //<--
     val active_DropDown_FabButton: Boolean = false,
 
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",

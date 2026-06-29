@@ -48,7 +48,6 @@ fun FabButton_newProto(
     on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var dropdownExpanded by remember { mutableStateOf(false) }
     Surface(
         modifier = modifier
             .offset(y = (-28).dp)
@@ -98,7 +97,7 @@ fun FabButton_newProto(
                         .clickable {
                             when (its_Targeted_Frag) {
                                 false -> {
-                                    dropdownExpanded = true
+                                    onToggleFabVisibility()
                                 }
                                 true -> {
                                     onShowDropdown()
@@ -109,30 +108,6 @@ fun FabButton_newProto(
                     contentDescription = null,
                     contentScale = ContentScale.Crop
                 )
-                DropdownMenu(
-                    expanded = dropdownExpanded,
-                    onDismissRequest = { dropdownExpanded = false }
-                ) {
-                    DropdownMenuItem(
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Affiche édition produits")
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Switch(
-                                    checked = affiche_ProduitDataBaseEdites,
-                                    onCheckedChange = { newVal ->
-                                        onToggleProduitDataBaseEdites(newVal)
-                                        on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent(newVal)
-                                        dropdownExpanded = false
-                                    }
-                                )
-                            }
-                        },
-                        onClick = {
-                            dropdownExpanded = false
-                        }
-                    )
-                }
             }
         }
     }

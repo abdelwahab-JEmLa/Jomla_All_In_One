@@ -26,6 +26,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.FloatingActionButton
@@ -74,7 +76,8 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     appDatabase: AppDatabase,
     viewModel: FeatureID1_ViewModel = viewModel(
         factory = viewModelFactory { initializer { FeatureID1_ViewModel(appDatabase = appDatabase) } }
-    )
+    ),
+    on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews: (Boolean) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var dialState by remember { mutableStateOf(DialState.Closed) }
@@ -122,10 +125,51 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                 enter   = fadeIn(tween(200)) + slideInVertically(tween(220)) { it },
                 exit    = fadeOut(tween(150)) + slideOutVertically(tween(150)) { it },
             ) {
+                val activeCompt = viewModel.active_Datas.active_M9Compt
+                val showEditedProducts = activeCompt?.affiche_ProduitDataBaseEdites_ComposableViews ?: false
+
                 Column(
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
+                    // ── Afficher les édités ────────────────────────────────────
+                    Row(
+                        verticalAlignment     = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text       = "Afficher édités",
+                            style      = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color      = Color.White,
+                            modifier   = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0xFFE91E63).copy(alpha = 0.92f))
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                        )
+                        Box {
+                            FloatingActionButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                     activeCompt?.let { compt ->
+                                         on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews(!compt.affiche_ProduitDataBaseEdites_ComposableViews)
+                                     }
+                                },
+                                modifier       = Modifier.size(46.dp),
+                                containerColor = if (showEditedProducts) Color(0xFFE91E63) else Color(0xFF757575),
+                                shape          = CircleShape,
+                                elevation      = FloatingActionButtonDefaults.elevation(4.dp),
+                            ) {
+                                Icon(
+                                    imageVector        = if (showEditedProducts) Icons.Default.Edit else Icons.Default.EditOff,
+                                    contentDescription = "Edit Switch",
+                                    tint               = Color.White,
+                                    modifier           = Modifier.size(22.dp),
+                                )
+                            }
+                        }
+                    }
+
                     // ── M8 BonVent ────────────────────────────────────────────
                     Row(
                         verticalAlignment     = Alignment.CenterVertically,

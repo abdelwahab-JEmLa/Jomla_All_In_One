@@ -263,10 +263,11 @@ fun A_Item_Produit_App4(
                 val currentList = viewModel.active_Datas
                     .listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
                 val now = System.currentTimeMillis()
+                val shouldActivate = !hasPremierCheckDonne
                 val updated = currentList.map { op ->
                     if (op.parent_M1Produit_KeyId == relative_M1produit.keyID)
                         op.copy(
-                            premier_Check_Donne = true,
+                            premier_Check_Donne = shouldActivate,
                             dernierTimeTampsSynchronisationAvecFireBase = now
                         )
                     else op

@@ -99,7 +99,14 @@ fun Ancien_PresenterApp_FragID5(
     )
 
     FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
-        appDatabase = viewModelHeadViewModel.appDatabase
+        appDatabase = viewModelHeadViewModel.appDatabase,
+        on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = { isChecked ->
+            focusedValuesGetter.currentActive_M9AppCompt?.let { compt ->
+                viewModelHeadViewModel.aCentralFacade.repositorysMainSetter.update_M9AppCompt(
+                    compt.copy(affiche_ProduitDataBaseEdites_ComposableViews = isChecked)
+                )
+            }
+        }
     )
 
 

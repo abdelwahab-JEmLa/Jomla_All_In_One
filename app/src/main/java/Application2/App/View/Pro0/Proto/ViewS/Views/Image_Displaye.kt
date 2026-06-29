@@ -108,7 +108,8 @@ fun Image_Displaye_app2(
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
     viewModel: ViewModel_MainFragment,
-) {
+) {         //<--
+//TODO(1): pk le video ne ce playe pas quen expanded big couleur
     val qualite = resolveQualite(expandState)
 
     // Get WiFi state to determine if user can interact with images

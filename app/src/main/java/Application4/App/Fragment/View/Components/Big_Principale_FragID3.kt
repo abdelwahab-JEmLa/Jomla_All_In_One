@@ -73,7 +73,8 @@ fun Big_Principale_FragID3(
         modifier = Modifier
             .fillMaxWidth()
             .height(imageHeight),
-        uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel
+        uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+        affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent
     )
 
     Spacer(modifier = Modifier.height(2.dp))
