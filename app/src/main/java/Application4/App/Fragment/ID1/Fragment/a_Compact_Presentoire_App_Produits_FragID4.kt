@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.clientjetpack.R
 import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 
 @Composable
 fun A_Compact_Presentoire_App_Produits_App4(
@@ -53,6 +54,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
     on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews: (Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
+    val focusedValuesGetter: FocusedValuesGetter = koinInject()
+    val activeAfficheButtons = focusedValuesGetter.active_Central_Values.affiche_buttons_lien_unite_couleur_au_couleut_parent
     val repo13TarificationInfos =
         koinInject<V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos>()
 
@@ -179,7 +182,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
                     justMovedProductKeyID = justMovedProductKeyID,
                     on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
                     ventCouleurs = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
-                    affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent
+                    affiche_buttons_lien_unite_couleur_au_couleut_parent = activeAfficheButtons
                 )
             }
 
@@ -196,8 +199,14 @@ fun A_Compact_Presentoire_App_Produits_App4(
                         Wifi_Messages_Types_NewProto.Update_affiche_pub_abdelwahab_electro_gro_store
                         ,bool.toString())
                 },
-                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
-                on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews,
+                affiche_buttons_lien_unite_couleur_au_couleut_parent = activeAfficheButtons,
+                on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = { newVal ->
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                        )
+                    )
+                },
             )
         }
     }
@@ -249,8 +258,14 @@ fun A_Compact_Presentoire_App_Produits_App4(
     if (showFabDropdown_Compact_Presentoire_App_Produits_FragID4) {
         FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
             viewModelNewProtoPatterns = viewModelNewProtoPatterns,
-            affiche_ProduitDataBaseEdites_ComposableViews = affiche_ProduitDataBaseEdites_ComposableViews,
-            on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews,
+            affiche_ProduitDataBaseEdites_ComposableViews = activeAfficheButtons,
+            on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = { newVal ->
+                focusedValuesGetter.update_activeCentralValues(
+                    focusedValuesGetter.active_Central_Values.copy(
+                        affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                    )
+                )
+            },
             onDismissDropdown = {
                 fragmentNavigationHandler.setShowFabDropdown_Compact_Presentoire(false)
             },

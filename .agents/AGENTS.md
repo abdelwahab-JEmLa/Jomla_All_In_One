@@ -73,3 +73,9 @@
 ## Skill Triggers in TODOs
 - Si le déclencheur d'un skill (ex: `t_copie_compos_et_fit`, `zip_colle`, etc.) est présent dans un commentaire `TODO`, l'agent doit automatiquement lancer ce skill.
 - L'agent doit également lire les instructions du skill `t_` (qui gère les TODOs) pour adopter le même comportement de résolution, et analyser/apprendre du contexte fourni pour exécuter la tâche.
+
+## Jetpack Compose Navigation Parameter Binding
+- When passing variables that change dynamically (such as visibility flags, active settings, or filters) to screens hosted inside a `NavHost` destination block:
+  - **Avoid Raw Primitives**: Do not pass raw primitives (like `Boolean`, `String`, `Int`) directly as parameters of the parent NavHost function. The NavHost's content builder caches destination lambdas, preventing parameter updates from triggering recomposition.
+  - **Use Shared State**: Prefer retrieving these values from a shared state container (like `FocusedValuesGetter.active_Central_Values` or shared ViewModels) directly inside the destination screen.
+  - **Use Lambda Getters**: If parameters must be passed, wrap them in lambda getters (e.g., `affiche_buttons: () -> Boolean`) to ensure Compose registers the read dependency within the active screen composition.

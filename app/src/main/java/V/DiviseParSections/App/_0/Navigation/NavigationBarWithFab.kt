@@ -65,7 +65,9 @@ fun NavigationBarWithFab(
     onCatalogSelected: (Long) -> Unit,
     context: Context = LocalContext.current,
     onClickImageToShowControles: () -> Unit,
-    showWarningState: Boolean = true
+    showWarningState: Boolean = true,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit = {}
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
     var showDialogTests by remember { mutableStateOf(false) }
@@ -191,11 +193,11 @@ fun NavigationBarWithFab(
                     showWarningState = showWarningState,
                     isFabVisible = isFabVisible,
                     its_Targeted_Frag = true,
-                    affiche_ProduitDataBaseEdites = false,
+                    affiche_ProduitDataBaseEdites = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                     onToggleFabVisibility = onToggleFabVisibility,
                     onShowDropdown = { showFabDropdownFastVent = true },
-                    onToggleProduitDataBaseEdites = {},
-                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = {}
+                    onToggleProduitDataBaseEdites = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent
                 )
             }
 
@@ -205,11 +207,11 @@ fun NavigationBarWithFab(
                     showWarningState = showWarningState,
                     isFabVisible = isFabVisible,
                     its_Targeted_Frag = its_Targeted_Frag,
-                    affiche_ProduitDataBaseEdites = false,
+                    affiche_ProduitDataBaseEdites = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                     onToggleFabVisibility = onToggleFabVisibility,
                     onShowDropdown = { showFabDropdown = true },
-                    onToggleProduitDataBaseEdites = {},
-                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = {}
+                    onToggleProduitDataBaseEdites = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent
                 )
             }
         }

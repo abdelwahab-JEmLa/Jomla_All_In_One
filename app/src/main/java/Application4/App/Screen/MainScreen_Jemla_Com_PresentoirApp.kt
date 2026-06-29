@@ -27,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import org.koin.compose.koinInject
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -79,7 +81,8 @@ private fun MainScaffold(
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     on_clear_wifi_classe_cache: () -> Unit,
 ) {
-    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(true) }
+    val focusedValuesGetter: FocusedValuesGetter = koinInject()
+    val activeAfficheButtons = focusedValuesGetter.active_Central_Values.affiche_buttons_lien_unite_couleur_au_couleut_parent
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -94,12 +97,20 @@ private fun MainScaffold(
                 onToggleFabVisibility = {},
                 showWarningState = false,
                 fragmentNavigationHandler = fragmentNavigationHandler_passed,
-                affiche_ProduitDataBaseEdites = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                affiche_ProduitDataBaseEdites = activeAfficheButtons,
                 onToggleProduitDataBaseEdites = { newVal ->
-                    affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                        )
+                    )
                 },
                 on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = { newVal ->
-                    affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                        )
+                    )
                 }
             )
         }
@@ -119,10 +130,14 @@ private fun MainScaffold(
                 wifiTransferDatas_ControllerApp = wifiTransferDatas_ControllerApp,
                 appDatabase = appDatabase,
                 on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
-                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
-                affiche_ProduitDataBaseEdites_ComposableViews = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                affiche_buttons_lien_unite_couleur_au_couleut_parent = activeAfficheButtons,
+                affiche_ProduitDataBaseEdites_ComposableViews = activeAfficheButtons,
                 on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = { newVal ->
-                    affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                    focusedValuesGetter.update_activeCentralValues(
+                        focusedValuesGetter.active_Central_Values.copy(
+                            affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                        )
+                    )
                 }
             )
         }

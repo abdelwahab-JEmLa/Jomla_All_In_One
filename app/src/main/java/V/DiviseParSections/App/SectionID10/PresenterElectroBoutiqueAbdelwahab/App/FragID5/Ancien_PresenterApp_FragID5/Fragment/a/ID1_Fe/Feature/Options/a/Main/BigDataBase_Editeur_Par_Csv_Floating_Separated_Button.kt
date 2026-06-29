@@ -79,7 +79,6 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     ),
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
     on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit = {}, //<--
-    //TODO(1): /passe_recieve_val
 ) {
 
     val haptic = LocalHapticFeedback.current
@@ -156,9 +155,9 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                         )
                         Box {
                             FloatingActionButton(
-                                onClick = {
+                                onClick = {   //<--
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent(affiche_buttons_lien_unite_couleur_au_couleut_parent)
+                                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent(!affiche_buttons_lien_unite_couleur_au_couleut_parent)    //<--
                                 },
                                 modifier = Modifier.size(46.dp),
                                 containerColor = if (affiche_buttons_lien_unite_couleur_au_couleut_parent) Color(0xFFE91E63) else Color(

@@ -88,6 +88,8 @@ fun AppNavHost(
     fragmentNavigationHandler_passed: FragmentNavigationHandler_NewProto,
     appDatabase: AppDatabase,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit = {},
 ) {
     // Initialize UI state and navigation
     val uiState by viewModel.uiState.collectAsState()
@@ -212,9 +214,11 @@ fun AppNavHost(
                 composable(
                     route = Screen.Compact_Presentoire_App_Produits_FragID5.route,
                 ) {
-                    Ancien_PresenterApp_FragID5(
-                        onClickImageToShowControles = onClickImageToShowControles,
-                    )
+                     Ancien_PresenterApp_FragID5(
+                         onClickImageToShowControles = onClickImageToShowControles,
+                         affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                         on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                     )
                 }
 
                 composable(Screen.Screen1PanieVentsFinale.route) {

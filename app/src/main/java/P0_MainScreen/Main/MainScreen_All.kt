@@ -208,6 +208,7 @@ fun MainScreen_All(
     var showProductDisplay by remember { mutableStateOf(false) }
     var lockHost by remember { mutableStateOf(false) }
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
+    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(true) }
 
     var isControleFabVisible by remember { mutableStateOf(M00CentralParametresOfAllApps().isControleFabVisible) }
     var isProcessingUpdate by remember { mutableStateOf(false) }
@@ -324,7 +325,12 @@ fun MainScreen_All(
                                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                                 wifiTransferDatas_ControllerApp=wifiTransferDatas_ControllerApp,
                                 fragmentNavigationHandler_passed=fragmentNavigationHandler_passed,
-                                appDatabase=appDatabase,on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture
+                                appDatabase=appDatabase,
+                                on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
+                                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                                on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = { newVal ->
+                                    affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                                }
                             )
                         }
                     }
@@ -358,6 +364,10 @@ fun MainScreen_All(
                         },
                         onClickImageToShowControles = {
                             isControleFabVisible = !isControleFabVisible
+                        },
+                        affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                        on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = { newVal ->
+                            affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
                         }
                     )
                 }

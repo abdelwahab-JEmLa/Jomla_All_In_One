@@ -102,8 +102,14 @@ fun Ancien_PresenterApp_FragID5(
 
     FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
         appDatabase = viewModelHeadViewModel.appDatabase,
-        affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
-        on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent,
+        affiche_buttons_lien_unite_couleur_au_couleut_parent = focusedValuesGetter.active_Central_Values.affiche_buttons_lien_unite_couleur_au_couleut_parent,
+        on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = { newVal ->
+            focusedValuesGetter.update_activeCentralValues(
+                focusedValuesGetter.active_Central_Values.copy(
+                    affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                )
+            )
+        },
     )
 
 
