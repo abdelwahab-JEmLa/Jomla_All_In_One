@@ -78,17 +78,6 @@ fun NavigationBarWithFab(
     var showFabDropdown by remember { mutableStateOf(false) }
     var showFabDropdownBaseDonne by remember { mutableStateOf(false) }
     var showFabDropdownAchats by remember { mutableStateOf(false) }
-    val currentCompt = focusedValuesGetter.currentActive_M9AppCompt
-    val affiche_ProduitDataBaseEdites = currentCompt?.affiche_ProduitDataBaseEdites_ComposableViews ?: false
-    val onToggleProduitDataBaseEdites: (Boolean) -> Unit = { newVal ->
-        val currentComptVal = focusedValuesGetter.currentActive_M9AppCompt
-        if (currentComptVal != null) {
-            aCentralFacade.repositorysMainGetter.repo9AppCompt.upsert(
-                currentComptVal.copy(affiche_ProduitDataBaseEdites_ComposableViews = newVal)
-            )
-        }
-    }
-    val on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit = {}
     var showFabDropdownFastVent by remember { mutableStateOf(false) }
     var showFabDropdownEducation by remember { mutableStateOf(false) }
     var showFabDropdown_MainPresenterFragment by remember { mutableStateOf(false) }
@@ -202,11 +191,11 @@ fun NavigationBarWithFab(
                     showWarningState = showWarningState,
                     isFabVisible = isFabVisible,
                     its_Targeted_Frag = true,
-                    affiche_ProduitDataBaseEdites = affiche_ProduitDataBaseEdites,
+                    affiche_ProduitDataBaseEdites = false,
                     onToggleFabVisibility = onToggleFabVisibility,
                     onShowDropdown = { showFabDropdownFastVent = true },
-                    onToggleProduitDataBaseEdites = onToggleProduitDataBaseEdites,
-                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent
+                    onToggleProduitDataBaseEdites = {},
+                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = {}
                 )
             }
 
@@ -216,11 +205,11 @@ fun NavigationBarWithFab(
                     showWarningState = showWarningState,
                     isFabVisible = isFabVisible,
                     its_Targeted_Frag = its_Targeted_Frag,
-                    affiche_ProduitDataBaseEdites = affiche_ProduitDataBaseEdites,
+                    affiche_ProduitDataBaseEdites = false,
                     onToggleFabVisibility = onToggleFabVisibility,
                     onShowDropdown = { showFabDropdown = true },
-                    onToggleProduitDataBaseEdites = onToggleProduitDataBaseEdites,
-                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent
+                    onToggleProduitDataBaseEdites = {},
+                    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = {}
                 )
             }
         }

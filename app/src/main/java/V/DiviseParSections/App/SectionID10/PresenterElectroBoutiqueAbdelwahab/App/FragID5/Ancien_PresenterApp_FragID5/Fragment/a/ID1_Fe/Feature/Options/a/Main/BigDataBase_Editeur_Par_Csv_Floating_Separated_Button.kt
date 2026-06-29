@@ -77,7 +77,6 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     viewModel: FeatureID1_ViewModel = viewModel(
         factory = viewModelFactory { initializer { FeatureID1_ViewModel(appDatabase = appDatabase) } }
     ),
-    on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews: (Boolean) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var dialState by remember { mutableStateOf(DialState.Closed) }
@@ -125,8 +124,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                 enter   = fadeIn(tween(200)) + slideInVertically(tween(220)) { it },
                 exit    = fadeOut(tween(150)) + slideOutVertically(tween(150)) { it },
             ) {
-                val activeCompt = viewModel.active_Datas.active_M9Compt
-                val showEditedProducts = activeCompt?.affiche_ProduitDataBaseEdites_ComposableViews ?: false
+                val showEditedProducts = remember { mutableStateOf(false) }
 
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -151,17 +149,15 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                             FloatingActionButton(
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                     activeCompt?.let { compt ->
-                                         on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews(!compt.affiche_ProduitDataBaseEdites_ComposableViews)
-                                     }
+                                    showEditedProducts.value = !showEditedProducts.value
                                 },
                                 modifier       = Modifier.size(46.dp),
-                                containerColor = if (showEditedProducts) Color(0xFFE91E63) else Color(0xFF757575),
+                                containerColor = if (showEditedProducts.value) Color(0xFFE91E63) else Color(0xFF757575),
                                 shape          = CircleShape,
                                 elevation      = FloatingActionButtonDefaults.elevation(4.dp),
                             ) {
                                 Icon(
-                                    imageVector        = if (showEditedProducts) Icons.Default.Edit else Icons.Default.EditOff,
+                                    imageVector        = if (showEditedProducts.value) Icons.Default.Edit else Icons.Default.EditOff,
                                     contentDescription = "Edit Switch",
                                     tint               = Color.White,
                                     modifier           = Modifier.size(22.dp),

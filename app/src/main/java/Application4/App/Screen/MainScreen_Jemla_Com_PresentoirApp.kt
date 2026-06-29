@@ -79,8 +79,8 @@ private fun MainScaffold(
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     on_clear_wifi_classe_cache: () -> Unit,
 ) {
-    var affiche_ProduitDataBaseEdites by remember { mutableStateOf(true) }
-    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(true) }          //<--
+    var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(true) }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
@@ -94,8 +94,10 @@ private fun MainScaffold(
                 onToggleFabVisibility = {},
                 showWarningState = false,
                 fragmentNavigationHandler = fragmentNavigationHandler_passed,
-                affiche_ProduitDataBaseEdites = affiche_ProduitDataBaseEdites,
-                onToggleProduitDataBaseEdites = { newVal -> affiche_ProduitDataBaseEdites = newVal },
+                affiche_ProduitDataBaseEdites = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                onToggleProduitDataBaseEdites = { newVal ->
+                    affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                },
                 on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = { newVal ->
                     affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
                 }
@@ -117,7 +119,11 @@ private fun MainScaffold(
                 wifiTransferDatas_ControllerApp = wifiTransferDatas_ControllerApp,
                 appDatabase = appDatabase,
                 on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
-                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent
+                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                affiche_ProduitDataBaseEdites_ComposableViews = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = { newVal ->
+                    affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
+                }
             )
         }
     }

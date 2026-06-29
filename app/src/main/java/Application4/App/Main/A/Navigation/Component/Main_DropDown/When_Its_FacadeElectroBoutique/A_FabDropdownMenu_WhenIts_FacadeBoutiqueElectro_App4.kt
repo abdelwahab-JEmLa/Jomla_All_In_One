@@ -15,7 +15,9 @@ import androidx.compose.ui.unit.dp
 fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
     onDismissDropdown: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
+    viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns,
+    affiche_ProduitDataBaseEdites_ComposableViews: Boolean = false,
+    on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews: (Boolean) -> Unit = {}
 ) {
     Box(modifier = modifier) {
         DropdownMenu(
@@ -30,6 +32,8 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
 
             Affiche_ProduitDataBaseEdites_ComposableViews_ActiveCompt_Update_DropdownMenuItem(
                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+                affiche_ProduitDataBaseEdites_ComposableViews = affiche_ProduitDataBaseEdites_ComposableViews,
+                on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews,
                 onDismissDropdown = onDismissDropdown
             )
 

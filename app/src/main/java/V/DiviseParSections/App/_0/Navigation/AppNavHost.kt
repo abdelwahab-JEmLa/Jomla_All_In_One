@@ -213,7 +213,6 @@ fun AppNavHost(
                     route = Screen.Compact_Presentoire_App_Produits_FragID5.route,
                 ) {
                     Ancien_PresenterApp_FragID5(
-
                         onClickImageToShowControles = onClickImageToShowControles,
                     )
                 }

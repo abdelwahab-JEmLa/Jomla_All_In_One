@@ -78,7 +78,6 @@ data class M09AppCompt(
 
     val affiche_Dialog_Fast_Affiche_Panie_App4: Boolean = false,
 
-    val affiche_ProduitDataBaseEdites_ComposableViews: Boolean = true,      //<--
     val active_DropDown_FabButton: Boolean = false,
 
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
@@ -173,7 +172,6 @@ data class M09AppCompt(
         "active_ProduitKeyID_Au_DroopDown_PresenterEcran" to active_ProduitKeyID_Au_DroopDown_PresenterEcran,
         "active_CouleurKeyID_Extended_Image" to active_CouleurKeyID_Extended_Image,
         "affiche_Dialog_Fast_Affiche_Panie_App4" to affiche_Dialog_Fast_Affiche_Panie_App4,
-        "affiche_ProduitDataBaseEdites_ComposableViews" to affiche_ProduitDataBaseEdites_ComposableViews,
         "active_DropDown_FabButton" to active_DropDown_FabButton,
         "couleurAchateOperationIdOuvertPourCeCompt" to couleurAchateOperationIdOuvertPourCeCompt,
         "couleurAchateOperationKeyOuvertPourCeCompt" to couleurAchateOperationKeyOuvertPourCeCompt,

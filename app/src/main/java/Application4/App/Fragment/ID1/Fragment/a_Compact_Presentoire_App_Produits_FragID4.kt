@@ -49,6 +49,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    affiche_ProduitDataBaseEdites_ComposableViews: Boolean = false,
+    on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews: (Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
     val repo13TarificationInfos =
@@ -245,6 +247,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
     if (showFabDropdown_Compact_Presentoire_App_Produits_FragID4) {
         FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
             viewModelNewProtoPatterns = viewModelNewProtoPatterns,
+            affiche_ProduitDataBaseEdites_ComposableViews = affiche_ProduitDataBaseEdites_ComposableViews,
+            on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews,
             onDismissDropdown = {
                 fragmentNavigationHandler.setShowFabDropdown_Compact_Presentoire(false)
             },

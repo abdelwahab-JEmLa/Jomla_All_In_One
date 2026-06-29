@@ -4,6 +4,7 @@ import Application2.App.Fragment.ViewModel.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -22,7 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -30,6 +38,10 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ui.PlayerView
 import java.io.File
 
 enum class ImageQualite(
@@ -87,19 +99,6 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     )
     .skipMemoryCache(qualite == ImageQualite.min_possible)
 
-/** For animated GIFs in expanded mode: allow looping animation, full quality. */
-private fun RequestBuilder<Drawable>.applyAnimatedGifOptions(
-    couleur: M3CouleurProduitInfos
-) = this
-    // Do NOT call dontAnimate() here — animation must run
-    .diskCacheStrategy(DiskCacheStrategy.DATA)
-    .priority(Priority.HIGH)
-    .signature(ObjectKey("${couleur.keyID}_gif_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
-    .override(800)
-    .disallowHardwareConfig()
-    .format(DecodeFormat.PREFER_ARGB_8888)
-    .skipMemoryCache(false)
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye_app2(
@@ -108,7 +107,7 @@ fun Image_Displaye_app2(
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
     viewModel: ViewModel_MainFragment,
-) {         //<--
+) {
     val qualite = resolveQualite(expandState)
 
     // Get WiFi state to determine if user can interact with images
@@ -143,13 +142,59 @@ fun Image_Displaye_app2(
         if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
             val isMainExpandedColor = expandState.isExpanded && relative_M3CouleurProduitInfos.keyID == expandState.bigPresenterCouleur.keyID
             if (isMainExpandedColor) {
-                // Expanded: play the GIF — do NOT use dontAnimate()
-                GlideImage(
-                    model = imageFile,
-                    contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo.ifBlank { "Color GIF" },
-                    modifier = completeModifier,
-                    contentScale = contentScale
-                ) { it.applyAnimatedGifOptions(relative_M3CouleurProduitInfos) }
+                val context = LocalContext.current
+                val isLegacyGif = relative_M3CouleurProduitInfos.extensionDisponible
+                    .equals("gif", ignoreCase = true)
+                if (isLegacyGif) {
+                    val gifLoader = remember(context) {
+                        ImageLoader.Builder(context)
+                            .components { add(GifDecoder.Factory()) }
+                            .build()
+                    }
+                    val gifRequest = remember(
+                        imageFile,
+                        relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase
+                    ) {
+                        ImageRequest.Builder(context)
+                            .data(imageFile)
+                            .memoryCacheKey("${relative_M3CouleurProduitInfos.keyID}_gif_${relative_M3CouleurProduitInfos.dernierTimeTampsSynchronisationAvecFireBase}")
+                            .crossfade(false)
+                            .build()
+                    }
+                    AsyncImage(
+                        model              = gifRequest,
+                        imageLoader        = gifLoader,
+                        contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
+                            .ifBlank { "Color video presentation" },
+                        modifier           = completeModifier,
+                        contentScale       = contentScale,
+                    )
+                } else {
+                    val exoPlayer = remember(imageFile) {
+                        ExoPlayer.Builder(context).build().apply {
+                            setMediaItem(MediaItem.fromUri(Uri.fromFile(imageFile)))
+                            prepare()
+                            playWhenReady = true
+                            repeatMode = Player.REPEAT_MODE_ONE
+                            volume = 0f
+                        }
+                    }
+                    DisposableEffect(imageFile) {
+                        onDispose { exoPlayer.release() }
+                    }
+                    AndroidView(
+                        factory = { ctx ->
+                            PlayerView(ctx).apply {
+                                player = exoPlayer
+                                useController = false
+                            }
+                        },
+                        update = { view ->
+                            view.player = exoPlayer
+                        },
+                        modifier = completeModifier
+                    )
+                }
             } else {
                 // Compact: static first frame + play icon
                 Box(modifier = completeModifier) {

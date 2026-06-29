@@ -56,6 +56,8 @@ fun  AppNavHost_App4(
     appDatabase: AppDatabase,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    affiche_ProduitDataBaseEdites_ComposableViews: Boolean = false,
+    on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews: (Boolean) -> Unit = {}
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
@@ -110,6 +112,8 @@ fun  AppNavHost_App4(
                             appDatabase = appDatabase,
                             fragmentNavigationHandler = fragmentNavigationHandler,
                             affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                            affiche_ProduitDataBaseEdites_ComposableViews = affiche_ProduitDataBaseEdites_ComposableViews,
+                            on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews,
                             on_update_M13TarificationInfos_par_ecriture = { updated ->
                                 on_update_M13TarificationInfos_par_ecriture(updated)
                                 list_M13TarificationInfos = list_M13TarificationInfos

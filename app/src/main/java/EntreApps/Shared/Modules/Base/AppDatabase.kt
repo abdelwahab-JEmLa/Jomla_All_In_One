@@ -116,7 +116,7 @@ import java.util.Date
 
         M09AppCompt::class,
     ],
-    version = 6, // Bumped from 5 → 6: added il_a_une_video_presentaion to M3CouleurProduitInfos
+    version = 7, // Bumped from 6 → 7: added affiche_ProduitDataBaseEdites_ComposableViews to M09AppCompt
     exportSchema = false
 )
 @TypeConverters(

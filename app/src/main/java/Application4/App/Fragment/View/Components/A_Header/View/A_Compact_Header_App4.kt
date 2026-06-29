@@ -57,6 +57,7 @@ fun A_Compact_Header_App4(
     onUpdateTariff: () -> Unit,
     onUpdateProduit: (M01Produit) -> Unit,
     affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
+    isPanierMode: Boolean = false,
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
     shouldShowButtons: Boolean = affiche_ProduitDataBaseEdites_ComposableViews || affiche_buttons_lien_unite_couleur_au_couleut_parent,
     onDelete: (M01Produit) -> Unit,
@@ -295,7 +296,7 @@ fun A_Compact_Header_App4(
                         }
                     )
 
-                    onSetPremierCheckDonneForAllVents?.let { callback ->
+                    if (isPanierMode && affiche_ProduitDataBaseEdites_ComposableViews && onSetPremierCheckDonneForAllVents != null) {
                         ClickableInfoCard(
                             icon = {
                                 Icon(
@@ -310,7 +311,7 @@ fun A_Compact_Header_App4(
                             labelTextSize = labelTextSize,
                             valueTextSize = valueTextSize,
                             itemPadding = itemPadding,
-                            onClick = callback
+                            onClick = onSetPremierCheckDonneForAllVents
                         )
                     }
                 }

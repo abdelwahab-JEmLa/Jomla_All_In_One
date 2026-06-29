@@ -230,7 +230,7 @@ fun A_Item_Produit_App4(
     val cardPadding = if (isThisProductExpanded) 8.dp else 4.dp
 
     val isAdmin = centralValues.currentApp_Est_Admin
-            && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true
+            && affiche_buttons_lien_unite_couleur_au_couleut_parent == true
     val categoryClickForHeader: (() -> Unit)? = if (isAdmin) onCategoryClick else null
 
     Column(
@@ -253,7 +253,9 @@ fun A_Item_Produit_App4(
             },
             onUpdateProduit = { viewModel.update_m1Produit(it) },
             affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin
-                    && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
+                    && affiche_buttons_lien_unite_couleur_au_couleut_parent == true,
+            isPanierMode = centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Panie
+                    || centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres,
             affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
             onDelete = { viewModel.delete_m1Produit(it) },
             modifier = modifier,

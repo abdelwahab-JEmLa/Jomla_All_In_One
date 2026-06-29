@@ -233,7 +233,7 @@ fun Lenceur_Vent_Handler_App4(
             },
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        if (boitParCarton > 1 && isAdmin && viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true) {
+        if (boitParCarton > 1 && isAdmin && affiche_buttons_lien_unite_couleur_au_couleut_parent == true) {
             CartonVentHandler_App4(
                 currentCartons = currentCartons,
                 depotEnCartons = depotEnCartons,
@@ -268,7 +268,7 @@ fun Lenceur_Vent_Handler_App4(
                 show_depot_card_on_top_in_flow_row = true,
                 is_admin = isAdmin,
                 add_spacing_between_depot_and_sale = isAdmin,
-                affiche_ProduitDataBaseEdites = viewModel.active_Datas.active_M9Compt?.affiche_ProduitDataBaseEdites_ComposableViews == true,
+                affiche_ProduitDataBaseEdites = affiche_buttons_lien_unite_couleur_au_couleut_parent == true,
                 affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                 c_unite_couleur_de_couleurKey = selectedCouleur.c_unite_couleur_de_couleurKey,
                 mode_selection_parent_couleur_key = mode_selection_parent_couleur?.keyID ?: "",
