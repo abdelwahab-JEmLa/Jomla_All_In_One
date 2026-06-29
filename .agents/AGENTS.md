@@ -38,6 +38,7 @@
 - **Résolution de ADB** : Si la commande `adb` n'est pas reconnue globalement, utilisez le chemin absolu de l'exécutable sous `$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe` pour effectuer les opérations de push.
 - **PowerShell Argument Quoting** : Lorsque vous passez des arguments contenant des préfixes de points (ex: `-PappSuffix=.a_AllInOne`) dans PowerShell, enveloppez toujours l'argument entier de double guillemets (ex: `"-PappSuffix=.a_AllInOne"`) pour éviter que PowerShell n'interprète mal la chaîne de caractères.
 - **Enchaînement Git** : À la fin du processus de compilation et déploiement de `build_client` (`b_c`), lancez automatiquement le skill global `p_v` pour commiter la version, créer/écraser le tag de version spécifique (ex : `v1.14.0.12`) en y incluant la description des changements depuis la version précédente (`version - 1`), mettre à jour le tag `par_version_instaled` et tout pousser vers les dépôts distants (`github` et `origin`).
+- **Déploiement Post-Build** : Si un build a été généré sans le suffixe `+z` et que l'utilisateur demande ensuite le déploiement sur le téléphone ou demande "où est le téléphone", ne relancez pas la compilation. Compressez directement le dossier d'export existant sous le format `Client_V_<VERSION>.zip` et déployez-le via ADB, puis proposez ou exécutez les étapes Git de `p_v` si nécessaire.
 
 
 ## Color Media Presentations & GIF Conversion
