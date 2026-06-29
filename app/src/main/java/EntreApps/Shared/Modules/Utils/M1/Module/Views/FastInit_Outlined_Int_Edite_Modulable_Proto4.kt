@@ -90,8 +90,7 @@ private fun MediaPickerBar(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
-            Text(            //<--
-                //TODO(1): deplce les media button a
+            Text(
                 text = "🎥",
                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                 style = textStyle,
