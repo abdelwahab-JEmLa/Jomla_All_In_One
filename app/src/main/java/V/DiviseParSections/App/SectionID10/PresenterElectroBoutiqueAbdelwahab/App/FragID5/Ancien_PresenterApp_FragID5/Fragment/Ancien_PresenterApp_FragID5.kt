@@ -41,6 +41,8 @@ fun Ancien_PresenterApp_FragID5(
     categoryViewModel: EditeBaseDonneMainScreenIdS9ViewModel? = null,
     onClickImageToShowControles: () -> Unit = {},
     isWifiClientConnected_1: Boolean =false,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit = {},
 ) {
     val viewModelToUse = categoryViewModel ?: koinInject<EditeBaseDonneMainScreenIdS9ViewModel>()
     val uiState by viewModelToUse.uiState.collectAsState()
@@ -100,6 +102,8 @@ fun Ancien_PresenterApp_FragID5(
 
     FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
         appDatabase = viewModelHeadViewModel.appDatabase,
+        affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+        on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent,
     )
 
 

@@ -195,7 +195,9 @@ fun A_Compact_Presentoire_App_Produits_App4(
                     wifiTransferDatas_ControllerApp.sendOrderToClientDisplayerT(
                         Wifi_Messages_Types_NewProto.Update_affiche_pub_abdelwahab_electro_gro_store
                         ,bool.toString())
-                }
+                },
+                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews,
             )
         }
     }
