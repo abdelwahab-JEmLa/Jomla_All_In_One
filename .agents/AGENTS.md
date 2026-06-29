@@ -33,12 +33,14 @@
 - Pour compiler la version cliente, utilisez le skill global `build_client` (`b_c`, `bc_` ou `b_c_all`).
 - **Comportement Ciblé** : Si l'utilisateur cite spécifiquement l'une des applications (ex: `b_c_all`/`AllInOne`, `b_c_host`/`VendeurHost`, `b_c_presenter`/`PresenterScreen`), ne compiler que l'application demandée. Si aucune n'est citée explicitement, compiler séquentiellement les 3 applications.
 - **Format de version propre** : L'incrémentation de version dans [build.gradle.kts](file:///D:/AndroidStudioProjects/ClientJetPack/app/build.gradle.kts) doit incrémenter le troisième chiffre de la version propre (ex: `1.14.0` devient `1.14.1`) dans le format `1.14.1$appSuffix`, sans numéro de build additionnel (.17) ni timestamp (_24.20:22).
-- **Nom de l'archive ZIP** : Compressez toujours l'export sous le nom de fichier `Client_V_<VERSION>.zip` (où `<VERSION>` est la version propre sans suffixe, ex: `1.14.1`).
+- **Déploiement avec/sans ZIP** :
+  - **Sans ZIP (ex: `b+1`)** : Déployez directement les dossiers extraits (`0.`) sur le téléphone via ADB, sans créer de fichier ZIP.
+  - **Avec ZIP (ex: `b+1+z`)** : Compressez l'export sous le nom `Client_V_<VERSION>.zip` (où `<VERSION>` est la version propre, ex: `1.14.4`) et poussez le ZIP ainsi que les dossiers extraits sur le téléphone.
 - **Restauration de configuration** : Assurez-vous de restaurer immédiatement [M00CentralParametresOfAllApps.kt](file:///D:/AndroidStudioProjects/ClientJetPack/app/src/main/java/EntreApps/Shared/Models/M00CentralParametresOfAllApps.kt) après le build pour garder Git propre.
 - **Résolution de ADB** : Si la commande `adb` n'est pas reconnue globalement, utilisez le chemin absolu de l'exécutable sous `$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe` pour effectuer les opérations de push.
 - **PowerShell Argument Quoting** : Lorsque vous passez des arguments contenant des préfixes de points (ex: `-PappSuffix=.a_AllInOne`) dans PowerShell, enveloppez toujours l'argument entier de double guillemets (ex: `"-PappSuffix=.a_AllInOne"`) pour éviter que PowerShell n'interprète mal la chaîne de caractères.
 - **Enchaînement Git** : À la fin du processus de compilation et déploiement de `build_client` (`b_c`), lancez automatiquement le skill global `p_v` pour commiter la version, créer/écraser le tag de version spécifique (ex : `v1.14.0.12`) en y incluant la description des changements depuis la version précédente (`version - 1`), mettre à jour le tag `par_version_instaled` et tout pousser vers les dépôts distants (`github` et `origin`).
-- **Déploiement Post-Build** : Si un build a été généré sans le suffixe `+z` et que l'utilisateur demande ensuite le déploiement sur le téléphone ou demande "où est le téléphone", ne relancez pas la compilation. Compressez directement le dossier d'export existant sous le format `Client_V_<VERSION>.zip` et déployez-le via ADB, puis proposez ou exécutez les étapes Git de `p_v` si nécessaire.
+- **Déploiement Post-Build** : Si un build ou un déploiement a besoin d'être poussé manuellement après coup sur le téléphone, ne relancez pas la compilation. Utilisez la commande ADB push appropriée (avec ou sans ZIP selon la demande) sur le dossier d'export existant.
 
 
 ## Color Media Presentations & GIF Conversion
