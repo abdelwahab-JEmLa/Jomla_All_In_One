@@ -64,6 +64,42 @@ private fun vibrateOnUpdate(context: Context) {
     }
 }
 
+@Composable
+private fun MediaPickerBar(
+    onPickImage: (() -> Unit)?,
+    onPickVideo: (() -> Unit)?,
+    textStyle: TextStyle
+) {
+    if (onPickImage != null) {
+        Card(
+            modifier = Modifier.clickable { onPickImage() },
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Text(
+                text = "🖼",
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                style = textStyle,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+    if (onPickVideo != null) {
+        Card(
+            modifier = Modifier.clickable { onPickVideo() },
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Text(            //<--
+                //TODO(1): deplce les media button a
+                text = "🎥",
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                style = textStyle,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -90,6 +126,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     mode_selection_parent_couleur_key: String = "",
     is_this_color_selected_as_parent_for_link: Boolean = false,
     on_pour_mode_selection_parent_couleur: () -> Unit = {},
+    onPickImage: (() -> Unit)? = null,
+    onPickVideo: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
 
@@ -145,10 +183,10 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
         )
     } else {
         val containerColor = if (!isAvailable) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-            else if (start_count > 0) MaterialTheme.colorScheme.tertiary
-            else startCouleur
+        else if (start_count > 0) MaterialTheme.colorScheme.tertiary
+        else startCouleur
         val contentColor = if (!isAvailable) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            else MaterialTheme.colorScheme.onPrimary
+        else MaterialTheme.colorScheme.onPrimary
 
         if (show_depot_card_on_top_in_flow_row) {
             FlowRow(
@@ -175,6 +213,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                             color = if (mode_c_unite_actif) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+
+                    MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
                 }
 
                 val showValidationButton = mode_c_unite_actif || (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link)

@@ -77,7 +77,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     viewModel: FeatureID1_ViewModel = viewModel(
         factory = viewModelFactory { initializer { FeatureID1_ViewModel(appDatabase = appDatabase) } }
     ),
-    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,             //<--
     on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit = {}, //<--
 ) {
 

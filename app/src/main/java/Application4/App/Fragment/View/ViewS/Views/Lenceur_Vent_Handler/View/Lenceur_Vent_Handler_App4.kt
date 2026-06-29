@@ -77,6 +77,134 @@ fun Lenceur_Vent_Handler_App4(
     val isAdmin = viewModel.active_Datas.currentApp_Est_Admin
 
     val haptic = LocalHapticFeedback.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+    val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            scope.launch {
+                try {
+                    val fileNameWithoutExtension = if (selectedCouleur.nomImageFichieSansEtansion.isNotBlank() && selectedCouleur.nomImageFichieSansEtansion != "Non Dispo") {
+                        selectedCouleur.nomImageFichieSansEtansion
+                    } else {
+                        "${relative_M1produit.id}_${selectedCouleur.indexCouleurDansAncienProto}"
+                    }
+
+                    if (selectedCouleur.extensionDisponible.isNotBlank()) {
+                        val oldFile = File(localPath, "${fileNameWithoutExtension}.${selectedCouleur.extensionDisponible}")
+                        if (oldFile.exists()) {
+                            oldFile.delete()
+                        }
+                    }
+
+                    val contentResolver = context.contentResolver
+                    val imageBytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                    if (imageBytes != null) {
+                        val newFile = File(localPath, "${fileNameWithoutExtension}.webp")
+                        withContext(Dispatchers.IO) {
+                            FileOutputStream(newFile).use { it.write(imageBytes) }
+                            try {
+                                storageRef.child("${fileNameWithoutExtension}.webp").putBytes(imageBytes).await()
+                            } catch (e: Exception) {
+                                // silent upload error
+                            }
+                        }
+
+                        viewModel.update_m3couleur(selectedCouleur.copy(
+                            aAffiche = M3CouleurProduitInfos.Type.Image,
+                            nomImageFichieSansEtansion = fileNameWithoutExtension,
+                            extensionDisponible = "webp",
+                            il_a_une_video_presentaion = false,
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        ))
+
+                        viewModel.update_m1Produit(relative_M1produit.copy(
+                            actualiseSonImage = relative_M1produit.actualiseSonImage + 1,
+                            actualiseSonImageTest2 = relative_M1produit.actualiseSonImageTest2 + 1,
+                            dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                        ))
+
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Image de couleur mise à jour !", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+    val videoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            scope.launch {
+                try {
+                    val fileNameWithoutExtension = if (selectedCouleur.nomImageFichieSansEtansion.isNotBlank() && selectedCouleur.nomImageFichieSansEtansion != "Non Dispo") {
+                        selectedCouleur.nomImageFichieSansEtansion
+                    } else {
+                        "${relative_M1produit.id}_${selectedCouleur.indexCouleurDansAncienProto}"
+                    }
+
+                    // Supprimer l'ancien fichier s'il existe
+                    if (selectedCouleur.extensionDisponible.isNotBlank()) {
+                        val oldFile = File(localPath, "${fileNameWithoutExtension}.${selectedCouleur.extensionDisponible}")
+                        if (oldFile.exists()) {
+                            oldFile.delete()
+                        }
+                    }
+
+                    val newFile = File(localPath, "${fileNameWithoutExtension}.mp4")
+
+                    // Copie directe du fichier MP4 sélectionné → stockage local uniquement.
+                    // Pas de conversion GIF, pas d'upload Firebase.
+                    val success = withContext(Dispatchers.IO) {
+                        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                            FileOutputStream(newFile).use { outputStream ->
+                                inputStream.copyTo(outputStream)
+                            }
+                            newFile.exists()
+                        } ?: false
+                    }
+
+                    if (success) {
+                        viewModel.update_m3couleur(selectedCouleur.copy(
+                            aAffiche = M3CouleurProduitInfos.Type.Image,
+                            nomImageFichieSansEtansion = fileNameWithoutExtension,
+                            extensionDisponible = "mp4",
+                            il_a_une_video_presentaion = true,
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        ))
+
+                        viewModel.update_m1Produit(relative_M1produit.copy(
+                            actualiseSonImage = relative_M1produit.actualiseSonImage + 1,
+                            actualiseSonImageTest2 = relative_M1produit.actualiseSonImageTest2 + 1,
+                            dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                        ))
+
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Vidéo mise à jour !", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Erreur : impossible de sauvegarder la vidéo !", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
 
     val au_depot by remember(
         selectedCouleur.keyID,
@@ -268,13 +396,16 @@ fun Lenceur_Vent_Handler_App4(
                 show_depot_card_on_top_in_flow_row = true,
                 is_admin = isAdmin,
                 add_spacing_between_depot_and_sale = isAdmin,
-                affiche_ProduitDataBaseEdites = affiche_buttons_lien_unite_couleur_au_couleut_parent == true,
+                affiche_ProduitDataBaseEdites = affiche_buttons_lien_unite_couleur_au_couleut_parent== true,
                 affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                 c_unite_couleur_de_couleurKey = selectedCouleur.c_unite_couleur_de_couleurKey,
                 mode_selection_parent_couleur_key = mode_selection_parent_couleur?.keyID ?: "",
                 is_this_color_selected_as_parent_for_link = mode_selection_parent_couleur?.keyID == selectedCouleur.keyID,
                 on_pour_mode_selection_parent_couleur = { on_pour_update_mode_selection_parent_couleur(selectedCouleur) },
+                onPickImage = { imagePickerLauncher.launch("image/*") },
+                onPickVideo = { videoPickerLauncher.launch("video/*") },
                 on_set_c_unite_key = { key ->
+
                     val parentColor = mode_selection_parent_couleur
                     if (parentColor != null) {
                         viewModel.update_m3couleur(parentColor.copy(c_unite_couleur_de_couleurKey = selectedCouleur.keyID))

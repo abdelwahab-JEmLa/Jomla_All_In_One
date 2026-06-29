@@ -208,6 +208,7 @@ fun MainScreen_All(
     var showProductDisplay by remember { mutableStateOf(false) }
     var lockHost by remember { mutableStateOf(false) }
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
+
     var affiche_buttons_lien_unite_couleur_au_couleut_parent by remember { mutableStateOf(true) }
 
     var isControleFabVisible by remember { mutableStateOf(M00CentralParametresOfAllApps().isControleFabVisible) }
