@@ -36,6 +36,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.res.painterResource
 import java.io.File
 import java.io.FileOutputStream
 
@@ -208,7 +211,22 @@ fun ColorImageCard_App4(
                     list_M1Produit = uiState_NewProtoPatterns_viewModel.second.active_Datas
                         .list_M1Produit,
                 )
-
+                val price = relative_M1produit?.clientPrixVentUnite ?: 0.0
+                val drawableRes = when (price.toInt()) {
+                    10 -> com.example.clientjetpack.R.drawable.da_10
+                    5 -> com.example.clientjetpack.R.drawable.da_5
+                    else -> null
+                }
+                if (drawableRes != null) {
+                    Image(
+                        painter = painterResource(id = drawableRes),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(if (isSelected && isEditMode) Alignment.Companion.TopStart else Alignment.Companion.TopEnd)
+                            .padding(8.dp)
+                            .size(40.dp)
+                    )
+                }
                 if (isSelected && isEditMode) {
                     Row(
                         modifier = Modifier

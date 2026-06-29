@@ -55,7 +55,9 @@ fun ColorImageCard_AppEcranPresntoireJemlaCom(
                 viewModel = viewModel
             )
 
-            val parentProduct = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {
+            val parentProduct = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {     //<--
+            //TODO(1): extract et fait qus si 15 de affiche 10 image au bas 5 fait que si 30 affiche da_20 et au bas 10 si 25 c da_20.png et 5 si 40 c 20 image 
+            //et au bas autre 20 image si 50 affiche da_50.png si 60 c 50 image + 10 da si autre affiche un circle et le prix ace da la don 
                 viewModel.uiState.value.list_ProductWithColors.find {
                     it.first.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
                 }?.first ?: viewModel.uiState.value.list_M1Produit.find {

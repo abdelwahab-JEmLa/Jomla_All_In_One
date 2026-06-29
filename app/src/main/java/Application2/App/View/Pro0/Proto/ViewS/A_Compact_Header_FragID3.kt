@@ -85,7 +85,8 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                     verticalArrangement = Arrangement.spacedBy(1.dp)
                 ) {
                     Text(
-                        text = relative_M1produit.nom,
+                        text = relative_M1produit.nom,        //<--
+                        //TODO(1): augment taille et fait que ca soit trouge
                         fontSize = nameTextSize,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -108,7 +109,8 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
             }
 
             // Second row: Info cards in FlowRow
-            FlowRow(
+            FlowRow(        //<--
+            //TODO(1): affiche ici حبة au liex U
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(itemPadding),
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
@@ -171,7 +173,8 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                 }
 
                 // Client unit price card - always shown
-                InfoCard(
+                InfoCard(           //<--
+                //TODO(1):enleve
                     icon = {
                         Icon(
                             imageVector = Icons.Default.AttachMoney,
