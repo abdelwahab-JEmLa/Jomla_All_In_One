@@ -85,14 +85,13 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                     verticalArrangement = Arrangement.spacedBy(1.dp)
                 ) {
                     Text(
-                        text = relative_M1produit.nom,        //<--
-                        //TODO(1): augment taille et fait que ca soit trouge
-                        fontSize = nameTextSize,
+                        text = relative_M1produit.nom,
+                        fontSize = if (isExpanded) 18.sp else 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.error,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        lineHeight = if (isExpanded) 16.sp else 12.sp
+                        lineHeight = if (isExpanded) 20.sp else 15.sp
                     )
 
                     if (relative_M1produit.nomArab.isNotBlank() && isExpanded) {
@@ -109,8 +108,7 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
             }
 
             // Second row: Info cards in FlowRow
-            FlowRow(        //<--
-            //TODO(1): affiche ici حبة au liex U
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(itemPadding),
                 verticalArrangement = Arrangement.spacedBy(itemPadding)
@@ -146,7 +144,7 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                             )
                         },
                         value = "${relative_M1produit.nombreUniteInt}",
-                        label = "U",
+                        label = "حبة",
                         labelTextSize = labelTextSize,
                         valueTextSize = valueTextSize,
                         itemPadding = itemPadding
@@ -172,23 +170,6 @@ fun Compact_Header_AppEcranPresntoireJemlaCom(
                     )
                 }
 
-                // Client unit price card - always shown
-                InfoCard(           //<--
-                //TODO(1):enleve
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.AttachMoney,
-                            contentDescription = "Prix client unité",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(iconSize)
-                        )
-                    },
-                    value = "%.2f".format(relative_M1produit.clientPrixVentUnite),
-                    label = "ب.حبة",
-                    labelTextSize = labelTextSize,
-                    valueTextSize = valueTextSize,
-                    itemPadding = itemPadding
-                )
 
                 // Total client price card - only shown if total > 0
                 val totalClient = relative_M1produit.clientPrixVentUnite * relative_M1produit.nombreUniteInt

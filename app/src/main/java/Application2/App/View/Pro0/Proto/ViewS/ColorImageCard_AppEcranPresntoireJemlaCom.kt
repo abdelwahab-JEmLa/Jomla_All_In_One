@@ -84,56 +84,55 @@ fun ColorImageCard_AppEcranPresntoireJemlaCom(
                 viewModel = viewModel
             )
 
-            val parentProduct = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {     //<--
-            //TODO(1): extract et fait qus si 15 de affiche 10 image au bas 5 fait que si 30 affiche da_20 et au bas 10 si 25 c da_20.png et 5 si 40 c 20 image 
-            //et au bas autre 20 image si 50 affiche da_50.png si 60 c 50 image + 10 da si autre affiche un circle et le prix ace da la don 
+            val parentProduct = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {
                 viewModel.uiState.value.list_ProductWithColors.find {
                     it.first.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
                 }?.first ?: viewModel.uiState.value.list_M1Produit.find {
                     it.keyID == relative_M3CouleurProduitInfos.parentBProduitInfosKeyID
                 }
             }
-            val price = parentProduct?.clientPrixVentUnite ?: 0.0
-            val drawables = getPrixDrawables(price.toInt())
-            if (drawables.isNotEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(6.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    drawables.forEachIndexed { index, res ->
-                        Image(
-                            painter = painterResource(id = res),
-                            contentDescription = null,
+            if (isSelected) {
+                val price = parentProduct?.clientPrixVentUnite ?: 0.0
+                val drawables = getPrixDrawables(price.toInt())
+                if (drawables.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(6.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        drawables.forEachIndexed { index, res ->
+                            Image(
+                                painter = painterResource(id = res),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .offset(x = (index * 14).dp, y = (index * 14).dp)
+                            )
+                        }
+                    }
+                } else if (price > 0.0) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(6.dp)
+                            .size(40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "${price.toInt()}دج",
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier
-                                .size(36.dp)
-                                .offset(x = (index * 14).dp, y = (index * 14).dp)
+                                .size(38.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(50)
+                                )
+                                .padding(4.dp),
                         )
                     }
-                }
-            } else if (price > 0.0) {
-                // Palier non standard : affiche un cercle avec le prix
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(6.dp)
-                        .size(40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "${price.toInt()}دج",
-                        fontSize = 8.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier
-                            .size(38.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(50)
-                            )
-                            .padding(4.dp),
-                    )
                 }
             }
         }
