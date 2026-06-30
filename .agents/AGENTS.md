@@ -31,6 +31,7 @@
 
 ## Conventions de Compilation & Déploiement (`build_client`)
 - Pour compiler la version cliente, utilisez le skill global `build_client` (`b_c`, `bc_` ou `b_c_all`).
+- **Compilation sans incrément (famille `b_cv`)** : Si le déclencheur est de type `b_cv` (ex: `b_cv_vendeur`, `b_cv_presenter`, `b_cv_all` ou `b_cv`), conservez la version propre actuelle lue dans `build.gradle.kts`. **N'exécutez pas** l'étape Git `p_v` à la fin du déploiement car la version n'est pas modifiée.
 - **Comportement Ciblé** : Si l'utilisateur cite spécifiquement l'une des applications (ex: `b_c_all`/`AllInOne`, `b_c_host`/`VendeurHost`, `b_c_presenter`/`PresenterScreen`), ne compiler que l'application demandée. Si aucune n'est citée explicitement, compiler séquentiellement les 3 applications.
 - **Format de version propre** : L'incrémentation de version dans [build.gradle.kts](file:///D:/AndroidStudioProjects/ClientJetPack/app/build.gradle.kts) doit incrémenter le troisième chiffre de la version propre (ex: `1.14.0` devient `1.14.1`) dans le format `1.14.1$appSuffix`, sans numéro de build additionnel (.17) ni timestamp (_24.20:22).
 - **Déploiement avec/sans ZIP** :

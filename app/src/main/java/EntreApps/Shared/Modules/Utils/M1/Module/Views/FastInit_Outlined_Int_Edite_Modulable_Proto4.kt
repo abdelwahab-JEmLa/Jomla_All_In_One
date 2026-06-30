@@ -196,9 +196,12 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                 verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 maxItemsInEachRow = 2
             ) {
-                if (on_toggle_presentative != null && is_admin) {
+                val showStar = affiche_buttons_lien_unite_couleur_au_couleut_parent || its_couleur_ac_imgVid_presentative_de_tout_les_couleur
+                if (on_toggle_presentative != null && is_admin && showStar) {
                     Card(
-                        modifier = Modifier.clickable { on_toggle_presentative() },
+                        modifier = Modifier.clickable(enabled = affiche_buttons_lien_unite_couleur_au_couleut_parent) {
+                            on_toggle_presentative()
+                        },
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = if (its_couleur_ac_imgVid_presentative_de_tout_les_couleur) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
