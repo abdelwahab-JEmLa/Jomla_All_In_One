@@ -57,6 +57,7 @@ data class M3CouleurProduitInfos(
         "dernierTimeTampsSynchronisationAvecFireBase" to dernierTimeTampsSynchronisationAvecFireBase,
         "its_in_echantiallants" to its_in_echantiallants,
 
+        "its_couleur_ac_imgVid_presentative_de_tout_les_couleur" to its_couleur_ac_imgVid_presentative_de_tout_les_couleur,
         "its_pour_affiche_au_presenter" to its_pour_affiche_au_presenter,
         "parentProduit_Classement" to parentProduit_Classement,
 

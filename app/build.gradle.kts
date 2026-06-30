@@ -34,7 +34,7 @@ android {
         // Boutique_JeMla_All_In_On_Project
 
         val appSuffix = if (project.hasProperty("appSuffix")) project.property("appSuffix").toString() else ".c_JomLaElectroLivreurGrossist_PresenterScreen"
-        versionName = "1.14.4$appSuffix"
+        versionName = "1.14.5$appSuffix"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"

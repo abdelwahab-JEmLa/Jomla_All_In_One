@@ -9,13 +9,14 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 
 object ProductListFilterLogic {
-    // ── Step 1 ───────────────────────────────────────────────────────────────
     fun filterByDepot(
         list: List<M3CouleurProduitInfos>,
     ): List<M3CouleurProduitInfos> {
         val counts = list.associate { it.keyID to it.count_Don_Depot }
         return list.filter {
-            if (it.c_unite_couleur_de_couleurKey.isNotEmpty()) {
+            if (it.its_couleur_ac_imgVid_presentative_de_tout_les_couleur) {
+                true
+            } else if (it.c_unite_couleur_de_couleurKey.isNotEmpty()) {
                 (counts[it.c_unite_couleur_de_couleurKey] ?: 0) > 0
             } else {
                 it.count_Don_Depot > 0
@@ -23,15 +24,14 @@ object ProductListFilterLogic {
         }
     }
 
-    // ── Step 2 ───────────────────────────────────────────────────────────────
     fun filterByQuery(
         list: List<M3CouleurProduitInfos>,
         query: String,
         productMap: Map<String, M01Produit> = emptyMap(),
     ): List<M3CouleurProduitInfos> {
         val q = query.trim().lowercase()
-        if (q.isEmpty()) return list       // 0 lettres → tout afficher (normal)
-        if (q.length < 3) return emptyList() // 1-2 lettres → rien afficher
+        if (q.isEmpty()) return list
+        if (q.length < 3) return emptyList()
         return list.filter {
             val productNom = productMap[it.parentBProduitInfosKeyID]?.nom?.lowercase() ?: ""
             productNom.contains(q) ||
@@ -42,7 +42,6 @@ object ProductListFilterLogic {
         }
     }
 
-    // ── Step 3 ───────────────────────────────────────────────────────────────
     fun filterByMode(
         list: List<M3CouleurProduitInfos>,
         mode: Filter_Affichage_Mode_Proto,
@@ -77,7 +76,6 @@ object ProductListFilterLogic {
         Vents_Creation,
     }
 
-    // ── Steps 4 & 5 ─────────────────────────────────────────────────────────
     fun groupAndSort(
         sort_Order: Sort_Order = Sort_Order.Produits_Grouped_Par_Categories,
         filteredColors: List<M3CouleurProduitInfos>,
@@ -147,7 +145,6 @@ object ProductListFilterLogic {
         }
     }
 
-    // ── Main entry-point ─────────────────────────────────────────────────────
     fun compute(
         rawColors: List<M3CouleurProduitInfos>?,
         productMap: Map<String, M01Produit>,
@@ -161,8 +158,6 @@ object ProductListFilterLogic {
         classement: Map<String, Int>,
         sort_Order: Sort_Order = Sort_Order.Produits_Grouped_Par_Categories,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
-        // When the user is actively searching in Panie+frères mode, don't restrict the results
-        // to siblings of sold items — let the search query do the filtering instead.
         val skipModeFilter =
             mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres &&
                     query.trim().isNotEmpty()

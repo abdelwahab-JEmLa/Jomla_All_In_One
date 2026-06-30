@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,28 +28,49 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-/** Retourne la liste des drawables à superposer pour un prix donné.
- *  Paliers : 5→[da_5], 10→[da_10], 15→[da_10,da_5], 20→[da_20],
- *  25→[da_20,da_5], 30→[da_20,da_10], 40→[da_20,da_20],
- *  50→[da_50], 60→[da_50,da_10], sinon cercle+texte géré dans le composable. */
 fun getPrixDrawables(price: Int): List<Int> {
+    if (price !in 1..200) {
+        return emptyList()
+    }
+    val da1   = com.example.clientjetpack.R.drawable.da_1
+    val da2   = com.example.clientjetpack.R.drawable.da_2
     val da5   = com.example.clientjetpack.R.drawable.da_5
     val da10  = com.example.clientjetpack.R.drawable.da_10
     val da20  = com.example.clientjetpack.R.drawable.da_20
     val da50  = com.example.clientjetpack.R.drawable.da_50
-    return when (price) {
-        5        -> listOf(da5)
-        10       -> listOf(da10)
-        15       -> listOf(da10, da5)
-        20       -> listOf(da20)
-        25       -> listOf(da20, da5)
-        30       -> listOf(da20, da10)
-        40       -> listOf(da20, da20)
-        50       -> listOf(da50)
-        60       -> listOf(da50, da10)
-        else     -> emptyList()
+    val da100 = com.example.clientjetpack.R.drawable.da_100
+
+    val result = mutableListOf<Int>()
+    var remaining = price
+    while (remaining >= 100) {
+        result.add(da100)
+        remaining -= 100
     }
+    if (remaining >= 50) {
+        result.add(da50)
+        remaining -= 50
+    }
+    while (remaining >= 20) {
+        result.add(da20)
+        remaining -= 20
+    }
+    if (remaining >= 10) {
+        result.add(da10)
+        remaining -= 10
+    }
+    if (remaining >= 5) {
+        result.add(da5)
+        remaining -= 5
+    }
+    while (remaining >= 2) {
+        result.add(da2)
+        remaining -= 2
+    }
+    if (remaining >= 1) {
+        result.add(da1)
+        remaining -= 1
+    }
+    return result
 }
 
 @Composable
@@ -107,12 +128,13 @@ fun ColorImageCard_AppEcranPresntoireJemlaCom(
                         contentAlignment = Alignment.Center
                     ) {
                         drawables.forEachIndexed { index, res ->
+                            val shiftLeft = if (drawables.size >= 2) (drawables.size - 1) * 14 else 0
                             Image(
                                 painter = painterResource(id = res),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(36.dp)
-                                    .offset(x = (index * 14).dp, y = (index * 14).dp)
+                                    .offset(x = (index * 14 - shiftLeft).dp, y = (index * 14).dp)
                             )
                         }
                     }

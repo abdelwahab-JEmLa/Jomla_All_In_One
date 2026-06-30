@@ -102,12 +102,13 @@ fun ColorImageCard_App4(
                             contentAlignment = Alignment.Center
                         ) {
                             drawables.forEachIndexed { index, res ->
+                                val shiftLeft = if (drawables.size >= 2) (drawables.size - 1) * 14 else 0
                                 Image(
                                     painter = painterResource(id = res),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(36.dp)
-                                        .offset(x = (index * 14).dp, y = (index * 14).dp)
+                                        .offset(x = (index * 14 - shiftLeft).dp, y = (index * 14).dp)
                                 )
                             }
                         }

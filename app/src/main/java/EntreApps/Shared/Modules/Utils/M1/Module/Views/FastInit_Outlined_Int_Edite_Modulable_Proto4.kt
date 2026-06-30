@@ -199,7 +199,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                 val showStar = affiche_buttons_lien_unite_couleur_au_couleut_parent || its_couleur_ac_imgVid_presentative_de_tout_les_couleur
                 if (on_toggle_presentative != null && is_admin && showStar) {
                     Card(
-                        modifier = Modifier.clickable(enabled = affiche_buttons_lien_unite_couleur_au_couleut_parent) {
+                        modifier = Modifier.clickable {
                             on_toggle_presentative()
                         },
                         shape = RoundedCornerShape(20.dp),
@@ -261,45 +261,58 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                     }
                 }
 
-                if (au_depot > 0 || affichable_mem_si_zero_depot) {
-                    Card(
-                        modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.Red)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
+                    if (au_depot > 0 || affichable_mem_si_zero_depot) {
+                        Card(
+                            modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.Red)
                         ) {
-                            Icon(imageVector = Icons.Default.Warehouse, contentDescription = "Dépôt", tint = Color.Black, modifier = Modifier.size((iconSize.value * 0.7f).dp))
-                            if (c_unite_couleur_de_couleurKey.isEmpty()) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Icon(imageVector = Icons.Default.Warehouse, contentDescription = "Dépôt", tint = Color.Black, modifier = Modifier.size((iconSize.value * 0.7f).dp))
                                 Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
                             }
                         }
                     }
-                }
 
-                Card(
-                    modifier = Modifier.clickable(enabled = isAvailable) {
-                        when {
-                            start_count == 0 -> {
-                                if (start_au_premier_click_par_add_outlined) isEditMode = true
-                                else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
+                    Card(
+                        modifier = Modifier.clickable(enabled = isAvailable) {
+                            when {
+                                start_count == 0 -> {
+                                    if (start_au_premier_click_par_add_outlined) isEditMode = true
+                                    else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
+                                }
+                                else -> isEditMode = true
                             }
-                            else -> isEditMode = true
-                        }
-                    },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = containerColor)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = containerColor)
                     ) {
-                        icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
-                        Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
+                        Row(
+                            modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
+                            Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
+                        }
+                    }
+                } else if (c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                    Card(
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Text(
+                            text = "🔗 Lié",
+                            modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
+                            style = textStyle,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
@@ -309,42 +322,57 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                 horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (au_depot > 0 || affichable_mem_si_zero_depot) {
-                    Card(
-                        modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.Red)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
+                    if (au_depot > 0 || affichable_mem_si_zero_depot) {
+                        Card(
+                            modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.Red)
                         ) {
-                            Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
+                            Row(
+                                modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
+                            }
                         }
                     }
-                }
 
-                Card(
-                    modifier = Modifier.clickable(enabled = isAvailable) {
-                        when {
-                            start_count == 0 -> {
-                                if (start_au_premier_click_par_add_outlined) isEditMode = true
-                                else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
+                    Card(
+                        modifier = Modifier.clickable(enabled = isAvailable) {
+                            when {
+                                start_count == 0 -> {
+                                    if (start_au_premier_click_par_add_outlined) isEditMode = true
+                                    else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
+                                }
+                                else -> isEditMode = true
                             }
-                            else -> isEditMode = true
-                        }
-                    },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = containerColor)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = containerColor)
                     ) {
-                        icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
-                        Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
+                        Row(
+                            modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
+                            Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
+                        }
+                    }
+                } else if (c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                    Card(
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Text(
+                            text = "🔗 Lié",
+                            modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
+                            style = textStyle,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
