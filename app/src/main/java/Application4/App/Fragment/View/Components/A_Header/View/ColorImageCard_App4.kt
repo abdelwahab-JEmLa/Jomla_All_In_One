@@ -67,7 +67,12 @@ fun ColorImageCard_App4(
             header()
 
             Box(
-                modifier = if (isSelected) {
+                modifier = if (isSelected && relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
+                    // Vidéo : le conteneur s'adapte à la vraie hauteur calculée par ExoPlayer
+                    Modifier.Companion
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                } else if (isSelected) {
                     Modifier.Companion
                         .fillMaxWidth()
                         .aspectRatio(370.dp / 500.dp)

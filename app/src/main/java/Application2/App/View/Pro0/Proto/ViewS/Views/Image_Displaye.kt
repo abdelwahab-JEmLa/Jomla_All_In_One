@@ -4,11 +4,14 @@ import Application2.App.Fragment.ViewModel.ViewModel_MainFragment
 import Application2.App.View.Pro0.Proto.Components.ProduitExpandState
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -27,10 +30,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.decode.GifDecoder
-import coil.request.ImageRequest
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -106,7 +105,8 @@ fun Image_Displaye_app2(
     expandState: ProduitExpandState,
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier,
-    viewModel: ViewModel_MainFragment) {
+    viewModel: ViewModel_MainFragment
+) {
     val qualite = resolveQualite(expandState)
 
     // Get WiFi state to determine if user can interact with images
@@ -127,7 +127,13 @@ fun Image_Displaye_app2(
 
     if (imageFile != null && imageFile.exists()) {
         val completeModifier = modifier
-            .fillMaxSize()
+            .then(
+                if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion && expandState.isExpanded && relative_M3CouleurProduitInfos.keyID == expandState.bigPresenterCouleur.keyID) {
+                    Modifier.fillMaxWidth()
+                } else {
+                    Modifier.fillMaxSize()
+                }
+            )
             .then(
                 if (canInteract) {
                     Modifier.clickable {
@@ -142,6 +148,19 @@ fun Image_Displaye_app2(
             val isMainExpandedColor = expandState.isExpanded && relative_M3CouleurProduitInfos.keyID == expandState.bigPresenterCouleur.keyID
             if (isMainExpandedColor) {
                 val context = LocalContext.current
+                val videoRatio = remember(imageFile) {
+                    try {
+                        MediaMetadataRetriever().use { mmr ->
+                            mmr.setDataSource(imageFile.absolutePath)
+                            val w = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toFloatOrNull() ?: 9f
+                            val h = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toFloatOrNull() ?: 16f
+                            val rotation = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0
+                            if (rotation == 90 || rotation == 270) h / w else w / h
+                        }
+                    } catch (e: Exception) {
+                        9f / 16f
+                    }
+                }
                 val exoPlayer = remember(imageFile) {
                     ExoPlayer.Builder(context).build().apply {
                         setMediaItem(MediaItem.fromUri(Uri.fromFile(imageFile)))
@@ -164,7 +183,7 @@ fun Image_Displaye_app2(
                     update = { view ->
                         view.player = exoPlayer
                     },
-                    modifier = completeModifier
+                    modifier = completeModifier.aspectRatio(videoRatio)
                 )
             } else {
                 // Compact: static first frame + play icon

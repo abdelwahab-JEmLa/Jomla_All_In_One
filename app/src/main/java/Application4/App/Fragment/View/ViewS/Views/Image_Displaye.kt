@@ -8,11 +8,14 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_New
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -114,7 +117,13 @@ fun Image_Displaye(
         }
 
         val completeModifier = modifier
-            .fillMaxSize()
+            .then(
+                if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion && isExpandedProduct && isMainExpandedColor) {
+                    Modifier.fillMaxWidth()
+                } else {
+                    Modifier.fillMaxSize()
+                }
+            )
             .then(
                 Modifier.clickable {
                     val isSameProductExpanded =
@@ -136,8 +145,23 @@ fun Image_Displaye(
         if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
             // ── Vidéo/GIF : expanded vs compact ──────────────────────────────────────
             if (isExpandedProduct && isMainExpandedColor) {
-                // Expanded: play the video presentation using ExoPlayer
+                // Expanded: lecture vidéo ExoPlayer
+                // ── Lit les dimensions réelles du MP4 de façon synchrone ──
                 val context = LocalContext.current
+                val videoRatio = remember(imageFile) {
+                    try {
+                        MediaMetadataRetriever().use { mmr ->
+                            mmr.setDataSource(imageFile.absolutePath)
+                            val w = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toFloatOrNull() ?: 9f
+                            val h = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toFloatOrNull() ?: 16f
+                            val rotation = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0
+                            // Si rotation 90° ou 270° → inverser w/h
+                            if (rotation == 90 || rotation == 270) h / w else w / h
+                        }
+                    } catch (e: Exception) {
+                        9f / 16f // fallback portrait
+                    }
+                }
                 val exoPlayer = remember(imageFile) {
                     ExoPlayer.Builder(context).build().apply {
                         setMediaItem(MediaItem.fromUri(Uri.fromFile(imageFile)))
@@ -147,7 +171,7 @@ fun Image_Displaye(
                         volume = 0f
                     }
                 }
-                DisposableEffect(imageFile) {
+                DisposableEffect(exoPlayer) {
                     onDispose { exoPlayer.release() }
                 }
                 AndroidView(
@@ -157,10 +181,8 @@ fun Image_Displaye(
                             useController = false
                         }
                     },
-                    update = { view ->
-                        view.player = exoPlayer
-                    },
-                    modifier = completeModifier
+                    update = { view -> view.player = exoPlayer },
+                    modifier = completeModifier.aspectRatio(videoRatio)
                 )
             } else {
                 // ── Non-playing thumbnail (either compact, or expanded but not main selected color) ──

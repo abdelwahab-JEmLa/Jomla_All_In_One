@@ -404,6 +404,12 @@ fun Lenceur_Vent_Handler_App4(
                 on_pour_mode_selection_parent_couleur = { on_pour_update_mode_selection_parent_couleur(selectedCouleur) },
                 onPickImage = { imagePickerLauncher.launch("image/*") },
                 onPickVideo = { videoPickerLauncher.launch("video/*") },
+                its_couleur_ac_imgVid_presentative_de_tout_les_couleur = selectedCouleur.its_couleur_ac_imgVid_presentative_de_tout_les_couleur,
+                on_toggle_presentative = {
+                    viewModel.update_m3couleur(
+                        selectedCouleur.copy(its_couleur_ac_imgVid_presentative_de_tout_les_couleur = !selectedCouleur.its_couleur_ac_imgVid_presentative_de_tout_les_couleur)
+                    )
+                },
                 on_set_c_unite_key = { key ->
 
                     val parentColor = mode_selection_parent_couleur

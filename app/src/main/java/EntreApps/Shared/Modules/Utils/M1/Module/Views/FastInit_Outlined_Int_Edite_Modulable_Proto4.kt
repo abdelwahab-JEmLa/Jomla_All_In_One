@@ -127,6 +127,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     on_pour_mode_selection_parent_couleur: () -> Unit = {},
     onPickImage: (() -> Unit)? = null,
     onPickVideo: (() -> Unit)? = null,
+    its_couleur_ac_imgVid_presentative_de_tout_les_couleur: Boolean = false,
+    on_toggle_presentative: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
 
@@ -194,6 +196,23 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                 verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 maxItemsInEachRow = 2
             ) {
+                if (on_toggle_presentative != null && is_admin) {
+                    Card(
+                        modifier = Modifier.clickable { on_toggle_presentative() },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (its_couleur_ac_imgVid_presentative_de_tout_les_couleur) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Text(
+                            text = "⭐",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = textStyle,
+                            fontWeight = FontWeight.Bold,
+                            color = if (its_couleur_ac_imgVid_presentative_de_tout_les_couleur) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
                 if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
                     Card(
                         modifier = Modifier.clickable {

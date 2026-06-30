@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -68,7 +69,11 @@ fun ColorImageCard_AppEcranPresntoireJemlaCom(
         shape = roundedCorners
     ) {
         Box(
-            modifier = if (isSelected) {
+            modifier = if (isSelected && relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            } else if (isSelected) {
                 Modifier
                     .fillMaxWidth()
                     .aspectRatio(370f / 500f)

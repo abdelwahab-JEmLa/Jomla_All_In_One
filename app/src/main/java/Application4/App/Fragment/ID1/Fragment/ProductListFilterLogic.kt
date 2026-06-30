@@ -9,7 +9,6 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 
 object ProductListFilterLogic {
-
     // ── Step 1 ───────────────────────────────────────────────────────────────
     fun filterByDepot(
         list: List<M3CouleurProduitInfos>,
@@ -50,7 +49,7 @@ object ProductListFilterLogic {
         ventCouleurs: List<M10OperationVentCouleur>,
     ): List<M3CouleurProduitInfos> = when (mode) {
         Filter_Affichage_Mode_Proto.Tablette_Produits_Seulement ->
-            list.filter { !it.its_in_echantiallants }
+            list.filter { !it.its_in_echantiallants || it.its_couleur_ac_imgVid_presentative_de_tout_les_couleur }
         Filter_Affichage_Mode_Proto.Echants_Seulement ->
             list.filter { it.its_in_echantiallants }
         Filter_Affichage_Mode_Proto.Tablette_Et_Echants -> list
@@ -69,7 +68,7 @@ object ProductListFilterLogic {
                 .filter { it.keyID in activeColorKeys }
                 .map { it.parentBProduitInfosKeyID }
                 .toSet()
-            list.filter { it.parentBProduitInfosKeyID in activeParentKeys }
+            list.filter { it.parentBProduitInfosKeyID in activeParentKeys || it.its_couleur_ac_imgVid_presentative_de_tout_les_couleur }
         }
     }
 

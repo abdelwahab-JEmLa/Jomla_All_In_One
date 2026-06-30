@@ -28,6 +28,8 @@ data class M3CouleurProduitInfos(
 
     val nomCouleurStrSiSonImageDispo: String = "",
 
+    var its_couleur_ac_imgVid_presentative_de_tout_les_couleur: Boolean = false,
+
     //-------------------------------Filters---------------------------------------------------------------------------------------------------------------------------------
     var its_pour_affiche_au_presenter: Boolean = false,
     var its_in_echantiallants: Boolean = false,
