@@ -13,9 +13,20 @@ object ProductListFilterLogic {
         list: List<M3CouleurProduitInfos>,
     ): List<M3CouleurProduitInfos> {
         val counts = list.associate { it.keyID to it.count_Don_Depot }
+        val productHasStock = list.groupBy { it.parentBProduitInfosKeyID }.mapValues { (_, productColors) ->
+            productColors.any { color ->
+                !color.its_couleur_ac_imgVid_presentative_de_tout_les_couleur && (
+                    if (color.c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                        (counts[color.c_unite_couleur_de_couleurKey] ?: 0) > 0
+                    } else {
+                        color.count_Don_Depot > 0
+                    }
+                )
+            }
+        }
         return list.filter {
             if (it.its_couleur_ac_imgVid_presentative_de_tout_les_couleur) {
-                true
+                productHasStock[it.parentBProduitInfosKeyID] == true
             } else if (it.c_unite_couleur_de_couleurKey.isNotEmpty()) {
                 (counts[it.c_unite_couleur_de_couleurKey] ?: 0) > 0
             } else {
@@ -67,7 +78,7 @@ object ProductListFilterLogic {
                 .filter { it.keyID in activeColorKeys }
                 .map { it.parentBProduitInfosKeyID }
                 .toSet()
-            list.filter { it.parentBProduitInfosKeyID in activeParentKeys || it.its_couleur_ac_imgVid_presentative_de_tout_les_couleur }
+            list.filter { it.parentBProduitInfosKeyID in activeParentKeys }
         }
     }
 
@@ -136,8 +147,21 @@ object ProductListFilterLogic {
             return list
         }
         val counts = list.associate { it.keyID to it.count_Don_Depot }
+        val productHasStock = list.groupBy { it.parentBProduitInfosKeyID }.mapValues { (_, productColors) ->
+            productColors.any { color ->
+                !color.its_couleur_ac_imgVid_presentative_de_tout_les_couleur && (
+                    if (color.c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                        (counts[color.c_unite_couleur_de_couleurKey] ?: 0) > 0
+                    } else {
+                        color.count_Don_Depot > 0
+                    }
+                )
+            }
+        }
         return list.filter {
-            if (it.c_unite_couleur_de_couleurKey.isNotEmpty()) {
+            if (it.its_couleur_ac_imgVid_presentative_de_tout_les_couleur) {
+                productHasStock[it.parentBProduitInfosKeyID] == true
+            } else if (it.c_unite_couleur_de_couleurKey.isNotEmpty()) {
                 (counts[it.c_unite_couleur_de_couleurKey] ?: 0) > 0
             } else {
                 true
