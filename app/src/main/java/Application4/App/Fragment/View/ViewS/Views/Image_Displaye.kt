@@ -100,7 +100,6 @@ fun Image_Displaye(
                 "${relative_M3CouleurProduitInfos.nomImageFichieSansEtansion}.${relative_M3CouleurProduitInfos.extensionDisponible}"
             File(baseDir, fileName)
         } else {
-            // Fallback: old-proto naming → "<parentBProduitOldID>_<indexCouleurDansAncienProto>.<ext>"
             val oldId    = relative_M3CouleurProduitInfos.parentBProduitOldID
             val colorIdx = relative_M3CouleurProduitInfos.indexCouleurDansAncienProto
             if (oldId > 0) {
@@ -150,10 +149,7 @@ fun Image_Displaye(
             )
 
         if (relative_M3CouleurProduitInfos.il_a_une_video_presentaion) {
-            // ── Vidéo/GIF : expanded vs compact ──────────────────────────────────────
             if (isExpandedProduct && isMainExpandedColor) {
-                // Expanded: lecture vidéo ExoPlayer
-                // ── Lit les dimensions réelles du MP4 de façon synchrone ──
                 val context = LocalContext.current
                 val videoRatio = remember(imageFile) {
                     try {
@@ -162,11 +158,10 @@ fun Image_Displaye(
                             val w = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toFloatOrNull() ?: 9f
                             val h = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toFloatOrNull() ?: 16f
                             val rotation = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0
-                            // Si rotation 90° ou 270° → inverser w/h
                             if (rotation == 90 || rotation == 270) h / w else w / h
                         }
                     } catch (e: Exception) {
-                        9f / 16f // fallback portrait
+                        9f / 16f
                     }
                 }
                 val exoPlayer = remember(imageFile) {
@@ -192,7 +187,6 @@ fun Image_Displaye(
                     modifier = completeModifier.aspectRatio(videoRatio)
                 )
             } else {
-                // ── Non-playing thumbnail (either compact, or expanded but not main selected color) ──
                 Box(modifier = completeModifier) {
                     GlideImage(
                         model = imageFile,
@@ -205,7 +199,6 @@ fun Image_Displaye(
                     }
 
                     if (isExpandedProduct) {
-                        // Affiche l'icône play au top end petite
                         Box(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
@@ -221,7 +214,6 @@ fun Image_Displaye(
                             )
                         }
                     } else {
-                        // Compact : grand icône play au centre
                         Box(
                             modifier = Modifier
                                 .align(Alignment.Center)
@@ -239,7 +231,6 @@ fun Image_Displaye(
                 }
             }
         } else {
-            // ── Image statique → Glide uniquement ────────────────────────────
             GlideImage(
                 model = imageFile,
                 contentDescription = relative_M3CouleurProduitInfos.nomCouleurStrSiSonImageDispo
@@ -269,9 +260,7 @@ fun Image_Displaye(
         }
     }
 }
-  //<--
-  //TODO(1): consiz_
-/** Images statiques : animation supprimée, priorité et qualité selon pourcentage. */
+
 private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     couleur: M3CouleurProduitInfos,
     qualite: pourcentage
@@ -303,11 +292,9 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     })
     .skipMemoryCache(qualite == pourcentage.min_possible)
 
-/** For animated GIFs in expanded mode: allow looping animation, full quality. */
 private fun RequestBuilder<Drawable>.applyAnimatedGifOptions(
     couleur: M3CouleurProduitInfos
 ) = this
-    // Do NOT call dontAnimate() here — animation must run
     .diskCacheStrategy(DiskCacheStrategy.DATA)
     .priority(Priority.HIGH)
     .signature(ObjectKey("${couleur.keyID}_gif_${couleur.dernierTimeTampsSynchronisationAvecFireBase}"))
