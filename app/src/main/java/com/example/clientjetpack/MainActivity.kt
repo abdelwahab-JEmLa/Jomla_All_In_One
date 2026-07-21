@@ -60,7 +60,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✅ startKoin appelé UNE SEULE FOIS ici, avant setContent
+        val config = org.osmdroid.config.Configuration.getInstance()
+        config.userAgentValue = "ClientJetPack/1.0 (abdelwahab.jomla@gmail.com)"
+        config.load(this, getSharedPreferences("osmdroid", MODE_PRIVATE))
+
         startKoin {
             androidLogger()
             androidContext(this@MainActivity)

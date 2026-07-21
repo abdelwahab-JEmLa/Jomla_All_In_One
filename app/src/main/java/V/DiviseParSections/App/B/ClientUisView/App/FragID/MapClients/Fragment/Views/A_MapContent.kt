@@ -79,7 +79,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.CARTO_DB_VOYAGER
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -101,7 +101,13 @@ fun MapContent(
     val scope = rememberCoroutineScope()
     val defaultZoom = 18.2
     val currentZoom by remember { mutableDoubleStateOf(defaultZoom) }
-    val mapView = remember { MapView(context) }
+    val mapView = remember {
+        val config = Configuration.getInstance()
+        config.userAgentValue = "ClientJetPack/1.0 (abdelwahab.jomla@gmail.com)"
+        config.load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
+        config.expirationOverrideDuration = 7 * 24 * 60 * 60 * 1000L
+        MapView(context)
+    }
     val showMarkerDetails by remember { mutableStateOf(true) }
 
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
@@ -138,9 +144,11 @@ fun MapContent(
     }
 
     DisposableEffect(context) {
-        Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
-        mapView.setTileSource(TileSourceFactory.MAPNIK)
+        mapView.setTileSource(CARTO_DB_VOYAGER)
         mapView.setMultiTouchControls(true)
+        val copyright = org.osmdroid.views.overlay.CopyrightOverlay(context)
+        copyright.setTextSize(10)
+        mapView.overlays.add(0, copyright)
 
         val scrollListener = object : MapListener {
             override fun onScroll(event: ScrollEvent?): Boolean {

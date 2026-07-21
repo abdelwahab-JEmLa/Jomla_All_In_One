@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.MapSource
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.changeMapSource
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.AddMarkerButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LabelsButton
@@ -27,8 +29,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Fireplace
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -183,7 +188,9 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                 color = Color.White
                             )
                         }
-                    }
+                    }      //<--
+
+                    MapSourceButton(mapView = mapView, showLabels = showLabels)
 
                     ControlButton(
                         onClick = {
@@ -371,6 +378,7 @@ fun ControlButton(
                     Icon(icon, contentDescription)
                 }
             }
+
             is LottieJsonGetterR_Raw_Icons -> {
                 Box(
                     modifier = Modifier
@@ -406,6 +414,118 @@ fun ControlButton(
                     .padding(4.dp),
                 color = Color.White
             )
+        }
+    }
+}
+
+@Composable
+fun MapSourceButton(mapView: MapView, showLabels: Boolean) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            FloatingActionButton(
+                onClick = { expanded = true },
+                modifier = Modifier.size(40.dp),
+                containerColor = Color(0xFF4CAF50)
+            ) {
+                Icon(Icons.Filled.Map, "Change Map Source")
+            }
+
+            if (showLabels) {
+                Text(
+                    "Map Source",
+                    modifier = Modifier
+                        .background(Color(0xFF4CAF50))
+                        .padding(4.dp),
+                    color = Color.White
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("OpenTopoMap") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.TOPO)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("OSM Humanitarian (HOT)") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.OSM_HOT)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("CartoDB Voyager (Street)") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.VOYAGER)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Esri Satellite") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.SATELLITE)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("OpenStreetMap Standard") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.OSM)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("CartoDB Dark Matter") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.DARK)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Wikimedia Maps") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.WIKIMEDIA)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("USGS Imagery Topo") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.USGS)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("CartoDB Positron (Light)") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.POSITRON)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Esri World Street Map") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.ESRI_STREET)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Esri World Topo Map") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.ESRI_TOPO)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }
