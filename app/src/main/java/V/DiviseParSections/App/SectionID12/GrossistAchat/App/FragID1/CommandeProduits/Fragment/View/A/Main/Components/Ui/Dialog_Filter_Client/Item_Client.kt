@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_Client
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,6 +41,8 @@ import org.koin.compose.koinInject
 data class ClientPurchaseInfo(
     val uniqueProducts: Int,
     val totalQuantity: Int,
+    val cartonQuantity: Int,
+    val nonCartonQuantity: Int,
     val totalSalesValue: Double,
     val deliveredOperations: List<M10OperationVentCouleur>
 )
@@ -92,6 +94,14 @@ fun Item_Client(
             it.parent_M8BonVent_KeyId in clientBonVentIds
         }
 
+        val allProduitsMap = viewModel.aCentralFacade.repositorysMainGetter.repo1Produit.datasValue.associateBy { it.keyID }
+        val (cartonOps, nonCartonOps) = clientVentOperations.partition { vent ->
+            val produit = allProduitsMap[vent.parent_M1Produit_KeyId]
+            produit?.its_Carton == true || vent.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+        }
+        val cartonQuantity = cartonOps.map { it.parent_M1Produit_KeyId }.toSet().size
+        val nonCartonQuantity = nonCartonOps.map { it.parent_M1Produit_KeyId }.toSet().size
+
         val uniqueProducts = clientVentOperations.map { it.parent_M1Produit_KeyId }.toSet().size
         val totalQuantity = clientVentOperations.sumOf { it.quantity }
 
@@ -110,6 +120,8 @@ fun Item_Client(
         ClientPurchaseInfo(
             uniqueProducts = uniqueProducts,
             totalQuantity = totalQuantity,
+            cartonQuantity = cartonQuantity,
+            nonCartonQuantity = nonCartonQuantity,
             totalSalesValue = totalSalesValue,
             deliveredOperations = deliveredOperations
         )
@@ -180,8 +192,20 @@ fun Item_Client(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                val summaryQuantityText = buildString {
+                    append("${clientPurchaseInfo.uniqueProducts} produits")
+                    if (clientPurchaseInfo.cartonQuantity > 0 || clientPurchaseInfo.nonCartonQuantity > 0) {
+                        append(" • ")
+                        val details = mutableListOf<String>()
+                        if (clientPurchaseInfo.cartonQuantity > 0) details.add("${clientPurchaseInfo.cartonQuantity} C")
+                        if (clientPurchaseInfo.nonCartonQuantity > 0) details.add("${clientPurchaseInfo.nonCartonQuantity} P")
+                        append(details.joinToString(" + "))
+                    } else {
+                        append(" • ${clientPurchaseInfo.totalQuantity} articles")
+                    }
+                }
                 Text(
-                    text = "${clientPurchaseInfo.uniqueProducts} produits • ${clientPurchaseInfo.totalQuantity} articles",
+                    text = summaryQuantityText,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,

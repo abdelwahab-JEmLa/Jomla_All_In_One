@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -105,6 +106,7 @@ fun PressistatntMainActivityButtons_App4(
         Filter_Affichage_Mode_Proto.Tablette_Et_Echants -> "Tous les produits"
         Filter_Affichage_Mode_Proto.Panie -> "Panier"
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> "Panier + frères"
+        Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent -> "Ventes récentes"
     }
 
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
@@ -127,6 +129,26 @@ fun PressistatntMainActivityButtons_App4(
             listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state?.let { ops ->
                 activeDatas.activeOnVent_M8BonVent?.benifice(ops, tariffs)
             }
+        }
+    }
+
+    val activeOnVent_M8BonVent_carton_and_non_carton_counts by remember(
+        listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
+        activeDatas.list_M1Produit
+    ) {
+        derivedStateOf {
+            val ops = listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                ?.filter { it.etateDelivery == EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur.EtateDelivery.Trouve }
+                ?: return@derivedStateOf null
+            val productsMap = (activeDatas.list_M1Produit ?: emptyList()).associateBy { it.keyID }
+            val (cartonOps, nonCartonOps) = ops.partition { vent ->
+                val produit = productsMap[vent.parent_M1Produit_KeyId]
+                produit?.its_Carton == true || vent.setIN_Vent_Its_Quantity_Represent == EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+            }
+            val cartonProductsCount = cartonOps.map { it.parent_M1Produit_KeyId }.toSet().size
+            val nonCartonProductsCount = nonCartonOps.map { it.parent_M1Produit_KeyId }.toSet().size
+            val totalProductsCount = ops.map { it.parent_M1Produit_KeyId }.toSet().size
+            Triple(totalProductsCount, cartonProductsCount, nonCartonProductsCount)
         }
     }
 
@@ -327,6 +349,38 @@ fun PressistatntMainActivityButtons_App4(
                         }
                     }
                 }
+
+                activeOnVent_M8BonVent_carton_and_non_carton_counts?.let { (prods, cartons, nonCartons) ->
+                    if (prods > 0) {
+                        val textDisplay = buildString {
+                            if (cartons > 0 && nonCartons > 0) {
+                                append("%d C + %d P".format(cartons, nonCartons))
+                            } else if (cartons > 0) {
+                                append("%d C".format(cartons))
+                            } else if (nonCartons > 0) {
+                                append("%d P".format(nonCartons))
+                            } else {
+                                append("%d P".format(prods))
+                            }
+                        }
+                        FloatingActionButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .widthIn(min = 56.dp)
+                                .height(40.dp),
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text(
+                                text = textDisplay,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
+                        }
+                    }
+                }
             }
 
             Row(
@@ -378,6 +432,15 @@ fun PressistatntMainActivityButtons_App4(
                                 isSelected = currentMode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres,
                                 onClick = {
                                     setMode(Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres)
+                                    showDropdown = false
+                                }
+                            )
+                            ModeMenuItem(
+                                label = "Ventes récentes",
+                                icon = Icons.Default.Star,
+                                isSelected = currentMode == Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent,
+                                onClick = {
+                                    setMode(Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent)
                                     showDropdown = false
                                 }
                             )

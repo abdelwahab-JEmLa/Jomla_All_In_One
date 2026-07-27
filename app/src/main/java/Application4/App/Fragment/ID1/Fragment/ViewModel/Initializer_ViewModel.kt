@@ -176,7 +176,8 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
             .let {
                 val mode = AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto
                 if (mode == Filter_Affichage_Mode_Proto.Panie ||
-                    mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
+                    mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres ||
+                    mode == Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent
                 ) it
                 else ProductListFilterLogic.filterByDepot(it)
             }

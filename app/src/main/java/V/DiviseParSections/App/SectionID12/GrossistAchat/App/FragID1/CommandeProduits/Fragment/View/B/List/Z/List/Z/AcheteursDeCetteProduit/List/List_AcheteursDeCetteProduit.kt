@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List
 
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.View.Parent_Dispo_Vent_StateFull
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.background
@@ -126,7 +126,8 @@ fun List_AcheteursDeCetteProduit(
                                         val size_vents_pour_bon = repo10OperationVentCouleur.datasValue.filter { ventOperation ->
                                             val produitForThisVent = repositorysMainGetter.find_M1Produit_ByKeyID(ventOperation.parent_M1Produit_KeyId)
                                             ventOperation.parent_M8BonVent_KeyId == relative_M10Vent.parent_M8BonVent_KeyId &&
-                                                    produitForThisVent?.its_Carton != true  // Exclude carton products
+                                                    produitForThisVent?.its_Carton != true &&
+                                                    ventOperation.setIN_Vent_Its_Quantity_Represent != M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
                                         }.size
 
                                         when (relative_M10Vent.its_Linked_To_Autre_Vent_Si_NonDispo) {

@@ -15,4 +15,7 @@ enum class Filter_Affichage_Mode_Proto(val mais_sort_order : ProductListFilterLo
     Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres(ProductListFilterLogic.Sort_Order.Vents_Creation),
 
     Panie(ProductListFilterLogic.Sort_Order.Vents_Creation),
+
+    /** Affiche uniquement les couleurs qui ont une vente de moins d'un mois. */
+    Panie_Couleurs_Ac_Vent_Recent(ProductListFilterLogic.Sort_Order.Vents_Creation),
 }

@@ -80,6 +80,15 @@ object ProductListFilterLogic {
                 .toSet()
             list.filter { it.parentBProduitInfosKeyID in activeParentKeys }
         }
+        Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent -> {
+            val unMoisEnMillis = 30L * 24 * 60 * 60 * 1000
+            val limiteTimestamp = System.currentTimeMillis() - unMoisEnMillis
+            val recentColorKeys = ventCouleurs
+                .filter { it.creationTimestamps >= limiteTimestamp }
+                .map { it.parent_M3CouleurProduit_KeyID }
+                .toSet()
+            list.filter { it.keyID in recentColorKeys }
+        }
     }
 
     enum class Sort_Order {
@@ -116,25 +125,42 @@ object ProductListFilterLogic {
                 val categoryMap  = categories.associateBy { it.id }
                 val catalogueMap = catalogues.associateBy { it.id }
                 pairs.sortedWith(
-                    compareBy(
-                        { (product, _) ->
-                            val cat = categoryMap[product.idParentCategorie]
-                            catalogueMap[cat?.catalogueParentId]?.position ?: Int.MAX_VALUE
-                        },
-                        { (product, _) ->
-                            categoryMap[product.idParentCategorie]?.positionDouble ?: Double.MAX_VALUE
-                        },
-                        { (product, _) -> classement[product.keyID] ?: Int.MAX_VALUE }
-                    )
+                    compareByDescending<Pair<M01Produit, List<M3CouleurProduitInfos>>> { (product, _) ->
+                        product.its_Carton
+                    }.thenByDescending { (product, _) ->
+                        product.quantite_Boit_Par_Carton > 1
+                    }.thenBy { (product, _) ->
+                        val cat = categoryMap[product.idParentCategorie]
+                        catalogueMap[cat?.catalogueParentId]?.position ?: Int.MAX_VALUE
+                    }.thenBy { (product, _) ->
+                        categoryMap[product.idParentCategorie]?.positionDouble ?: Double.MAX_VALUE
+                    }.thenBy { (product, _) ->
+                        classement[product.keyID] ?: Int.MAX_VALUE
+                    }
                 )
             }
             Sort_Order.Vents_Creation -> {
                 val latestVentTimestampByColorKey = ventCouleurs
                     .groupBy { it.parent_M3CouleurProduit_KeyID }
                     .mapValues { (_, vents) -> vents.maxOf { it.creationTimestamps } }
-                pairs.sortedByDescending { (_, colors) ->
-                    colors.maxOfOrNull { latestVentTimestampByColorKey[it.keyID] ?: 0L } ?: 0L
-                }
+                val categoryMap  = categories.associateBy { it.id }
+                val catalogueMap = catalogues.associateBy { it.id }
+                pairs.sortedWith(
+                    compareByDescending<Pair<M01Produit, List<M3CouleurProduitInfos>>> { (product, _) ->
+                        product.its_Carton
+                    }.thenByDescending { (product, _) ->
+                        product.quantite_Boit_Par_Carton > 1
+                    }.thenBy { (product, _) ->
+                        val cat = categoryMap[product.idParentCategorie]
+                        catalogueMap[cat?.catalogueParentId]?.position ?: Int.MAX_VALUE
+                    }.thenBy { (product, _) ->
+                        categoryMap[product.idParentCategorie]?.positionDouble ?: Double.MAX_VALUE
+                    }.thenBy { (product, _) ->
+                        classement[product.keyID] ?: Int.MAX_VALUE
+                    }.thenByDescending { (_, colors) ->
+                        colors.maxOfOrNull { latestVentTimestampByColorKey[it.keyID] ?: 0L } ?: 0L
+                    }
+                )
             }
         }
     }
