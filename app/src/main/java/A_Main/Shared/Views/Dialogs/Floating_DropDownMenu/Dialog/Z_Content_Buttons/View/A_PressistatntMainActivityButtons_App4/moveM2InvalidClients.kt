@@ -61,6 +61,7 @@ private fun haversineMeters(lat1: Double, lng1: Double, lat2: Double, lng2: Doub
 }
 fun moveM2InvalidClients(
     repositorysMainGetter: RepositorysMainGetter,
+    nom_contains_a_evite_de_delete_leur_oeprations: String = "",
     onProgress: (Float) -> Unit = {},
 ) {
     val clientsWithProtectedBonVent: Set<String> = repositorysMainGetter.repo8BonVent.datasValue
@@ -68,8 +69,14 @@ fun moveM2InvalidClients(
         .map { it.parent_M2Client_KeyID }
         .toSet()
 
+    val protectedTerms = nom_contains_a_evite_de_delete_leur_oeprations
+        .split(",")
+        .map { it.trim().lowercase() }
+        .filter { it.isNotEmpty() }
+
     val toMove = repositorysMainGetter.repo2Client.datasValue.filter { client ->
         if (client.keyID in clientsWithProtectedBonVent) return@filter false
+        if (protectedTerms.any { term -> client.nom.lowercase().contains(term) }) return@filter false
         invalidM2ClientPredicate(client.keyID, client.numTelephone, client.latitude, client.longitude)
     }
     if (toMove.isEmpty()) { onProgress(1f); return }

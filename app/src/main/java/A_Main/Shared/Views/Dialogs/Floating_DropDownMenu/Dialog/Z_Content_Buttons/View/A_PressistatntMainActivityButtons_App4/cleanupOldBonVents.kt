@@ -15,6 +15,7 @@ fun cleanupOldBonVents_Np(
     repo8BonVent: Repo8BonVent,
     bonVents: List<M8BonVent>,
     on_vent_key: String,
+    nom_contains_a_evite_de_delete_leur_oeprations: String = "",
     onDone: () -> Unit = {},
 ) {
     val specialClientKeyIDs = AbdelwahabJomla_Client_Speciale.entries
@@ -30,14 +31,18 @@ fun cleanupOldBonVents_Np(
         .toSet()
     Log.d(TAG, "lastBonVentKeyPerClient count=${lastBonVentKeyPerClient.size}")
 
+    val protectedTerms = nom_contains_a_evite_de_delete_leur_oeprations
+        .split(",")
+        .map { it.trim().lowercase() }
+        .filter { it.isNotEmpty() }
+
     val bonVentsToRemove = bonVents.filter { bonVent ->
-        // Keep any bon vent whose state is marked nonDeletable (Credit, Versemment, Cette_Transaction_Type_Est_Credit, Demande_Versemet, …)
         if (bonVent.etateActuellementEst.nonDeletable) return@filter false
         if (bonVent.keyID == on_vent_key) return@filter false
-        // Always keep the last bon vent for each client
         if (bonVent.keyID in lastBonVentKeyPerClient) return@filter false
         val isSpecialClient = bonVent.parent_M2Client_KeyID in specialClientKeyIDs ||
-                bonVent.parent_M2Client_DebugInfos.contains("abdelwahab", ignoreCase = true)
+                bonVent.parent_M2Client_DebugInfos.contains("abdelwahab", ignoreCase = true) ||
+                protectedTerms.any { term -> bonVent.parent_M2Client_DebugInfos.lowercase().contains(term) }
         !isSpecialClient
     }
 

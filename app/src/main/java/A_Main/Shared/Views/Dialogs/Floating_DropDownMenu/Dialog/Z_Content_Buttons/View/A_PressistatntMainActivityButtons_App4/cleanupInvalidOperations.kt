@@ -15,6 +15,7 @@ private const val TAG = "CleanupInvalidOps"
 fun cleanupInvalidOperations_Np(
     repo10OperationVentCouleur: Repo10OperationVentCouleur,
     on_vent_key: String,
+    nom_contains_a_evite_de_delete_leur_oeprations: String = "",
     onDone: () -> Unit = {},
 ) {
     repo10OperationVentCouleur.repoScope.launch {
@@ -26,10 +27,16 @@ fun cleanupInvalidOperations_Np(
                 .toSet()
             Log.d(TAG, "specialClientKeyIDs count=${specialClientKeyIDs.size}: $specialClientKeyIDs")
 
+            val protectedTerms = nom_contains_a_evite_de_delete_leur_oeprations
+                .split(",")
+                .map { it.trim().lowercase() }
+                .filter { it.isNotEmpty() }
+
             val operationsToDelete = repo10OperationVentCouleur.datasValue.filter { operation ->
                 if (operation.parent_M8BonVent_KeyId == on_vent_key) return@filter false
                 val isSpecialClient = operation.parent_M2Client_KeyID in specialClientKeyIDs ||
-                        operation.parentClientName == "abdelwahab"
+                        operation.parentClientName == "abdelwahab" ||
+                        protectedTerms.any { term -> operation.parentClientName.lowercase().contains(term) }
                 !isSpecialClient
             }
             Log.d(TAG, "operationsToDelete count=${operationsToDelete.size}")

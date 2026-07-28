@@ -30,6 +30,7 @@ data class M09AppCompt(
     var credit_fait: Double = 0.0,
 
     var nom: String = "",
+    var nom_contains_a_evite_de_delete_leur_oeprations: String = "",
     var autres_Noms_SepareParComma: String = "",
 
     var deviceModelNom: String = Build.MODEL,
@@ -143,6 +144,7 @@ data class M09AppCompt(
         "mode_edite_dispo" to mode_edite_dispo,
         "credit_fait" to credit_fait,
         "nom" to nom,
+        "nom_contains_a_evite_de_delete_leur_oeprations" to nom_contains_a_evite_de_delete_leur_oeprations,
         "autres_Noms_SepareParComma" to autres_Noms_SepareParComma,
         "deviceModelNom" to deviceModelNom,
         "deviceModelId" to deviceModelId,
