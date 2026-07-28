@@ -74,6 +74,7 @@ fun MainLazyList_App2(
                 catalogues = uiState.list_M21CataloguesCategorie,
                 echantillantsPurchaseOrder = emptyList(),
                 classement = classement,
+                prioritize_cartons = false,
             )
         }
     }

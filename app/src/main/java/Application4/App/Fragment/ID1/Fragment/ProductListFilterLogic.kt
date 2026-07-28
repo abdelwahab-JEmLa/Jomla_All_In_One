@@ -106,6 +106,7 @@ object ProductListFilterLogic {
         ventCouleurs: List<M10OperationVentCouleur> = emptyList(),
         categories: List<M16CategorieProduit> = emptyList(),
         catalogues: List<M21CataloguesCategorie> = emptyList(),
+        prioritize_cartons: Boolean = true,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
         val pairs = filteredColors
             .groupBy { it.parentBProduitInfosKeyID }
@@ -120,22 +121,31 @@ object ProductListFilterLogic {
                 product to sortedColors
             }
 
+        val prioritizeCartons = prioritize_cartons && mode != Filter_Affichage_Mode_Proto.Tablette_Et_Echants
+
         return when (sort_Order) {
             Sort_Order.Produits_Grouped_Par_Categories -> {
                 val categoryMap  = categories.associateBy { it.id }
                 val catalogueMap = catalogues.associateBy { it.id }
-                pairs.sortedWith(
+                val baseComparator = if (prioritizeCartons) {
                     compareByDescending<Pair<M01Produit, List<M3CouleurProduitInfos>>> { (product, _) ->
                         product.its_Carton
                     }.thenByDescending { (product, _) ->
                         product.quantite_Boit_Par_Carton > 1
-                    }.thenBy { (product, _) ->
+                    }
+                } else {
+                    compareBy<Pair<M01Produit, List<M3CouleurProduitInfos>>> { 0 }
+                }
+                pairs.sortedWith(
+                    baseComparator.thenBy { (product, _) ->
                         val cat = categoryMap[product.idParentCategorie]
                         catalogueMap[cat?.catalogueParentId]?.position ?: Int.MAX_VALUE
                     }.thenBy { (product, _) ->
                         categoryMap[product.idParentCategorie]?.positionDouble ?: Double.MAX_VALUE
-                    }.thenBy { (product, _) ->
-                        classement[product.keyID] ?: Int.MAX_VALUE
+                    }.let { comparator ->
+                        if (prioritize_cartons) comparator.thenBy { (product, _) ->
+                            classement[product.keyID] ?: Int.MAX_VALUE
+                        } else comparator
                     }
                 )
             }
@@ -145,18 +155,25 @@ object ProductListFilterLogic {
                     .mapValues { (_, vents) -> vents.maxOf { it.creationTimestamps } }
                 val categoryMap  = categories.associateBy { it.id }
                 val catalogueMap = catalogues.associateBy { it.id }
-                pairs.sortedWith(
+                val baseComparatorV = if (prioritizeCartons) {
                     compareByDescending<Pair<M01Produit, List<M3CouleurProduitInfos>>> { (product, _) ->
                         product.its_Carton
                     }.thenByDescending { (product, _) ->
                         product.quantite_Boit_Par_Carton > 1
-                    }.thenBy { (product, _) ->
+                    }
+                } else {
+                    compareBy<Pair<M01Produit, List<M3CouleurProduitInfos>>> { 0 }
+                }
+                pairs.sortedWith(
+                    baseComparatorV.thenBy { (product, _) ->
                         val cat = categoryMap[product.idParentCategorie]
                         catalogueMap[cat?.catalogueParentId]?.position ?: Int.MAX_VALUE
                     }.thenBy { (product, _) ->
                         categoryMap[product.idParentCategorie]?.positionDouble ?: Double.MAX_VALUE
-                    }.thenBy { (product, _) ->
-                        classement[product.keyID] ?: Int.MAX_VALUE
+                    }.let { comparator ->
+                        if (prioritize_cartons) comparator.thenBy { (product, _) ->
+                            classement[product.keyID] ?: Int.MAX_VALUE
+                        } else comparator
                     }.thenByDescending { (_, colors) ->
                         colors.maxOfOrNull { latestVentTimestampByColorKey[it.keyID] ?: 0L } ?: 0L
                     }
@@ -207,6 +224,7 @@ object ProductListFilterLogic {
         periode: M14VentPeriode?=null,
         classement: Map<String, Int>,
         sort_Order: Sort_Order = Sort_Order.Produits_Grouped_Par_Categories,
+        prioritize_cartons: Boolean = true,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
         val skipModeFilter =
             mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres &&
@@ -229,6 +247,7 @@ object ProductListFilterLogic {
             ventCouleurs = ventCouleurs,
             categories = categories,
             catalogues = catalogues,
+            prioritize_cartons = prioritize_cartons,
         )
     }
 }

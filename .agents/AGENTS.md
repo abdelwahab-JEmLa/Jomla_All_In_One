@@ -84,3 +84,11 @@
   - **Avoid Raw Primitives**: Do not pass raw primitives (like `Boolean`, `String`, `Int`) directly as parameters of the parent NavHost function. The NavHost's content builder caches destination lambdas, preventing parameter updates from triggering recomposition.
   - **Use Shared State**: Prefer retrieving these values from a shared state container (like `FocusedValuesGetter.active_Central_Values` or shared ViewModels) directly inside the destination screen.
   - **Use Lambda Getters**: If parameters must be passed, wrap them in lambda getters (e.g., `affiche_buttons: () -> Boolean`) to ensure Compose registers the read dependency within the active screen composition.
+
+## App Architecture Routing (App2 vs App4)
+- **App2 (`MainLazyList_App2.kt`)** est **toujours** le `PresenterScreen` (`AppType.JomLaElectroLivreurGrossist_PresenterScreen`). Il ne nécessite jamais de tri cartons-en-premier : toujours passer `prioritize_cartons = false` dans tout appel à `ProductListFilterLogic.compute()` depuis ce fichier.
+- **App4 (`b_List_LazyColumnList_App4.kt`)** est utilisé pour VendeurHost et AllInOne. La détection du compte actif se fait via `M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId`.
+
+## ProductListFilterLogic — Comportement du `classement`
+- Le paramètre `classement` (map `keyID → index`) dans `groupAndSort()` représente l'ordre de la **session en cours**. Il doit être ignoré sur le PresenterScreen pour éviter qu'un classement résiduel de session antérieure ne perturbe l'ordre par groupes de catégories.
+- Quand `prioritize_cartons = false`, le tri final est : **catalogue.position → catégorie.positionDouble uniquement**, sans `.thenBy { classement[...] }`.

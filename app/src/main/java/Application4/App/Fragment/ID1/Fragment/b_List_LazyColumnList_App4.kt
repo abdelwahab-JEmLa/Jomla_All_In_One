@@ -6,6 +6,8 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_New
 import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
+import EntreApps.Shared.Models.Compts
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
@@ -81,6 +83,9 @@ fun Main_LazyColumnList_App4(
         derivedStateOf {
             activeDatas.filter_relode_tiger
 
+            val isPresenterPhone = M00CentralParametresOfAllApps.get_Default()
+                .au_Lence_Set_Compt_Ac_KeyId == Compts.Telephone_de_presentation.keyId
+
             ProductListFilterLogic.compute(
                 rawColors = activeDatas.list_M03CouleurProduitInfos,
                 productMap = activeDatas.list_M1Produit?.associateBy { it.keyID } ?: emptyMap(),
@@ -92,7 +97,8 @@ fun Main_LazyColumnList_App4(
                 echantillantsPurchaseOrder = set_couleursKey_echantilliants_achat,
                 classement = activeDatas.parentProduit_Classement,
                 sort_Order = currentMode.mais_sort_order,
-                periode = activeDatas.active_PeriodVent
+                periode = activeDatas.active_PeriodVent,
+                prioritize_cartons = !isPresenterPhone,
             )
         }
     }
