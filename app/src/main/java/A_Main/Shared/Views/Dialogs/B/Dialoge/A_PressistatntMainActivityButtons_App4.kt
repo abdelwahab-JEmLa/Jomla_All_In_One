@@ -5,10 +5,12 @@ import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Datas
 import A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID8.Action.Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode.Companion.sum_vent_et_benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.benifice
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_vents
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -39,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
@@ -58,6 +62,8 @@ import kotlin.math.roundToInt
 fun PressistatntMainActivityButtons_App4(
     viewModelNewProtoPatterns: A_ViewModel_NewProtoPatterns
 ) {
+    val context = LocalContext.current
+    var depotClickCount by remember { mutableIntStateOf(0) }
     val activeDatas = viewModelNewProtoPatterns.active_Datas
     var sharedPdfPath by remember { mutableStateOf("") }
     var sharedPdfCount by remember { mutableStateOf(0) }
@@ -183,6 +189,27 @@ fun PressistatntMainActivityButtons_App4(
         }
     }
 
+    val totalDepotStockValue by remember(
+        activeDatas.list_M03CouleurProduitInfos,
+        uiState.list_M13TarificationInfos
+    ) {
+        derivedStateOf {
+            val colors = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
+            val tariffs = uiState.list_M13TarificationInfos
+            val purchaseTariffsByProduct = tariffs
+                .filter { it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros && it.prixCurrency != 0.0 }
+                .groupBy { it.parent_M1Produit_KeyId }
+                .mapValues { (_, tList) -> tList.maxByOrNull { it.creationTimestamps }?.prixCurrency ?: 0.0 }
+
+            colors.fold(0.0) { acc, col ->
+                if (col.count_Don_Depot > 0) {
+                    val purchasePrice = purchaseTariffsByProduct[col.parentBProduitInfosKeyID] ?: 0.0
+                    acc + (col.count_Don_Depot * purchasePrice)
+                } else acc
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
@@ -244,6 +271,44 @@ fun PressistatntMainActivityButtons_App4(
 
             Text("Period")
             Row {
+                if (totalDepotStockValue > 0.0) {
+                    FloatingActionButton(
+                        onClick = {
+                            val colors = activeDatas.list_M03CouleurProduitInfos ?: emptyList()
+                            val negativeColors = colors.filter { it.count_Don_Depot < 0 }
+                            if (negativeColors.isEmpty()) {
+                                Toast.makeText(context, "Aucune couleur avec stock négatif à réinitialiser", Toast.LENGTH_SHORT).show()
+                                depotClickCount = 0
+                            } else if (depotClickCount == 0) {
+                                Toast.makeText(context, "Êtes-vous sûr ? Cliquez à nouveau pour réinitialiser ${negativeColors.size} couleur(s) négative(s) à 0", Toast.LENGTH_SHORT).show()
+                                depotClickCount = 1
+                            } else {
+                                negativeColors.forEach { col ->
+                                    viewModelNewProtoPatterns.update_m3couleur(
+                                        col.copy(
+                                            count_Don_Depot = 0,
+                                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                        )
+                                    )
+                                }
+                                Toast.makeText(context, "Réinitialisation terminée : ${negativeColors.size} couleur(s) mises à 0", Toast.LENGTH_SHORT).show()
+                                depotClickCount = 0
+                            }
+                        },
+                        modifier = Modifier
+                            .widthIn(min = 56.dp)
+                            .height(40.dp),
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = RoundedCornerShape(12.dp),
+                    ) {
+                        Text(
+                            text = "dépôt ach: %.0f DA".format(totalDepotStockValue),
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(horizontal = 10.dp)
+                        )
+                    }
+                }
                 m14VentPeriode_sums?.let { periodSums ->
                     if (periodSums.totale_vents > 0.0) {
                         FloatingActionButton(

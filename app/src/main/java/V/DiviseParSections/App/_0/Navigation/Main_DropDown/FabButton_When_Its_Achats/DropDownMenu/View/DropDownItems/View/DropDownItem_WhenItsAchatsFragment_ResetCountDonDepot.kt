@@ -75,12 +75,12 @@ fun DropDownItem_WhenItsAchatsFragment_ResetCountDonDepot(
                 } else {
                     // Second click - execute the reset
                     val allColors = repositorysMainGetter.repo03CouleurProduitInfos.datasValue
-                    val colorsToReset = allColors.filter { it.count_Don_Depot != 0 }
+                    val colorsToReset = allColors.filter { it.count_Don_Depot < 0 }
 
                     if (colorsToReset.isEmpty()) {
                         Toast.makeText(
                             context,
-                            "Aucune couleur à réinitialiser (tous les count_Don_Depot sont déjà à 0)",
+                            "Aucune couleur à réinitialiser (aucun count_Don_Depot < 0)",
                             Toast.LENGTH_SHORT
                         ).show()
                         clickCount = 0

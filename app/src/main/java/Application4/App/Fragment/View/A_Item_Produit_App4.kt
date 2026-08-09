@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View
 
-import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.toastLogIfErr
+import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.Filter_Affichage_Mode_Proto
 import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
@@ -13,6 +13,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.A.View.Expanded_Multi_Couleurs.View.Functions.findMatchingColorIndex
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -32,25 +33,17 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
-import android.net.Uri
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.CoroutineScope
-import java.io.File
-import java.io.FileOutputStream
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
-import kotlinx.coroutines.tasks.await
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalLayoutApi::class)

@@ -37,6 +37,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -427,7 +429,8 @@ fun A_Compact_Header_App4(
                     }
                 )
 
-                InfoCard(
+                val context = LocalContext.current
+                ClickableInfoCard(
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Outbox,
@@ -436,11 +439,18 @@ fun A_Compact_Header_App4(
                             modifier = Modifier.size(iconSize)
                         )
                     },
-                    value = "%.2f".format(prix_achat),
+                    value = "%.2f".format(prix_achat ?: 0.0),
                     label = "شراء",
                     labelTextSize = labelTextSize,
                     valueTextSize = valueTextSize,
-                    itemPadding = itemPadding
+                    itemPadding = itemPadding,
+                    onClick = {
+                        if (prix_achat == null || prix_achat == 0.0) {
+                            Toast.makeText(context, "Attention: Prix d'achat non défini pour ce produit", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Prix d'achat: %.2f DA".format(prix_achat), Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 )
 
                 val totalClient =
