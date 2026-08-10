@@ -281,8 +281,17 @@ fun MapContent(
         }
 
         val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
+        // NB: le mode actif est lu depuis active_Datas.active_M9Compt — la même
+        // source que celle utilisée par But1_OnClickMode et le listener de clic
+        // sur les markers (A_B_MarkersHandler.kt). active_Central_Values.click_On_Marque
+        // n'est jamais mis à jour quand l'utilisateur change de mode, donc
+        // s'appuyer dessus ici faisait rester shouldShowMarkerDialog bloqué sur
+        // false (ou sur un ancien mode) même en mode Standard, empêchant le
+        // dialog client de s'afficher.
+        val currentClickOnMarqueMode = viewModel.active_Datas.active_M9Compt?.click_On_Marque
+            ?: ActiveCentralValues.Click_On_Marque.Standart
         val shouldShowMarkerDialog = (activeOnVentM2ClientInfos != null || markerStatusDialogActiveM2Client != null) &&
-                focusedValuesGetter.active_Central_Values.click_On_Marque != ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
+                currentClickOnMarqueMode != ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients
 
         if (shouldShowMarkerDialog) {
             MarkerStatusDialog(

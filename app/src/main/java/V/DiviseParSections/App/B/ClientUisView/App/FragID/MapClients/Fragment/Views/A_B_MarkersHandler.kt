@@ -178,9 +178,17 @@ fun createAndAddMarker(
             configureMarkerInfoWindow(this, mapView, context, viewModel, m2Client)
         } catch (_: Exception) {
         }
-        val compt = viewModel.active_Datas.active_M9Compt
-        val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
         setOnMarkerClickListener { clickedMarker, _ ->
+            // Relu à chaque clic — et non capturé une seule fois à la création
+            // du marker — car sinon un changement de mode actif après coup
+            // (via But1_OnClickMode, sans recréation complète des markers)
+            // ne prend jamais effet pour ce marker : la closure resterait
+            // bloquée sur l'ancien mode, et par ex. un clic en mode Standard
+            // pourrait toujours déclencher la logique d'un ancien mode
+            // (Ciblage, Call, ...), empêchant le dialog client de s'afficher.
+            val compt = viewModel.active_Datas.active_M9Compt
+            val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
+
             val activeCentralValues = focusedValuesGetter.active_Central_Values
             val actuelle_Ciblage_MaxPosition = activeCentralValues.actuelle_Ciblage_MaxPosition
             val newPosition = actuelle_Ciblage_MaxPosition + 1

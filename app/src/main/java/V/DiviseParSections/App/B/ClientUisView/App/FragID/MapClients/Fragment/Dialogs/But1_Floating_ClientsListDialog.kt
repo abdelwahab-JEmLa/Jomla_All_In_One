@@ -196,10 +196,8 @@ fun But1_Floating_ClientsListDialog(
                                         } finally {
                                             fakeTapEvent.recycle()
                                         }
-                                    } else {
-                                        // Marker not currently rendered (e.g. filtered out
-                                        // of view) — fall back to opening its standard
-                                        // detail dialog directly via the ViewModel.
+                                    } else {                 //<--
+                                        //TODO(1): pk le on click ne affiche pa le dialog client
                                         viewModel.set_M2Client_UiState_In_MarkerStatusDialog(client)
                                     }
                                     onDismiss()
