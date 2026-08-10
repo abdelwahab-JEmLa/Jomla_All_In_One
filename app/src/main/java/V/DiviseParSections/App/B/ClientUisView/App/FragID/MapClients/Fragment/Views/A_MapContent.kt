@@ -318,27 +318,7 @@ fun MapContent(
             )
         }
 
-        // Floating dialog listing clients currently shown on the map, filterable by
-        // search, tapping a row triggers the same marker-click logic as tapping the
-        // marker directly on the map (respecting the active Click_On_Marque mode).
-        if (showClientsListDialog) {
-            // Same clients (mode filter + proximity filter) as what's actually
-            // drawn as markers on the map right now — NOT the full, unfiltered
-            // client database — so the search field filters within what's
-            // visible instead of searching every client that exists.
-            val clientsCurrentlyOnMap = getClientsCurrentlyVisibleOnMap(
-                viewModel = viewModel,
-                currentFilterMode = currentFilterMode,
-                proximityFilterCenter = proximityFilterCenter,
-                proximityFilterRadiusMeters = viewModel.proximite_de_vision_meter.toDouble(),
-            )
-            But1_Floating_ClientsListDialog(
-                mapView = mapView,
-                clients = clientsCurrentlyOnMap,
-                viewModel = viewModel,
-                onDismiss = { showClientsListDialog = false },
-            )
-        }
+
 
         // Phone-entry dialog: shown when Cree_et_envoi_whatsapp_pdf is tapped for a client
         // whose phone number is missing. After the user enters a number the phone is saved
@@ -422,6 +402,22 @@ fun MapContent(
                     icons = Pair(Icons.Default.GpsNotFixed, Icons.Default.GpsFixed),
                     colors = Pair(Color.Red, Color.Green)
                 )
+            )
+        }
+        if (showClientsListDialog) {
+            val clientsCurrentlyOnMap = getClientsCurrentlyVisibleOnMap(
+                viewModel = viewModel,
+                currentFilterMode = currentFilterMode,
+                proximityFilterCenter = proximityFilterCenter,
+                proximityFilterRadiusMeters = viewModel.proximite_de_vision_meter.toDouble(),
+            )
+            But1_Floating_ClientsListDialog(
+                mapView = mapView,
+                clients = clientsCurrentlyOnMap,
+                viewModel = viewModel,
+                fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
+                list_M13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
+                onDismiss = { showClientsListDialog = false },
             )
         }
     }

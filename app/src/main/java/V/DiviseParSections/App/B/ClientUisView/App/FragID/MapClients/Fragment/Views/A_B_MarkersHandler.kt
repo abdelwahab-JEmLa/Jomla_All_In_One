@@ -159,8 +159,6 @@ fun createAndAddMarker(
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
     list_M13TarificationInfos: List<M13TarificationInfos>,
 ) {
-    val repo = viewModel.getter.repo2Client
-
     val marker = Marker(mapView).apply {
         id = m2Client.id.toString()
         position = GeoPoint(
@@ -189,7 +187,52 @@ fun createAndAddMarker(
             val compt = viewModel.active_Datas.active_M9Compt
             val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
 
-            val activeCentralValues = focusedValuesGetter.active_Central_Values
+            performClickOnMarqueAction(
+                context = context,
+                m2Client = m2Client,
+                currentMode = currentMode,
+                viewModel = viewModel,
+                aCentralFacade = aCentralFacade,
+                focusedValuesGetter = focusedValuesGetter,
+                fragmentNavigationHandler = fragmentNavigationHandler,
+                fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
+                list_M13TarificationInfos = list_M13TarificationInfos,
+                marker = clickedMarker,
+                showMarkerDetails = showMarkerDetails,
+            )
+            true
+        }
+    }
+
+    mapView.overlays.add(marker)
+
+    if (showMarkerDetails) {
+        marker.showInfoWindow()
+    }
+}
+
+/**
+ * Runs the action for the currently active Click_On_Marque mode against a
+ * given client — the same dispatch used by the map marker's click listener
+ * (see setOnMarkerClickListener above), extracted so it can also be invoked
+ * from But1_Floating_ClientsListDialog when a row is tapped there. Without
+ * this, tapping a client in the list dialog always ran the Standard-mode
+ * behaviour (open the client dialog) no matter which mode was active.
+ */
+fun performClickOnMarqueAction(
+    context: Context,
+    m2Client: M2Client,
+    currentMode: ActiveCentralValues.Click_On_Marque,
+    viewModel: MapClientsViewModel,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+    fragmentNavigationHandler: FragmentNavigationHandler = aCentralFacade.modulesCentral.fragmentNavigationHandler,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
+    list_M13TarificationInfos: List<M13TarificationInfos>,
+    marker: Marker? = null,
+    showMarkerDetails: Boolean = false,
+) {
+    val activeCentralValues = focusedValuesGetter.active_Central_Values
             val actuelle_Ciblage_MaxPosition = activeCentralValues.actuelle_Ciblage_MaxPosition
             val newPosition = actuelle_Ciblage_MaxPosition + 1
 
@@ -248,16 +291,11 @@ fun createAndAddMarker(
                             ).show()
                         }
                     }
-                    true
                 }
                 ActiveCentralValues.Click_On_Marque.Standart -> {
-                    val clickedMarkerM2Client =
-                        repo.datasValue.find { it.id.toString() == clickedMarker.id }
+                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
 
-                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(clickedMarkerM2Client)
-
-                    if (showMarkerDetails) clickedMarker.showInfoWindow()
-                    true
+                    if (showMarkerDetails) marker?.showInfoWindow()
                 }
 
                 // Add client to targeting list
@@ -269,7 +307,7 @@ fun createAndAddMarker(
                     ) ?: run {
                         Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT)
                             .show()
-                        return@setOnMarkerClickListener true
+                        return
                     }
 
                     aCentralFacade.repositorysMainSetter
@@ -292,7 +330,6 @@ fun createAndAddMarker(
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    true
                 }
 
                 // Direct phone call to client
@@ -346,7 +383,6 @@ fun createAndAddMarker(
                         ).show()
                     }
 
-                    true
                 }
 
                 // Navigate to client using Google Maps
@@ -384,7 +420,6 @@ fun createAndAddMarker(
                         }
                     }
 
-                    true
                 }
 
                 // Mark client as closed/fermé
@@ -396,7 +431,7 @@ fun createAndAddMarker(
                     ) ?: run {
                         Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT)
                             .show()
-                        return@setOnMarkerClickListener true
+                        return
                     }
 
                     aCentralFacade.repositorysMainSetter
@@ -408,7 +443,6 @@ fun createAndAddMarker(
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    true
                 }
 
                 // Mark client command as delivered (livré)
@@ -444,7 +478,6 @@ fun createAndAddMarker(
                         ).show()
                     }
 
-                    true
                 }
 
                 ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> {
@@ -465,10 +498,8 @@ fun createAndAddMarker(
                     // No bon found: fall back to the standard marker dialog (same UX as
                     // Affiche_OnCommand_VentPeriod_Transaction) so the user can still see client info.
                     if (onCommandBon_ventPeriod == null) {
-                        viewModel.set_M2Client_UiState_In_MarkerStatusDialog(
-                            repo.datasValue.find { it.id.toString() == clickedMarker.id }
-                        )
-                        return@setOnMarkerClickListener true
+                        viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
+                        return
                     }
 
                     val phoneNumber = m2Client.numTelephone.trim()
@@ -479,7 +510,7 @@ fun createAndAddMarker(
                         aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
                             .setIN_M9CurrentApp_onVentM8BonVentKey(onCommandBon_ventPeriod)
                         viewModel.set_pendingWhatsAppSend(m2Client)
-                        return@setOnMarkerClickListener true
+                        return
                     }
 
                     // Phone exists: activate the bon then generate + send the PDF.
@@ -531,18 +562,10 @@ fun createAndAddMarker(
                             on_vent_bon = focusedValuesGetter.activeOnVent_M8BonVent
                         )
                     }
-                    true
                 }
             }
-        }
-    }
-
-    mapView.overlays.add(marker)
-
-    if (showMarkerDetails) {
-        marker.showInfoWindow()
-    }
 }
+
 
 fun Marker.title(
     viewModel: MapClientsViewModel,

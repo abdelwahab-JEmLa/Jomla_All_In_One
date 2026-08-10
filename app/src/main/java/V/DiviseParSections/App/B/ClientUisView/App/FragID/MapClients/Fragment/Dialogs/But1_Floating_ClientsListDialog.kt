@@ -1,9 +1,12 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
 
+import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.performClickOnMarqueAction
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.get_sum_Bon_Vents
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -67,6 +70,8 @@ fun But1_Floating_ClientsListDialog(
     mapView: MapView,
     clients: List<M2Client>,
     viewModel: MapClientsViewModel,
+    fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
+    list_M13TarificationInfos: List<M13TarificationInfos>,
     onDismiss: () -> Unit,
 ) {
     var searchQuery by remember { mutableStateOf("") }
@@ -167,8 +172,7 @@ fun But1_Floating_ClientsListDialog(
                                     .size(10.dp)
                                     .background(color = currentMode.couleur, shape = CircleShape),
                             )
-                            Text(      //<--
-                            //TODO(1): pk si je choisi un mode par exmpla apple ca lance stadart
+                            Text(
                                 text = "Mode : ${getModeLabel(currentMode)}",
                                 modifier = Modifier.padding(start = 8.dp),
                                 style = MaterialTheme.typography.bodySmall,
@@ -257,7 +261,18 @@ fun But1_Floating_ClientsListDialog(
                                 lastTransaction = lastTransaction,
                                 getter = viewModel.getter,
                                 onClick = {
-                                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(client)
+                                    // Same dispatch as tapping the client's marker on the map
+                                    // (performClickOnMarqueAction), so the row honours whichever
+                                    // Click_On_Marque mode is active — Call/Navigate/etc. — instead
+                                    // of always opening the Standard client-details dialog.
+                                    performClickOnMarqueAction(
+                                        context = mapView.context,
+                                        m2Client = client,
+                                        currentMode = currentMode,
+                                        viewModel = viewModel,
+                                        fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
+                                        list_M13TarificationInfos = list_M13TarificationInfos,
+                                    )
                                     onDismiss()
                                 },
                             )
@@ -314,12 +329,14 @@ private fun ClientRow(
     onClick: () -> Unit,
 ) {
     // Same idea as the marker title (A_B_MarkersHandler.Marker.title): if the
-    // client has a positive running credit (sum of their bons > 0), show the
-    // date of their last bon so it's visible without opening the marker.
+    // client has a positive running credit (sum of their bons > 0, i.e. their
+    // "new_situation"), show the amount and the date of their last bon so
+    // it's visible without opening the marker.
     val sumBonVents = lastTransaction?.let { get_sum_Bon_Vents(getter, it) }
-    val lastBonDateLabel = if (lastTransaction != null && (sumBonVents ?: 0.0) > 0.0) {
+    val creditLabel = if (lastTransaction != null && (sumBonVents ?: 0.0) > 0.0) {
         val dateHandler = DatesHandler()
-        dateHandler.getDateAndTimString(lastTransaction.creationTimestamps).date
+        val date = dateHandler.getDateAndTimString(lastTransaction.creationTimestamps).date
+        "%.2f DA".format(sumBonVents) + " · $date"
     } else {
         null
     }
@@ -350,10 +367,9 @@ private fun ClientRow(
                     color = Color.Gray,
                 )
             }
-            if (lastBonDateLabel != null) {
-                Text(                //<--
-                //TODO(1): ici affiche le montant de son creedit new_situation
-                    text = "Dernier bon (crédit) : $lastBonDateLabel",
+            if (creditLabel != null) {
+                Text(
+                    text = "Crédit : $creditLabel",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
                 )

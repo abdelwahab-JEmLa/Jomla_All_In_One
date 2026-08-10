@@ -364,7 +364,7 @@ fun CreditItems_Capturable_List(
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = "معاملات الدين (${allBons.size})",
+                        text = " الدين (${allBons.size})",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -379,7 +379,7 @@ fun CreditItems_Capturable_List(
                         ) {
                             Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("التقاط $captureCount الأخيرة", style = MaterialTheme.typography.labelSmall)
+                            Text("$captureCount ", style = MaterialTheme.typography.labelSmall)
                         }
                     }
 
@@ -391,7 +391,7 @@ fun CreditItems_Capturable_List(
                         ) {
                             Icon(Icons.Default.Print, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("Imprimer", style = MaterialTheme.typography.labelSmall)
+                            Text("", style = MaterialTheme.typography.labelSmall)
                         }
                     }
 
