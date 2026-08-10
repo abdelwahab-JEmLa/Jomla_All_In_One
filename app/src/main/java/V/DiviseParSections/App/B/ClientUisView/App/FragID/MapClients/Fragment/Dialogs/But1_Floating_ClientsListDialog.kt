@@ -2,9 +2,11 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.D
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import android.os.SystemClock
-import android.view.MotionEvent
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -31,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 
 /**
  * Floating dialog listing the clients currently displayed on the map (the
@@ -63,6 +67,7 @@ fun But1_Floating_ClientsListDialog(
     onDismiss: () -> Unit,
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    var showPeriodsPanel by remember { mutableStateOf(false) }
 
     val compt = viewModel.active_Datas.active_M9Compt
     val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
@@ -141,6 +146,42 @@ fun But1_Floating_ClientsListDialog(
                     ),
                 )
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "${filteredClients.size} client(s)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                    )
+                    TextButton(onClick = { showPeriodsPanel = !showPeriodsPanel }) {
+                        Icon(
+                            imageVector = Icons.Default.CalendarMonth,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Text(
+                            text = if (showPeriodsPanel) "Masquer les périodes" else "Afficher les périodes",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 4.dp),
+                        )
+                    }
+                }
+
+                AnimatedVisibility(visible = showPeriodsPanel) {
+                    ScreenM14VentPeriod(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 320.dp),
+                        viewModel = ViewModel_M14VentPeriod(viewModel.aCentralFacade),
+                        aCentralFacade = viewModel.aCentralFacade,
+                    )
+                }
+
                 Divider(modifier = Modifier.padding(top = 12.dp))
 
                 if (filteredClients.isEmpty()) {
@@ -169,37 +210,12 @@ fun But1_Floating_ClientsListDialog(
                             ClientRow(
                                 client = client,
                                 currentMode = currentMode,
+                                // Same "dernier bon" the marker/client-info screen shows:
+                                // the client's last transaction, so a New_Situation_Credit
+                                // balance can be surfaced next to the row.
+                                lastTransaction = viewModel.getLastTransaction(client),
                                 onClick = {
-                                    // Find the marker already placed on the map for this
-                                    // client and simulate a tap on it, so the exact same
-                                    // Click_On_Marque logic used by the map (Standard,
-                                    // ADD_Au_Ciblage_Clients, Call, Navigate, ...) runs.
-                                    val marker = mapView.overlays
-                                        .filterIsInstance<Marker>()
-                                        .find { it.id == client.id.toString() }
-                                    if (marker != null) {
-                                        // onSingleTapConfirmed is the exact call osmdroid's own
-                                        // touch dispatch makes on a real tap; it invokes the
-                                        // OnMarkerClickListener registered on the MapView (see
-                                        // A_B_MarkersHandler.kt), which runs the active mode's
-                                        // logic — including showing the Standard-mode dialog.
-                                        val fakeTapEvent = MotionEvent.obtain(
-                                            SystemClock.uptimeMillis(),
-                                            SystemClock.uptimeMillis(),
-                                            MotionEvent.ACTION_UP,
-                                            0f,
-                                            0f,
-                                            0,
-                                        )
-                                        try {
-                                            marker.onSingleTapConfirmed(fakeTapEvent, mapView)
-                                        } finally {
-                                            fakeTapEvent.recycle()
-                                        }
-                                    } else {                 //<--
-                                        //TODO(1): pk le on click ne affiche pa le dialog client
-                                        viewModel.set_M2Client_UiState_In_MarkerStatusDialog(client)
-                                    }
+                                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(client)
                                     onDismiss()
                                 },
                             )
@@ -216,8 +232,19 @@ fun But1_Floating_ClientsListDialog(
 private fun ClientRow(
     client: M2Client,
     currentMode: ActiveCentralValues.Click_On_Marque,
+    lastTransaction: M8BonVent?,
     onClick: () -> Unit,
 ) {
+    // Mirrors Situation_Card_ItemView / the map marker's title: only the
+    // New_Situation_Credit state carries a running balance
+    // (montant_principale_du_type). A client whose balance is settled (0)
+    // doesn't need a badge here — only surface it when there's something
+    // outstanding, positive (still owed) or negative (overpaid).
+    val newSituationBalance = lastTransaction
+        ?.takeIf { it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit }
+        ?.montant_principale_du_type
+        ?.takeIf { it != 0.0 }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -244,6 +271,18 @@ private fun ClientRow(
                     color = Color.Gray,
                 )
             }
+        }
+        if (newSituationBalance != null) {
+            // > 0: still owed (دين) — white/error tint; < 0: client overpaid
+            // (زيادة دفع) — yellow tint. Same colour convention as
+            // Situation_Card_ItemView.
+            val isDebt = newSituationBalance > 0
+            Text(
+                text = "${String.format("%.2f", newSituationBalance)} دج",
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+                color = if (isDebt) MaterialTheme.colorScheme.error else Color(0xFFC9A400),
+            )
         }
     }
 }
