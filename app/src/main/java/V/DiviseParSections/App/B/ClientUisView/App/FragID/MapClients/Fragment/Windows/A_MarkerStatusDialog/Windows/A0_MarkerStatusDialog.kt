@@ -13,6 +13,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.DropdownItems.DropdownItem_Credit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.DropdownItems.DropdownItem_Versement
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.CreditCapture.CreditItems_Capturable_List
+import android.os.Build
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -53,6 +55,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -69,7 +72,6 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 private enum class ActiveDropdownItem { None, Credit, Versement }
-
 @Composable
 private fun CustomStatusDropdownMenu(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -264,6 +266,8 @@ fun MarkerStatusDialog(
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
     var showExitConfirmationDialog by remember { mutableStateOf(false) }
     var showStatusDropdown by remember { mutableStateOf(false) }
+    // Shared capture trigger: incrementing this value tells CreditItems_Capturable_List to capture + send
+    var triggerCreditCaptureVersion by remember { mutableIntStateOf(0) }
 
     val clientId = relative_M2Client?.id ?: 0L
     var clientTypeMode by remember { mutableStateOf(relative_M2Client?.clientTypeMode) }
@@ -317,6 +321,7 @@ fun MarkerStatusDialog(
                             onClientTypeModeChange = { clientTypeMode = it },
                             onShowEditDialogChange = { showEditDialog = it },
                             onShowPhoneDialogChange = { showPhoneDialog = it },
+                            onTriggerCreditCapture = { triggerCreditCaptureVersion++ },
                         )
                     }
                     val activeCompt = viewModel.getter.repo9AppCompt.currentAppCompt
@@ -443,6 +448,20 @@ fun MarkerStatusDialog(
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    // ── CreditItems_Capturable_List ─────────────────────────────────────
+                    // Rendered here so MultiCaptureController registers items as they are drawn.
+                    // triggerCreditCaptureVersion > 0 triggers scroll-capture + WhatsApp send.
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        item {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            CreditItems_Capturable_List(
+                                aCentralFacade = aCentralFacade,
+                                relative_M2Client = relative_M2Client,
+                                triggerCaptureVersion = triggerCreditCaptureVersion,
+                            )
                         }
                     }
 

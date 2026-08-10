@@ -1,13 +1,20 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.functions_central.runtime_throw_Erreur_Pour_Regle_Le_Real_Bug
-import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
+import android.content.ClipData
+import android.content.ContentUris
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +28,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import java.io.File
 
 @Composable
 fun ClientEdites(
@@ -45,6 +54,7 @@ fun ClientEdites(
     onClientTypeModeChange: (M2Client.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
+    onTriggerCreditCapture: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val clientTypeMode = relative_Client?.clientTypeMode
@@ -74,6 +84,22 @@ fun ClientEdites(
                 contentDescription = "Delete client",
                 modifier = Modifier.padding(8.dp)
             )
+        }
+
+        // WhatsApp Send Credit Items Icon - visible if phone number exists
+        if (hasPhoneNumber) {
+            Card(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .clickable { onTriggerCreditCapture() }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Send credit items via WhatsApp",
+                    tint = Color(0xFF25D366),
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
         }
 
         // Phone Call Icon - only visible if phone number exists
@@ -253,6 +279,125 @@ fun ClientEdites(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+        }
+    }
+}
+
+fun checkAndSendLocalImagesForClient(context: Context, client: M2Client) {
+    val safeKey = client.keyID.replace(Regex("[^a-zA-Z0-9_\\-]"), "_")
+    val folderPath = "Download/Image_Compose_Screen/$safeKey"
+    val rawPhone = (client.numTelephone ?: "").replace(Regex("[^0-9]"), "")
+    val tag = "WA_CREDIT_SEND"
+
+    Log.d(tag, "Checking local images in MediaStore for folder: $folderPath (clientKey=${client.keyID})")
+
+    val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+    else
+        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+
+    val uris = mutableListOf<Uri>()
+
+    // 1. Check via MediaStore
+    try {
+        val projection = arrayOf(MediaStore.Images.Media._ID)
+        val selection = "${MediaStore.Images.Media.RELATIVE_PATH} LIKE ?"
+        val selectionArgs = arrayOf("%Image_Compose_Screen/$safeKey%")
+
+        context.contentResolver.query(collection, projection, selection, selectionArgs, null)?.use { cursor ->
+            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(idColumn)
+                val uri = ContentUris.withAppendedId(collection, id)
+                uris.add(uri)
+            }
+        }
+    } catch (e: Exception) {
+        Log.e(tag, "Error querying MediaStore for images: ${e.message}", e)
+    }
+
+    // 2. Check via direct file system + FileProvider if MediaStore returns empty
+    if (uris.isEmpty()) {
+        try {
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val dir = File(downloadsDir, "Image_Compose_Screen/$safeKey")
+            Log.d(tag, "Checking direct filesystem path: ${dir.absolutePath} (exists=${dir.exists()})")
+
+            if (dir.exists() && dir.isDirectory) {
+                dir.listFiles { _, name ->
+                    val lower = name.lowercase()
+                    lower.endsWith(".webp") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png")
+                }?.sortedBy { it.name }?.forEach { file ->
+                    val fileUri = androidx.core.content.FileProvider.getUriForFile(
+                        context,
+                        "${context.packageName}.fileprovider",
+                        file
+                    )
+                    uris.add(fileUri)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "Error checking direct filesystem for images: ${e.message}", e)
+        }
+    }
+
+    Log.d(tag, "Local images check result: found ${uris.size} images for client ${client.nom}")
+
+    if (uris.isEmpty()) {
+        Log.w(tag, "No local images found in $folderPath. Opening direct chat link instead.")
+        Toast.makeText(context, "Aucune image locale trouvée. Ouverture du chat...", Toast.LENGTH_SHORT).show()
+        val directIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$rawPhone"))
+        try {
+            context.startActivity(directIntent)
+        } catch (e: Exception) {
+            Toast.makeText(context, "WhatsApp non disponible", Toast.LENGTH_SHORT).show()
+        }
+        return
+    }
+
+    Log.d(tag, "Adding ${uris.size} image(s) to WhatsApp send intent...")
+    val jid = if (!rawPhone.startsWith("213")) "213${rawPhone.removePrefix("0")}@s.whatsapp.net" else "$rawPhone@s.whatsapp.net"
+
+    val intent = if (uris.size == 1) {
+        Intent(Intent.ACTION_SEND).apply {
+            type = "image/*"
+            setPackage("com.whatsapp.w4b")
+            putExtra(Intent.EXTRA_STREAM, uris.first())
+            putExtra("jid", jid)
+            clipData = ClipData.newRawUri("", uris.first())
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    } else {
+        Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+            type = "image/*"
+            setPackage("com.whatsapp.w4b")
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
+            putExtra("jid", jid)
+            val clip = ClipData.newRawUri("", uris.first())
+            uris.drop(1).forEach { clip.addItem(ClipData.Item(it)) }
+            clipData = clip
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    }
+
+    uris.forEach { uri ->
+        try {
+            context.grantUriPermission("com.whatsapp.w4b", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        } catch (_: Exception) {}
+    }
+
+    try {
+        context.startActivity(intent)
+        Log.d(tag, "WhatsApp Business intent launched with ${uris.size} image(s).")
+    } catch (e: Exception) {
+        Log.w(tag, "WhatsApp Business fail, attempting fallback WhatsApp: ${e.message}")
+        try {
+            intent.setPackage("com.whatsapp")
+            context.startActivity(intent)
+            Log.d(tag, "WhatsApp standard intent launched with ${uris.size} image(s).")
+        } catch (e2: Exception) {
+            Log.e(tag, "WhatsApp share failed: ${e2.message}", e2)
+            Toast.makeText(context, "Erreur d'envoi WhatsApp: ${e2.message}", Toast.LENGTH_SHORT).show()
         }
     }
 }
