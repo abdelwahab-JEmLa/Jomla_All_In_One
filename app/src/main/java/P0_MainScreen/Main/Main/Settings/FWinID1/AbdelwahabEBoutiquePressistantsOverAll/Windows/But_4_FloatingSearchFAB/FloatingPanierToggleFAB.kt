@@ -81,29 +81,34 @@ fun FloatingPanierToggleFAB(
                 .getSemanticsTag(affiche_Dialog_Fast_Affiche_Panie_App4, "")
                 .size(40.dp),
             onClick = {
+                // Single source of truth: compute the new state once from the central
+                // active values, then apply that SAME value everywhere. Previously the
+                // toggle was computed from `latestValues.affiche_Dialog_Fast_Affiche_Panie`
+                // but then actually applied using the separate, possibly-stale
+                // `affiche_Dialog_Fast_Affiche_Panie_App4` DB field (and force-unwrapped,
+                // which could NPE when it was null) -> the two flags could disagree and
+                // the FAB/UI would appear not to change.
                 val latestValues = focusedValuesGetter.active_Central_Values
                 val newPanierState = !latestValues.affiche_Dialog_Fast_Affiche_Panie
+
                 Log.d(
                     "FloatingPanierToggleFAB",
                     "onClick => affiche_Dialog_Fast_Affiche_Panie: ${latestValues.affiche_Dialog_Fast_Affiche_Panie} -> $newPanierState"
                 )
-                Log.d(
-                    "FloatingPanierToggleFAB",
-                    "onClick => affiche_Dialog_Fast_Affiche_Panie: $affiche_Dialog_Fast_Affiche_Panie_App4 -> $newPanierState"
-                )
 
-                // Single authoritative update: toggle using the persisted DB value as source of truth
+                // Update the in-memory central active values (drives the UI state, e.g. isPanierOpen)
                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
                     latestValues.copy(
-                        affiche_Dialog_Fast_Affiche_Panie = !affiche_Dialog_Fast_Affiche_Panie_App4!!
+                        affiche_Dialog_Fast_Affiche_Panie = newPanierState
                     )
                 )
 
-                affiche_Dialog_Fast_Affiche_Panie_App4?.let {
+                // Keep the persisted DB flag in sync with the exact same new state
+                m9?.let { currentM9 ->
                     coroutineScope.launch {
                         appDatabase.dao_M9AppCompt().update(
-                            m9.copy(
-                                affiche_Dialog_Fast_Affiche_Panie_App4 = !affiche_Dialog_Fast_Affiche_Panie_App4
+                            currentM9.copy(
+                                affiche_Dialog_Fast_Affiche_Panie_App4 = newPanierState
                             )
                         )
                     }
@@ -115,7 +120,6 @@ fun FloatingPanierToggleFAB(
                 )
                 focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
                 vibrateOnUpdate(con)
-
             },
             containerColor = if (isPanierOpen) {
                 MaterialTheme.colorScheme.secondary

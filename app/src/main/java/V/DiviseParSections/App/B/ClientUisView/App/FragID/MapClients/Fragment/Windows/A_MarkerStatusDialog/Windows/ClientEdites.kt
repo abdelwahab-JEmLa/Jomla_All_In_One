@@ -63,7 +63,10 @@ fun ClientEdites(
     val hasValidLocation = relative_Client?.latitude != null &&
             relative_Client?.latitude != 0.0 &&
             relative_Client?.longitude != null
-
+            //<--
+            //(1): ajout un button au click lance choisi au galery  image comm au
+                    ////<--
+                    //(1): ajout affiche image de client si dispo fait que ca soit petite a cote gatche clickt au click expand grand
     Row(
         modifier = Modifier
             .fillMaxWidth()

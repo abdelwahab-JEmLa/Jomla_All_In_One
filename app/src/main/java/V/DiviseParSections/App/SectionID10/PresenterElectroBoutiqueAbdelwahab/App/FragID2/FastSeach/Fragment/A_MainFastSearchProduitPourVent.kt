@@ -357,7 +357,7 @@ fun MainFastSearchProduitPourVent(
 
             val currentActive_M9AppCompt = focusedValuesGetter.currentActive_M9AppCompt
             val affiche_Dialog_Fast_Affiche_Panie_App4 = currentActive_M9AppCompt?.affiche_Dialog_Fast_Affiche_Panie_App4
-            (affiche_Dialog_Fast_Affiche_Panie|| affiche_Dialog_Fast_Affiche_Panie_App4 == true).ifTrue {
+            (affiche_Dialog_Fast_Affiche_Panie ).ifTrue {
                 Dialog_Fast_Affiche_Panie()
             }
 

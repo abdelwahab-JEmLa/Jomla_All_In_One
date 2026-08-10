@@ -148,7 +148,8 @@ fun But1_OnClickMode(
                             )
                         }
                     }
-
+                    // Dropdown items below update the active click mode
+                    // (compt.click_On_Marque) and trigger a map reload.
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },

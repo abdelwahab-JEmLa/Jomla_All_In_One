@@ -38,7 +38,9 @@ fun ScreenM14VentPeriod(
     list_M14VentPeriode: List<M14VentPeriode> = aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue,
     relative_M9AppCompt: M09AppCompt? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActive_M9AppCompt,
-) {
+) {          //<--
+//TODO(2.C Relative Au Todo(2):
+        //... affiche ac
     // State for dialog and selected period
     var showPeriodCreditsDialog by remember { mutableStateOf(false) }
 
