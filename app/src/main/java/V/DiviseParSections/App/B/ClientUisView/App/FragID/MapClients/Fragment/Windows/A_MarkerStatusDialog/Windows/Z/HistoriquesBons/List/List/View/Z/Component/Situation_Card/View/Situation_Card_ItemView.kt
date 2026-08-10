@@ -34,7 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,8 +50,11 @@ fun Situation_Card_ItemView(
     onUpdate: (M8BonVent) -> Unit,
     onDelete: (M8BonVent) -> Unit,
 ) {
+    val colore_text = relative_M8BonVent.etateActuellementEst.text_color
+    val isNewSituationCredit =
+        relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
+
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -77,23 +79,22 @@ fun Situation_Card_ItemView(
         .maxByOrNull { it.creationTimestamps }
 
     Card(
-        modifier = Modifier.Companion
-            .fillMaxWidth()
-            .height(if (isVersement || isDemandeVersement) 220.dp else 140.dp),
+        modifier = Modifier
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = relative_M8BonVent.etateActuellementEst.color
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
             Row(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = { showDeleteDialog = true }
@@ -101,33 +102,49 @@ fun Situation_Card_ItemView(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "حذف",
-                        tint = Color.Companion.White
+                        tint = Color.White
                     )
                 }
 
                 Row(
-                    verticalAlignment = Alignment.Companion.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = relative_M8BonVent.etateActuellementEst.nomArabe,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Companion.Bold,
-                        color = Color.Companion.White
+                        fontWeight = FontWeight.Bold,
+                        color = colore_text
                     )
 
-                    Spacer(modifier = Modifier.Companion.width(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
                         text = relative_M8BonVent.keyID.takeLast(4),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Companion.White.copy(alpha = 0.8f)
+                        color = Color.White.copy(alpha = 0.8f)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.Companion.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             when {
+                isNewSituationCredit -> {
+                    @SuppressLint("DefaultLocale")
+                    val formattedVal = String.format("%.2f", relative_M8BonVent.montant_principale_du_type)
+                    val (label, color) = if (relative_M8BonVent.montant_principale_du_type >= 0)
+                        "الرصيد المتبقي (دين)" to Color.White
+                    else
+                        "رصيد سالب (زيادة دفع)" to Color.Yellow
+                    Text(
+                        text = "$label: $formattedVal دج",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = color,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                }
+
                 isVersement -> {
                     EditableAmountField(
                         label = "مبلغ الدفع",
@@ -154,7 +171,7 @@ fun Situation_Card_ItemView(
                                 },
                                 Toast.LENGTH_SHORT
                             ).show()
-                        }
+                        },
                     )
                 }
 
@@ -174,7 +191,7 @@ fun Situation_Card_ItemView(
                                 "تم تحديث مبلغ القرض",
                                 Toast.LENGTH_SHORT
                             ).show()
-                        }
+                        },
                     )
                 }
 
@@ -194,36 +211,36 @@ fun Situation_Card_ItemView(
                                 "تم تحديث طلب الدفع",
                                 Toast.LENGTH_SHORT
                             ).show()
-                        }
+                        },
                     )
 
-                    Spacer(modifier = Modifier.Companion.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Toggle button for payment status
                     Row(
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Companion.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(
-                            verticalAlignment = Alignment.Companion.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
-                                tint = if (localDemandeVersementRegle) Color.Companion.White else Color.Companion.White.copy(
+                                tint = if (localDemandeVersementRegle) Color.White else Color.White.copy(
                                     alpha = 0.5f
                                 ),
-                                modifier = Modifier.Companion.size(20.dp)
+                                modifier = Modifier.size(20.dp)
                             )
-                            Spacer(modifier = Modifier.Companion.width(8.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = if (localDemandeVersementRegle) "تم التسديد" else "لم يتم التسديد",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Companion.White,
-                                fontWeight = if (localDemandeVersementRegle) FontWeight.Companion.Bold else FontWeight.Companion.Normal
+                                color = Color.White,
+                                fontWeight = if (localDemandeVersementRegle) FontWeight.Bold else FontWeight.Normal
                             )
                         }
 
@@ -242,22 +259,26 @@ fun Situation_Card_ItemView(
                                 ).show()
                             },
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color.Companion.White,
-                                checkedTrackColor = Color.Companion.Green,
-                                uncheckedThumbColor = Color.Companion.White.copy(alpha = 0.7f),
-                                uncheckedTrackColor = Color.Companion.Gray
+                                checkedThumbColor = Color.White,
+                                checkedTrackColor = Color.Green,
+                                uncheckedThumbColor = Color.White.copy(alpha = 0.7f),
+                                uncheckedTrackColor = Color.Gray
                             )
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.Companion.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "الوقت: ${DatesHandler().getDateAndTimStringAvecSeconds(relative_M8BonVent.creationTimestamps).time}",
+                text = buildString {
+                    append(DatesHandler.get_PersonaleDateFormatArab(relative_M8BonVent.creationTimestamps))
+                    append(" \u200F| \u200E")
+                    append(DatesHandler().getDateAndTimStringAvecSeconds(relative_M8BonVent.creationTimestamps).time)
+                },
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Companion.White.copy(alpha = 0.8f)
+                color = Color.White.copy(alpha = 0.8f)
             )
         }
     }
@@ -269,14 +290,14 @@ fun Situation_Card_ItemView(
                 Icon(
                     imageVector = Icons.Default.Warning,
                     contentDescription = "Warning",
-                    tint = Color.Companion.Red
+                    tint = Color.Red
                 )
             },
             title = {
                 Text(
                     text = "تأكيد الحذف",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Companion.Bold
+                    fontWeight = FontWeight.Bold
                 )
             },
             text = {
@@ -285,7 +306,7 @@ fun Situation_Card_ItemView(
                         text = "هل أنت متأكد من حذف هذه المعاملة؟",
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    Spacer(modifier = Modifier.Companion.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "رقم المعاملة: ${relative_M8BonVent.keyID.takeLast(6)}",
                         style = MaterialTheme.typography.bodySmall,
@@ -296,12 +317,12 @@ fun Situation_Card_ItemView(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(modifier = Modifier.Companion.height(4.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "لا يمكن التراجع عن هذا الإجراء",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Companion.Red,
-                        fontWeight = FontWeight.Companion.Medium
+                        color = Color.Red,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             },
@@ -317,13 +338,13 @@ fun Situation_Card_ItemView(
                         showDeleteDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Companion.Red
+                        containerColor = Color.Red
                     )
                 ) {
                     Text(
                         "حذف نهائي",
-                        color = Color.Companion.White,
-                        fontWeight = FontWeight.Companion.Bold
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             },

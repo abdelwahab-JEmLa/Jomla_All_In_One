@@ -10,6 +10,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.CommandButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.DropdownItems.DropdownItem_Credit
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.DropdownItems.DropdownItem_Versement
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -66,6 +68,8 @@ import androidx.compose.ui.window.DialogProperties
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
+private enum class ActiveDropdownItem { None, Credit, Versement }
+
 @Composable
 private fun CustomStatusDropdownMenu(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -75,6 +79,7 @@ private fun CustomStatusDropdownMenu(
     relative_M2Client: M2Client?,
 ) {
     val currentApp_ItsWorkChezGrossisst= focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+    var activeItem by remember(expanded) { mutableStateOf(ActiveDropdownItem.None) }
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
@@ -170,6 +175,24 @@ private fun CustomStatusDropdownMenu(
             status = statusCommantaire,
             text = statusCommantaire.nomArabe
         )
+
+        // ── Crédit & Versement rapides (pattern Light_App) ──────────────────
+        relative_M2Client?.let { client ->
+            DropdownItem_Credit(
+                aCentralFacade = aCentralFacade,
+                relative_M2Client = client,
+                isActive = activeItem == ActiveDropdownItem.Credit,
+                onActivate = { activeItem = ActiveDropdownItem.Credit },
+                onDismiss = { activeItem = ActiveDropdownItem.None; onDismissRequest() },
+            )
+            DropdownItem_Versement(
+                aCentralFacade = aCentralFacade,
+                relative_M2Client = client,
+                isActive = activeItem == ActiveDropdownItem.Versement,
+                onActivate = { activeItem = ActiveDropdownItem.Versement },
+                onDismiss = { activeItem = ActiveDropdownItem.None; onDismissRequest() },
+            )
+        }
 
         focusedValuesGetter.currentApp_Est_Admin.ifTrue {
 

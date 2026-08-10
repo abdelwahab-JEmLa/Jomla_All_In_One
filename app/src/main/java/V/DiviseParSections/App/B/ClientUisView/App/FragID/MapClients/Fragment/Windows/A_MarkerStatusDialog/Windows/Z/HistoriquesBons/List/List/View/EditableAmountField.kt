@@ -43,7 +43,8 @@ fun EditableAmountField(
     label: String,
     amount: Double,
     onAmountChange: (Double) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color = Color.White
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var textValue by remember { mutableStateOf("") }
@@ -83,8 +84,8 @@ fun EditableAmountField(
                     .weight(1f)
                     .focusRequester(focusRequester),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White.copy(alpha = 0.9f),
-                    unfocusedContainerColor = Color.White.copy(alpha = 0.7f)
+                    focusedContainerColor = color.copy(alpha = 0.9f),
+                    unfocusedContainerColor = color.copy(alpha = 0.7f)
                 ),
                 singleLine = true
             )
@@ -136,14 +137,14 @@ fun EditableAmountField(
             Text(
                 text = "$label: ${String.format("%.2f", amount)} دج",
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.White,
+                color = color,
                 fontWeight = FontWeight.Medium
             )
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Default.Edit,
                 contentDescription = "تعديل",
-                tint = Color.White.copy(alpha = 0.7f),
+                tint = color.copy(alpha = 0.7f),
                 modifier = Modifier.size(16.dp)
             )
         }

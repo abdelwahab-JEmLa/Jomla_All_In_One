@@ -89,37 +89,33 @@ class Repo9AppCompt(
     }
 
     fun upsert(data: M09AppCompt) {
-        val existingIndex = datasValue.indexOfFirst { ancien ->
-            ancien.keyID == data.keyID
-        }
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                val existingIndex = _datas.value.indexOfFirst { ancien ->
+                    ancien.keyID == data.keyID
+                }
 
-        _datas.value = if (existingIndex >= 0) {
-            datasValue.toMutableList().apply {
-                val updatedItem = data.copy(
-                    keyID = datasValue[existingIndex].keyID,
-                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                )
-                this[existingIndex] = updatedItem
+                val dataForRepo: M09AppCompt
+                _datas.value = if (existingIndex >= 0) {
+                    val updatedItem = data.copy(
+                        keyID = _datas.value[existingIndex].keyID,
+                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                    )
+                    dataForRepo = updatedItem
+                    _datas.value.toMutableList().apply {
+                        this[existingIndex] = updatedItem
+                    }
+                } else {
+                    val newItem = data.copy(
+                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                    )
+                    dataForRepo = newItem
+                    _datas.value + newItem
+                }
+
+                ancienRepo.addOrUpdatedDataBase(existingIndex, dataForRepo)
             }
-        } else {
-            val newItem = data.copy(
-                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-            )
-            datasValue + newItem
         }
-
-        val dataForRepo = if (existingIndex >= 0) {
-            data.copy(
-                keyID = datasValue[existingIndex].keyID,
-                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-            )
-        } else {
-            data.copy(
-                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-            )
-        }
-
-        ancienRepo.addOrUpdatedDataBase(existingIndex, dataForRepo)
     }
 }
 
