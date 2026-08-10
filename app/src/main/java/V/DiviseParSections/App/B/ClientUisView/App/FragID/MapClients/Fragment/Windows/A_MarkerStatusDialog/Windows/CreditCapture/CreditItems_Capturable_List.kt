@@ -28,16 +28,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -49,11 +53,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -122,65 +130,85 @@ fun getTodayCreditImages(context: Context, clientKeyID: String?): List<Uri> {
 }
 
 fun sendImagesToWhatsApp(context: Context, phone: String, uris: List<Uri>) {
-    if (uris.isEmpty()) return
-    val rawPhone = phone.replace(Regex("[^0-9]"), "")
+    if (uris.isEmpty()) {
+        Toast.makeText(context, "لا توجد صور لإرسالها", Toast.LENGTH_SHORT).show()
+        return
+    }
+
+    var formattedPhone = phone.replace(Regex("[^0-9]"), "")
+    if (formattedPhone.startsWith("0")) {
+        formattedPhone = "213" + formattedPhone.substring(1)
+    } else if (!formattedPhone.startsWith("213") && formattedPhone.length == 9) {
+        formattedPhone = "213$formattedPhone"
+    }
+    val jid = "$formattedPhone@s.whatsapp.net"
+
     val packageName = "com.whatsapp.w4b"
+    val altPackage = "com.whatsapp"
     val intentAction = if (uris.size == 1) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
 
     @Suppress("DEPRECATION")
     val allCandidates = context.packageManager.queryIntentActivities(
         Intent(intentAction).apply { type = "image/*" }, 0
     )
-    val altPackage = "com.whatsapp"
     val resolvedInfo = allCandidates.firstOrNull { it.activityInfo.packageName == packageName }
         ?: allCandidates.firstOrNull { it.activityInfo.packageName == altPackage }
-    val resolvedComponent = resolvedInfo?.activityInfo?.let {
-        android.content.ComponentName(it.packageName, it.name)
-    }
+    val targetPackage = resolvedInfo?.activityInfo?.packageName ?: packageName
 
     fun baseIntent(): Intent =
         if (uris.size == 1) {
             Intent(Intent.ACTION_SEND).apply {
                 type = "image/*"
                 putExtra(Intent.EXTRA_STREAM, uris.first())
-                clipData = ClipData.newRawUri("", uris.first())
+                putExtra("jid", jid)
+                clipData = ClipData.newRawUri("CreditImage", uris.first())
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             }
         } else {
             Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                 type = "image/*"
                 putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
-                val clip = ClipData.newRawUri("", uris.first())
+                putExtra("jid", jid)
+                val clip = ClipData.newRawUri("CreditImages", uris.first())
                 uris.drop(1).forEach { clip.addItem(ClipData.Item(it)) }
                 clipData = clip
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             }
         }
 
-    uris.forEach { uri ->
-        try { context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
-        catch (_: Exception) {}
+    listOf(packageName, altPackage).forEach { pkg ->
+        uris.forEach { uri ->
+            try {
+                context.grantUriPermission(pkg, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            } catch (_: Exception) {}
+        }
     }
 
     val directIntent = baseIntent().apply {
-        if (resolvedComponent != null) component = resolvedComponent
-        else setPackage(packageName)
+        if (resolvedInfo?.activityInfo != null) {
+            component = android.content.ComponentName(resolvedInfo.activityInfo.packageName, resolvedInfo.activityInfo.name)
+        } else {
+            setPackage(targetPackage)
+        }
     }
 
-    try { context.startActivity(directIntent) } catch (_: Exception) {
-        try { context.startActivity(Intent.createChooser(baseIntent(), null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
-        catch (_: Exception) {
-            try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$rawPhone")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
-            catch (_: Exception) { Toast.makeText(context, "WhatsApp non installé", Toast.LENGTH_SHORT).show() }
+    try {
+        context.startActivity(directIntent)
+    } catch (_: Exception) {
+        try {
+            val chooserIntent = Intent.createChooser(baseIntent(), "مشاركة صور الدين").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(chooserIntent)
+        } catch (_: Exception) {
+            try {
+                val directChatIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$formattedPhone")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(directChatIntent)
+            } catch (_: Exception) {
+                Toast.makeText(context, "WhatsApp non installé", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
 
-/**
- * Liste des bons crédit/versement capturables avec Header dépliable, 
- * bouton capture des 10 derniers sous Download/credit_trxs/<key>/<MM_dd>/
- * et bouton de partage des images du jour via WhatsApp.
- */
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun CreditItems_Capturable_List(
@@ -191,7 +219,7 @@ fun CreditItems_Capturable_List(
     val context: Context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var isExpanded by remember { mutableStateOf(true) }
+    var isExpanded by remember { mutableStateOf(false) }
     var todayImages by remember(relative_M2Client?.keyID, triggerCaptureVersion) {
         mutableStateOf(getTodayCreditImages(context, relative_M2Client?.keyID))
     }
@@ -208,8 +236,12 @@ fun CreditItems_Capturable_List(
             .sortedByDescending { it.creationTimestamps }
     }
 
-    // Limit to 10 latest items
-    val itemsToDisplay = remember(allBons) { allBons.take(10) }
+    var captureCountInput by remember { mutableStateOf("10") }
+    var captureCount by remember { mutableStateOf(10) }
+    var showCountDialog by remember { mutableStateOf(false) }
+    val countFocusRequester = remember { FocusRequester() }
+
+    val itemsToDisplay = remember(allBons, captureCount) { allBons.take(captureCount) }
 
     val ctrl = rememberMultiCaptureController()
 
@@ -230,41 +262,48 @@ fun CreditItems_Capturable_List(
     fun mapRawToNamed(raw: List<Pair<String, ImageBitmap>>) =
         raw.mapIndexed { idx, (k, bmp) -> bmp to buildImageName(idx, k) }
 
-    // ── External trigger (from ClientEdites WhatsApp button or Header button) ─
     LaunchedEffect(triggerCaptureVersion) {
         if (triggerCaptureVersion == 0) return@LaunchedEffect
         val phone = relative_M2Client?.numTelephone
-        Log.d("CREDIT_CAPTURE", "[trigger v$triggerCaptureVersion] client=${relative_M2Client?.nom} phone=$phone allBons=${allBons.size} ctrl.registered=${ctrl.size()}")
-        if (phone.isNullOrEmpty()) {
-            Log.w("CREDIT_CAPTURE", "Skipped: no phone number for client ${relative_M2Client?.nom}")
-            return@LaunchedEffect
-        }
-        if (itemsToDisplay.isEmpty()) {
-            Log.w("CREDIT_CAPTURE", "Skipped: itemsToDisplay is empty — no credit items to capture")
-            return@LaunchedEffect
-        }
+        if (phone.isNullOrEmpty()) return@LaunchedEffect
+        if (itemsToDisplay.isEmpty()) return@LaunchedEffect
         whatsappSendRequest = phone
     }
 
-    // ── WhatsApp send & capture flow ──────────────────────────────────────────
     LaunchedEffect(whatsappSendRequest) {
         val phone = whatsappSendRequest ?: return@LaunchedEffect
         if (isCapturing.value) {
-            Log.w("CREDIT_CAPTURE", "[send flow] already capturing, skipping duplicate trigger")
+            Log.w("CREDIT_CAPTURE", "Capture already in progress, skipping duplicate request")
             return@LaunchedEffect
         }
         isCapturing.value = true
+        Log.d("CREDIT_CAPTURE", "Starting capture flow for phone: $phone. isExpanded: $isExpanded, itemsToDisplay: ${itemsToDisplay.size}")
 
-        Log.d("CREDIT_CAPTURE", "[send flow] starting capture. ctrl.registered=${ctrl.size()} itemsToDisplay=${itemsToDisplay.size}")
-        delay(200)
+        if (!isExpanded) {
+            Log.d("CREDIT_CAPTURE", "List is collapsed — setting isExpanded = true for capture")
+            isExpanded = true
+            delay(300)
+        }
+
+        var retry = 0
+        while (ctrl.size() < itemsToDisplay.size && retry < 5) {
+            Log.d("CREDIT_CAPTURE", "Waiting for items composition: ctrl.size()=${ctrl.size()} expected=${itemsToDisplay.size} (attempt $retry)")
+            delay(200)
+            retry++
+        }
+
+        Log.d("CREDIT_CAPTURE", "Executing ctrl.captureAll(). Registered items: ${ctrl.size()}")
         val raw = ctrl.captureAll()
-        Log.d("CREDIT_CAPTURE", "captureAll() returned ${raw.size} bitmaps")
+        Log.d("CREDIT_CAPTURE", "ctrl.captureAll() returned ${raw.size} bitmap(s)")
         val namedImages = mapRawToNamed(raw)
 
         if (namedImages.isEmpty()) {
-            Log.w("CREDIT_CAPTURE", "namedImages empty after capture — aborting")
+            Log.w("CREDIT_CAPTURE", "namedImages is empty after capture! Aborting.")
             whatsappSendRequest = null
             isCapturing.value = false
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "لم يتم التقاط أي عنصر", Toast.LENGTH_SHORT).show()
+            }
             return@LaunchedEffect
         }
 
@@ -272,6 +311,7 @@ fun CreditItems_Capturable_List(
         val safeKey = relative_M2Client?.keyID?.replace(Regex("[^a-zA-Z0-9_\\-]"), "_") ?: ""
         val todayFolderPath = "Download/credit_trxs/$safeKey/$mmDd"
 
+        Log.d("CREDIT_CAPTURE", "Saving ${namedImages.size} images to MediaStore path '$todayFolderPath'...")
         val savedUris: List<Uri> = withContext(Dispatchers.IO) {
             relative_M2Client?.let {
                 saveAllToMediaStore(
@@ -283,16 +323,28 @@ fun CreditItems_Capturable_List(
             } ?: emptyList()
         }
 
+        Log.d("CREDIT_CAPTURE", "saveAllToMediaStore returned ${savedUris.size} URIs")
+
         if (savedUris.isNotEmpty()) {
-            todayImages = savedUris
-            sendImagesToWhatsApp(context, phone, savedUris)
+            val updated = getTodayCreditImages(context, relative_M2Client?.keyID)
+            todayImages = updated
+            Log.d("CREDIT_CAPTURE", "Updated todayImages count: ${updated.size}")
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "تم التقاط وحفظ ${savedUris.size} صورة", Toast.LENGTH_SHORT).show()
+                Log.d("CREDIT_CAPTURE", "Displayed Toast: تم التقاط وحفظ ${savedUris.size} صورة")
+            }
+            sendImagesToWhatsApp(context, phone, updated)
+        } else {
+            Log.e("CREDIT_CAPTURE", "savedUris is empty after saving!")
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "فشل في حفظ الصور", Toast.LENGTH_SHORT).show()
+            }
         }
 
         whatsappSendRequest = null
         isCapturing.value = false
     }
 
-    // ── Header & UI ───────────────────────────────────────────────────────────
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -324,29 +376,25 @@ fun CreditItems_Capturable_List(
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    // Button 1: Capture 10 latest items
                     if (allBons.isNotEmpty()) {
                         Button(
-                            onClick = {
-                                relative_M2Client?.numTelephone?.let { phone ->
-                                    whatsappSendRequest = phone
-                                }
-                            },
+                            onClick = { showCountDialog = true },
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                         ) {
                             Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("التقاط 10 الأخيرة", style = MaterialTheme.typography.labelSmall)
+                            Text("التقاط $captureCount الأخيرة", style = MaterialTheme.typography.labelSmall)
                         }
                     }
 
-                    // Button 2: Share Today's Images (Visible if today's images exist)
                     if (todayImages.isNotEmpty()) {
                         Button(
                             onClick = {
+                                val updated = getTodayCreditImages(context, relative_M2Client?.keyID)
+                                todayImages = updated
                                 relative_M2Client?.numTelephone?.let { phone ->
-                                    sendImagesToWhatsApp(context, phone, todayImages)
+                                    sendImagesToWhatsApp(context, phone, updated)
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
@@ -360,7 +408,6 @@ fun CreditItems_Capturable_List(
                 }
             }
 
-            // Expandable Items Content
             if (isExpanded) {
                 Spacer(Modifier.height(8.dp))
                 if (allBons.isEmpty()) {
@@ -380,7 +427,7 @@ fun CreditItems_Capturable_List(
                             val capKey = "${b.creationTimestamps}|${b.keyID}|${b.etateActuellementEst.name}"
 
                             DisposableEffect(capKey) {
-                                ctrl.register(capKey, index, cap.hasBeenDrawn) { cap.capture() }
+                                ctrl.register(capKey, index, { cap.hasBeenDrawn }) { cap.capture() }
                                 onDispose { ctrl.unregister(capKey) }
                             }
 
@@ -399,22 +446,77 @@ fun CreditItems_Capturable_List(
         }
     }
 
+    if (showCountDialog) {
+        AlertDialog(
+            onDismissRequest = { showCountDialog = false },
+            title = { Text("عدد العناصر للالتقاط") },
+            text = {
+                OutlinedTextField(
+                    value = captureCountInput,
+                    onValueChange = { input -> if (input.all { it.isDigit() }) captureCountInput = input },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            val count = captureCountInput.toIntOrNull() ?: 10
+                            captureCount = count.coerceAtLeast(1)
+                            showCountDialog = false
+                            relative_M2Client?.numTelephone?.let { phone ->
+                                whatsappSendRequest = phone
+                            }
+                        }
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(countFocusRequester)
+                )
+                LaunchedEffect(Unit) {
+                    countFocusRequester.requestFocus()
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val count = captureCountInput.toIntOrNull() ?: 10
+                        captureCount = count.coerceAtLeast(1)
+                        showCountDialog = false
+                        relative_M2Client?.numTelephone?.let { phone ->
+                            whatsappSendRequest = phone
+                        }
+                    }
+                ) {
+                    Text("تأكيد")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showCountDialog = false }) {
+                    Text("إلغاء")
+                }
+            }
+        )
+    }
+
     // ── Dialog preview ────────────────────────────────────────────────────
     if (showPreview && captured.isNotEmpty()) {
         Afficheur_locale_Image_Captured(
             capturedBitmaps = captured,
             onDismiss = { showPreview = false; captured = emptyList() },
             onSave = { bmpList ->
-                relative_M2Client?.let {
+                relative_M2Client?.let { client ->
                     scope.launch(Dispatchers.IO) {
                         val mmDd = SimpleDateFormat("MM_dd", Locale.getDefault()).format(Date())
-                        val safeKey = it.keyID.replace(Regex("[^a-zA-Z0-9_\\-]"), "_")
-                        saveAllToMediaStore(
+                        val safeKey = client.keyID.replace(Regex("[^a-zA-Z0-9_\\-]"), "_")
+                        val saved = saveAllToMediaStore(
                             bitmaps = bmpList,
                             context = context,
-                            clientKeyID = it.keyID,
+                            clientKeyID = client.keyID,
                             customFolderPath = "Download/credit_trxs/$safeKey/$mmDd"
                         )
+                        val updated = getTodayCreditImages(context, client.keyID)
+                        withContext(Dispatchers.Main) {
+                            todayImages = updated
+                            Toast.makeText(context, "تم حفظ ${saved.size} صورة", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
                 showPreview = false; captured = emptyList()

@@ -178,9 +178,15 @@ fun filterClientsBasedOnMode(
         }
 
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> {
-            clientDataBaseSnapList.filter {
-                viewModel.getLastTransaction(it)?.etateActuellementEst ==
-                        M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit
+            clientDataBaseSnapList.filter { client ->
+                val lastTrx = viewModel.getLastTransaction(client)
+                val lastNewSituation = viewModel.getter.repo8BonVent.datasValue.filter {
+                    it.parent_M2Client_KeyID == client.keyID &&
+                    it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
+                }.maxByOrNull { it.creationTimestamps }
+
+                lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit ||
+                (lastNewSituation != null && lastNewSituation.montant_principale_du_type > 0.0)
             }
         }
 

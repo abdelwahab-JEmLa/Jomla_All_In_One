@@ -3,13 +3,18 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.TextIncrease
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -25,6 +30,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 
 /**
  * Dropdown item — "تسديد" (versement).
@@ -57,14 +63,21 @@ fun DropdownItem_Versement(
 
     var out_val by remember { mutableStateOf("") }
     var montant by remember { mutableStateOf(0.0) }
+    var moulahadaText by remember { mutableStateOf("") }
+    var showMoulahadaField by remember { mutableStateOf(false) }
     var displayedMontant by remember(latestSituationMontant) {
         mutableStateOf<Int?>(latestSituationMontant)
     }
     val focusRequester = remember { FocusRequester() }
+    val moulahadaFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(isActive) {
         if (isActive) focusRequester.requestFocus()
-        else out_val = ""
+        else {
+            out_val = ""
+            moulahadaText = ""
+            showMoulahadaField = false
+        }
     }
 
     fun buildAndSave() {
@@ -83,6 +96,7 @@ fun DropdownItem_Versement(
         ).copy(
             creationTimestamps = baseTs,
             versement_fait = montant,
+            moulahada = moulahadaText,
         )
 
         val newSituation = M8BonVent.get_default(
@@ -96,6 +110,7 @@ fun DropdownItem_Versement(
         ).copy(
             creationTimestamps = baseTs + 1_000L,
             montant_principale_du_type = (latestSituationMontant?.toDouble() ?: 0.0) - montant,
+            moulahada = moulahadaText,
         )
 
         aCentralFacade.repositorysMainSetter.update_M8BonVent(versementBon)
@@ -113,38 +128,79 @@ fun DropdownItem_Versement(
         },
         text = {
             if (isActive) {
-                OutlinedTextField(
-                    value = out_val,
-                    onValueChange = { input ->
-                        if (input.all { it.isDigit() }) out_val = input
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done,
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            val parsed = out_val.toIntOrNull()
-                            if (parsed != null) {
-                                montant = parsed.toDouble()
-                                displayedMontant = parsed
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = out_val,
+                        onValueChange = { input ->
+                            if (input.all { it.isDigit() }) out_val = input
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done,
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                val parsed = out_val.toIntOrNull()
+                                if (parsed != null) {
+                                    montant = parsed.toDouble()
+                                    displayedMontant = parsed
+                                }
+                                out_val = displayedMontant?.toString() ?: ""
+                                buildAndSave()
                             }
-                            out_val = displayedMontant?.toString() ?: ""
-                            buildAndSave()
-                        }
-                    ),
-                    label = {
-                        val diff = (displayedMontant ?: 0) - (out_val.toIntOrNull() ?: 0)
-                        Text(
-                            text = "الرصيد بعد التسديد — $diff",
-                            style = MaterialTheme.typography.labelSmall,
+                        ),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = { showMoulahadaField = !showMoulahadaField }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "إضافة ملاحظة",
+                                    tint = if (moulahadaText.isNotEmpty()) Color(0xFF43A047) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        },
+                        label = {
+                            val diff = (displayedMontant ?: 0) - (out_val.toIntOrNull() ?: 0)
+                            Text(
+                                text = "الرصيد بعد التسديد — $diff",
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
+                    )
+
+                    if (showMoulahadaField) {
+                        Spacer(Modifier.height(4.dp))
+                        OutlinedTextField(
+                            value = moulahadaText,
+                            onValueChange = { moulahadaText = it },
+                            singleLine = true,
+                            label = { Text("ملاحظة", style = MaterialTheme.typography.labelSmall) },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    val parsed = out_val.toIntOrNull()
+                                    if (parsed != null) {
+                                        montant = parsed.toDouble()
+                                        displayedMontant = parsed
+                                    }
+                                    out_val = displayedMontant?.toString() ?: ""
+                                    buildAndSave()
+                                }
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(moulahadaFocusRequester),
                         )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                )
+                        LaunchedEffect(showMoulahadaField) {
+                            if (showMoulahadaField) moulahadaFocusRequester.requestFocus()
+                        }
+                    }
+                }
             } else {
                 Text(
                     text = "تسديد: ${displayedMontant ?: "-"} دج",

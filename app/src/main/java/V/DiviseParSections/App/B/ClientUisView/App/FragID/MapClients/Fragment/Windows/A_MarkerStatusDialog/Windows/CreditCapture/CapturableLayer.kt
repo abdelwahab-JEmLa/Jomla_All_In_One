@@ -1,78 +1,67 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.CreditCapture
 
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
-import androidx.annotation.DrawableRes
-import androidx.appcompat.content.res.AppCompatResources
+import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import kotlinx.coroutines.delay
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-private class DrawnHolder { var value: Boolean = false }
+internal class DrawnHolder { var value: Boolean = false }
 
-class CapturableLayerState(
-    val modifier: Modifier,
-    val capture: suspend () -> ImageBitmap,
-    val hasBeenDrawn: () -> Boolean,
-)
-
-@Composable
-fun rememberCapturableLayer(@DrawableRes backgroundRes: Int? = null): CapturableLayerState {
-    val ctx = LocalContext.current
-    val gLayer = rememberGraphicsLayer()
-    val drawnHolder = remember { DrawnHolder() }
-
-    val mod = Modifier.drawWithContent {
-        gLayer.record { this@drawWithContent.drawContent() }
-        drawnHolder.value = true
+class CapturableLayerController internal constructor(
+    private val graphicsLayer: GraphicsLayer,
+    private val drawnHolder: DrawnHolder
+) {
+    val modifier: Modifier = Modifier.drawWithContent {
         drawContent()
+        graphicsLayer.record {
+            this@drawWithContent.drawContent()
+        }
+        drawnHolder.value = true
     }
 
-    return CapturableLayerState(
-        modifier = mod,
-        hasBeenDrawn = { drawnHolder.value },
-        capture = {
-            delay(100)
-            val hw = gLayer.toImageBitmap()
-            val sw = hw.asAndroidBitmap().copy(Bitmap.Config.ARGB_8888, false)
-            if (backgroundRes == null) return@CapturableLayerState sw.asImageBitmap()
-            val out = Bitmap.createBitmap(sw.width, sw.height, Bitmap.Config.ARGB_8888)
-            val cvs = Canvas(out)
-            AppCompatResources.getDrawable(ctx, backgroundRes)?.let { drw ->
-                drw.setBounds(0, 0, sw.width, sw.height)
-                drw.draw(cvs)
-            }
-            cvs.drawBitmap(sw, 0f, 0f, null)
-            out.asImageBitmap()
-        },
-    )
+    val hasBeenDrawn: Boolean get() = drawnHolder.value
+
+    suspend fun capture(): ImageBitmap {
+        return graphicsLayer.toImageBitmap()
+    }
 }
 
-private data class CaptureEntry(
-    val index: Int,
-    val hasBeenDrawn: () -> Boolean,
-    val capture: suspend () -> ImageBitmap,
-)
+@Composable
+fun rememberCapturableLayer(): CapturableLayerController {
+    val graphicsLayer = rememberGraphicsLayer()
+    val drawnHolder = remember { DrawnHolder() }
+    return remember(graphicsLayer) { CapturableLayerController(graphicsLayer, drawnHolder) }
+}
 
 class MultiCaptureController {
-    private val entries = linkedMapOf<String, CaptureEntry>()
+    private class Entry(
+        val index: Int,
+        val hasBeenDrawn: () -> Boolean,
+        val capture: suspend () -> ImageBitmap
+    )
+
+    private val entries = mutableMapOf<String, Entry>()
 
     fun register(key: String, index: Int, hasBeenDrawn: () -> Boolean, capture: suspend () -> ImageBitmap) {
-        entries[key] = CaptureEntry(index, hasBeenDrawn, capture)
+        entries[key] = Entry(index, hasBeenDrawn, capture)
     }
 
     fun unregister(key: String) { entries.remove(key) }
@@ -135,6 +124,7 @@ fun saveAllToMediaStore(
     clientKeyID: String,
     customFolderPath: String? = null,
 ): List<Uri> {
+    Log.d("CREDIT_CAPTURE", "[saveAllToMediaStore] Started with ${bitmaps.size} bitmap(s) for clientKeyID='$clientKeyID'")
     if (bitmaps.isEmpty()) return emptyList()
 
     val savedUris = mutableListOf<Uri>()
@@ -142,15 +132,53 @@ fun saveAllToMediaStore(
     val mmDd = SimpleDateFormat("MM_dd", Locale.getDefault()).format(Date())
     val folderPath = customFolderPath ?: "Download/credit_trxs/$safeKey/$mmDd"
     val resolver = context.contentResolver
+    
     val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
         MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
     else
         MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        try {
-            resolver.delete(collection, "${MediaStore.Images.Media.RELATIVE_PATH} = ?", arrayOf("$folderPath/"))
-        } catch (_: Exception) {}
+    Log.d("CREDIT_CAPTURE", "[saveAllToMediaStore] Cleaning existing MediaStore entries for '%credit_trxs/$safeKey/$mmDd%'...")
+    try {
+        val proj = arrayOf(MediaStore.Images.Media._ID)
+        val sel = "${MediaStore.Images.Media.RELATIVE_PATH} LIKE ?"
+        val selArgs = arrayOf("%credit_trxs/$safeKey/$mmDd%")
+        var deletedCount = 0
+        resolver.query(collection, proj, sel, selArgs, null)?.use { cursor ->
+            val idCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(idCol)
+                val uri = ContentUris.withAppendedId(collection, id)
+                try {
+                    val rows = resolver.delete(uri, null, null)
+                    deletedCount += rows
+                } catch (e: Exception) {
+                    Log.w("CREDIT_CAPTURE", "[saveAllToMediaStore] Failed deleting URI $uri: ${e.message}")
+                }
+            }
+        }
+        Log.d("CREDIT_CAPTURE", "[saveAllToMediaStore] Deleted $deletedCount MediaStore entries.")
+    } catch (e: Exception) {
+        Log.w("CREDIT_CAPTURE", "[saveAllToMediaStore] MediaStore cleanup error: ${e.message}")
+    }
+
+    try {
+        val cleanSubPath = "credit_trxs/$safeKey/$mmDd"
+        val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val dir = File(downloadsDir, cleanSubPath)
+        Log.d("CREDIT_CAPTURE", "[saveAllToMediaStore] Physical dir check: '${dir.absolutePath}' exists=${dir.exists()}")
+        if (dir.exists() && dir.isDirectory) {
+            val files = dir.listFiles()
+            var deletedFileCount = 0
+            files?.forEach { file ->
+                if (file.isFile && file.delete()) {
+                    deletedFileCount++
+                }
+            }
+            Log.d("CREDIT_CAPTURE", "[saveAllToMediaStore] Deleted $deletedFileCount physical files from ${dir.absolutePath}")
+        }
+    } catch (e: Exception) {
+        Log.w("CREDIT_CAPTURE", "[saveAllToMediaStore] Physical file cleanup error: ${e.message}")
     }
 
     val fmt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
@@ -173,6 +201,9 @@ fun saveAllToMediaStore(
             resolver.update(uri, ContentValues().apply { put(MediaStore.Images.Media.IS_PENDING, 0) }, null, null)
         }
         savedUris.add(uri)
+        Log.d("CREDIT_CAPTURE", "[saveAllToMediaStore] Saved image: $uri (display='image_${lbl}.webp')")
     }
+
+    Log.d("CREDIT_CAPTURE", "[saveAllToMediaStore] Finished. Total saved URIs: ${savedUris.size}")
     return savedUris
 }

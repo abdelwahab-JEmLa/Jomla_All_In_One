@@ -10,16 +10,18 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.CommandButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.CreditCapture.CreditItems_Capturable_List
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.DropdownItems.DropdownItem_Credit
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.DropdownItems.DropdownItem_CreditEtVersement
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.DropdownItems.DropdownItem_Versement
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.CreditCapture.CreditItems_Capturable_List
-import android.os.Build
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,7 +73,7 @@ import androidx.compose.ui.window.DialogProperties
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-private enum class ActiveDropdownItem { None, Credit, Versement }
+private enum class ActiveDropdownItem { None, Credit, Versement, CreditEtVersement }
 @Composable
 private fun CustomStatusDropdownMenu(
     aCentralFacade: ACentralFacade = koinInject(),
@@ -85,7 +87,7 @@ private fun CustomStatusDropdownMenu(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
-    ) {
+    ) { 
         @Composable
         fun StatusDropdownItem(
             status: M8BonVent.EtateActuellementEst,
@@ -194,6 +196,13 @@ private fun CustomStatusDropdownMenu(
                 onActivate = { activeItem = ActiveDropdownItem.Versement },
                 onDismiss = { activeItem = ActiveDropdownItem.None; onDismissRequest() },
             )
+            DropdownItem_CreditEtVersement(
+                aCentralFacade = aCentralFacade,
+                relative_M2Client = client,
+                isActive = activeItem == ActiveDropdownItem.CreditEtVersement,
+                onActivate = { activeItem = ActiveDropdownItem.CreditEtVersement },
+                onDismiss = { activeItem = ActiveDropdownItem.None; onDismissRequest() },
+            )
         }
 
         focusedValuesGetter.currentApp_Est_Admin.ifTrue {
@@ -238,6 +247,7 @@ private fun CustomStatusDropdownMenu(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun MarkerStatusDialog(
     viewModel: MapClientsViewModel = koinViewModel(),

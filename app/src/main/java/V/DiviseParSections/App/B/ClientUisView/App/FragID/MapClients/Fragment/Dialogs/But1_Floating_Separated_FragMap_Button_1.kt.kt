@@ -120,7 +120,8 @@ fun But1_OnClickMode(
                             modifier = Modifier.size(28.dp)
                         )
                     }
-
+                         //<--
+                         //TODO(1): ajout un btton au click 
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },

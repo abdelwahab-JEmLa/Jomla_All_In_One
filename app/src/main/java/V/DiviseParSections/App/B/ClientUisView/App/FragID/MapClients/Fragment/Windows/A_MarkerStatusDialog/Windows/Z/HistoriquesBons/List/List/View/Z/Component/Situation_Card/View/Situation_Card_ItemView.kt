@@ -130,19 +130,39 @@ fun Situation_Card_ItemView(
 
             when {
                 isNewSituationCredit -> {
-                    @SuppressLint("DefaultLocale")
-                    val formattedVal = String.format("%.2f", relative_M8BonVent.montant_principale_du_type)
-                    val (label, color) = if (relative_M8BonVent.montant_principale_du_type >= 0)
-                        "الرصيد المتبقي (دين)" to Color.White
-                    else
-                        "رصيد سالب (زيادة دفع)" to Color.Yellow
-                    Text(
-                        text = "$label: $formattedVal دج",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = color,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
+                    if (relative_M8BonVent.montant_principale_du_type == 0.0) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = Color(0xFF2196F3)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "زيرو زيرو جزاك الله خيراً",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color(0xFF2196F3),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    } else {
+                        @SuppressLint("DefaultLocale")
+                        val formattedVal = String.format("%.2f", relative_M8BonVent.montant_principale_du_type)
+                        val (label, color) = if (relative_M8BonVent.montant_principale_du_type > 0)
+                            "الرصيد المتبقي (دين)" to Color.White
+                        else
+                            "رصيد سالب (زيادة دفع)" to Color.Yellow
+                        Text(
+                            text = "$label: $formattedVal دج",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = color,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+                    }
                 }
 
                 isVersement -> {
@@ -267,6 +287,17 @@ fun Situation_Card_ItemView(
                         )
                     }
                 }
+            }
+
+            if (relative_M8BonVent.moulahada.isNotBlank()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "ملاحظة: ${relative_M8BonVent.moulahada}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.95f),
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))

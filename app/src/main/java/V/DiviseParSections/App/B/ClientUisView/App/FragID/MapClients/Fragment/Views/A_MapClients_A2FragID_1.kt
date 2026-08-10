@@ -26,7 +26,9 @@ fun A_MapClients_A2FragID_1(
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
-) {
+) {        //<--
+//TODO(2.C Relative Au Todo(1): 
+        //... affiche un floating dialog contien les client list qui son affiche au map avec la filtration au click ca lance le on click au marcque par le active mode 
     val uiState by viewModel.uiState.collectAsState()
     val progress = uiState.mainLoadingProgress
 
