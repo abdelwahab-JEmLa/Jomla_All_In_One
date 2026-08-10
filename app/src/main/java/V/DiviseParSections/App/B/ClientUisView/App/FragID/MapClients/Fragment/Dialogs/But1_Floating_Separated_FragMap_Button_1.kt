@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Share
@@ -120,8 +121,34 @@ fun But1_OnClickMode(
                             modifier = Modifier.size(28.dp)
                         )
                     }
-                         //<--
-                         //TODO(1): ajout un btton au click 
+
+                    // Quick-reset button: only shown when a non-default mode is active,
+                    // lets the user clear back to Standart with a single tap instead of
+                    // opening the dropdown and picking "Standard" manually.
+                    if (currentMode != ActiveCentralValues.Click_On_Marque.Standart) {
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(x = 8.dp, y = (-8).dp)
+                                .size(22.dp),
+                            onClick = {
+                                compt?.let {
+                                    viewModel.update_active_Compt(it.copy(click_On_Marque = ActiveCentralValues.Click_On_Marque.Standart))
+                                }
+                                viewModel.mapReloadTrigger++
+                                expanded = false
+                            },
+                            containerColor = Color.DarkGray,
+                            contentColor = Color.White
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Réinitialiser le mode au standard",
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
@@ -180,6 +207,50 @@ fun But1_OnClickMode(
     }
 }
 
+/**
+ * Small floating trigger button that opens the clients-list dialog
+ * (But1_Floating_ClientsListDialog). Placed next to But1_OnClickMode.
+ */
+@Composable
+fun But1_Floating_ClientsListButton(
+    onClick: () -> Unit,
+) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeightDp = configuration.screenHeightDp.dp
+
+    var offsetX by remember { mutableFloatStateOf(screenWidth.value - 200f) }
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 270f) }
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                .pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount ->
+                        change.consume()
+                        offsetX = (offsetX + dragAmount.x).coerceIn(0f, screenWidth.value - 100f)
+                        offsetY = (offsetY + dragAmount.y).coerceIn(0f, screenHeightDp.value - 100f)
+                    }
+                }
+                .padding(16.dp)
+        ) {
+            FloatingActionButton(
+                modifier = Modifier.size(48.dp),
+                onClick = onClick,
+                containerColor = Color.DarkGray,
+                contentColor = Color.White,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.List,
+                    contentDescription = "Afficher la liste des clients",
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+        }
+    }
+}
+
 private fun getModeIcon(mode: ActiveCentralValues.Click_On_Marque): ImageVector = when (mode) {
     ActiveCentralValues.Click_On_Marque.Standart -> Icons.Default.Info
     ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> Icons.Default.Add
@@ -191,7 +262,7 @@ private fun getModeIcon(mode: ActiveCentralValues.Click_On_Marque): ImageVector 
     ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> Icons.Default.Share
 }
 
-private fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
+fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
     ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
     ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Ajouter Ciblage"
     ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Afficher Commande"

@@ -5,6 +5,8 @@ import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_Floating_ClientsListButton
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_Floating_ClientsListDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_OnClickMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But2_GPSFollowMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
@@ -12,6 +14,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Di
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.CARTO_DB_VOYAGER
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.cleanupMapResources
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.initializeMapPosition
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui.MarkerEditModeOverlay
@@ -24,7 +27,9 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -79,7 +84,6 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.CARTO_DB_VOYAGER
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -87,6 +91,7 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 
 private const val SCROLL_RELOAD_DEBOUNCE_MS = 3_000L
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun MapContent(
     viewModel: MapClientsViewModel,
@@ -109,6 +114,7 @@ fun MapContent(
         MapView(context)
     }
     val showMarkerDetails by remember { mutableStateOf(true) }
+    var showClientsListDialog by remember { mutableStateOf(false) }
 
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
         ?: MapClientsViewModel.VisibleClientsNow.showAll
@@ -302,6 +308,18 @@ fun MapContent(
             )
         }
 
+        // Floating dialog listing clients currently shown on the map, filterable by
+        // search, tapping a row triggers the same marker-click logic as tapping the
+        // marker directly on the map (respecting the active Click_On_Marque mode).
+        if (showClientsListDialog) {
+            But1_Floating_ClientsListDialog(
+                mapView = mapView,
+                clients = uiState.b_ClientInfosProtoJuin3List,
+                viewModel = viewModel,
+                onDismiss = { showClientsListDialog = false },
+            )
+        }
+
         // Phone-entry dialog: shown when Cree_et_envoi_whatsapp_pdf is tapped for a client
         // whose phone number is missing. After the user enters a number the phone is saved
         // and the PDF + WhatsApp send is triggered automatically.
@@ -366,6 +384,11 @@ fun MapContent(
         focusedValuesGetter.active_Central_Values.affiche_Floating_Button_Cible_Client.ifTrue {
             But1_OnClickMode(
                 viewModel = viewModel
+            )
+            // Opens the floating clients-list dialog (search + tap-to-trigger the
+            // active Click_On_Marque mode) — resolves TODO(2.C).
+            But1_Floating_ClientsListButton(
+                onClick = { showClientsListDialog = true },
             )
         }
         focusedValuesGetter.active_Central_Values.affiche_Floating_Button_TogleFilterMarquers.ifTrue {

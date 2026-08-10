@@ -4,6 +4,8 @@ import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_Ne
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui.LoadingProgressOverlay
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun A_MapClients_A2FragID_1(
     modifier: Modifier = Modifier,
@@ -26,9 +29,10 @@ fun A_MapClients_A2FragID_1(
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
-) {        //<--
-//TODO(2.C Relative Au Todo(1): 
-        //... affiche un floating dialog contien les client list qui son affiche au map avec la filtration au click ca lance le on click au marcque par le active mode 
+) {
+    // TODO(2.C) resolved: the floating clients-list dialog (search/filter + tap-to-trigger
+    // the active Click_On_Marque mode) lives in But1_Floating_ClientsListDialog and is
+    // opened from MapContent's floating buttons row via showClientsListDialog state.
     val uiState by viewModel.uiState.collectAsState()
     val progress = uiState.mainLoadingProgress
 
