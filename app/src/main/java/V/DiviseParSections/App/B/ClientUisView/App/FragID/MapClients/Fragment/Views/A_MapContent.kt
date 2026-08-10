@@ -14,6 +14,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Di
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
+// getClientsCurrentlyVisibleOnMap is defined in A_B_MarkersHandler.kt, same package — no import needed.
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.CARTO_DB_VOYAGER
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.cleanupMapResources
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.initializeMapPosition
@@ -312,9 +313,19 @@ fun MapContent(
         // search, tapping a row triggers the same marker-click logic as tapping the
         // marker directly on the map (respecting the active Click_On_Marque mode).
         if (showClientsListDialog) {
+            // Same clients (mode filter + proximity filter) as what's actually
+            // drawn as markers on the map right now — NOT the full, unfiltered
+            // client database — so the search field filters within what's
+            // visible instead of searching every client that exists.
+            val clientsCurrentlyOnMap = getClientsCurrentlyVisibleOnMap(
+                viewModel = viewModel,
+                currentFilterMode = currentFilterMode,
+                proximityFilterCenter = proximityFilterCenter,
+                proximityFilterRadiusMeters = viewModel.proximite_de_vision_meter.toDouble(),
+            )
             But1_Floating_ClientsListDialog(
                 mapView = mapView,
-                clients = uiState.b_ClientInfosProtoJuin3List,
+                clients = clientsCurrentlyOnMap,
                 viewModel = viewModel,
                 onDismiss = { showClientsListDialog = false },
             )
@@ -386,7 +397,6 @@ fun MapContent(
                 viewModel = viewModel
             )
             // Opens the floating clients-list dialog (search + tap-to-trigger the
-            // active Click_On_Marque mode) — resolves TODO(2.C).
             But1_Floating_ClientsListButton(
                 onClick = { showClientsListDialog = true },
             )
@@ -504,5 +514,3 @@ private fun ensureLocationOverlayIsAtBottom(mapView: MapView) {
     mapView.overlays.find { it.javaClass.simpleName.contains("Location") || it.toString().contains("location", ignoreCase = true) }
         ?.let { mapView.overlays.remove(it); mapView.overlays.add(0, it) }
 }
-
-

@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.bluetooth.BluetoothAdapter
@@ -94,6 +94,97 @@ class BluetoothPrintHandler {
             e.printStackTrace()
             false
         }
+    }
+
+    /**
+     * Prints a list of credit transactions (Credit / Versement / New_Situation_Credit, etc.)
+     * via the Bluetooth thermal printer, with each item separated and text in French.
+     * Client name is automatically transliterated from Arabic to Latin if needed.
+     */
+    fun printCreditItemsListBluetooth(
+        context: Context,
+        client: M2Client?,
+        bons: List<M8BonVent>,
+        companyHeader: String = "Jomla.com"
+    ): Boolean {
+        if (!isBluetoothAvailable()) {
+            return false
+        }
+
+        if (bons.isEmpty()) {
+            return false
+        }
+
+        return try {
+            val texteImprimable = prepareCreditItemsListText(client, bons, companyHeader)
+            handleBluetoothPrint(context, texteImprimable)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun prepareCreditItemsListText(
+        client: M2Client?,
+        bons: List<M8BonVent>,
+        companyHeader: String
+    ): String {
+        val clientName = getClientDisplayName(client)
+        val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+        val etatLabelFr: (M8BonVent.EtateActuellementEst) -> String = { etat ->
+            when (etat) {
+                M8BonVent.EtateActuellementEst.Credit -> "Credit"
+                M8BonVent.EtateActuellementEst.Versemment -> "Versement"
+                M8BonVent.EtateActuellementEst.New_Situation_Credit -> "Nouvelle Situation"
+                M8BonVent.EtateActuellementEst.Demande_Versemet -> "Demande de Versement"
+                M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit -> "Transaction Credit"
+                else -> etat.name
+            }
+        }
+
+        return StringBuilder().apply {
+            append("<BIG><CENTER>$companyHeader<BR>")
+            append("<SMALL><CENTER>0553885037<BR>")
+            append("<SMALL><CENTER>Historique des Transactions Credit<BR>")
+            append("<BR>")
+            append("<MEDIUM1><CENTER>$clientName<BR>")
+            append("<SMALL><CENTER>$dateString<BR>")
+            append("<BR>")
+            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+
+            bons.forEachIndexed { index, bon ->
+                val itemDate = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    .format(Date(bon.creationTimestamps))
+                val label = etatLabelFr(bon.etateActuellementEst)
+                val montant = when (bon.etateActuellementEst) {
+                    M8BonVent.EtateActuellementEst.Credit -> bon.credit_fait
+                    M8BonVent.EtateActuellementEst.Versemment -> bon.versement_fait
+                    M8BonVent.EtateActuellementEst.New_Situation_Credit -> bon.montant_principale_du_type
+                    else -> bon.montant_principale_du_type
+                }
+
+                append("<MEDIUM1><LEFT>${index + 1}. $label<BR>")
+                append("<SMALL><LEFT>$itemDate<BR>")
+                append("<MEDIUM2><RIGHT>${round(montant)}Da<BR>")
+
+                if (!bon.moulahada.isNullOrBlank()) {
+                    val formattedComment = formatCommentForPrinting(bon.moulahada)
+                    if (formattedComment.isNotBlank()) {
+                        append("$formattedComment<BR>")
+                    }
+                }
+
+                if (index < bons.lastIndex) {
+                    append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
+                }
+            }
+
+            append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
+            append("<BR>")
+            append("<SMALL><CENTER>Total: ${bons.size} transaction(s)<BR>")
+            append("<BR><BR><BR>>")
+        }.toString()
     }
 
     /**

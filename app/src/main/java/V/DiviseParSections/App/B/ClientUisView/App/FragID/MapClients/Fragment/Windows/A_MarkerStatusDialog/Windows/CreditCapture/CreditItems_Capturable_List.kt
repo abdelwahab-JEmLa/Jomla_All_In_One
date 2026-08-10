@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View.Z.Component.Situation_Card.View.Situation_Card_ItemView
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.BluetoothPrintHandler
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import android.content.ClipData
 import android.content.ContentUris
@@ -12,7 +13,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -33,6 +33,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -236,10 +237,15 @@ fun CreditItems_Capturable_List(
             .sortedByDescending { it.creationTimestamps }
     }
 
-    var captureCountInput by remember { mutableStateOf("10") }
-    var captureCount by remember { mutableStateOf(10) }
+    var captureCountInput by remember { mutableStateOf("4") }
+    var captureCount by remember { mutableStateOf(4) }
     var showCountDialog by remember { mutableStateOf(false) }
     val countFocusRequester = remember { FocusRequester() }
+
+    var printCountInput by remember { mutableStateOf("4") }
+    var printCount by remember { mutableStateOf(4) }
+    var showPrintCountDialog by remember { mutableStateOf(false) }
+    val printCountFocusRequester = remember { FocusRequester() }
 
     val itemsToDisplay = remember(allBons, captureCount) { allBons.take(captureCount) }
 
@@ -273,32 +279,25 @@ fun CreditItems_Capturable_List(
     LaunchedEffect(whatsappSendRequest) {
         val phone = whatsappSendRequest ?: return@LaunchedEffect
         if (isCapturing.value) {
-            Log.w("CREDIT_CAPTURE", "Capture already in progress, skipping duplicate request")
             return@LaunchedEffect
         }
         isCapturing.value = true
-        Log.d("CREDIT_CAPTURE", "Starting capture flow for phone: $phone. isExpanded: $isExpanded, itemsToDisplay: ${itemsToDisplay.size}")
 
         if (!isExpanded) {
-            Log.d("CREDIT_CAPTURE", "List is collapsed — setting isExpanded = true for capture")
             isExpanded = true
             delay(300)
         }
 
         var retry = 0
         while (ctrl.size() < itemsToDisplay.size && retry < 5) {
-            Log.d("CREDIT_CAPTURE", "Waiting for items composition: ctrl.size()=${ctrl.size()} expected=${itemsToDisplay.size} (attempt $retry)")
             delay(200)
             retry++
         }
 
-        Log.d("CREDIT_CAPTURE", "Executing ctrl.captureAll(). Registered items: ${ctrl.size()}")
         val raw = ctrl.captureAll()
-        Log.d("CREDIT_CAPTURE", "ctrl.captureAll() returned ${raw.size} bitmap(s)")
         val namedImages = mapRawToNamed(raw)
 
         if (namedImages.isEmpty()) {
-            Log.w("CREDIT_CAPTURE", "namedImages is empty after capture! Aborting.")
             whatsappSendRequest = null
             isCapturing.value = false
             withContext(Dispatchers.Main) {
@@ -311,7 +310,6 @@ fun CreditItems_Capturable_List(
         val safeKey = relative_M2Client?.keyID?.replace(Regex("[^a-zA-Z0-9_\\-]"), "_") ?: ""
         val todayFolderPath = "Download/credit_trxs/$safeKey/$mmDd"
 
-        Log.d("CREDIT_CAPTURE", "Saving ${namedImages.size} images to MediaStore path '$todayFolderPath'...")
         val savedUris: List<Uri> = withContext(Dispatchers.IO) {
             relative_M2Client?.let {
                 saveAllToMediaStore(
@@ -323,19 +321,14 @@ fun CreditItems_Capturable_List(
             } ?: emptyList()
         }
 
-        Log.d("CREDIT_CAPTURE", "saveAllToMediaStore returned ${savedUris.size} URIs")
-
         if (savedUris.isNotEmpty()) {
             val updated = getTodayCreditImages(context, relative_M2Client?.keyID)
             todayImages = updated
-            Log.d("CREDIT_CAPTURE", "Updated todayImages count: ${updated.size}")
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "تم التقاط وحفظ ${savedUris.size} صورة", Toast.LENGTH_SHORT).show()
-                Log.d("CREDIT_CAPTURE", "Displayed Toast: تم التقاط وحفظ ${savedUris.size} صورة")
             }
             sendImagesToWhatsApp(context, phone, updated)
         } else {
-            Log.e("CREDIT_CAPTURE", "savedUris is empty after saving!")
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "فشل في حفظ الصور", Toast.LENGTH_SHORT).show()
             }
@@ -344,6 +337,8 @@ fun CreditItems_Capturable_List(
         whatsappSendRequest = null
         isCapturing.value = false
     }
+
+    val bluetoothPrintHandler = remember { BluetoothPrintHandler() }
 
     Card(
         modifier = Modifier
@@ -385,6 +380,18 @@ fun CreditItems_Capturable_List(
                             Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(Modifier.width(4.dp))
                             Text("التقاط $captureCount الأخيرة", style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+
+                    if (itemsToDisplay.isNotEmpty()) {
+                        Button(
+                            onClick = { showPrintCountDialog = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Icon(Icons.Default.Print, contentDescription = null, modifier = Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Imprimer", style = MaterialTheme.typography.labelSmall)
                         }
                     }
 
@@ -490,6 +497,74 @@ fun CreditItems_Capturable_List(
             },
             dismissButton = {
                 Button(onClick = { showCountDialog = false }) {
+                    Text("إلغاء")
+                }
+            }
+        )
+    }
+
+    if (showPrintCountDialog) {
+        AlertDialog(
+            onDismissRequest = { showPrintCountDialog = false },
+            title = { Text("عدد العناصر للطباعة") },
+            text = {
+                OutlinedTextField(
+                    value = printCountInput,
+                    onValueChange = { input -> if (input.all { it.isDigit() }) printCountInput = input },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            val count = printCountInput.toIntOrNull() ?: 4
+                            printCount = count.coerceAtLeast(1)
+                            showPrintCountDialog = false
+                            val success = bluetoothPrintHandler.printCreditItemsListBluetooth(
+                                context = context,
+                                client = relative_M2Client,
+                                bons = allBons.take(printCount.coerceAtLeast(1)),
+                            )
+                            if (!success) {
+                                Toast.makeText(
+                                    context,
+                                    "Bluetooth non disponible ou aucune transaction",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(printCountFocusRequester)
+                )
+                LaunchedEffect(Unit) {
+                    printCountFocusRequester.requestFocus()
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val count = printCountInput.toIntOrNull() ?: 4
+                        printCount = count.coerceAtLeast(1)
+                        showPrintCountDialog = false
+                        val success = bluetoothPrintHandler.printCreditItemsListBluetooth(
+                            context = context,
+                            client = relative_M2Client,
+                            bons = allBons.take(printCount.coerceAtLeast(1)),
+                        )
+                        if (!success) {
+                            Toast.makeText(
+                                context,
+                                "Bluetooth non disponible ou aucune transaction",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                ) {
+                    Text("طباعة")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showPrintCountDialog = false }) {
                     Text("إلغاء")
                 }
             }

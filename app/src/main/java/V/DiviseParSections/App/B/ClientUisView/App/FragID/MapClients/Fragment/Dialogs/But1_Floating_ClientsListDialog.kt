@@ -3,6 +3,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.D
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import android.os.SystemClock
+import android.view.MotionEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,11 +47,13 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 /**
- * TODO(2.C): Floating dialog listing the clients currently displayed on the map.
- * Typing in the search field filters the list by name/phone. Tapping a row
- * simulates a tap on that client's marker, so the same active
- * Click_On_Marque mode (Standard / Ajouter Ciblage / Appeler / Navigation / ...)
- * that would fire from the map fires from here too.
+ * Floating dialog listing the clients currently displayed on the map (the
+ * caller passes in the same mode-filtered + proximity-filtered list that's
+ * rendered as markers, via getClientsCurrentlyVisibleOnMap — not the full,
+ * unfiltered client database). Typing in the search field filters that list
+ * by name/phone. Tapping a row simulates a tap on that client's marker, so
+ * the same active Click_On_Marque mode (Standard / Ajouter Ciblage / Appeler
+ * / Navigation / ...) that would fire from the map fires from here too.
  */
 @Composable
 fun But1_Floating_ClientsListDialog(
@@ -63,12 +67,22 @@ fun But1_Floating_ClientsListDialog(
     val compt = viewModel.active_Datas.active_M9Compt
     val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
 
-    val filteredClients = remember(clients, searchQuery) {
-        if (searchQuery.isBlank()) {
-            clients
-        } else {
-            val query = searchQuery.trim().lowercase()
-            clients.filter {
+    // Below 3 characters, search stays scoped to the clients currently shown
+    // on the map (the same mode-filtered + proximity-filtered `clients` list
+    // passed in). From 3 characters on, the search broadens to the full
+    // client database, so the user can find any client by name — not only
+    // one that's currently rendered as a marker.
+    val allClients = viewModel.getter.repo2Client.datasValue
+
+    val filteredClients = remember(clients, allClients, searchQuery) {
+        val query = searchQuery.trim().lowercase()
+        when {
+            query.isEmpty() -> clients
+            query.length < 3 -> clients.filter {
+                it.nom.lowercase().contains(query) ||
+                        it.numTelephone.lowercase().contains(query)
+            }
+            else -> allClients.filter {
                 it.nom.lowercase().contains(query) ||
                         it.numTelephone.lowercase().contains(query)
             }
@@ -164,7 +178,24 @@ fun But1_Floating_ClientsListDialog(
                                         .filterIsInstance<Marker>()
                                         .find { it.id == client.id.toString() }
                                     if (marker != null) {
-                                        marker.onMarkerClick(marker, mapView)
+                                        // onSingleTapConfirmed is the exact call osmdroid's own
+                                        // touch dispatch makes on a real tap; it invokes the
+                                        // OnMarkerClickListener registered on the MapView (see
+                                        // A_B_MarkersHandler.kt), which runs the active mode's
+                                        // logic — including showing the Standard-mode dialog.
+                                        val fakeTapEvent = MotionEvent.obtain(
+                                            SystemClock.uptimeMillis(),
+                                            SystemClock.uptimeMillis(),
+                                            MotionEvent.ACTION_UP,
+                                            0f,
+                                            0f,
+                                            0,
+                                        )
+                                        try {
+                                            marker.onSingleTapConfirmed(fakeTapEvent, mapView)
+                                        } finally {
+                                            fakeTapEvent.recycle()
+                                        }
                                     } else {
                                         // Marker not currently rendered (e.g. filtered out
                                         // of view) — fall back to opening its standard

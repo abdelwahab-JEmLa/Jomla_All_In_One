@@ -69,9 +69,42 @@ fun addOuUpdateMapMarkers(
 
     val locationOverlay = preserveLocationOverlay(mapView)
 
+    val clientsToShow = getClientsCurrentlyVisibleOnMap(
+        viewModel = viewModel,
+        currentFilterMode = currentFilterMode,
+        proximityFilterCenter = proximityFilterCenter,
+        proximityFilterRadiusMeters = proximityFilterRadiusMeters,
+    )
+    addMarkersForFilteredClients(
+        mapView,
+        clientsToShow,
+        viewModel,
+        showMarkerDetails,
+        fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
+        list_M13TarificationInfos = list_M13TarificationInfos,
+    )
+
+    restoreLocationOverlayAtBottom(mapView, locationOverlay)
+}
+
+/**
+ * The exact set of clients currently rendered as markers on the map: the mode
+ * filter (currentFilterMode) followed by the proximity filter, if any.
+ *
+ * Shared by addOuUpdateMapMarkers (to draw the markers) and by MapContent (to
+ * feed But1_Floating_ClientsListDialog), so the clients-list dialog always
+ * lists exactly what's on the map instead of the full, unfiltered client
+ * database — see the note this replaces in But1_Floating_ClientsListDialog.
+ */
+fun getClientsCurrentlyVisibleOnMap(
+    viewModel: MapClientsViewModel,
+    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
+    proximityFilterCenter: GeoPoint?,
+    proximityFilterRadiusMeters: Double,
+): List<M2Client> {
     val modeFilteredClients = filterClientsBasedOnMode(viewModel, currentFilterMode)
 
-    val clientsToShow = if (proximityFilterCenter != null) {
+    return if (proximityFilterCenter != null) {
         modeFilteredClients.filter { client ->
             haversineMeters(
                 proximityFilterCenter.latitude,
@@ -83,16 +116,6 @@ fun addOuUpdateMapMarkers(
     } else {
         modeFilteredClients
     }
-    addMarkersForFilteredClients(
-        mapView,
-        clientsToShow,
-        viewModel,
-        showMarkerDetails,
-        fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
-        list_M13TarificationInfos = list_M13TarificationInfos,
-    )
-
-    restoreLocationOverlayAtBottom(mapView, locationOverlay)
 }
 
 fun addMarkersForFilteredClients(
