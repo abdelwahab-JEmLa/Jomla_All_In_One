@@ -96,11 +96,7 @@ class BluetoothPrintHandler {
         }
     }
 
-    /**
-     * Prints a list of credit transactions (Credit / Versement / New_Situation_Credit, etc.)
-     * via the Bluetooth thermal printer, with each item separated and text in French.
-     * Client name is automatically transliterated from Arabic to Latin if needed.
-     */
+
     fun printCreditItemsListBluetooth(
         context: Context,
         client: M2Client?,
@@ -130,6 +126,9 @@ class BluetoothPrintHandler {
         bons: List<M8BonVent>,
         companyHeader: String
     ): String {
+        // Transactions ordered oldest -> newest
+        val sortedBons = bons.sortedBy { it.creationTimestamps }
+
         val clientName = getClientDisplayName(client)
         val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
         val etatLabelFr: (M8BonVent.EtateActuellementEst) -> String = { etat ->
@@ -143,6 +142,21 @@ class BluetoothPrintHandler {
             }
         }
 
+        // The current balance is the client's most recent "Nouvelle Situation" bon,
+        // since that entry already stores the recalculated running balance.
+        // Only fall back to summing credits/versements if no such entry exists.
+        val finalBalance = sortedBons
+            .lastOrNull { it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit }
+            ?.montant_principale_du_type
+            ?: (sortedBons.sumOf {
+                when (it.etateActuellementEst) {
+                    M8BonVent.EtateActuellementEst.Credit,
+                    M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit -> it.credit_fait
+                    M8BonVent.EtateActuellementEst.Versemment -> -it.versement_fait
+                    else -> 0.0
+                }
+            })
+
         return StringBuilder().apply {
             append("<BIG><CENTER>$companyHeader<BR>")
             append("<SMALL><CENTER>0553885037<BR>")
@@ -153,20 +167,29 @@ class BluetoothPrintHandler {
             append("<BR>")
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
 
-            bons.forEachIndexed { index, bon ->
-                val itemDate = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                    .format(Date(bon.creationTimestamps))
+            sortedBons.forEachIndexed { index, bon ->
+                val itemDate = formatTransactionDate(bon.creationTimestamps)
                 val label = etatLabelFr(bon.etateActuellementEst)
                 val montant = when (bon.etateActuellementEst) {
-                    M8BonVent.EtateActuellementEst.Credit -> bon.credit_fait
+                    M8BonVent.EtateActuellementEst.Credit,
+                    M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit -> bon.credit_fait
                     M8BonVent.EtateActuellementEst.Versemment -> bon.versement_fait
                     M8BonVent.EtateActuellementEst.New_Situation_Credit -> bon.montant_principale_du_type
                     else -> bon.montant_principale_du_type
                 }
 
+                // "+" next to credit amounts, "-" next to versement amounts
+                val sign = when (bon.etateActuellementEst) {
+                    M8BonVent.EtateActuellementEst.Credit,
+                    M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit -> "+"
+                    M8BonVent.EtateActuellementEst.Versemment -> "-"
+                    else -> ""
+                }
+
                 append("<MEDIUM1><LEFT>${index + 1}. $label<BR>")
                 append("<SMALL><LEFT>$itemDate<BR>")
-                append("<MEDIUM2><RIGHT>${round(montant)}Da<BR>")
+                // Bigger, bold amount, plain (non-inverse) black-on-white text
+                append("<MEDIUM3><BOLD><NORMAL><RIGHT>$sign${round(montant)}Da<BR>")
 
                 if (!bon.moulahada.isNullOrBlank()) {
                     val formattedComment = formatCommentForPrinting(bon.moulahada)
@@ -175,16 +198,51 @@ class BluetoothPrintHandler {
                     }
                 }
 
-                if (index < bons.lastIndex) {
+                if (index < sortedBons.lastIndex) {
                     append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
                 }
             }
 
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
             append("<BR>")
-            append("<SMALL><CENTER>Total: ${bons.size} transaction(s)<BR>")
+            append("<SMALL><CENTER>Total: ${sortedBons.size} transaction(s)<BR>")
+            append("<BR>")
+
+            // Current balance = latest "Nouvelle Situation" value
+            append("<MEDIUM1><CENTER>Solde Actuel du Credit<BR>")
+            append("<MEDIUM2><BOLD><NORMAL><CENTER>${round(finalBalance)}Da<BR>")
+
             append("<BR><BR><BR>>")
         }.toString()
+    }
+
+    /**
+     * Formats a transaction timestamp for the receipt:
+     * - "Samedi 18 Août(8) 2026 HH:mm"
+     */
+    private fun formatTransactionDate(timestampRaw: Long): String {
+        // Some sources (backend/Firebase) store creationTimestamps in seconds
+        // instead of milliseconds. Normalize to millis so formatting is correct.
+        val timestamp = if (timestampRaw in 1 until 10_000_000_000L) {
+            timestampRaw * 1000
+        } else {
+            timestampRaw
+        }
+
+        val date = Date(timestamp)
+        val calendar = java.util.Calendar.getInstance().apply { time = date }
+
+        val timeString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)
+
+        val dayName = SimpleDateFormat("EEEE", Locale.FRENCH).format(date)
+            .replaceFirstChar { it.uppercase() }
+        val dayNumber = calendar.get(java.util.Calendar.DAY_OF_MONTH)
+        val monthName = SimpleDateFormat("MMMM", Locale.FRENCH).format(date)
+            .replaceFirstChar { it.uppercase() }
+        val monthNumber = calendar.get(java.util.Calendar.MONTH) + 1
+        val year = calendar.get(java.util.Calendar.YEAR)
+
+        return "$dayName $dayNumber $monthName($monthNumber) $year $timeString"
     }
 
     /**

@@ -381,15 +381,7 @@ fun MapContent(
             )
         }
 
-        focusedValuesGetter.active_Central_Values.affiche_Floating_Button_Cible_Client.ifTrue {
-            But1_OnClickMode(
-                viewModel = viewModel
-            )
-            // Opens the floating clients-list dialog (search + tap-to-trigger the
-            But1_Floating_ClientsListButton(
-                onClick = { showClientsListDialog = true },
-            )
-        }
+
         focusedValuesGetter.active_Central_Values.affiche_Floating_Button_TogleFilterMarquers.ifTrue {
             ClientFilterMode_Button_4()
         }
@@ -404,6 +396,17 @@ fun MapContent(
                 )
             )
         }
+
+        focusedValuesGetter.active_Central_Values.affiche_Floating_Button_Cible_Client.ifTrue {
+            But1_OnClickMode(
+                viewModel = viewModel
+            )
+            // Opens the floating clients-list dialog (search + tap-to-trigger the
+            But1_Floating_ClientsListButton(
+                onClick = { showClientsListDialog = true },
+            )
+        }
+
         if (showClientsListDialog) {
             val clientsCurrentlyOnMap = getClientsCurrentlyVisibleOnMap(
                 viewModel = viewModel,

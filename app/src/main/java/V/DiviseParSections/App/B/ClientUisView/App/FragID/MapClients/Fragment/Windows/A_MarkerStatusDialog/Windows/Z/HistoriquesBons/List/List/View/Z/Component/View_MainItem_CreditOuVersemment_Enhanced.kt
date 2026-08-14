@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
@@ -91,7 +90,7 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
                     bon.creationTimestamps < relative_M8BonVent.creationTimestamps
         }
         .maxByOrNull { it.creationTimestamps }
-      Card(
+    Card(
         modifier = Modifier.Companion
             .fillMaxWidth()
             .wrapContentHeight(),
@@ -335,9 +334,15 @@ fun View_MainItem_CreditOuVersemment_Enhanced(
                         )
                         Spacer(modifier = Modifier.Companion.width(8.dp))
                         Text(
-                            text = "ملاحظات: $localMoulahada",
+                            text = if (localMoulahada.isNotBlank())
+                                "ملاحظات: $localMoulahada"
+                            else
+                                "اضغط لإضافة ملاحظة",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Companion.White,
+                            color = if (localMoulahada.isNotBlank())
+                                Color.Companion.White
+                            else
+                                Color.Companion.White.copy(alpha = 0.7f),
                             fontWeight = FontWeight.Companion.Medium
                         )
                     }

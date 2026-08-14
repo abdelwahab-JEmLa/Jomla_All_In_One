@@ -68,6 +68,9 @@ class MultiCaptureController {
 
     fun size(): Int = entries.size
 
+    /** Nombre d'entrées enregistrées qui ont effectivement été dessinées (prêtes à être capturées). */
+    fun drawnCount(): Int = entries.values.count { it.hasBeenDrawn() }
+
     /** Capture tous les items actuellement enregistrés sans scroll (pour Column). */
     suspend fun captureAll(): List<Pair<String, ImageBitmap>> {
         delay(100)
@@ -132,7 +135,7 @@ fun saveAllToMediaStore(
     val mmDd = SimpleDateFormat("MM_dd", Locale.getDefault()).format(Date())
     val folderPath = customFolderPath ?: "Download/credit_trxs/$safeKey/$mmDd"
     val resolver = context.contentResolver
-    
+
     val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
         MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
     else

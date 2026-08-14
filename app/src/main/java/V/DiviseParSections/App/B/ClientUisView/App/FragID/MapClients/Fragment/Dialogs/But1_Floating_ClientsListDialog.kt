@@ -7,7 +7,6 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.performClickOnMarqueAction
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.get_sum_Bon_Vents
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -250,10 +249,14 @@ fun But1_Floating_ClientsListDialog(
                     ) {
                         items(
                             filteredClients,
-                            key = { client -> "${client.id}_${client.nom}_${client.numTelephone}" },
                         ) { client ->
                             val lastTransaction = remember(client.id, viewModel.mapReloadTrigger) {
-                                viewModel.getLastTransaction(client)
+                                viewModel.getter.repo8BonVent.datasValue
+                                    ?.filter {
+                                        it.parent_M2Client_KeyID == client.keyID
+                                                && it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
+                                    }
+                                    ?.maxByOrNull { it.creationTimestamps }
                             }
                             ClientRow(
                                 client = client,
@@ -261,10 +264,6 @@ fun But1_Floating_ClientsListDialog(
                                 lastTransaction = lastTransaction,
                                 getter = viewModel.getter,
                                 onClick = {
-                                    // Same dispatch as tapping the client's marker on the map
-                                    // (performClickOnMarqueAction), so the row honours whichever
-                                    // Click_On_Marque mode is active — Call/Navigate/etc. — instead
-                                    // of always opening the Standard client-details dialog.
                                     performClickOnMarqueAction(
                                         context = mapView.context,
                                         m2Client = client,
@@ -328,11 +327,8 @@ private fun ClientRow(
     getter: RepositorysMainGetter,
     onClick: () -> Unit,
 ) {
-    // Same idea as the marker title (A_B_MarkersHandler.Marker.title): if the
-    // client has a positive running credit (sum of their bons > 0, i.e. their
-    // "new_situation"), show the amount and the date of their last bon so
-    // it's visible without opening the marker.
-    val sumBonVents = lastTransaction?.let { get_sum_Bon_Vents(getter, it) }
+    val sumBonVents = lastTransaction?.let { lastTransaction.montant_principale_du_type }
+
     val creditLabel = if (lastTransaction != null && (sumBonVents ?: 0.0) > 0.0) {
         val dateHandler = DatesHandler()
         val date = dateHandler.getDateAndTimString(lastTransaction.creationTimestamps).date

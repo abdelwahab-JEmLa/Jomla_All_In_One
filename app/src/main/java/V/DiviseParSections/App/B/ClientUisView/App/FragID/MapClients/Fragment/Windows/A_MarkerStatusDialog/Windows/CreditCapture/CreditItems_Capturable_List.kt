@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -232,7 +233,7 @@ fun CreditItems_Capturable_List(
         aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
             .filter {
                 it.parent_M2Client_KeyID == relative_M2Client?.keyID &&
-                it.etateActuellementEst in CREDIT_STATES
+                        it.etateActuellementEst in CREDIT_STATES
             }
             .sortedByDescending { it.creationTimestamps }
     }
@@ -242,8 +243,8 @@ fun CreditItems_Capturable_List(
     var showCountDialog by remember { mutableStateOf(false) }
     val countFocusRequester = remember { FocusRequester() }
 
-    var printCountInput by remember { mutableStateOf("4") }
-    var printCount by remember { mutableStateOf(4) }
+    var printCountInput by remember { mutableStateOf("3") }
+    var printCount by remember { mutableStateOf(3) }
     var showPrintCountDialog by remember { mutableStateOf(false) }
     val printCountFocusRequester = remember { FocusRequester() }
 
@@ -288,14 +289,45 @@ fun CreditItems_Capturable_List(
             delay(300)
         }
 
+        val expectedCount = itemsToDisplay.size
+
+        // 1) Attendre que les n items soient au moins enregistrés (composés).
         var retry = 0
-        while (ctrl.size() < itemsToDisplay.size && retry < 5) {
+        while (ctrl.size() < expectedCount && retry < 5) {
             delay(200)
             retry++
         }
 
+        // 2) Attendre que les n items soient réellement dessinés, pour garantir que
+        //    captureAll() renverra exactement `expectedCount` images, dans le même ordre
+        //    que itemsToDisplay (le dernier item capturé correspond bien au dernier "bon").
+        var drawnRetry = 0
+        val maxDrawnRetries = 20 // ~4s d'attente max
+        while (ctrl.drawnCount() < expectedCount && drawnRetry < maxDrawnRetries) {
+            delay(200)
+            drawnRetry++
+        }
+
+        if (ctrl.drawnCount() < expectedCount) {
+            Log.w(
+                "CREDIT_CAPTURE",
+                "Seulement ${ctrl.drawnCount()}/$expectedCount items dessinés avant capture; " +
+                        "poursuite avec les items disponibles."
+            )
+        }
+
+        // captureAll() ne retient que les entrées dessinées et les trie par index,
+        // donc l'ordre correspond déjà à celui de itemsToDisplay (le dernier élément
+        // capturé est bien le dernier "bon" affiché).
         val raw = ctrl.captureAll()
         val namedImages = mapRawToNamed(raw)
+
+        if (namedImages.size < expectedCount) {
+            Log.w(
+                "CREDIT_CAPTURE",
+                "Capture incomplète: ${namedImages.size}/$expectedCount images capturées."
+            )
+        }
 
         if (namedImages.isEmpty()) {
             whatsappSendRequest = null

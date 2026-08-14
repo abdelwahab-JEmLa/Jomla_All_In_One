@@ -53,6 +53,9 @@ fun Situation_Card_ItemView(
     val colore_text = relative_M8BonVent.etateActuellementEst.text_color
     val isNewSituationCredit =
         relative_M8BonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
+    val isSoldeZero = isNewSituationCredit && relative_M8BonVent.montant_principale_du_type == 0.0
+    val cardBackgroundColor =
+        if (isSoldeZero) Color(0xFF2196F3) else relative_M8BonVent.etateActuellementEst.color
 
     val context = LocalContext.current
 
@@ -82,7 +85,7 @@ fun Situation_Card_ItemView(
         modifier = Modifier
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = relative_M8BonVent.etateActuellementEst.color
+            containerColor = cardBackgroundColor
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -138,13 +141,13 @@ fun Situation_Card_ItemView(
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
-                                tint = Color(0xFF2196F3)
+                                tint = Color.White
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "زيرو زيرو جزاك الله خيراً",
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = Color(0xFF2196F3),
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold
                             )
                         }
