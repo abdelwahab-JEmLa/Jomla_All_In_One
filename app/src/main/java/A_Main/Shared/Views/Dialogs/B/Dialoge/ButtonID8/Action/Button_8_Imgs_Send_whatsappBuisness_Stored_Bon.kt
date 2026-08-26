@@ -361,7 +361,7 @@ fun createAndSaveWelcomeImage(context: Context): Uri? {
     val fileName = "welcome_marhaba.jpg"
     val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/BonsWhatsApp/"
     return try {
-        val bmp = buildWelcomeBitmap()
+        val bmp = buildWelcomeBitmap(context)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val resolver = context.contentResolver
             val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
@@ -397,8 +397,8 @@ fun createAndSaveWelcomeImage(context: Context): Uri? {
     }
 }
 
-fun buildWelcomeBitmap(): Bitmap {
-    val W = 900;
+fun buildWelcomeBitmap(context: Context? = null): Bitmap {
+    val W = 900
     val H = 400
     val bmp = createBitmap(W, H)
     val canvas = Canvas(bmp)
@@ -427,19 +427,47 @@ fun buildWelcomeBitmap(): Bitmap {
             Paint.Style.STROKE; strokeWidth = 3f
         })
 
+    if (context != null) {
+        try {
+            val logoBmp = android.graphics.BitmapFactory.decodeResource(context.resources, com.example.clientjetpack.R.drawable.logo)
+            if (logoBmp != null) {
+                val logoSize = 120
+                val squareSize = minOf(logoBmp.width, logoBmp.height)
+                val circularLogo = Bitmap.createBitmap(squareSize, squareSize, Bitmap.Config.ARGB_8888)
+                val cCanvas = Canvas(circularLogo)
+                val cPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+                val rect = android.graphics.RectF(0f, 0f, squareSize.toFloat(), squareSize.toFloat())
+                val srcX = (logoBmp.width - squareSize) / 2
+                val srcY = (logoBmp.height - squareSize) / 2
+                val srcRect = android.graphics.Rect(srcX, srcY, srcX + squareSize, srcY + squareSize)
+                cCanvas.drawOval(rect, cPaint)
+                cPaint.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN)
+                cCanvas.drawBitmap(logoBmp, srcRect, rect, cPaint)
+
+                val scaledLogo = Bitmap.createScaledBitmap(circularLogo, logoSize, logoSize, true)
+                canvas.drawBitmap(scaledLogo, 60f, (H - logoSize) / 2f, Paint(Paint.ANTI_ALIAS_FLAG))
+                circularLogo.recycle()
+                scaledLogo.recycle()
+                logoBmp.recycle()
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("WelcomeBitmap", "Error drawing logo: ${e.message}")
+        }
+    }
+
     val mainPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = "#FFD700".toColorInt(); textSize = 140f; textAlign =
         Paint.Align.CENTER; isFakeBoldText = true
     }
     val mainY = H / 2f - (mainPaint.fontMetrics.ascent + mainPaint.fontMetrics.descent) / 2f - 30f
-    canvas.drawText("مرحبا بك", W / 2f, mainY, mainPaint)
+    canvas.drawText("مرحبا بك", W / 2f + 40f, mainY, mainPaint)
 
     val subPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = "#C8E6C9".toColorInt(); textSize = 44f; textAlign = Paint.Align.CENTER
     }
     val subY =
         mainY + mainPaint.fontMetrics.descent - mainPaint.fontMetrics.ascent + 10f - (subPaint.fontMetrics.ascent + subPaint.fontMetrics.descent) / 2f
-    canvas.drawText("✦  شكراً لثقتكم  ✦", W / 2f, subY, subPaint)
+    canvas.drawText("✦  شكراً لثقتكم  ✦", W / 2f + 40f, subY, subPaint)
 
     return bmp
 }

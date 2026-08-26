@@ -97,7 +97,7 @@ class MapClientsViewModel(
     var mapReloadTrigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
     var scrollSpeedThresholdMps by mutableStateOf(1.0)
-    var proximite_de_vision_meter by mutableStateOf(700)
+    var proximite_de_vision_meter by mutableStateOf(900)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
 
     fun update_uiState_m2Client_In_ShowEditMarkerMode(m2Client_In_ShowEditMarkerMode: M2Client? = null) {

@@ -81,7 +81,8 @@ class B_Generateur_ProMai(
                 versement = relative_bonVent.versement_fait,
                 transactionId = transactionId,
                 its_GrossistApp = its_GrossistApp,
-                relative_bonVent = relative_bonVent
+                relative_bonVent = relative_bonVent,
+                context = context
             )
         } else {
             // Generate receipt WITHOUT credit section
@@ -94,6 +95,7 @@ class B_Generateur_ProMai(
                 transactionId = transactionId,
                 its_GrossistApp = its_GrossistApp,
                 relative_bonVent = relative_bonVent,
+                context = context
             )
         }
 

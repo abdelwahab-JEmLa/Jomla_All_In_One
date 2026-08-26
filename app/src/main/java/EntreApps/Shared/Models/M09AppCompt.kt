@@ -14,6 +14,10 @@ enum class Do() {
     DeleteAll_To_Let_Ancien_Repositorys_GetAll(),
     DeleteInsertAll_Ref_All_Datas();
 }
+enum class Title_Filter() {
+    Rien,
+    Tout_Sauf_Nom_Si_Non_New,
+}
 
 @Entity
 data class M09AppCompt(
@@ -109,6 +113,7 @@ data class M09AppCompt(
 
     // ---- mode de clic sur un marqueur carte ----
     var click_On_Marque: ActiveCentralValues.Click_On_Marque = ActiveCentralValues.Click_On_Marque.Standart,
+    var title_Filter: Title_Filter = Title_Filter.Rien,
 
     var KeyByParent: String = "",
     var vid: Long = 1,

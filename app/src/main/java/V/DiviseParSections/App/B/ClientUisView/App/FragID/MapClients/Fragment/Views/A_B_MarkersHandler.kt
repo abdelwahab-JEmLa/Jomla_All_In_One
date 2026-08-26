@@ -9,6 +9,7 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import EntreApps.Shared.Models.Title_Filter
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.initiateBackgroundPdfCreation_NewP
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
@@ -240,6 +241,7 @@ fun performClickOnMarqueAction(
                 ActiveCentralValues.Click_On_Marque.Standart                                  -> "Standard"
                 ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients                    -> "Ajouter Ciblage"
                 ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction  -> "Afficher Commande"
+                ActiveCentralValues.Click_On_Marque.Lence_New_Command                         -> "Lancer Nouvelle Commande"
                 ActiveCentralValues.Click_On_Marque.Call                                      -> "Appeler Client"
                 ActiveCentralValues.Click_On_Marque.Navigate                                  -> "Navigation GPS"
                 ActiveCentralValues.Click_On_Marque.Marck_Ferme                              -> "Marquer Fermé"
@@ -259,38 +261,67 @@ fun performClickOnMarqueAction(
 
             when (currentMode) {
                 ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> {
+                    val bonToOpen = onCommandBon_ventPeriod ?: run {
+                        val foundOrDefault = get_Found_Or_Default_M8BonVent(
+                            aCentralFacade = aCentralFacade,
+                            relative_M2Client = m2Client,
+                            etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                        )
+                        foundOrDefault?.let { f ->
+                            if (f.found != null) {
+                                aCentralFacade.repositorysMainSetter.update_M8BonVent(f.found)
+                            } else {
+                                aCentralFacade.repositorysMainSetter.addNew_M8BonVent(f.default_If_No_Found)
+                            }
+                            f.found ?: f.default_If_No_Found
+                        }
+                    }
 
+                    if (bonToOpen != null) {
+                        aCentralFacade.focusedActiveValuesFacade
+                            .focusedValuesSetter
+                            .setIN_M9CurrentApp_onVentM8BonVentKey(bonToOpen)
 
-                    if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
-                        onCommandBon_ventPeriod?.let {
-                            aCentralFacade.focusedActiveValuesFacade
-                                .focusedValuesSetter
-                                .setIN_M9CurrentApp_onVentM8BonVentKey(it)
+                        if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
                             fragmentNavigationHandler_NewProto.navigateTo(
                                 Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
                             )
-                        } ?: Toast.makeText(
+                        } else {
+                            fragmentNavigationHandler.navigateToCartScreen()
+                        }
+                    } else {
+                        Toast.makeText(
                             context,
-                            "Aucune onCommandBon_ventPeriod",
+                            "Aucune commande en cours",
                             Toast.LENGTH_SHORT
                         ).show()
-
-                    } else {
-                        if (onCommandBon_ventPeriod != null) {
-                            aCentralFacade.focusedActiveValuesFacade
-                                .focusedValuesSetter
-                                .setIN_M9CurrentApp_onVentM8BonVentKey(
-                                    onCommandBon_ventPeriod
-                                )
-                            fragmentNavigationHandler.navigateToCartScreen()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Aucune commande en cours pour ce client",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
                     }
+                }
+                ActiveCentralValues.Click_On_Marque.Lence_New_Command -> {
+                    val foundOrDefault = get_Found_Or_Default_M8BonVent(
+                        aCentralFacade = aCentralFacade,
+                        relative_M2Client = m2Client,
+                        etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                    )
+                    foundOrDefault?.let { f ->
+                        if (f.found != null) {
+                            aCentralFacade.repositorysMainSetter.update_M8BonVent(f.found)
+                        } else {
+                            aCentralFacade.repositorysMainSetter.addNew_M8BonVent(f.default_If_No_Found)
+                        }
+                        val bonToOpen = f.found ?: f.default_If_No_Found
+                        aCentralFacade.focusedActiveValuesFacade
+                            .focusedValuesSetter
+                            .setIN_M9CurrentApp_onVentM8BonVentKey(bonToOpen)
+
+                        if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
+                            fragmentNavigationHandler_NewProto.navigateTo(
+                                Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
+                            )
+                        } else {
+                            fragmentNavigationHandler.navigateToCartScreen()
+                        }
+                    } ?: Toast.makeText(context, "Impossible de créer la commande", Toast.LENGTH_SHORT).show()
                 }
                 ActiveCentralValues.Click_On_Marque.Standart -> {
                     viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
@@ -566,6 +597,11 @@ fun performClickOnMarqueAction(
             }
 }
 
+private fun String.cleanClientNameFromPhone(): String {
+    return this.replace(Regex("""\+?\d[\d\s.\-]{7,}\d"""), "")
+        .replace(Regex("""\s+"""), " ")
+        .trim('.', '-', ',', ' ', ':')
+}
 
 fun Marker.title(
     viewModel: MapClientsViewModel,
@@ -578,49 +614,56 @@ fun Marker.title(
     val position = relative_M8Transaction?.position_Don_Lis_Cible_Clients_au_VentPeriod ?: 0
     val positionPrefix = if (position != 0) "[$position] " else ""
 
-    title =
-        if (viewModel.afficheLesJoursAuNoms && position == 0) {
-            val dateHandler = DatesHandler()
-            val timeStr = relative_M8Transaction?.creationTimestamps?.let {
-                dateHandler.getDateAndTimString(it).time
-            }
-            val dayName = dateHandler.getArabicDayNameFromTimestamp(
-                relative_M8Transaction?.creationTimestamps ?: 0
-            )
-            val distanceSemain =
-                dateHandler.getAbrgDistanceSemain(relative_M8Transaction?.creationTimestamps)
+    val activeFilter = viewModel.active_Datas.active_M9Compt?.title_Filter ?: Title_Filter.Rien
 
-            if (relative_M8Transaction != null) {
-                val text = " بالتقريب$sumBonVents"
-                val texy_Safe = text.takeIf { sumBonVents!! > 0.0 } ?: ""
-                val demande_Versemet_si_Type = relative_M8Transaction.demande_Versemet_si_Type
-                    .takeIf { relative_M8Transaction.demande_Versemet_si_Type > 0.0 } ?: ""
-
-                "$distanceSemain.$dayName (${timeStr})" +
-                        "\n${relative_M8Transaction.etateActuellementEst.nomArabe}" +
-                        texy_Safe +
-                        demande_Versemet_si_Type +
-                        "\n${
-                            m2Client.nom.split(" ")
-                                .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
-                        } ${
-                            if (m2Client.numTelephone.isNotEmpty()) "📞${
-                                m2Client.numTelephone.takeLast(
-                                    2
-                                )
-                            }" else ""
-                        }"
-            } else {
-                m2Client.nom
-            }
+    title = if (activeFilter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
+        if (m2Client.nom.contains("new", ignoreCase = true) || m2Client.nom.contains("ز")) {
+            ""
         } else {
-            if (position != 0 && relative_M8Transaction != null) {
-                "$positionPrefix${relative_M8Transaction.etateActuellementEst.nomArabe}" +
-                        "\n${m2Client.nom}"
-            } else {
-                "$positionPrefix${m2Client.nom}"
-            }
+            m2Client.nom.cleanClientNameFromPhone()
         }
+    } else if (viewModel.afficheLesJoursAuNoms && position == 0) {
+        val dateHandler = DatesHandler()
+        val timeStr = relative_M8Transaction?.creationTimestamps?.let {
+            dateHandler.getDateAndTimString(it).time
+        }
+        val dayName = dateHandler.getArabicDayNameFromTimestamp(
+            relative_M8Transaction?.creationTimestamps ?: 0
+        )
+        val distanceSemain =
+            dateHandler.getAbrgDistanceSemain(relative_M8Transaction?.creationTimestamps)
+
+        if (relative_M8Transaction != null) {
+            val text = " بالتقريب$sumBonVents"
+            val texy_Safe = text.takeIf { sumBonVents!! > 0.0 } ?: ""
+            val demande_Versemet_si_Type = relative_M8Transaction.demande_Versemet_si_Type
+                .takeIf { relative_M8Transaction.demande_Versemet_si_Type > 0.0 } ?: ""
+
+            "$distanceSemain.$dayName (${timeStr})" +
+                    "\n${relative_M8Transaction.etateActuellementEst.nomArabe}" +
+                    texy_Safe +
+                    demande_Versemet_si_Type +
+                    "\n${
+                        m2Client.nom.split(" ")
+                            .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+                    } ${
+                        if (m2Client.numTelephone.isNotEmpty()) "📞${
+                            m2Client.numTelephone.takeLast(
+                                2
+                            )
+                        }" else ""
+                    }"
+        } else {
+            m2Client.nom
+        }
+    } else {
+        if (position != 0 && relative_M8Transaction != null) {
+            "$positionPrefix${relative_M8Transaction.etateActuellementEst.nomArabe}" +
+                    "\n${m2Client.nom}"
+        } else {
+            "$positionPrefix${m2Client.nom}"
+        }
+    }
 }
 
 fun configureMarkerInfoWindow(

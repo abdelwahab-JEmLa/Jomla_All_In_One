@@ -41,7 +41,8 @@ data class PdfGenerationParams_Mai(
     val transactionId: String = "",
     val its_GrossistApp: Boolean = true,
     val creditData: CreditReceiptData_Mai? = null,
-    val relative_bonVent: M8BonVent?
+    val relative_bonVent: M8BonVent?,
+    val context: android.content.Context? = null
 )
 
 /**

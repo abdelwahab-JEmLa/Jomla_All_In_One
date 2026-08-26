@@ -105,7 +105,7 @@ class PdfGeneratorCore_Mai(
         when (params.type) {
             PdfType.RECEIPT_ONLY, PdfType.RECEIPT_WITH_CREDIT -> {
                 val title = if (!params.its_GrossistApp) "Facture" else ""
-                contentBuilder.addHeader(doc, title, regularFont, boldFont, params.bonVent?.keyID)
+                contentBuilder.addHeader(doc, title, regularFont, boldFont, params.bonVent?.keyID, params.context)
             }
 
             PdfType.CREDIT_ONLY -> {
@@ -119,7 +119,8 @@ class PdfGeneratorCore_Mai(
                     receiptType,
                     regularFont,
                     boldFont,
-                    params.bonVent?.keyID
+                    params.bonVent?.keyID,
+                    params.context
                 )
             }
         }

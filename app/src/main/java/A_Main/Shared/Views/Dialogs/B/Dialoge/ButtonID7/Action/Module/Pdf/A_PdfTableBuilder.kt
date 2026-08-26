@@ -257,48 +257,89 @@ class PdfTableBuilder_Mai(
 
     private fun findProductImage(operation: M10OperationVentCouleur): ImageSearchResult {
         try {
-            val couleurProduit = operation.parent_M3CouleurProduit_KeyID?.let { keyID ->
-                focusedValuesGetter.relative_couleurs?.find{
-                    it.keyID == keyID
-                }
-            }
-
-            if (couleurProduit == null) {
-                android.util.Log.d(TAG, "No color product found for operation: ${operation.keyID}")
-                return ImageSearchResult(null, false)
-            }
-
-            val imageFileName = couleurProduit.nomImageFichieSansEtansion
-            val extension = couleurProduit.extensionDisponible
-
-            if (imageFileName.isNullOrEmpty() || extension.isNullOrEmpty()) {
-                android.util.Log.d(TAG, "No image filename or extension for color product: ${couleurProduit.keyID}")
-                return ImageSearchResult(null, false)
-            }
-
-            // FIXED: Use the correct image directory path (same as ImageDisplayerGlide_FragFastVent)
             val baseDir = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
-
             if (!baseDir.exists()) {
                 android.util.Log.w(TAG, "Image directory does not exist: ${baseDir.absolutePath}")
                 return ImageSearchResult(null, false)
             }
 
-            // Use the decrementing function to find the actual image file (same logic as in ImageDisplayerGlide_FragFastVent)
-            val actualImageFileName = M3CouleurProduitInfos
-                .decrementing_file_name_si_non_trouve(imageFileName, extension)
+            val imageExtensions = listOf("webp", "jpg", "png", "jpeg")
+            val videoExtensions = listOf("mp4", "webm", "mkv", "avi", "mov")
 
-            val imageFile = actualImageFileName?.let {
-                File(baseDir, "$it.$extension")
+            fun isVideoExt(ext: String?): Boolean =
+                ext != null && videoExtensions.contains(ext.lowercase(java.util.Locale.ROOT))
+
+            fun checkImageFile(fileName: String, ext: String): File? {
+                if (isVideoExt(ext)) return null
+                val actualName = M3CouleurProduitInfos.decrementing_file_name_si_non_trouve(fileName, ext)
+                val file = actualName?.let { File(baseDir, "$it.$ext") }
+                return if (file != null && file.exists() && !isVideoExt(file.extension)) file else null
             }
 
-            return if (imageFile != null && imageFile.exists()) {
-                android.util.Log.d(TAG, "✅ Image found: ${imageFile.absolutePath}")
-                ImageSearchResult(imageFile, true)
-            } else {
-                android.util.Log.d(TAG, "❌ Image not found: $imageFileName.$extension in ${baseDir.absolutePath}")
-                ImageSearchResult(null, false)
+            val targetCouleur = operation.parent_M3CouleurProduit_KeyID?.let { keyID ->
+                focusedValuesGetter.relative_couleurs?.find { it.keyID == keyID }
             }
+
+            // 1. Try target color product image (e.g. 5027_1 -> 5027_0 if non-video)
+            if (targetCouleur != null && !targetCouleur.il_a_une_video_presentaion) {
+                val name = targetCouleur.nomImageFichieSansEtansion
+                val ext = targetCouleur.extensionDisponible
+                if (!name.isNullOrEmpty() && name != "Non Dispo" && !ext.isNullOrEmpty()) {
+                    val file = checkImageFile(name, ext)
+                    if (file != null) {
+                        android.util.Log.d(TAG, "✅ Target color image found: ${file.absolutePath}")
+                        return ImageSearchResult(file, true)
+                    }
+                }
+            }
+
+            // 2. Fallback: Search all sibling colors of the same parent product
+            val parentId = operation.parent_M1Produit_KeyId
+            val siblingCouleurs = focusedValuesGetter.relative_couleurs?.filter {
+                it.parentBProduitInfosKeyID == parentId
+            } ?: emptyList()
+
+            for (sibling in siblingCouleurs) {
+                if (sibling.il_a_une_video_presentaion) continue
+                val sibName = sibling.nomImageFichieSansEtansion
+                val sibExt = sibling.extensionDisponible
+                if (!sibName.isNullOrEmpty() && sibName != "Non Dispo" && !sibExt.isNullOrEmpty()) {
+                    val file = checkImageFile(sibName, sibExt)
+                    if (file != null) {
+                        android.util.Log.d(TAG, "✅ Sibling color image found: ${file.absolutePath}")
+                        return ImageSearchResult(file, true)
+                    }
+                }
+            }
+
+            // 3. Fallback: Search by parent product ID/key/prefix (4222_0, 4222_1, ..., 4222_19)
+            val parentPrefixes = mutableListOf<String>()
+            if (!parentId.isNullOrEmpty()) parentPrefixes.add(parentId)
+
+            // Extract numeric or base prefix from sibling color filenames (e.g. "4222" from "4222_1")
+            siblingCouleurs.mapNotNull {
+                val name = it.nomImageFichieSansEtansion
+                if (name.contains("_")) name.substringBeforeLast("_") else null
+            }.distinct().forEach { prefix ->
+                if (prefix.isNotEmpty() && prefix != "Non Dispo" && prefix !in parentPrefixes) {
+                    parentPrefixes.add(prefix)
+                }
+            }
+
+            for (prefix in parentPrefixes) {
+                for (i in 0..19) {
+                    for (ext in imageExtensions) {
+                        val candidate = File(baseDir, "${prefix}_$i.$ext")
+                        if (candidate.exists()) {
+                            android.util.Log.d(TAG, "✅ Parent fallback image found: ${candidate.absolutePath}")
+                            return ImageSearchResult(candidate, true)
+                        }
+                    }
+                }
+            }
+
+            android.util.Log.d(TAG, "❌ No image found for operation: ${operation.keyID}")
+            return ImageSearchResult(null, false)
 
         } catch (e: Exception) {
             android.util.Log.e(TAG, "Error searching for image: ${e.message}", e)

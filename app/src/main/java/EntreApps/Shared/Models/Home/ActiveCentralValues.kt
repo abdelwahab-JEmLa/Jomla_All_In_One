@@ -217,6 +217,7 @@ data class ActiveCentralValues(
         Marck_Command_Livret(Color(0xFF2196F3)),
         ADD_Au_Ciblage_Clients(Color(0xFFFF5722)),
         Affiche_OnCommand_VentPeriod_Transaction(Color(0xFF9C27B0)),
+        Lence_New_Command(Color(0xFFE91E63)),
         Cree_et_envoi_whatsapp_pdf(Color(0xFF4CAF50)),
     }
 

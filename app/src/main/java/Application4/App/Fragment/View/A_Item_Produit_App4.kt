@@ -225,7 +225,6 @@ fun A_Item_Produit_App4(
     val isAdmin = centralValues.currentApp_Est_Admin
             && affiche_buttons_lien_unite_couleur_au_couleut_parent == true
     val categoryClickForHeader: (() -> Unit)? = if (isAdmin) onCategoryClick else null
-
     Column(
         modifier = modifier
             .semantics(mergeDescendants = true) {

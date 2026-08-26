@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.Title_Filter
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import androidx.compose.foundation.background
@@ -155,6 +156,43 @@ fun But1_OnClickMode(
                         onDismissRequest = { expanded = false },
                         modifier = Modifier.widthIn(min = 280.dp)
                     ) {
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.List,
+                                        contentDescription = null,
+                                        tint = if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) Color(0xFF4CAF50) else Color.Gray,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) "Titre: Nom Seul" else "Titre: Standard",
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 14.sp
+                                        )
+                                        Text(
+                                            text = if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) "Masque les détails et le téléphone" else "Affiche le nom et les détails complets",
+                                            fontSize = 11.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                compt?.let {
+                                    val nextFilter = if (it.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) Title_Filter.Rien else Title_Filter.Tout_Sauf_Nom_Si_Non_New
+                                    viewModel.update_active_Compt(it.copy(title_Filter = nextFilter))
+                                }
+                                viewModel.mapReloadTrigger++
+                                expanded = false
+                            },
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
                         ActiveCentralValues.Click_On_Marque.entries.forEach { clickMode ->
                             DropdownMenuItem(
                                 text = {
@@ -256,6 +294,7 @@ private fun getModeIcon(mode: ActiveCentralValues.Click_On_Marque): ImageVector 
     ActiveCentralValues.Click_On_Marque.Standart -> Icons.Default.Info
     ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> Icons.Default.Add
     ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> Icons.Default.ShoppingCart
+    ActiveCentralValues.Click_On_Marque.Lence_New_Command -> Icons.Default.Add
     ActiveCentralValues.Click_On_Marque.Call -> Icons.Default.Call
     ActiveCentralValues.Click_On_Marque.Navigate -> Icons.Default.Explore
     ActiveCentralValues.Click_On_Marque.Marck_Ferme -> Icons.Default.Close
@@ -267,6 +306,7 @@ fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode
     ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
     ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Ajouter Ciblage"
     ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Afficher Commande"
+    ActiveCentralValues.Click_On_Marque.Lence_New_Command -> "Lancer Nouvelle Commande"
     ActiveCentralValues.Click_On_Marque.Call -> "Appeler Client"
     ActiveCentralValues.Click_On_Marque.Navigate -> "Navigation GPS"
     ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer Fermé"
@@ -278,6 +318,7 @@ private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): Strin
     ActiveCentralValues.Click_On_Marque.Standart -> "Afficher les détails du client"
     ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Ajouter à la liste de ciblage"
     ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Voir le bon de commande actif"
+    ActiveCentralValues.Click_On_Marque.Lence_New_Command -> "Créer et ouvrir directement une nouvelle commande"
     ActiveCentralValues.Click_On_Marque.Call -> "Lancer un appel téléphonique"
     ActiveCentralValues.Click_On_Marque.Navigate -> "Ouvrir dans Google Maps"
     ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer le client comme fermé"

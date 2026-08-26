@@ -2,13 +2,24 @@ package A_Main.Shared.Views.Dialogs.B.Dialoge.ButtonID7.Action.Module.Pdf
 
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.RectF
+import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.Cell
+import com.itextpdf.layout.element.Image
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.UnitValue
+import java.io.ByteArrayOutputStream
 import java.util.Date
 
 /**
@@ -17,13 +28,52 @@ import java.util.Date
 class PdfContentBuilder_Mai(
     private val formatter: PdfFormatterUtils_Mai
 ) {
+    private fun getCircularBitmap(srcBitmap: Bitmap): Bitmap {
+        val squareSize = minOf(srcBitmap.width, srcBitmap.height)
+        val output = Bitmap.createBitmap(squareSize, squareSize, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+        val paint = Paint().apply { isAntiAlias = true }
+        val rect = RectF(0f, 0f, squareSize.toFloat(), squareSize.toFloat())
+        val srcX = (srcBitmap.width - squareSize) / 2
+        val srcY = (srcBitmap.height - squareSize) / 2
+        val srcRect = android.graphics.Rect(srcX, srcY, srcX + squareSize, srcY + squareSize)
+        canvas.drawARGB(0, 0, 0, 0)
+        canvas.drawOval(rect, paint)
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+        canvas.drawBitmap(srcBitmap, srcRect, rect, paint)
+        return output
+    }
+
     fun addHeader(
         doc: Document,
         title: String,
         regularFont: PdfFont,
         boldFont: PdfFont,
-        bonVentKeyId: String? = null
+        bonVentKeyId: String? = null,
+        context: Context? = null
     ) {
+        if (context != null) {
+            try {
+                val logoBitmap = BitmapFactory.decodeResource(context.resources, com.example.clientjetpack.R.drawable.logo)
+                if (logoBitmap != null) {
+                    val circularLogo = getCircularBitmap(logoBitmap)
+                    val stream = ByteArrayOutputStream()
+                    circularLogo.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                    val imgData = ImageDataFactory.create(stream.toByteArray())
+                    val logoImage = Image(imgData)
+                        .setWidth(80f)
+                        .setHeight(80f)
+                        .setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER)
+                    doc.add(logoImage)
+                    doc.add(Paragraph("\n").setFontSize(0.2f))
+                    circularLogo.recycle()
+                    logoBitmap.recycle()
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("PdfHeader", "Error adding circular logo: ${e.message}")
+            }
+        }
+
         bonVentKeyId?.let {
             if (it.length >= 3) {
                 val prefix = it.dropLast(3)
