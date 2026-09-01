@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
-
 @Entity
 data class M14VentPeriode(
     @PrimaryKey

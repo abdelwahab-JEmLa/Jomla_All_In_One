@@ -247,6 +247,9 @@ fun performClickOnMarqueAction(
                 ActiveCentralValues.Click_On_Marque.Marck_Ferme                              -> "Marquer Fermé"
                 ActiveCentralValues.Click_On_Marque.Marck_Command_Livret                     -> "Marquer Livré"
                 ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf               -> "Envoyer PDF WhatsApp"
+                ActiveCentralValues.Click_On_Marque.Delete_Client                            -> "Supprimer Client"
+                ActiveCentralValues.Click_On_Marque.Passe_Client                             -> "Passer le client"
+                ActiveCentralValues.Click_On_Marque.Livre_Client                             -> "Livrer le client"
             }
             Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_LONG).show()
             val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
@@ -331,36 +334,12 @@ fun performClickOnMarqueAction(
 
                 // Add client to targeting list
                 ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> {
-                    val found_Or_Default = get_Found_Or_Default_M8BonVent(
-                        aCentralFacade = aCentralFacade,
-                        relative_M2Client = m2Client,
-                        etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
-                    ) ?: run {
-                        Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT)
-                            .show()
-                        return
-                    }
-
-                    aCentralFacade.repositorysMainSetter
-                        .addNew_M8BonVent(
-                            found_Or_Default.default_If_No_Found
-                                .copy(
-                                    position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition
-                                )
-                        )
-
-                    focusedValuesGetter.update_activeCentralValues(
-                        activeCentralValues.copy(
-                            actuelle_Ciblage_MaxPosition = newPosition
-                        )
-                    )
-
+                    viewModel.addCibleOptimistic(m2Client)
                     Toast.makeText(
                         context,
                         "Client ajouté à la liste de ciblage (Position: $newPosition)",
                         Toast.LENGTH_SHORT
                     ).show()
-
                 }
 
                 // Direct phone call to client
@@ -593,6 +572,22 @@ fun performClickOnMarqueAction(
                             on_vent_bon = focusedValuesGetter.activeOnVent_M8BonVent
                         )
                     }
+                }
+                ActiveCentralValues.Click_On_Marque.Delete_Client -> {
+                    viewModel.deleteClientOptimistic(m2Client)
+                    Toast.makeText(
+                        context,
+                        "Client ${m2Client.nom} supprimé",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                ActiveCentralValues.Click_On_Marque.Passe_Client -> {
+                    viewModel.addPasseOptimistic(m2Client)
+                    Toast.makeText(context, "${m2Client.nom} → Passé", Toast.LENGTH_SHORT).show()
+                }
+                ActiveCentralValues.Click_On_Marque.Livre_Client -> {
+                    viewModel.addLivreOptimistic(m2Client)
+                    Toast.makeText(context, "${m2Client.nom} → Livré", Toast.LENGTH_SHORT).show()
                 }
             }
 }

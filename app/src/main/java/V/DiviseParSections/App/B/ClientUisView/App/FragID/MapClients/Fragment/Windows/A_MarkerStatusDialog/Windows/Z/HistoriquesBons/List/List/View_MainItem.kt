@@ -35,8 +35,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Print
@@ -97,6 +99,7 @@ fun View_MainItem(
 ) {
     // State for delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showCreateCartonBonDialog by remember { mutableStateOf(false) }
 
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
@@ -370,132 +373,155 @@ fun View_MainItem(
                     }
                 }
 
-                Row {
-                    if (sumBonVents > 0.0) {
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color.White.copy(alpha = 0.15f)
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit) {
-                                // Enhanced compact version with better spacing
-                                Row(
-                                    modifier = Modifier.padding(
-                                        horizontal = 12.dp,
-                                        vertical = 8.dp
-                                    ), // Increased padding
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    // Remaining amount (primary)
-                                    Text(
-                                        text = String.format(
-                                            "%.2f",
-                                            sumBonVents - relative_M8BonVent.sum_De_Credit_Fait
-                                        ),
-                                        style = MaterialTheme.typography.titleMedium, // Slightly larger
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (sumBonVents - relative_M8BonVent.versement > 0) {
-                                            Color.White.copy(alpha = 0.9f)
-                                        } else {
-                                            Color.Green.copy(alpha = 0.9f)
-                                        }
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "دج متبقي",
-                                        style = MaterialTheme.typography.bodyMedium, // Larger text
-                                        color = Color.White.copy(alpha = 0.8f)
-                                    )
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    item {
+                        if (sumBonVents > 0.0) {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White.copy(alpha = 0.15f)
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                if (etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit) {
+                                    // Enhanced compact version with better spacing
+                                    Row(
+                                        modifier = Modifier.padding(
+                                            horizontal = 12.dp,
+                                            vertical = 8.dp
+                                        ), // Increased padding
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        // Remaining amount (primary)
+                                        Text(
+                                            text = String.format(
+                                                "%.2f",
+                                                sumBonVents - relative_M8BonVent.sum_De_Credit_Fait
+                                            ),
+                                            style = MaterialTheme.typography.titleMedium, // Slightly larger
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (sumBonVents - relative_M8BonVent.versement > 0) {
+                                                Color.White.copy(alpha = 0.9f)
+                                            } else {
+                                                Color.Green.copy(alpha = 0.9f)
+                                            }
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "دج متبقي",
+                                            style = MaterialTheme.typography.bodyMedium, // Larger text
+                                            color = Color.White.copy(alpha = 0.8f)
+                                        )
 
-                                    Spacer(modifier = Modifier.width(10.dp))
+                                        Spacer(modifier = Modifier.width(10.dp))
 
-                                    // Separator
-                                    Text(
-                                        text = "|",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.White.copy(alpha = 0.6f)
-                                    )
+                                        // Separator
+                                        Text(
+                                            text = "|",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color.White.copy(alpha = 0.6f)
+                                        )
 
-                                    Spacer(modifier = Modifier.width(10.dp))
+                                        Spacer(modifier = Modifier.width(10.dp))
 
-                                    // Amount paid (compact)
-                                    Text(
-                                        text = String.format("%.2f", relative_M8BonVent.versement),
-                                        style = MaterialTheme.typography.bodyMedium, // Larger text
-                                        fontWeight = FontWeight.Medium,
-                                        color = Color.White.copy(alpha = 0.9f)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "مدفوع",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.White.copy(alpha = 0.7f)
-                                    )
-                                }
-                            } else {
-                                Row(
-                                    modifier = Modifier.padding(
-                                        horizontal = 12.dp,
-                                        vertical = 8.dp
-                                    ), // Increased padding
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = String.format("%.2f", sumBonVents),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "دج",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.White.copy(alpha = 0.9f)
-                                    )
+                                        // Amount paid (compact)
+                                        Text(
+                                            text = String.format("%.2f", relative_M8BonVent.versement),
+                                            style = MaterialTheme.typography.bodyMedium, // Larger text
+                                            fontWeight = FontWeight.Medium,
+                                            color = Color.White.copy(alpha = 0.9f)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = "مدفوع",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color.White.copy(alpha = 0.7f)
+                                        )
+                                    }
+                                } else {
+                                    Row(
+                                        modifier = Modifier.padding(
+                                            horizontal = 12.dp,
+                                            vertical = 8.dp
+                                        ), // Increased padding
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = String.format("%.2f", sumBonVents),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "دج",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color.White.copy(alpha = 0.9f)
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
 
-                    IconButton(
-                        onClick = {
-                            showChangeDispoDialog = true
+                    item {
+                        IconButton(
+                            onClick = {
+                                showCreateCartonBonDialog = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Create Cartons Bon",
+                                tint = Color.White
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.SwapHoriz, // Icône pour changer l'état
-                            contentDescription = "Change Availability",
-                            tint = Color.White
-                        )
                     }
 
-                    IconButton(
-                        onClick = {
-                            showSaveDispoDialog = true
+                    item {
+                        IconButton(
+                            onClick = {
+                                showChangeDispoDialog = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.SwapHoriz, // Icône pour changer l'état
+                                contentDescription = "Change Availability",
+                                tint = Color.White
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Save,
-                            contentDescription = "Save Availability State for Camion",
-                            tint = Color.White
-                        )
                     }
 
-                    IconButton(
-                        onClick = {
-                            showStockOptionsDialog = true
+                    item {
+                        IconButton(
+                            onClick = {
+                                showSaveDispoDialog = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Save,
+                                contentDescription = "Save Availability State for Camion",
+                                tint = Color.White
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Receipt,
-                            contentDescription = "Add to Stock",
-                            tint = Color.White
-                        )
                     }
 
-
+                    item {
+                        IconButton(
+                            onClick = {
+                                showStockOptionsDialog = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Receipt,
+                                contentDescription = "Add to Stock",
+                                tint = Color.White
+                            )
+                        }
+                    }
                 }
             }
 
@@ -885,6 +911,60 @@ fun View_MainItem(
             repositorysMainGetter = repositorysMainGetter,
             repositorysMainSetter = repositorysMainSetter,
             relative_M8BonVent = relative_M8BonVent
+        )
+    }
+
+    if (showCreateCartonBonDialog) {
+        AlertDialog(
+            onDismissRequest = { showCreateCartonBonDialog = false },
+            title = { Text("إنشاء بون كارتون (Cartons Bon)") },
+            text = { Text("هل تريد إنشاء بون كارتون جديد ونقل عمليات البيع إليه؟") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val lastVentPeriodKeyId = repositorysMainGetter.repo14VentPeriode.datasValue
+                            .maxByOrNull { it.creationTimestamp }?.keyID
+                            ?: focusedValuesGetter.active_Central_Values.active_M14VentPeriode?.keyID
+                            ?: relative_M8BonVent.parent_M14VentPeriod_KeyId
+
+                        val newM8Bon = M8BonVent(
+                            its_Cartons_Bon = true,
+                            parent_M14VentPeriod_KeyId = lastVentPeriodKeyId,
+                            parent_M2Client_KeyID = relative_Client?.keyID ?: relative_M8BonVent.parent_M2Client_KeyID,
+                            parent_M9AppCompt_KeyID = relative_M8BonVent.parent_M9AppCompt_KeyID,
+                            etateActuellementEst = relative_M8BonVent.etateActuellementEst
+                        )
+                        repositorysMainSetter.addNew_M8BonVent(newM8Bon)
+
+                        val clickedVentOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter { vent ->
+                            vent.parent_M8BonVent_KeyId == relative_M8BonVent.keyID &&
+                            repositorysMainGetter.repo1ProduitInfos.datasValue.find { it.keyID == vent.parent_M1Produit_KeyId }?.its_Carton == true
+                        }
+                        clickedVentOperations.forEach { opVent ->
+                            repositorysMainSetter.repo10OperationVentCouleur.addOrUpdateData(
+                                opVent.copy(
+                                    parent_M8BonVent_KeyId = newM8Bon.keyID,
+                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                )
+                            )
+                        }
+
+                        Toast.makeText(
+                            context,
+                            "تم إنشاء بون كارتون بنجاح ونقل ${clickedVentOperations.size} عمليات",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        showCreateCartonBonDialog = false
+                    }
+                ) {
+                    Text("نعم / Confirmer")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCreateCartonBonDialog = false }) {
+                    Text("إلغاء / Annuler")
+                }
+            }
         )
     }
 

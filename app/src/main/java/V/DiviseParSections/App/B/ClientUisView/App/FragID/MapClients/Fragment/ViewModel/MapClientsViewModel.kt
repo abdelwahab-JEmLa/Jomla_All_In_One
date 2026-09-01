@@ -254,6 +254,122 @@ class MapClientsViewModel(
         )
     }
 
+    fun passAllCibleClientsForCurrentVentPeriod() {
+        viewModelScope.launch {
+            val currentClients = repo2Client.datasState.value
+            var count = 0
+            currentClients.forEach { client ->
+                val lastTrx = getLastTransaction(client)
+                if (lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible) {
+                    val foundOrDefault = get_Found_Or_Default_M8BonVent(
+                        aCentralFacade = aCentralFacade,
+                        relative_M2Client = client,
+                        etateActuellementEst = M8BonVent.EtateActuellementEst.Passe_Pour_Current_vent_period,
+                    )
+                    if (foundOrDefault != null) {
+                        aCentralFacade.repositorysMainSetter.addNew_M8BonVent(foundOrDefault.default_If_No_Found)
+                        count++
+                    }
+                }
+            }
+            mapReloadTrigger++
+            android.widget.Toast.makeText(
+                context,
+                "Mis à jour $count clients en 'Passé'",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    fun importClientsFromLatestExpoCsv(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val candidateDirs = listOfNotNull(
+                    android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS),
+                    context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
+                )
+                val csvFiles = candidateDirs
+                    .flatMap { dir -> dir.listFiles()?.toList() ?: emptyList() }
+                    .filter { file ->
+                        file.isFile &&
+                        file.name.startsWith("expo", ignoreCase = true) &&
+                        file.name.endsWith(".csv", ignoreCase = true)
+                    }
+                    .sortedByDescending { it.lastModified() }
+
+                val latestCsv = csvFiles.firstOrNull()
+                if (latestCsv == null) {
+                    kotlinx.coroutines.withContext(Dispatchers.Main) {
+                        android.widget.Toast.makeText(
+                            context,
+                            "Aucun fichier CSV expo trouvé dans Téléchargements",
+                            android.widget.Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    return@launch
+                }
+
+                val lines = latestCsv.readLines()
+                var currentMaxId = if (repo2Client.isEmpty) 0L else repo2Client.maxId
+                var importedCount = 0
+
+                for (line in lines) {
+                    val trimmed = line.trim()
+                    if (trimmed.isBlank() || trimmed.startsWith("Folder name", ignoreCase = true)) continue
+                    val parts = trimmed.split(",")
+                    if (parts.size >= 4) {
+                        val lat = parts[2].trim().toDoubleOrNull()
+                        val lon = parts[3].trim().toDoubleOrNull()
+                        if (lat != null && lon != null) {
+                            currentMaxId++
+                            val title = parts.getOrNull(4)?.trim()
+                            val phone = parts.getOrNull(7)?.trim() ?: ""
+                            val clientName = if (!title.isNullOrBlank()) title else "ز.$currentMaxId"
+                            val newClient = M2Client().apply {
+                                id = currentMaxId
+                                nom = clientName
+                                cUnClientTemporaire = true
+                                typeDeSonMagasine = auClickeCaUpdateClientPar
+                                latitude = lat
+                                longitude = lon
+                                this.title = clientName
+                                snippet = "ClientAchteur temporaire"
+                                if (phone.isNotBlank()) {
+                                    numTelephone = phone
+                                }
+                            }
+                            repo2Client.upsert(newClient)
+                            kotlinx.coroutines.withContext(Dispatchers.Main) {
+                                add_Cible(newClient)
+                            }
+                            importedCount++
+                        }
+                    }
+                }
+
+                kotlinx.coroutines.withContext(Dispatchers.Main) {
+                    _uiState.value = _uiState.value.copy(
+                        b_ClientInfosProtoJuin3List = repo2Client.datasState.value
+                    )
+                    mapReloadTrigger++
+                    android.widget.Toast.makeText(
+                        context,
+                        "Importé $importedCount clients depuis ${latestCsv.name}",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
+                kotlinx.coroutines.withContext(Dispatchers.Main) {
+                    android.widget.Toast.makeText(
+                        context,
+                        "Erreur lors de l'import: ${e.message}",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
+
     fun deleteUnSeulData(data: M2Client) {
         viewModelScope.launch {
             b_ClientDataBaseRepository.deleteData(data)
@@ -263,6 +379,53 @@ class MapClientsViewModel(
             )
         }
     }
+
+    fun deleteClientOptimistic(data: M2Client) {
+        // 1. Retire le marqueur de la map immédiatement (thread UI, pas de jank)
+        repo2Client.removeClient(data.id)
+        mapReloadTrigger++
+        // 2. Lance le delete Room + Firebase en arrière-plan
+        viewModelScope.launch(Dispatchers.IO) {
+            b_ClientDataBaseRepository.deleteData(data)
+        }
+    }
+
+    private fun addBonOptimistic(
+        client: M2Client,
+        etate: M8BonVent.EtateActuellementEst,
+        extraCopy: (M8BonVent) -> M8BonVent = { it },
+    ) {
+        val foundOrDefault = get_Found_Or_Default_M8BonVent(
+            aCentralFacade = aCentralFacade,
+            relative_M2Client = client,
+            etateActuellementEst = etate,
+        ) ?: return
+        // Màj optimiste du trigger → la couleur du marqueur change instantanément
+        mapReloadTrigger++
+        // Persistance en arrière-plan
+        viewModelScope.launch(Dispatchers.IO) {
+            aCentralFacade.repositorysMainSetter.addNew_M8BonVent(
+                extraCopy(foundOrDefault.default_If_No_Found)
+            )
+        }
+    }
+
+    fun addCibleOptimistic(client: M2Client) {
+        val activeCentralValues = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Central_Values
+        val newPosition = activeCentralValues.actuelle_Ciblage_MaxPosition + 1
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.update_activeCentralValues(
+            activeCentralValues.copy(actuelle_Ciblage_MaxPosition = newPosition)
+        )
+        addBonOptimistic(client, M8BonVent.EtateActuellementEst.Cible) { bon ->
+            bon.copy(position_Don_Lis_Cible_Clients_au_VentPeriod = newPosition)
+        }
+    }
+
+    fun addPasseOptimistic(client: M2Client) =
+        addBonOptimistic(client, M8BonVent.EtateActuellementEst.Passe_Pour_Current_vent_period)
+
+    fun addLivreOptimistic(client: M2Client) =
+        addBonOptimistic(client, M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI)
 
     fun updateLongAppSetting(value: Long, name: String = "clientBuyerNowId") {
         viewModelScope.launch {

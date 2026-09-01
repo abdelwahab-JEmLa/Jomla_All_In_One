@@ -191,6 +191,9 @@ data class ActiveCentralValues_app2(
         ADD_Au_Ciblage_Clients(Color(0xFFFF5722)),
         Affiche_OnCommand_VentPeriod_Transaction(Color(0xFF9C27B0)),
         Lence_New_Command(Color(0xFFE91E63)),
+        Delete_Client(Color(0xFFF44336)),
+        Passe_Client(Color(0xFF747680)),
+        Livre_Client(Color(0xFF0099CC)),
     }
 
     sealed class RoleDefinieParSourceACetteFragment {

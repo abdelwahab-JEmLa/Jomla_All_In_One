@@ -24,6 +24,8 @@ data class M8BonVent(
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
+    
+    var its_Cartons_Bon: Boolean = false,
 
     val nombre_produits_don_dernier_pdf_stoked: Int = 0,
     val last_sort_pdf_locale_totale_a_paye: Double = 0.0,
@@ -191,11 +193,12 @@ data class M8BonVent(
         Bloque_Probleme(Color(0xFFCC0000), "حدث مشكل معه"),
         Ordre_Gerant(Color(0xFFCC0000), "توجيه المسير"),
         A_COMMANDE_CONFIRME(Color(0xFF9933CC), "تم تاكيد الطلبية",nonDeletable=true),
-        COMMANDE_LIVRAI(Color(0xFF0099CC), "تم أيصال منتجاته"),
+        COMMANDE_LIVRAI(Color(0xFF0099CC), "تم أيصال منتجاته",nonDeletable=true),
 
-        ACHETEUR_NON_DISPO(Color(0xFFCC0000), "الشاري غائب"),
-        AVEC_MARCHANDISE(Color(0xFFCC0000), "عندو سلعة"),
-        FERME(Color(0xFF444444), "مغلق"),
+        ACHETEUR_NON_DISPO(Color(0xFF9C27B0), "الشاري غائب",nonDeletable=true),
+        AVEC_MARCHANDISE(Color(0xFFE91E63), "عندو سلعة"),
+        FERME(Color(0xFF444444), "مغلق",nonDeletable=true),
+        Passe_Pour_Current_vent_period(Color(0xFFC3BDBD), "Passe_Pour_Current_vent_period"),
         Cible(Color(0xFFFF6700), "معين من المسير"),
         CIBLE_PRIORITE_2(Color(0xFFFF6700), "CIBLE_PRIORITE_2"),
         CIBLE_PRIORITE_3(Color(0xFF99CC00), "CIBLE_PRIORITE_3"),

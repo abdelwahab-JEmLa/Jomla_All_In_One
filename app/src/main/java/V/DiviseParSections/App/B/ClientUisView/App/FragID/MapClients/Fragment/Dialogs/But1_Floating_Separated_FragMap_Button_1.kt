@@ -19,7 +19,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
@@ -164,6 +167,39 @@ fun But1_OnClickMode(
                                     modifier = Modifier.padding(vertical = 4.dp)
                                 ) {
                                     Icon(
+                                        imageVector = Icons.Default.CheckCircle,
+                                        contentDescription = null,
+                                        tint = Color(0xFF747680),
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = "Passer tous les ciblés",
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 14.sp
+                                        )
+                                        Text(
+                                            text = "Ajoute 'Passé pour période actuelle' aux clients ciblés",
+                                            fontSize = 11.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                viewModel.passAllCibleClientsForCurrentVentPeriod()
+                                expanded = false
+                            },
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Icon(
                                         imageVector = Icons.Default.List,
                                         contentDescription = null,
                                         tint = if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) Color(0xFF4CAF50) else Color.Gray,
@@ -300,6 +336,9 @@ private fun getModeIcon(mode: ActiveCentralValues.Click_On_Marque): ImageVector 
     ActiveCentralValues.Click_On_Marque.Marck_Ferme -> Icons.Default.Close
     ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> Icons.Default.LocalShipping
     ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> Icons.Default.Share
+    ActiveCentralValues.Click_On_Marque.Delete_Client -> Icons.Default.Delete
+    ActiveCentralValues.Click_On_Marque.Passe_Client -> Icons.Default.CheckCircle
+    ActiveCentralValues.Click_On_Marque.Livre_Client -> Icons.Default.Check
 }
 
 fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
@@ -312,6 +351,9 @@ fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode
     ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer Fermé"
     ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer Livré"
     ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> "Envoyer PDF WhatsApp"
+    ActiveCentralValues.Click_On_Marque.Delete_Client -> "Supprimer Client"
+    ActiveCentralValues.Click_On_Marque.Passe_Client -> "Passer le client"
+    ActiveCentralValues.Click_On_Marque.Livre_Client -> "Livrer le client"
 }
 
 private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
@@ -324,4 +366,7 @@ private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): Strin
     ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer le client comme fermé"
     ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer la commande comme livrée"
     ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> "Créer et envoyer le bon PDF via WhatsApp"
+    ActiveCentralValues.Click_On_Marque.Delete_Client -> "Supprimer définitivement le client de la carte"
+    ActiveCentralValues.Click_On_Marque.Passe_Client -> "Créer un bon Passe_Pour_Current_vent_period pour ce client"
+    ActiveCentralValues.Click_On_Marque.Livre_Client -> "Créer un bon COMMANDE_LIVRAI pour ce client"
 }

@@ -144,7 +144,7 @@ suspend fun initializeMapPosition(
     }
     mapView.apply {
         setMultiTouchControls(true)
-        setTileSource(OPENTOPOMAP)
+        setTileSource(CARTO_DB_VOYAGER)
         controller.setZoom(currentZoom)
         if (shouldCenterOnLocation) {
             withContext(Dispatchers.Main) {

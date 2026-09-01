@@ -403,7 +403,15 @@ fun MapContent(
             )
             // Opens the floating clients-list dialog (search + tap-to-trigger the
             But1_Floating_ClientsListButton(
-                onClick = { showClientsListDialog = true },
+                onClick = {
+                    (mapView.mapCenter as? GeoPoint)?.let { center ->
+                        viewModel.relod_map_marques_du_3km_du_centre_map(center.latitude, center.longitude)
+                    }
+                    scope.launch {
+                        delay(200)
+                        showClientsListDialog = true
+                    }
+                },
             )
         }
 

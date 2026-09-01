@@ -194,13 +194,13 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 
                     ControlButton(
                         onClick = {
-                            showDatabaseEditDialog = true
+                            viewModel.importClientsFromLatestExpoCsv(context)
                         },
                         icon = Icons.Default.Fireplace,
-                        contentDescription = "showDatabaseEditDialog",
+                        contentDescription = "Import Latest CSV Clients",
                         showLabels = showLabels,
-                        labelText = "showDatabaseEditDialog",
-                        containerColor = Color(0xFFF44336)
+                        labelText = "Import CSV Clients",
+                        containerColor = Color(0xFF4CAF50)
                     )
 
                     LocationTrackingButton(
@@ -449,6 +449,20 @@ fun MapSourceButton(mapView: MapView, showLabels: Boolean) {
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
+                    text = { Text("CartoDB Voyager (Street)") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.VOYAGER)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("CartoDB Positron (Light)") },
+                    onClick = {
+                        changeMapSource(mapView, MapSource.POSITRON)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
                     text = { Text("OpenTopoMap") },
                     onClick = {
                         changeMapSource(mapView, MapSource.TOPO)
@@ -462,13 +476,7 @@ fun MapSourceButton(mapView: MapView, showLabels: Boolean) {
                         expanded = false
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("CartoDB Voyager (Street)") },
-                    onClick = {
-                        changeMapSource(mapView, MapSource.VOYAGER)
-                        expanded = false
-                    }
-                )
+
                 DropdownMenuItem(
                     text = { Text("Esri Satellite") },
                     onClick = {
@@ -504,13 +512,7 @@ fun MapSourceButton(mapView: MapView, showLabels: Boolean) {
                         expanded = false
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("CartoDB Positron (Light)") },
-                    onClick = {
-                        changeMapSource(mapView, MapSource.POSITRON)
-                        expanded = false
-                    }
-                )
+                
                 DropdownMenuItem(
                     text = { Text("Esri World Street Map") },
                     onClick = {

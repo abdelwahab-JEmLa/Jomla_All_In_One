@@ -219,6 +219,9 @@ data class ActiveCentralValues(
         Affiche_OnCommand_VentPeriod_Transaction(Color(0xFF9C27B0)),
         Lence_New_Command(Color(0xFFE91E63)),
         Cree_et_envoi_whatsapp_pdf(Color(0xFF4CAF50)),
+        Delete_Client(Color(0xFFF44336)),
+        Passe_Client(Color(0xFF747680)),
+        Livre_Client(Color(0xFF0099CC)),
     }
 
     sealed class RoleDefinieParSourceACetteFragment {
