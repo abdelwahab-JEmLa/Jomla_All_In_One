@@ -77,6 +77,10 @@ fun But1_Floating_ClientsListDialog(
     var showPeriodsDialog by remember { mutableStateOf(false) }
     var modeMenuExpanded by remember { mutableStateOf(false) }
 
+    var filterMenuExpanded by remember { mutableStateOf(false) }
+    val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
+        ?: MapClientsViewModel.VisibleClientsNow.showAll
+
     val compt = viewModel.active_Datas.active_M9Compt
     val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
 
@@ -86,18 +90,59 @@ fun But1_Floating_ClientsListDialog(
     // client database, so the user can find any client by name — not only
     // one that's currently rendered as a marker.
     val allClients = viewModel.getter.repo2Client.datasValue
+    val isCreditFilter = currentFilterMode ==
+            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit
 
-    val filteredClients = remember(clients, allClients, searchQuery) {
+    val repo8Bons = viewModel.getter.repo8BonVent.datasValue
+
+    // Precalculate latest New_Situation_Credit montant for clients when under credit filter
+    val creditMontantByClientKeyId = remember(allClients, repo8Bons, isCreditFilter) {
+        if (!isCreditFilter) {
+            emptyMap()
+        } else {
+            val bonsByClient = repo8Bons
+                .filter {
+                    it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
+                            && !it.its_working_for_wholesaler
+                }
+                .groupBy { it.parent_M2Client_KeyID }
+
+            allClients
+                .filter { !it.its_Fournisseur_Grossisst_A_Jomla }
+                .mapNotNull { client ->
+                    val lastSituation = bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
+                    val montant = lastSituation?.montant_principale_du_type ?: 0.0
+                    if (montant > 0.0) client.keyID to montant else null
+                }.toMap()
+        }
+    }
+
+    val totalCreditChezClients = remember(creditMontantByClientKeyId) {
+        creditMontantByClientKeyId.values.sum()
+    }
+
+    val baseClientsList = remember(clients, allClients, isCreditFilter, creditMontantByClientKeyId) {
+        if (isCreditFilter) {
+            allClients.filter { it.keyID in creditMontantByClientKeyId }
+        } else {
+            clients
+        }
+    }
+
+    val filteredClients = remember(baseClientsList, allClients, searchQuery, isCreditFilter) {
         val query = searchQuery.trim().lowercase()
         when {
-            query.isEmpty() -> clients
-            query.length < 3 -> clients.filter {
+            query.isEmpty() -> baseClientsList
+            query.length < 3 -> baseClientsList.filter {
                 it.nom.lowercase().contains(query) ||
                         it.numTelephone.lowercase().contains(query)
             }
-            else -> allClients.filter {
-                it.nom.lowercase().contains(query) ||
-                        it.numTelephone.lowercase().contains(query)
+            else -> {
+                val searchPool = if (isCreditFilter) baseClientsList else allClients
+                searchPool.filter {
+                    it.nom.lowercase().contains(query) ||
+                            it.numTelephone.lowercase().contains(query)
+                }
             }
         }
     }
@@ -132,6 +177,14 @@ fun But1_Floating_ClientsListDialog(
                             style = MaterialTheme.typography.bodySmall,
                             color = currentMode.couleur,
                         )
+                        if (isCreditFilter) {
+                            Text(
+                                text = "Total crédits : ${"%.2f".format(totalCreditChezClients)} DA",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        }
                     }
                     IconButton(onClick = onDismiss) {
                         Icon(imageVector = Icons.Default.Close, contentDescription = "Fermer")
@@ -153,10 +206,6 @@ fun But1_Floating_ClientsListDialog(
                         unfocusedContainerColor = Color.White,
                     ),
                 )
-
-                // Header row: a button to open/edit the active click mode
-                // (same modes as the map's mode selector), plus a button
-                // opening the sale-periods screen (ScreenM14VentPeriod).
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -192,7 +241,10 @@ fun But1_Floating_ClientsListDialog(
                                             Box(
                                                 modifier = Modifier
                                                     .size(10.dp)
-                                                    .background(color = clickMode.couleur, shape = CircleShape),
+                                                    .background(
+                                                        color = clickMode.couleur,
+                                                        shape = CircleShape
+                                                    ),
                                             )
                                             Text(
                                                 text = getModeLabel(clickMode),
@@ -212,6 +264,44 @@ fun But1_Floating_ClientsListDialog(
                         }
                     }
 
+                    Box {
+                        TextButton(onClick = { filterMenuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Default.FilterList,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Text(
+                                text = "Filtre : ${getFilterLabel(currentFilterMode)}",
+                                modifier = Modifier.padding(start = 6.dp),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = filterMenuExpanded,
+                            onDismissRequest = { filterMenuExpanded = false },
+                            modifier = Modifier.widthIn(min = 240.dp),
+                        ) {
+                            MapClientsViewModel.VisibleClientsNow.entries.forEach { filterMode ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = getFilterLabel(filterMode),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = if (filterMode == currentFilterMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                                            fontWeight = if (filterMode == currentFilterMode) FontWeight.Bold else FontWeight.Normal,
+                                        )
+                                    },
+                                    onClick = {
+                                        viewModel.update_filter_marqueClient(filterMode)
+                                        viewModel.mapReloadTrigger++
+                                        filterMenuExpanded = false
+                                    },
+                                )
+                            }
+                        }
+                    }
+
                     TextButton(onClick = { showPeriodsDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
@@ -219,7 +309,7 @@ fun But1_Floating_ClientsListDialog(
                             modifier = Modifier.size(18.dp),
                         )
                         Text(
-                            text = "Périodes de vente",
+                            text = "Périodes",
                             modifier = Modifier.padding(start = 6.dp),
                             style = MaterialTheme.typography.bodySmall,
                         )
@@ -372,4 +462,19 @@ private fun ClientRow(
             }
         }
     }
+}
+
+private fun getFilterLabel(mode: MapClientsViewModel.VisibleClientsNow): String = when (mode) {
+    MapClientsViewModel.VisibleClientsNow.showAll -> "Tous les clients"
+    MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> "Crédit"
+    MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "Commande confirmée"
+    MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> "Commande livrée"
+    MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> "Cible vendeur"
+    MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> "Cible & Passé"
+    MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly -> "Clients non absents"
+    MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes -> "Collecteur commandes"
+    MapClientsViewModel.VisibleClientsNow.showAtayClients -> "Atay / Moukassarat"
+    MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> "Cible pour 2"
+    MapClientsViewModel.VisibleClientsNow.showAlimentionlients -> "Alimentation"
+    MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts -> "Produits confirmés"
 }

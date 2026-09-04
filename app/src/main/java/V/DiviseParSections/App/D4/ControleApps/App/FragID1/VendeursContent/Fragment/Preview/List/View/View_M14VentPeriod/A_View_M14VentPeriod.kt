@@ -1,13 +1,14 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 
+import EntreApps.Shared.Models.M09AppCompt
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.filtersAndSorts_Central.calculateClientSalesSummary
-import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -127,6 +128,27 @@ fun View_M14VentPeriod(
 
     val heurDebutInString = remember(relative_M14VentPeriode.creationTimestamp) {
         DatesHandler.formatDateWithAmPm(Date(relative_M14VentPeriode.creationTimestamp))
+    }
+
+
+
+    val totalDepotStockValue = remember(
+        repositorysMainGetter.repo03CouleurProduitInfos.datasValue,
+        repositorysMainGetter.repo13TarificationInfos.datasValue
+    ) {
+        val colors = repositorysMainGetter.repo03CouleurProduitInfos.datasValue
+        val tariffs = repositorysMainGetter.repo13TarificationInfos.datasValue
+        val purchaseTariffsByProduct = tariffs
+            .filter { it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros && it.prixCurrency != 0.0 }
+            .groupBy { it.parent_M1Produit_KeyId }
+            .mapValues { (_, tList) -> tList.maxByOrNull { it.creationTimestamps }?.prixCurrency ?: 0.0 }
+
+        colors.fold(0.0) { acc, col ->
+            if (col.count_Don_Depot > 0) {
+                val purchasePrice = purchaseTariffsByProduct[col.parentBProduitInfosKeyID] ?: 0.0
+                acc + (col.count_Don_Depot * purchasePrice)
+            } else acc
+        }
     }
 
     // Delete confirmation dialog
@@ -252,6 +274,45 @@ fun View_M14VentPeriod(
                     else
                         MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            }
+        }
+
+        // Section résumé Chiffre d'Affaires, Bénéfices et Valeur Stock Dépôt
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 6.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            ),
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "Résumé Dépôt Et Credite Et Balence Entre Eux",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Dépôt (prods par p achat):",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = "%.0f DA".format(totalDepotStockValue),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
             }
         }
 

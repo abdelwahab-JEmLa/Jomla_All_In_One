@@ -27,6 +27,11 @@ data class M2Client(
     var cretionTimestamps: Long = DatesHandler().getCurrentTimestamps(),
     //Forging Keys
     var its_Fournisseur: Boolean = false,
+
+    var its_Fournisseur_Grossisst_A_Jomla: Boolean = false,
+
+    var cUnClientTemporaire: Boolean = true,
+
     var parentComptCreateurKEyID: String = "",
     // Section Etates Mutable
     var numTelephone: String = "",
@@ -34,7 +39,6 @@ data class M2Client(
     var bonDuClientsSu: String = "",
     var currentCreditBalance: Double = 0.0,
     var positionDonClientsList: Int = 0,
-    var cUnClientTemporaire: Boolean = true,
     var auFilterFAB: Boolean = false,
     var typeDeSonMagasine: TypeDeSonMagasine = TypeDeSonMagasine.ATAYAT_MOUKASSARAT,
     var clientTypeMode: ClientTypeMode = ClientTypeMode.NEVEAU,

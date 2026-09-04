@@ -179,14 +179,18 @@ fun filterClientsBasedOnMode(
 
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> {
             clientDataBaseSnapList.filter { client ->
-                val lastTrx = viewModel.getLastTransaction(client)
-                val lastNewSituation = viewModel.getter.repo8BonVent.datasValue.filter {
-                    it.parent_M2Client_KeyID == client.keyID &&
-                    it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
-                }.maxByOrNull { it.creationTimestamps }
+                if (client.its_Fournisseur_Grossisst_A_Jomla) {
+                    false
+                } else {
+                    val lastTrx = viewModel.getLastTransaction(client)
+                    val lastNewSituation = viewModel.getter.repo8BonVent.datasValue.filter {
+                        it.parent_M2Client_KeyID == client.keyID &&
+                        it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
+                    }.maxByOrNull { it.creationTimestamps }
 
-                lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit ||
-                (lastNewSituation != null && lastNewSituation.montant_principale_du_type > 0.0)
+                    lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit ||
+                    (lastNewSituation != null && lastNewSituation.montant_principale_du_type > 0.0)
+                }
             }
         }
 
