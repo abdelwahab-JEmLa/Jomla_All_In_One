@@ -19,6 +19,7 @@ enum class Title_Filter() {
     Tout_Sauf_Nom_Si_Non_New,
 }
 
+
 @Entity
 data class M09AppCompt(
     @PrimaryKey

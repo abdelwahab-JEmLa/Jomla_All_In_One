@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Filter
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.SettingsBackupRestore
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -447,6 +448,7 @@ class MapClientsViewModel(
 
     enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
         Filter_Leur_Last_TRX_Est_Credit(Icons.Default.Map, Color.Red),
+        Filter_Fournisseurs_Grossistes_Credit(Icons.Default.Store, Color(0xFFFF9800)),
         Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME(Icons.Default.Map, Color.Red),
         AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Filter, Color.Blue),
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),

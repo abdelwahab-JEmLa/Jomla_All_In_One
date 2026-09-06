@@ -220,7 +220,8 @@ fun ClientFilterMode_Button_4(
                         viewModel = mapClientsViewModel,
                         currentFilterMode = visibleClientsNow3
                     )
-                    DropdownMenuItem(
+                    DropdownMenuItem(     //<--
+                    //TODO(1): pk il ya des cieln
                         modifier = Modifier
                             .semantics(mergeDescendants = true) {
                                 set(
@@ -259,6 +260,22 @@ fun ClientFilterMode_Button_4(
                             showDropdown = false
                         }
                     )
+
+                    // Credit Fournisseurs / Grossistes
+                    val visibleClientsNowFournisseurs = MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Crédit Fournisseurs / Grossistes",
+                                color = if (filter_marqueClient_enum_entrie == visibleClientsNowFournisseurs)
+                                    Color(0xFFFF9800) else Color.Black
+                            )
+                        },
+                        onClick = {
+                            mapClientsViewModel.update_filter_marqueClient(visibleClientsNowFournisseurs)
+                            showDropdown = false
+                        }
+                    )
                 }
             }
         }
@@ -274,6 +291,8 @@ fun getFilterLabelForMode(mode: MapClientsViewModel.VisibleClientsNow, count: In
             count?.let { "COMMANDE_LIVRAI Filter ($it)" } ?: "COMMANDE_LIVRAI Filter"
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ->
             count?.let { "Credit Filter ($it)" } ?: "Credit Filter"
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit ->
+            "Crédit Fournisseurs / Grossistes"
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
             "Targeted Clients"
         else -> "Unknown Filter"

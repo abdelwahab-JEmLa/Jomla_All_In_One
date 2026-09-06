@@ -8,6 +8,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import org.checkerframework.checker.units.qual.s
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import kotlin.math.atan2
@@ -180,6 +181,23 @@ fun filterClientsBasedOnMode(
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> {
             clientDataBaseSnapList.filter { client ->
                 if (client.its_Fournisseur_Grossisst_A_Jomla) {
+                    false
+                } else {
+                    val lastTrx = viewModel.getLastTransaction(client)
+                    val lastNewSituation = viewModel.getter.repo8BonVent.datasValue.filter {
+                        it.parent_M2Client_KeyID == client.keyID &&
+                        it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
+                    }.maxByOrNull { it.creationTimestamps }
+
+                    lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit ||
+                    (lastNewSituation != null && lastNewSituation.montant_principale_du_type > 0.0)
+                }
+            }
+        }
+
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit -> {
+            clientDataBaseSnapList.filter { client ->
+                if (!client.its_Fournisseur_Grossisst_A_Jomla) {
                     false
                 } else {
                     val lastTrx = viewModel.getLastTransaction(client)

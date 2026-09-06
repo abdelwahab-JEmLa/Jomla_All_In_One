@@ -6,6 +6,7 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.performClickOnMarqueAction
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -29,6 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
@@ -92,28 +95,22 @@ fun But1_Floating_ClientsListDialog(
     val allClients = viewModel.getter.repo2Client.datasValue
     val isCreditFilter = currentFilterMode ==
             MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit
+    val isFournisseursCreditFilter = currentFilterMode ==
+            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit
+    val isAnyCreditFilter = isCreditFilter || isFournisseursCreditFilter
 
     val repo8Bons = viewModel.getter.repo8BonVent.datasValue
 
     // Precalculate latest New_Situation_Credit montant for clients when under credit filter
-    val creditMontantByClientKeyId = remember(allClients, repo8Bons, isCreditFilter) {
-        if (!isCreditFilter) {
+    val creditMontantByClientKeyId = remember(allClients, repo8Bons, isCreditFilter, isFournisseursCreditFilter) {
+        if (!isAnyCreditFilter) {
             emptyMap()
         } else {
-            val bonsByClient = repo8Bons
-                .filter {
-                    it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
-                            && !it.its_working_for_wholesaler
-                }
-                .groupBy { it.parent_M2Client_KeyID }
-
-            allClients
-                .filter { !it.its_Fournisseur_Grossisst_A_Jomla }
-                .mapNotNull { client ->
-                    val lastSituation = bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
-                    val montant = lastSituation?.montant_principale_du_type ?: 0.0
-                    if (montant > 0.0) client.keyID to montant else null
-                }.toMap()
+            M2Client.calculateCreditsMap(
+                clients = allClients,
+                bons = repo8Bons,
+                forFournisseurs = isFournisseursCreditFilter
+            )
         }
     }
 
@@ -121,15 +118,24 @@ fun But1_Floating_ClientsListDialog(
         creditMontantByClientKeyId.values.sum()
     }
 
-    val baseClientsList = remember(clients, allClients, isCreditFilter, creditMontantByClientKeyId) {
-        if (isCreditFilter) {
-            allClients.filter { it.keyID in creditMontantByClientKeyId }
+    val isGlobalModeFilter = currentFilterMode in listOf(
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
+        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
+    )
+
+    val baseClientsList = remember(clients, allClients, currentFilterMode, isCreditFilter, isGlobalModeFilter, creditMontantByClientKeyId) {
+        if (isGlobalModeFilter) {
+            filterClientsBasedOnMode(viewModel, currentFilterMode)
         } else {
             clients
         }
     }
 
-    val filteredClients = remember(baseClientsList, allClients, searchQuery, isCreditFilter) {
+    val filteredClients = remember(baseClientsList, allClients, searchQuery, isGlobalModeFilter) {
         val query = searchQuery.trim().lowercase()
         when {
             query.isEmpty() -> baseClientsList
@@ -138,7 +144,7 @@ fun But1_Floating_ClientsListDialog(
                         it.numTelephone.lowercase().contains(query)
             }
             else -> {
-                val searchPool = if (isCreditFilter) baseClientsList else allClients
+                val searchPool = if (isGlobalModeFilter) baseClientsList else allClients
                 searchPool.filter {
                     it.nom.lowercase().contains(query) ||
                             it.numTelephone.lowercase().contains(query)
@@ -177,9 +183,10 @@ fun But1_Floating_ClientsListDialog(
                             style = MaterialTheme.typography.bodySmall,
                             color = currentMode.couleur,
                         )
-                        if (isCreditFilter) {
+                        if (isAnyCreditFilter) {
+                            val creditTitle = if (isFournisseursCreditFilter) "Total crédits fournisseurs" else "Total crédits"
                             Text(
-                                text = "Total crédits : ${"%.2f".format(totalCreditChezClients)} DA",
+                                text = "$creditTitle : ${"%.2f".format(totalCreditChezClients)} DA",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.error,
@@ -209,7 +216,8 @@ fun But1_Floating_ClientsListDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                        .height(30.dp)
+                    ,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -467,6 +475,7 @@ private fun ClientRow(
 private fun getFilterLabel(mode: MapClientsViewModel.VisibleClientsNow): String = when (mode) {
     MapClientsViewModel.VisibleClientsNow.showAll -> "Tous les clients"
     MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> "Crédit"
+    MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit -> "Crédit Fournisseurs / Grossistes"
     MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "Commande confirmée"
     MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> "Commande livrée"
     MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> "Cible vendeur"

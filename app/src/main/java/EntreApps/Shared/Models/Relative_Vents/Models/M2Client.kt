@@ -28,7 +28,11 @@ data class M2Client(
     //Forging Keys
     var its_Fournisseur: Boolean = false,
 
+    var its_Client_De_Jamale: Boolean = false,
+    
     var its_Fournisseur_Grossisst_A_Jomla: Boolean = false,
+    var ignore_sont_credit: Boolean = false,
+
 
     var cUnClientTemporaire: Boolean = true,
 
@@ -208,6 +212,33 @@ data class M2Client(
 
         fun removeRef(preparedData: M2Client) {
             ref.child(preparedData.keyID).removeValue()
+        }
+
+        fun calculateCreditsMap(
+            clients: List<M2Client>,
+            bons: List<M8BonVent>,
+            forFournisseurs: Boolean = false,
+        ): Map<String, Double> {
+            val bonsByClient = bons
+                .filter { it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit }
+                .groupBy { it.parent_M2Client_KeyID }
+
+            return clients
+                .filter { !it.ignore_sont_credit }
+                .filter { if (forFournisseurs) it.its_Fournisseur_Grossisst_A_Jomla else !it.its_Fournisseur_Grossisst_A_Jomla }
+                .mapNotNull { client ->
+                    val lastSituation = bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
+                    val montant = lastSituation?.montant_principale_du_type ?: 0.0
+                    if (montant > 0.0) client.keyID to montant else null
+                }.toMap()
+        }
+
+        fun calculateTotalCredit(
+            clients: List<M2Client>,
+            bons: List<M8BonVent>,
+            forFournisseurs: Boolean = false,
+        ): Double {
+            return calculateCreditsMap(clients, bons, forFournisseurs).values.sum()
         }
 
         fun get_default(): M2Client {

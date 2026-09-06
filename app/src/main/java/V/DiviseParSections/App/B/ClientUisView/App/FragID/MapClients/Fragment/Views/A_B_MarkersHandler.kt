@@ -105,7 +105,16 @@ fun getClientsCurrentlyVisibleOnMap(
 ): List<M2Client> {
     val modeFilteredClients = filterClientsBasedOnMode(viewModel, currentFilterMode)
 
-    return if (proximityFilterCenter != null) {
+    val isGlobalModeFilter = currentFilterMode in listOf(
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
+        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
+    )
+
+    return if (proximityFilterCenter != null && !isGlobalModeFilter) {
         modeFilteredClients.filter { client ->
             haversineMeters(
                 proximityFilterCenter.latitude,
@@ -250,6 +259,7 @@ fun performClickOnMarqueAction(
                 ActiveCentralValues.Click_On_Marque.Delete_Client                            -> "Supprimer Client"
                 ActiveCentralValues.Click_On_Marque.Passe_Client                             -> "Passer le client"
                 ActiveCentralValues.Click_On_Marque.Livre_Client                             -> "Livrer le client"
+                else -> {"non difinie"}
             }
             Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_LONG).show()
             val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
@@ -588,6 +598,27 @@ fun performClickOnMarqueAction(
                 ActiveCentralValues.Click_On_Marque.Livre_Client -> {
                     viewModel.addLivreOptimistic(m2Client)
                     Toast.makeText(context, "${m2Client.nom} → Livré", Toast.LENGTH_SHORT).show()
+                }
+                ActiveCentralValues.Click_On_Marque.Toggle_Fournisseur_Grossist -> {
+                    val newStatut = !m2Client.its_Fournisseur_Grossisst_A_Jomla
+                    val updated = m2Client.copy(its_Fournisseur_Grossisst_A_Jomla = newStatut)
+                    viewModel.updateData(updated)
+                    val label = if (newStatut) "Défini comme Fournisseur/Grossiste" else "Défini comme Client standard"
+                    Toast.makeText(context, "${m2Client.nom} : $label", Toast.LENGTH_SHORT).show()
+                }
+                ActiveCentralValues.Click_On_Marque.Toggle_Ignore_Sont_Credit -> {
+                    val newStatut = !m2Client.ignore_sont_credit
+                    val updated = m2Client.copy(ignore_sont_credit = newStatut)
+                    viewModel.updateData(updated)
+                    val label = if (newStatut) "Crédit ignoré du calcul" else "Crédit inclus dans le calcul"
+                    Toast.makeText(context, "${m2Client.nom} : $label", Toast.LENGTH_SHORT).show()
+                }
+                ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale -> {
+                    val newStatut = !m2Client.its_Client_De_Jamale
+                    val updated = m2Client.copy(its_Client_De_Jamale = newStatut)
+                    viewModel.updateData(updated)
+                    val label = if (newStatut) "Défini comme Client de Jamale" else "Retiré des Clients de Jamale"
+                    Toast.makeText(context, "${m2Client.nom} : $label", Toast.LENGTH_SHORT).show()
                 }
             }
 }

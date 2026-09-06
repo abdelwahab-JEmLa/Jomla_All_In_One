@@ -222,6 +222,9 @@ data class ActiveCentralValues(
         Delete_Client(Color(0xFFF44336)),
         Passe_Client(Color(0xFF747680)),
         Livre_Client(Color(0xFF0099CC)),
+        Toggle_Fournisseur_Grossist(Color(0xFFFF9800)),
+        Toggle_Ignore_Sont_Credit(Color(0xFF795548)),
+        Toggle_Client_De_Jamale(Color(0xFF009688)),
     }
 
     sealed class RoleDefinieParSourceACetteFragment {

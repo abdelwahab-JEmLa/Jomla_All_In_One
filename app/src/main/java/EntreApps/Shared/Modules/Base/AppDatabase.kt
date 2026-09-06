@@ -116,7 +116,7 @@ import java.util.Date
 
         M09AppCompt::class,
     ],
-    version = 7, // Bumped from 6 → 7: added affiche_ProduitDataBaseEdites_ComposableViews to M09AppCompt
+    version = 9, // Bumped from 8 → 9: added its_Client_De_Jamale to M2Client
     exportSchema = false
 )
 @TypeConverters(

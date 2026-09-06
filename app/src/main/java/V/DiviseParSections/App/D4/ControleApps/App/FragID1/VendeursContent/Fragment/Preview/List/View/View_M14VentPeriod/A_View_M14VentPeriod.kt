@@ -3,6 +3,7 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Frag
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -19,14 +20,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,8 +44,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Date
@@ -97,7 +107,12 @@ fun View_M14VentPeriod(
             "credit_produits_depot" -> relative_M14VentPeriode.copy(credit_produitsAuDepot = newValue)
             "acheter_produits_depot" -> relative_M14VentPeriode.copy(acheter_produitsAuDepot = newValue)
             "ancien_produits" -> relative_M14VentPeriode.copy(valeur_Produits_depuit_Ancien_Vent_Period = newValue)
-            "pre_fraits" -> relative_M14VentPeriode.copy(pre_fraits_voiture_essance_marche_et_paprasse = newValue)  // ADD THIS LINE
+            "pre_fraits" -> relative_M14VentPeriode.copy(pre_fraits_voiture_essance_marche_et_paprasse = newValue)
+            "saved_depot" -> relative_M14VentPeriode.copy(saved_produits_au_depot = newValue)
+            "saved_clients_credit" -> relative_M14VentPeriode.copy(saved_totale_credits_clients = newValue)
+            "saved_fournisseurs_credit" -> relative_M14VentPeriode.copy(saved_sums_fournisseurs = newValue)
+            "saved_cache_au_coffre" -> relative_M14VentPeriode.copy(saved_cache_au_coffre = newValue)
+            "saved_balance_par_chiffre" -> relative_M14VentPeriode.copy(save_balence_par_chiffre = newValue)
             else -> relative_M14VentPeriode
         }
         updatedPeriode.handel_Clavie_Donne()
@@ -151,7 +166,33 @@ fun View_M14VentPeriod(
         }
     }
 
-    // Delete confirmation dialog
+    // Dynamic credit sum for all non-fournisseur clients
+    val totalClientsCredit = remember(
+        repositorysMainGetter.repo2Client.datasValue,
+        repositorysMainGetter.repo8BonVent.datasValue
+    ) {
+        M2Client.calculateTotalCredit(
+            clients = repositorysMainGetter.repo2Client.datasValue,
+            bons = repositorysMainGetter.repo8BonVent.datasValue,
+            forFournisseurs = false
+        )
+    }
+
+    // Dynamic credit sum for fournisseur grossiste clients
+    val totalFournisseursCredit = remember(
+        repositorysMainGetter.repo2Client.datasValue,
+        repositorysMainGetter.repo8BonVent.datasValue
+    ) {
+        M2Client.calculateTotalCredit(
+            clients = repositorysMainGetter.repo2Client.datasValue,
+            bons = repositorysMainGetter.repo8BonVent.datasValue,
+            forFournisseurs = true
+        )
+    }
+
+    val dynamicBalance = totalDepotStockValue + totalClientsCredit - totalFournisseursCredit
+
+
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -298,19 +339,149 @@ fun View_M14VentPeriod(
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
+                @Composable
+                fun ResumeRow(label: String, dynamic: Double, savedKey: String, savedValue: Double, dynamicColor: Color = MaterialTheme.colorScheme.tertiary) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.weight(1.6f)
+                        )
+                        Text(
+                            text = "%.0f".format(dynamic),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = dynamicColor,
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (editingField == savedKey) {
+                            OutlinedTextField(
+                                value = editingValue,
+                                onValueChange = { editingValue = it },
+                                label = { Text("%.0f".format(savedValue)) },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Decimal,
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(onDone = { saveEditedValue() }),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .focusRequester(focusRequester)
+                            )
+                        } else {
+                            Text(
+                                text = "💾 %.0f".format(savedValue),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.outline,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { startEditing(savedKey, savedValue) }
+                            )
+                        }
+                    }
+                }
+
+                // Depot row
+                ResumeRow(
+                    label = "Dépôt (prods par p achat):",
+                    dynamic = totalDepotStockValue,
+                    savedKey = "saved_depot",
+                    savedValue = relative_M14VentPeriode.saved_produits_au_depot
+                )
+
+                Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+                // Clients credit row
+                ResumeRow(
+                    label = "Crédit clients:",
+                    dynamic = totalClientsCredit,
+                    savedKey = "saved_clients_credit",
+                    savedValue = relative_M14VentPeriode.saved_totale_credits_clients,
+                    dynamicColor = Color(0xFFE64A19)
+                )
+                // Fournisseurs credit row
+                ResumeRow(
+                    label = "Crédit fournisseurs:",
+                    dynamic = totalFournisseursCredit,
+                    savedKey = "saved_fournisseurs_credit",
+                    savedValue = relative_M14VentPeriode.saved_sums_fournisseurs,
+                    dynamicColor = Color(0xFF1565C0)
+                )
+                // Cache au coffre row
+                ResumeRow(
+                    label = "Cash au coffre:",
+                    dynamic = 0.0,
+                    savedKey = "saved_cache_au_coffre",
+                    savedValue = relative_M14VentPeriode.saved_cache_au_coffre,
+                    dynamicColor = MaterialTheme.colorScheme.secondary
+                )
+
+                Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+                // Dynamic balance row + save_balence_par_chiffre
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Dépôt (prods par p achat):",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = "⚖ Balance dyn:",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1.6f)
                     )
                     Text(
-                        text = "%.0f DA".format(totalDepotStockValue),
+                        text = "%.0f".format(dynamicBalance),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.tertiary
+                        fontWeight = FontWeight.Bold,
+                        color = if (dynamicBalance >= 0) Color(0xFF388E3C) else Color(0xFFD32F2F),
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (editingField == "saved_balance_par_chiffre") {
+                        OutlinedTextField(
+                            value = editingValue,
+                            onValueChange = { editingValue = it },
+                            label = { Text("%.0f".format(relative_M14VentPeriode.save_balence_par_chiffre)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(onDone = { saveEditedValue() }),
+                            modifier = Modifier.weight(1f).focusRequester(focusRequester)
+                        )
+                    } else {
+                        Text(
+                            text = "💾 %.0f".format(relative_M14VentPeriode.save_balence_par_chiffre),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.weight(1f).clickable {
+                                startEditing("saved_balance_par_chiffre", relative_M14VentPeriode.save_balence_par_chiffre)
+                            }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                // Copy all dynamic values to saved fields
+                IconButton(
+                    onClick = {
+                        repositorysMainSetter.update_M14VentPeriode(
+                            relative_M14VentPeriode.copy(
+                                saved_produits_au_depot = totalDepotStockValue,
+                                saved_totale_credits_clients = totalClientsCredit,
+                                saved_sums_fournisseurs = totalFournisseursCredit,
+                                save_balence_par_chiffre = dynamicBalance
+                            )
+                        )
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = "Copier les valeurs dynamiques dans les saved",
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
