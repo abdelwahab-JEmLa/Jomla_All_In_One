@@ -100,6 +100,7 @@ fun View_MainItem(
     // State for delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showCreateCartonBonDialog by remember { mutableStateOf(false) }
+    var showMoveToLastVentPeriodDialog by remember { mutableStateOf(false) }
 
     val activeCentralValues by remember { derivedStateOf { focusedValuesGetter.active_Central_Values } }
     val relative_M17Message =
@@ -480,7 +481,19 @@ fun View_MainItem(
                             )
                         }
                     }
-
+                    item {
+                        IconButton(
+                            onClick = {
+                                showMoveToLastVentPeriodDialog = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = "Move Bon to Last Vent Period",
+                                tint = Color.White
+                            )
+                        }
+                    }
                     item {
                         IconButton(
                             onClick = {
@@ -938,7 +951,7 @@ fun View_MainItem(
 
                         val clickedVentOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter { vent ->
                             vent.parent_M8BonVent_KeyId == relative_M8BonVent.keyID &&
-                            repositorysMainGetter.repo1ProduitInfos.datasValue.find { it.keyID == vent.parent_M1Produit_KeyId }?.its_Carton == true
+                                    repositorysMainGetter.repo1ProduitInfos.datasValue.find { it.keyID == vent.parent_M1Produit_KeyId }?.its_Carton == true
                         }
                         clickedVentOperations.forEach { opVent ->
                             repositorysMainSetter.repo10OperationVentCouleur.addOrUpdateData(
@@ -962,6 +975,65 @@ fun View_MainItem(
             },
             dismissButton = {
                 TextButton(onClick = { showCreateCartonBonDialog = false }) {
+                    Text("إلغاء / Annuler")
+                }
+            }
+        )
+    }
+
+    if (showMoveToLastVentPeriodDialog) {
+        AlertDialog(
+            onDismissRequest = { showMoveToLastVentPeriodDialog = false },
+            title = { Text("نقل إلى آخر فترة بيع (Last Vent Period)") },
+            text = { Text("هل تريد نقل هذا البون وكل عملياته إلى آخر فترة بيع؟") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val lastVentPeriode = repositorysMainGetter.repo14VentPeriode.datasValue
+                            .maxByOrNull { it.creationTimestamp }
+
+                        val lastVentPeriodKeyId = lastVentPeriode?.keyID
+                            ?: focusedValuesGetter.active_Central_Values.active_M14VentPeriode?.keyID
+                            ?: relative_M8BonVent.parent_M14VentPeriod_KeyId
+                        val lastVentPeriodDebugInfos = lastVentPeriode?.get_DebugInfos()
+                            ?: relative_M8BonVent.parent_M14VentPeriod_DebugInfos
+
+                        // Update the M8BonVent itself to point at the last vent period
+                        repositorysMainSetter.update_M8BonVent(
+                            relative_M8BonVent.copy(
+                                parent_M14VentPeriod_KeyId = lastVentPeriodKeyId,
+                                parent_M14VentPeriod_DebugInfos = lastVentPeriodDebugInfos,
+                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                            )
+                        )
+
+                        // Propagate the change to every operation attached to this bon
+                        val bonOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
+                            it.parent_M8BonVent_KeyId == relative_M8BonVent.keyID
+                        }
+                        bonOperations.forEach { opVent ->
+                            repositorysMainSetter.repo10OperationVentCouleur.addOrUpdateData(
+                                opVent.copy(
+                                    parent_M14VentPeriod_KeyId = lastVentPeriodKeyId,
+                                    parent_M14VentPeriod_DebugInfos = lastVentPeriodDebugInfos,
+                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                )
+                            )
+                        }
+
+                        Toast.makeText(
+                            context,
+                            "تم نقل البون و ${bonOperations.size} عمليات إلى آخر فترة بيع",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        showMoveToLastVentPeriodDialog = false
+                    }
+                ) {
+                    Text("نعم / Confirmer")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showMoveToLastVentPeriodDialog = false }) {
                     Text("إلغاء / Annuler")
                 }
             }
