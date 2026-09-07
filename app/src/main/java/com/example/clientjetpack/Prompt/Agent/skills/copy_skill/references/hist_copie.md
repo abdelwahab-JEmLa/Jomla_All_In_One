@@ -1,0 +1,1 @@
+### 🔗 [ActiveDatasFragNewProto.kt](file:///C:/Users/Abou Mohamed/AndroidStudioProjects/Light_App_Controles/app/src/main/java/com/example/light_app_controles/B/Screens/Z/Screens/Test/ID1/Client_Map/App/Bon_Vent_Etate/View/a/Screens/a/Vendeur_Boutiqe/Screen/ViewModel/ActiveDatasFragNewProto.kt)
