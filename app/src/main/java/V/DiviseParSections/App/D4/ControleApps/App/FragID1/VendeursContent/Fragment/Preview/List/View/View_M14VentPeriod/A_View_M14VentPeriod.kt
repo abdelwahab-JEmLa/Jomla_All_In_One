@@ -395,19 +395,22 @@ fun View_M14VentPeriod(
 
                 Divider(modifier = Modifier.padding(vertical = 4.dp))
 
-                // Clients credit row
+                // Clients credit row — total dynamique = M2Client.calculateTotalCredit
+                // avec forFournisseurs = false, qui ne compte déjà que les clients
+                // "court terme" (!ces_credits_son_a_long_term), donc les mêmes
+                // clients que ceux marqués via Set_Client_Court_Terme.
                 ResumeRow(
-                    label = "Crédit clients:",      //<--
-                    //TODO(1): fait que ca est Set_Client_Court_Terme
+                    label = "Crédit clients:",
                     dynamic = totalClientsCredit,
                     savedKey = "saved_clients_credit",
                     savedValue = relative_M14VentPeriode.saved_totale_credits_clients,
                     dynamicColor = Color(0xFFE64A19)
                 )
-                // Fournisseurs credit row
+                // Fournisseurs credit row — même logique que ci-dessus, avec
+                // forFournisseurs = true, donc les fournisseurs "court terme"
+                // marqués via Set_Fournisseur_Court_Terme.
                 ResumeRow(
-                    label = "Crédit fournisseurs:",       //<--
-                    //TODO(1): et ca c Set_Fournisseur_Court_Terme
+                    label = "Crédit fournisseurs:",
                     dynamic = totalFournisseursCredit,
                     savedKey = "saved_fournisseurs_credit",
                     savedValue = relative_M14VentPeriode.saved_sums_fournisseurs_Short_Term,
@@ -620,4 +623,3 @@ fun View_M14VentPeriod(
         }
     }
 }
-
