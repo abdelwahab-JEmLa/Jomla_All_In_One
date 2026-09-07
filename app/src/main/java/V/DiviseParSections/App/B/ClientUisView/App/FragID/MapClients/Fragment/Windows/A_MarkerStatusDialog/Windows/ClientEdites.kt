@@ -20,9 +20,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
@@ -63,198 +63,334 @@ fun ClientEdites(
     val hasValidLocation = relative_Client?.latitude != null &&
             relative_Client?.latitude != 0.0 &&
             relative_Client?.longitude != null
-            //<--
-            //(1): ajout un button au click lance choisi au galery  image comm au
-                    ////<--
-                    //(1): ajout affiche image de client si dispo fait que ca soit petite a cote gatche clickt au click expand grand
-    Row(
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Delete Icon
-        Card(
-            modifier = Modifier
-                .background(color = Color.Red)
-                .clickable {
-                    onShowDeleteConfirmationChange(true)
-                }
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete client",
-                modifier = Modifier.padding(8.dp)
-            )
+        item {
+            Card(
+                modifier = Modifier
+                    .background(color = Color.Red)
+                    .clickable {
+                        onShowDeleteConfirmationChange(true)
+                    }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete client",
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
         }
 
         // WhatsApp Send Credit Items Icon - visible if phone number exists
         if (hasPhoneNumber) {
-            Card(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .clickable { onTriggerCreditCapture() }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = "Send credit items via WhatsApp",
-                    tint = Color(0xFF25D366),
-                    modifier = Modifier.padding(8.dp)
-                )
+            item {
+                Card(
+                    modifier = Modifier
+                        .clickable { onTriggerCreditCapture() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Send credit items via WhatsApp",
+                        tint = Color(0xFF25D366),
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
             }
         }
 
         // Phone Call Icon - only visible if phone number exists
         if (hasPhoneNumber) {
-            Card(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .clickable {
-                        val phoneNumber = relative_Client?.numTelephone ?: ""
-                        try {
-                            // Try Truecaller first
-                            val truecallerIntent = Intent(
-                                Intent.ACTION_DIAL,
-                                Uri.fromParts("tel", phoneNumber, null)
-                            ).apply {
-                                setPackage("com.truecaller")
-                            }
-
-                            val packageManager = context.packageManager
-                            val isTruecallerInstalled = truecallerIntent.resolveActivity(packageManager) != null
-
-                            if (isTruecallerInstalled) {
-                                context.startActivity(truecallerIntent)
-                                Toast.makeText(
-                                    context,
-                                    "Appel vers ${relative_Client?.nom} via Truecaller",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                // Fallback to default dialer
-                                val defaultDialerIntent = Intent(Intent.ACTION_DIAL).apply {
-                                    data = Uri.parse("tel:$phoneNumber")
+            item {
+                Card(
+                    modifier = Modifier
+                        .clickable {
+                            val phoneNumber = relative_Client?.numTelephone ?: ""
+                            try {
+                                // Try Truecaller first
+                                val truecallerIntent = Intent(
+                                    Intent.ACTION_DIAL,
+                                    Uri.fromParts("tel", phoneNumber, null)
+                                ).apply {
+                                    setPackage("com.truecaller")
                                 }
-                                context.startActivity(defaultDialerIntent)
+
+                                val packageManager = context.packageManager
+                                val isTruecallerInstalled = truecallerIntent.resolveActivity(packageManager) != null
+
+                                if (isTruecallerInstalled) {
+                                    context.startActivity(truecallerIntent)
+                                    Toast.makeText(
+                                        context,
+                                        "Appel vers ${relative_Client?.nom} via Truecaller",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    // Fallback to default dialer
+                                    val defaultDialerIntent = Intent(Intent.ACTION_DIAL).apply {
+                                        data = Uri.parse("tel:$phoneNumber")
+                                    }
+                                    context.startActivity(defaultDialerIntent)
+                                    Toast.makeText(
+                                        context,
+                                        "Appel vers ${relative_Client?.nom}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } catch (e: Exception) {
                                 Toast.makeText(
                                     context,
-                                    "Appel vers ${relative_Client?.nom}",
+                                    "Impossible de lancer l'appel",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Impossible de lancer l'appel",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
-                    }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Phone,
-                    contentDescription = "Call client",
-                    tint = Color(0xFF4CAF50), // Green color for call
-                    modifier = Modifier.padding(8.dp)
-                )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Phone,
+                        contentDescription = "Call client",
+                        tint = Color(0xFF4CAF50), // Green color for call
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
             }
         }
 
         // Navigation Icon - only visible if GPS coordinates exist
         if (hasValidLocation) {
-            Card(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .clickable {
-                        val latitude = relative_Client?.latitude ?: 0.0
-                        val longitude = relative_Client?.longitude ?: 0.0
-                        val clientName = relative_Client?.nom ?: ""
+            item {
+                Card(
+                    modifier = Modifier
+                        .clickable {
+                            val latitude = relative_Client?.latitude ?: 0.0
+                            val longitude = relative_Client?.longitude ?: 0.0
+                            val clientName = relative_Client?.nom ?: ""
 
-                        try {
-                            // Try Google Maps first
-                            val gmmIntentUri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d")
-                            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
-                                setPackage("com.google.android.apps.maps")
-                            }
-
-                            context.startActivity(mapIntent)
-                            Toast.makeText(
-                                context,
-                                "Navigation vers $clientName",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } catch (e: Exception) {
-                            // Fallback to generic geo intent
                             try {
-                                val geoUri = Uri.parse("geo:$latitude,$longitude?q=$latitude,$longitude($clientName)")
-                                val fallbackIntent = Intent(Intent.ACTION_VIEW, geoUri)
-                                context.startActivity(fallbackIntent)
-                            } catch (e2: Exception) {
+                                // Try Google Maps first
+                                val gmmIntentUri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d")
+                                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
+                                    setPackage("com.google.android.apps.maps")
+                                }
+
+                                context.startActivity(mapIntent)
                                 Toast.makeText(
                                     context,
-                                    "Aucune application de navigation disponible",
+                                    "Navigation vers $clientName",
                                     Toast.LENGTH_SHORT
                                 ).show()
+                            } catch (e: Exception) {
+                                // Fallback to generic geo intent
+                                try {
+                                    val geoUri = Uri.parse("geo:$latitude,$longitude?q=$latitude,$longitude($clientName)")
+                                    val fallbackIntent = Intent(Intent.ACTION_VIEW, geoUri)
+                                    context.startActivity(fallbackIntent)
+                                } catch (e2: Exception) {
+                                    Toast.makeText(
+                                        context,
+                                        "Aucune application de navigation disponible",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                         }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Navigation,
+                        contentDescription = "Navigate to client",
+                        tint = Color(0xFF2196F3), // Blue color for navigation
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+        }
+
+        // Edit Location Icon
+        item {
+            Card(
+                modifier = Modifier
+                    .clickable {
+                        relative_Client?.let { onClickToEditeMarquerPosition(relative_Client) }
+                        onDismiss()
+                        viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+                        focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                     }
             ) {
                 Icon(
-                    imageVector = Icons.Default.Navigation,
-                    contentDescription = "Navigate to client",
-                    tint = Color(0xFF2196F3), // Blue color for navigation
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Edit location",
                     modifier = Modifier.padding(8.dp)
                 )
             }
         }
 
-        // Edit Location Icon
-        Card(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .clickable {
-                    relative_Client?.let { onClickToEditeMarquerPosition(relative_Client) }
-                    onDismiss()
-                    viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
-                    focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+        // Client Type Mode Toggle Icon
+        item {
+            Card(
+                modifier = Modifier
+                    .clickable {
+                        val newClientTypeMode = when (clientTypeMode) {
+                            M2Client.ClientTypeMode.ANCIEN -> M2Client.ClientTypeMode.NEVEAU
+                            M2Client.ClientTypeMode.NEVEAU -> M2Client.ClientTypeMode.EVITE
+                            M2Client.ClientTypeMode.EVITE -> M2Client.ClientTypeMode.ANCIEN
+                            null -> M2Client.ClientTypeMode.NEVEAU
+                        }
+
+                        // Update the client's type mode
+                        relative_Client?.let { client ->
+                            client.clientTypeMode = newClientTypeMode
+                            viewModel.updateData(client)
+                        }
+
+                        onClientTypeModeChange(newClientTypeMode)
+                    }
+            ) {
+                clientTypeMode?.let {
+                    Icon(
+                        imageVector = it.icon,
+                        contentDescription = "Toggle Client Type",
+                        tint = it.color,
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
-        ) {
-            Icon(
-                imageVector = Icons.Default.LocationOn,
-                contentDescription = "Edit location",
-                modifier = Modifier.padding(8.dp)
-            )
+            }
         }
 
-        // Client Type Mode Toggle Icon
-        Card(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .clickable {
-                    val newClientTypeMode = when (clientTypeMode) {
-                        M2Client.ClientTypeMode.ANCIEN -> M2Client.ClientTypeMode.NEVEAU
-                        M2Client.ClientTypeMode.NEVEAU -> M2Client.ClientTypeMode.EVITE
-                        M2Client.ClientTypeMode.EVITE -> M2Client.ClientTypeMode.ANCIEN
-                        null -> M2Client.ClientTypeMode.NEVEAU
-                    }
-
-                    // Update the client's type mode
-                    relative_Client?.let { client ->
-                        client.clientTypeMode = newClientTypeMode
-                        viewModel.updateData(client)
-                    }
-
-                    onClientTypeModeChange(newClientTypeMode)
+        // 5 boutons pour changer le statut crédit du client : Client/Fournisseur
+        // x court/long terme, plus le toggle "Client de Jamale". Mêmes flags que
+        // ceux posés par Set_Client_Court_Terme / Set_Fournisseur_Court_Terme /
+        // Toggle_Client_De_Jamale dans A_B_MarkersHandler.kt, pour que le statut
+        // posé ici depuis la fiche client corresponde exactement aux filtres
+        // crédit de la carte.
+        if (relative_Client != null) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .background(
+                            color = if (!relative_Client.its_Fournisseur_Grossisst_A_Jomla && !relative_Client.ces_credits_son_a_long_term)
+                                MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+                        )
+                        .clickable {
+                            val updated = relative_Client.copy(
+                                its_Fournisseur_Grossisst_A_Jomla = false,
+                                ces_credits_son_a_long_term = false,
+                            )
+                            viewModel.updateData(updated)
+                            Toast.makeText(context, "${relative_Client.nom} : Client, crédit court terme", Toast.LENGTH_SHORT).show()
+                        }
+                ) {
+                    Text(
+                        text = "Client\ncourt terme",
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
-        ) {
-            clientTypeMode?.let {
-                Icon(
-                    imageVector = it.icon,
-                    contentDescription = "Toggle Client Type",
-                    tint = it.color,
-                    modifier = Modifier.padding(8.dp)
-                )
+            }
+            item {
+                Card(
+                    modifier = Modifier
+                        .background(
+                            color = if (!relative_Client.its_Fournisseur_Grossisst_A_Jomla && relative_Client.ces_credits_son_a_long_term)
+                                MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+                        )
+                        .clickable {
+                            val updated = relative_Client.copy(
+                                its_Fournisseur_Grossisst_A_Jomla = false,
+                                ces_credits_son_a_long_term = true,
+                            )
+                            viewModel.updateData(updated)
+                            Toast.makeText(context, "${relative_Client.nom} : Client, crédit long terme", Toast.LENGTH_SHORT).show()
+                        }
+                ) {
+                    Text(
+                        text = "Client\nlong terme",
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+            item {
+                // Le highlight de ce bouton (et des 3 autres boutons de statut
+                // crédit) dépend de relative_Client, qui vient de
+                // uiState.markerStatusDialogActiveM2Client. Ce champ ne se
+                // rafraîchissait pas après un clic (viewModel.updateData ne
+                // touchait que b_ClientInfosProtoJuin3List), donc le highlight
+                // restait sur l'ancien statut même une fois le nouveau bien
+                // enregistré — corrigé dans MapClientsViewModel.updateData.
+                Card(
+                    modifier = Modifier
+                        .background(
+                            color = if (relative_Client.its_Fournisseur_Grossisst_A_Jomla && !relative_Client.ces_credits_son_a_long_term)
+                                MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+                        )
+                        .clickable {
+                            val updated = relative_Client.copy(
+                                its_Fournisseur_Grossisst_A_Jomla = true,
+                                ces_credits_son_a_long_term = false,
+                            )
+                            viewModel.updateData(updated)
+                            Toast.makeText(context, "${relative_Client.nom} : Fournisseur/Grossiste, crédit court terme", Toast.LENGTH_SHORT).show()
+                        }
+                ) {
+                    Text(
+                        text = "Fournisseur\ncourt terme",
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+            item {
+                Card(
+                    modifier = Modifier
+                        .background(
+                            color = if (relative_Client.its_Fournisseur_Grossisst_A_Jomla && relative_Client.ces_credits_son_a_long_term)
+                                MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+                        )
+                        .clickable {
+                            val updated = relative_Client.copy(
+                                its_Fournisseur_Grossisst_A_Jomla = true,
+                                ces_credits_son_a_long_term = true,
+                            )
+                            viewModel.updateData(updated)
+                            Toast.makeText(context, "${relative_Client.nom} : Fournisseur/Grossiste, crédit long terme", Toast.LENGTH_SHORT).show()
+                        }
+                ) {
+                    Text(
+                        text = "Fournisseur\nlong terme",
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+            item {
+                Card(
+                    modifier = Modifier
+                        .background(
+                            color = if (relative_Client.its_Client_De_Jamale)
+                                MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surface
+                        )
+                        .clickable {
+                            val newStatut = !relative_Client.its_Client_De_Jamale
+                            val updated = relative_Client.copy(its_Client_De_Jamale = newStatut)
+                            viewModel.updateData(updated)
+                            Toast.makeText(
+                                context,
+                                "${relative_Client.nom} : ${if (newStatut) "Client de Jamale activé" else "Client de Jamale désactivé"}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                ) {
+                    Text(
+                        text = "Client\nJamale",
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
             }
         }
     }

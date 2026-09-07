@@ -59,6 +59,12 @@ data class UiState(
     val error: String? = null,
     val m2Client_In_ShowEditMarkerMode: M2Client? = null,
     val proximityFilterCenter: GeoPoint? = null,
+    // Le rayon de proximité (proximite_de_vision_meter, 900m par défaut) ne
+    // s'applique PAS quand currentFilterMode est un mode global (les 5 filtres
+    // crédit, AFFICHE_CIBLE_POUR_VENDEUR, etc. — voir isGlobalModeFilter dans
+    // A_B_MarkersHandler.getClientsCurrentlyVisibleOnMap) : l'affichage y est
+    // intentionnellement illimité, car un crédit ne dépend pas de la position
+    // actuelle sur la carte. C'est le comportement voulu, pas un filtre oublié.
     // Signals MapContent to show a phone-entry dialog before sending the WhatsApp PDF
     val pendingWhatsAppSend: M2Client? = null,
 )
@@ -202,7 +208,16 @@ class MapClientsViewModel(
             b_ClientDataBaseRepository.addOrUpdateData(client)
             this@MapClientsViewModel.repo2Client.updateClient(client)
             _uiState.value = _uiState.value.copy(
-                b_ClientInfosProtoJuin3List = this@MapClientsViewModel.repo2Client.datasState.value
+                b_ClientInfosProtoJuin3List = this@MapClientsViewModel.repo2Client.datasState.value,
+                // Sans ça, le client affiché dans ClientEdites (relative_Client, lu
+                // depuis markerStatusDialogActiveM2Client) restait figé sur son
+                // ancienne valeur après un updateData : les boutons de statut crédit
+                // (Set_Fournisseur_Court_Terme, etc.) ne se surlignaient jamais,
+                // même quand le flag venait d'être posé avec succès en base.
+                markerStatusDialogActiveM2Client = _uiState.value.markerStatusDialogActiveM2Client
+                    ?.takeIf { it.keyID == client.keyID }
+                    ?.let { client }
+                    ?: _uiState.value.markerStatusDialogActiveM2Client,
             )
         }
         mapReloadTrigger++

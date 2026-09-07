@@ -32,6 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
@@ -56,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
 /**
@@ -330,7 +332,11 @@ fun But1_Floating_ClientsListDialog(
                             // (client/fournisseur x court/long terme) en un clic, plutôt
                             // que de les inverser indépendamment.
                             val toggleClickModes = listOf(
-                                ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme,
+                                ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme,      //<--
+                                // Ces modes (+ Delete/Ferme/Cible/Livré via otherClickModes)
+                                // ne ferment plus le dialogue après update : ils ne font que
+                                // fixer un statut/flag, donc l'utilisateur reste dans la liste
+                                // pour enchaîner sur d'autres clients sans rouvrir le menu.
                                 ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme,
                                 ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme,
                                 ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme,
@@ -338,7 +344,40 @@ fun But1_Floating_ClientsListDialog(
                             )
                             val otherClickModes = ActiveCentralValues.Click_On_Marque.entries
                                 .filter { it !in toggleClickModes }
-
+                            //<--
+                            // Recentre le filtre de proximité (3km) sur la position actuelle
+                            // de la carte. Utile après avoir scrollé/déplacé la carte pendant
+                            // que le dialogue est ouvert : sans ça le filtre restait figé sur
+                            // le centre capté à l'ouverture du dialogue (voir A_MapContent.kt,
+                            // But1_Floating_ClientsListButton.onClick).
+                            DropdownMenuItem(
+                                text = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.MyLocation,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp),
+                                        )
+                                        Text(
+                                            text = "Centrer sur la carte (3km)",
+                                            style = MaterialTheme.typography.bodySmall,
+                                        )
+                                    }
+                                },
+                                onClick = {
+                                    (mapView.mapCenter as? GeoPoint)?.let { center ->
+                                        viewModel.relod_map_marques_du_3km_du_centre_map(
+                                            center.latitude,
+                                            center.longitude,
+                                        )
+                                    }
+                                    modeMenuExpanded = false
+                                },
+                            )
+                            Divider(modifier = Modifier.padding(vertical = 4.dp))
                             otherClickModes.forEach { clickMode ->
                                 DropdownMenuItem(
                                     text = {
@@ -365,7 +404,7 @@ fun But1_Floating_ClientsListDialog(
                                             viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
                                         }
                                         viewModel.mapReloadTrigger++
-                                        modeMenuExpanded = false
+                                        // Ne ferme pas le menu : voir commentaire sur toggleClickModes.
                                     },
                                 )
                             }
@@ -379,6 +418,10 @@ fun But1_Floating_ClientsListDialog(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                             )
+                            //<--
+                            // Centrer la carte sur un client donné n'est pas un mode
+                            // Click_On_Marque (ça ne change aucun statut) — c'est géré via
+                            // le bouton MyLocation sur chaque ClientRow de la liste, pas ici.
                             toggleClickModes.forEach { clickMode ->
                                 DropdownMenuItem(       //<--
                                     text = {
@@ -407,7 +450,8 @@ fun But1_Floating_ClientsListDialog(
                                             viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
                                         }
                                         viewModel.mapReloadTrigger++
-                                        modeMenuExpanded = false
+                                        // Ne ferme pas le menu : l'utilisateur peut enchaîner
+                                        // sur un autre statut sans rouvrir le dropdown.
                                     },
                                 )
                             }
@@ -455,7 +499,12 @@ fun But1_Floating_ClientsListDialog(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                            )
+                            )   //<--
+                            // "Court terme" (crédit affiché ici) = dernière situation
+                            // crédit du client différente de zéro. Un client sans
+                            // situation crédit enregistrée, ou dont la dernière
+                            // situation est exactement 0, n'apparaît pas dans ce
+                            // filtre — voir M2Client.calculateCreditsMap.
                             creditFilterModes.forEach { filterMode ->
                                 DropdownMenuItem(
                                     text = {
@@ -571,6 +620,11 @@ fun But1_Floating_ClientsListDialog(
                                     )
                                     onDismiss()
                                 },
+                                onCenterOnMap = {
+                                    mapView.controller.animateTo(GeoPoint(client.latitude, client.longitude))
+                                    mapView.controller.setZoom(19.2)
+                                    onDismiss()
+                                },
                             )
                             Divider(color = Color.LightGray.copy(alpha = 0.4f))
                         }
@@ -623,6 +677,7 @@ private fun ClientRow(
     lastTransaction: M8BonVent?,
     getter: RepositorysMainGetter,
     onClick: () -> Unit,
+    onCenterOnMap: () -> Unit,
 ) {
     val sumBonVents = lastTransaction?.let { lastTransaction.montant_principale_du_type }
 
@@ -675,6 +730,16 @@ private fun ClientRow(
                     color = MaterialTheme.colorScheme.error,
                 )
             }
+        }
+        // Centre la carte sur ce client sans déclencher l'action du mode actif
+        // (Standard / Appeler / Navigation / ...) ni fermer le dialogue —
+        // action indépendante de onClick.
+        IconButton(onClick = onCenterOnMap) {
+            Icon(
+                imageVector = Icons.Default.MyLocation,
+                contentDescription = "Centrer la carte sur ${client.nom}",
+                tint = MaterialTheme.colorScheme.primary,
+            )
         }
     }
 }

@@ -455,7 +455,7 @@ fun performClickOnMarqueAction(
             }
 
         }
-
+        //<--
         // Mark client as closed/fermé
         ActiveCentralValues.Click_On_Marque.Marck_Ferme -> {
             val found_Or_Default = get_Found_Or_Default_M8BonVent(
