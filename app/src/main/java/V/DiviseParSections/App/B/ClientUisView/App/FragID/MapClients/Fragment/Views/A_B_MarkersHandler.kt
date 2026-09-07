@@ -107,13 +107,17 @@ fun getClientsCurrentlyVisibleOnMap(
     val modeFilteredClients = filterClientsBasedOnMode(viewModel, currentFilterMode)
 
     val isGlobalModeFilter = currentFilterMode in listOf(
-        // Les 4 filtres crédit (client/fournisseur x court/long terme) sont
-        // globaux : un crédit ne dépend pas de la position actuelle sur la
-        // carte, donc pas de restriction par proximityFilterRadiusMeters.
+        // Les 4 filtres crédit (client/fournisseur x court/long terme), plus le
+        // filtre Jamale-avec-crédit, sont globaux : un crédit ne dépend pas de
+        // la position actuelle sur la carte, donc pas de restriction par
+        // proximityFilterRadiusMeters. Sans ça, un fournisseur avec crédit situé
+        // hors du rayon de 900m (proximite_de_vision_meter) disparaissait de la
+        // liste alors qu'il devait s'afficher.
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
         MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
         MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
         MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,

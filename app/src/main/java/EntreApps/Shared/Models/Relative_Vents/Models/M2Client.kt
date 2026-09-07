@@ -226,11 +226,18 @@ data class M2Client(
                 .groupBy { it.parent_M2Client_KeyID }
 
             return clients
-                .filter { !it.ces_credits_son_a_long_term }
+                .filter { !it.ces_credits_son_a_long_term && !it.its_Client_De_Jamale }
                 .filter { if (forFournisseurs) it.its_Fournisseur_Grossisst_A_Jomla else !it.its_Fournisseur_Grossisst_A_Jomla }
                 .mapNotNull { client ->
                     val lastSituation = bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
-                    val montant = lastSituation?.montant_principale_du_type ?: 0.0
+                    val brutMontant = lastSituation?.montant_principale_du_type ?: 0.0
+                    // montant_principale_du_type = sumCredits - sumVersements.
+                    // Pour un client normal, positif = il nous doit de l'argent.
+                    // Pour un fournisseur, c'est l'inverse : les versements
+                    // dépassant les crédits (donc un montant négatif) signifient
+                    // qu'on lui doit de l'argent — c'est ça le crédit fournisseur
+                    // à afficher, donc on inverse le signe dans ce cas.
+                    val montant = if (forFournisseurs) -brutMontant else brutMontant
                     if (montant > 0.0) client.keyID to montant else null
                 }.toMap()
         }
@@ -263,7 +270,10 @@ data class M2Client(
                 .filter { if (forFournisseurs) it.its_Fournisseur_Grossisst_A_Jomla else !it.its_Fournisseur_Grossisst_A_Jomla }
                 .mapNotNull { client ->
                     val lastSituation = bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
-                    val montant = lastSituation?.montant_principale_du_type ?: 0.0
+                    val brutMontant = lastSituation?.montant_principale_du_type ?: 0.0
+                    // Même inversion de signe que calculateCreditsMap pour les
+                    // fournisseurs — voir le commentaire là-bas.
+                    val montant = if (forFournisseurs) -brutMontant else brutMontant
                     if (montant > 0.0) client.keyID to montant else null
                 }.toMap()
         }

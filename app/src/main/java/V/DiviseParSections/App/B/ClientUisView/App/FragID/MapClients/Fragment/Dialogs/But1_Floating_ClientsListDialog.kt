@@ -79,6 +79,7 @@ fun But1_Floating_ClientsListDialog(
     var searchQuery by remember { mutableStateOf("") }
     var showPeriodsDialog by remember { mutableStateOf(false) }
     var modeMenuExpanded by remember { mutableStateOf(false) }
+    var showCreditBreakdown by remember { mutableStateOf(false) }
 
     var filterMenuExpanded by remember { mutableStateOf(false) }
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
@@ -120,6 +121,15 @@ fun But1_Floating_ClientsListDialog(
 
     val totalCreditChezClients = remember(creditMontantByClientKeyId) {
         creditMontantByClientKeyId.values.sum()
+    }
+
+    // Détail par client du total crédit affiché : nom + montant, trié du plus
+    // gros crédit au plus petit, pour le clic sur le libellé "Total crédits".
+    val creditBreakdownByClient = remember(creditMontantByClientKeyId, allClients) {
+        creditMontantByClientKeyId.entries.mapNotNull { (keyId, montant) ->
+            val client = allClients.find { it.keyID == keyId } ?: return@mapNotNull null
+            client to montant
+        }.sortedByDescending { it.second }
     }
 
     // Total credits of clients whose credit is flagged long term
@@ -208,10 +218,30 @@ fun But1_Floating_ClientsListDialog(
                             val creditTitle = if (isFournisseursCreditFilter) "Total crédits fournisseurs" else "Total crédits"
                             Text(
                                 text = "$creditTitle : ${"%.2f".format(totalCreditChezClients)} DA",
+                                modifier = Modifier.clickable { showCreditBreakdown = !showCreditBreakdown },
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.error,
                             )
+                            if (showCreditBreakdown) {
+                                Column(modifier = Modifier.padding(top = 4.dp, start = 4.dp)) {
+                                    if (creditBreakdownByClient.isEmpty()) {
+                                        Text(
+                                            text = "Aucun client avec crédit",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.Gray,
+                                        )
+                                    } else {
+                                        creditBreakdownByClient.forEach { (client, montant) ->
+                                            Text(
+                                                text = "${client.nom} : ${"%.2f".format(montant)} DA",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.error,
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                         if (totalIgnoredCreditChezClients > 0.0) {
                             Text(
@@ -572,10 +602,18 @@ private fun ClientRow(
 ) {
     val sumBonVents = lastTransaction?.let { lastTransaction.montant_principale_du_type }
 
-    val creditLabel = if (lastTransaction != null && (sumBonVents ?: 0.0) > 0.0) {
+    // montant_principale_du_type = sumCredits - sumVersements (voir
+    // M8BonVent.fun_calculative_du_main_val). Pour un client normal, positif =
+    // il nous doit de l'argent, négatif = on lui doit (versements en trop).
+    // Pour un fournisseur c'est l'inverse — voir M2Client.calculateCreditsMap.
+    // On affiche donc toujours le montant réel (+ ou -) avec un libellé qui
+    // en précise le sens, plutôt que de cacher les valeurs négatives.
+    val creditLabel = if (lastTransaction != null && sumBonVents != null && sumBonVents != 0.0) {
         val dateHandler = DatesHandler()
         val date = dateHandler.getDateAndTimString(lastTransaction.creationTimestamps).date
-        "%.2f DA".format(sumBonVents) + " · $date"
+        val doitNousDeArgent = if (client.its_Fournisseur_Grossisst_A_Jomla) sumBonVents < 0.0 else sumBonVents > 0.0
+        val prefix = if (doitNousDeArgent) "+" else "-"
+        "$prefix${"%.2f".format(kotlin.math.abs(sumBonVents))} DA · $date"
     } else {
         null
     }

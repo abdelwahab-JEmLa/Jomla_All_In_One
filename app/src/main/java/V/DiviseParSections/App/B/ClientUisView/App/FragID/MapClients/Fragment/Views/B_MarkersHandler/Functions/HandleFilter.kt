@@ -248,15 +248,26 @@ fun filterClientsBasedOnMode(
                 it.its_Client_De_Jamale && it.keyID in keyIdsAvecCredit
             }
         }
-
         else -> {
             clientDataBaseSnapList
         }
     }
 
+    // Les filtres crédit (client/fournisseur x court/long terme, + Jamale avec
+    // crédit) doivent montrer TOUS les clients concernés, y compris ceux situés
+    // à moins de 100m d'Ami Jamel. La règle d'exclusion de proximité ne
+    // s'applique donc que quand un filtre non-crédit est actif.
+    val isCreditFilterMode = currentFilterMode in listOf(
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
+    )
+
     val finalClientsList = (filteredClients + alwaysVisibleClients)
         .distinctBy { it.id }
-        .filter { !it.isWithin100mOfAmiJamel() }
+        .filter { isCreditFilterMode || !it.isWithin100mOfAmiJamel() }
 
     return finalClientsList
 }
