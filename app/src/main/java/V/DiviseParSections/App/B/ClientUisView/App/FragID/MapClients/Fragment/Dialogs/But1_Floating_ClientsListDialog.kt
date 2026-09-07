@@ -103,13 +103,29 @@ fun But1_Floating_ClientsListDialog(
             currentFilterMode ==
             MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
     val isAnyCreditFilter = isCreditFilter || isFournisseursCreditFilter
+    // Le mode actif est-il l'un des 2 filtres "long terme" (client ou
+    // fournisseur) ? Détermine si le total/détail affiché doit venir de
+    // calculateIgnoredCreditsMap (long terme) plutôt que calculateCreditsMap
+    // (court terme) — sinon un fournisseur/client long terme n'apparaissait
+    // jamais dans le total affiché, même s'il était bien inclus dans la liste
+    // de clients filtrée par HandleFilter.filterClientsBasedOnMode.
+    val isLongTermCreditFilter = currentFilterMode ==
+            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term ||
+            currentFilterMode ==
+            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
 
     val repo8Bons = viewModel.getter.repo8BonVent.datasValue
 
     // Precalculate latest New_Situation_Credit montant for clients when under credit filter
-    val creditMontantByClientKeyId = remember(allClients, repo8Bons, isCreditFilter, isFournisseursCreditFilter) {
+    val creditMontantByClientKeyId = remember(allClients, repo8Bons, isCreditFilter, isFournisseursCreditFilter, isLongTermCreditFilter) {
         if (!isAnyCreditFilter) {
             emptyMap()
+        } else if (isLongTermCreditFilter) {
+            M2Client.calculateIgnoredCreditsMap(
+                clients = allClients,
+                bons = repo8Bons,
+                forFournisseurs = isFournisseursCreditFilter
+            )
         } else {
             M2Client.calculateCreditsMap(
                 clients = allClients,
@@ -215,7 +231,12 @@ fun But1_Floating_ClientsListDialog(
                             color = currentMode.couleur,
                         )
                         if (isAnyCreditFilter) {
-                            val creditTitle = if (isFournisseursCreditFilter) "Total crédits fournisseurs" else "Total crédits"
+                            val creditTitle = when {
+                                isFournisseursCreditFilter && isLongTermCreditFilter -> "Total crédits fournisseurs (long terme)"
+                                isFournisseursCreditFilter -> "Total crédits fournisseurs"
+                                isLongTermCreditFilter -> "Total crédits (long terme)"
+                                else -> "Total crédits"
+                            }
                             Text(
                                 text = "$creditTitle : ${"%.2f".format(totalCreditChezClients)} DA",
                                 modifier = Modifier.clickable { showCreditBreakdown = !showCreditBreakdown },
@@ -243,7 +264,10 @@ fun But1_Floating_ClientsListDialog(
                                 }
                             }
                         }
-                        if (totalIgnoredCreditChezClients > 0.0) {
+                        // Rappel "Crédits long terme" affiché seulement quand le mode actif
+                        // n'est PAS déjà un filtre long terme (sinon doublon avec le total
+                        // ci-dessus qui montre déjà ce même montant).
+                        if (!isLongTermCreditFilter && totalIgnoredCreditChezClients > 0.0) {
                             Text(
                                 text = "Crédits long terme : ${"%.2f".format(totalIgnoredCreditChezClients)} DA",
                                 style = MaterialTheme.typography.bodySmall,
