@@ -454,6 +454,11 @@ class MapClientsViewModel(
         Filter_Leur_Last_TRX_Est_Credit_Long_Term(Icons.Default.Map, Color(0xFFB71C1C)),
         Filter_Fournisseurs_Short_Term_Credit(Icons.Default.Store, Color(0xFFFF9800)),
         Filter_Fournisseurs_Long_Term_Credit(Icons.Default.Store, Color(0xFFE65100)),
+        // Clients de Jamale (its_Client_De_Jamale == true) ayant un crédit en
+        // cours, tous flags court/long terme confondus — recoupement des 4
+        // filtres crédit ci-dessus avec le flag Jamale plutôt qu'un nouveau
+        // couple court/long terme dédié.
+        Filter_Clients_De_Jamale_Avec_Credit(Icons.Default.Map, Color(0xFF009688)),
         Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME(Icons.Default.Map, Color.Red),
         AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Filter, Color.Blue),
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),

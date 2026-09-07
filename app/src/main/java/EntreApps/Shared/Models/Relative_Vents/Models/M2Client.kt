@@ -30,8 +30,7 @@ data class M2Client(
     //Forging Keys
     var its_Fournisseur: Boolean = false,
 
-    var its_Client_De_Jamale: Boolean = false,       //<--
-    //TODO(1): fait que si ca de pas inclue ces credits don tout les terms 
+    var its_Client_De_Jamale: Boolean = false,
 
     var its_Fournisseur_Grossisst_A_Jomla: Boolean = false,
     var ces_credits_son_a_long_term: Boolean = false,

@@ -110,7 +110,7 @@ fun View_M14VentPeriod(
             "pre_fraits" -> relative_M14VentPeriode.copy(pre_fraits_voiture_essance_marche_et_paprasse = newValue)
             "saved_depot" -> relative_M14VentPeriode.copy(saved_produits_au_depot = newValue)
             "saved_clients_credit" -> relative_M14VentPeriode.copy(saved_totale_credits_clients = newValue)
-            "saved_fournisseurs_credit" -> relative_M14VentPeriode.copy(saved_sums_fournisseurs = newValue)
+            "saved_fournisseurs_credit" -> relative_M14VentPeriode.copy(saved_sums_fournisseurs_Short_Term = newValue)
             "saved_cache_au_coffre" -> relative_M14VentPeriode.copy(saved_cache_au_coffre = newValue)
             "saved_balance_par_chiffre" -> relative_M14VentPeriode.copy(save_balence_par_chiffre = newValue)
             else -> relative_M14VentPeriode
@@ -397,7 +397,8 @@ fun View_M14VentPeriod(
 
                 // Clients credit row
                 ResumeRow(
-                    label = "Crédit clients:",
+                    label = "Crédit clients:",      //<--
+                    //TODO(1): fait que ca est Set_Client_Court_Terme
                     dynamic = totalClientsCredit,
                     savedKey = "saved_clients_credit",
                     savedValue = relative_M14VentPeriode.saved_totale_credits_clients,
@@ -405,10 +406,11 @@ fun View_M14VentPeriod(
                 )
                 // Fournisseurs credit row
                 ResumeRow(
-                    label = "Crédit fournisseurs:",
+                    label = "Crédit fournisseurs:",       //<--
+                    //TODO(1): et ca c Set_Fournisseur_Court_Terme
                     dynamic = totalFournisseursCredit,
                     savedKey = "saved_fournisseurs_credit",
-                    savedValue = relative_M14VentPeriode.saved_sums_fournisseurs,
+                    savedValue = relative_M14VentPeriode.saved_sums_fournisseurs_Short_Term,
                     dynamicColor = Color(0xFF1565C0)
                 )
                 // Cache au coffre row
@@ -471,7 +473,7 @@ fun View_M14VentPeriod(
                             relative_M14VentPeriode.copy(
                                 saved_produits_au_depot = totalDepotStockValue,
                                 saved_totale_credits_clients = totalClientsCredit,
-                                saved_sums_fournisseurs = totalFournisseursCredit,
+                                saved_sums_fournisseurs_Short_Term = totalFournisseursCredit,
                                 save_balence_par_chiffre = dynamicBalance
                             )
                         )

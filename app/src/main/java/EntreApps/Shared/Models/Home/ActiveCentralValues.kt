@@ -236,6 +236,7 @@ data class ActiveCentralValues(
         Toggle_Client_De_Jamale(Color(0xFF009688)),
     }
 
+
     sealed class RoleDefinieParSourceACetteFragment {
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
         data class SearchProduit(val produit: M01Produit) :

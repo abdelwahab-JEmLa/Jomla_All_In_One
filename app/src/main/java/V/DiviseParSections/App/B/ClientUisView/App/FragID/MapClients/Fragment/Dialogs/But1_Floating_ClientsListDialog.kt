@@ -141,6 +141,7 @@ fun But1_Floating_ClientsListDialog(
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
         MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
         MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
         MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
@@ -380,13 +381,16 @@ fun But1_Floating_ClientsListDialog(
                             // Les filtres liés au crédit sont regroupés sous un header
                             // "Crédits", séparé du reste par un Divider, avec leur
                             // couleur propre (celle définie sur l'enum) pour bien les
-                            // distinguer des autres modes de filtre.
-                            //
+                            // distinguer des autres modes de filtre. Le filtre "Clients
+                            // de Jamale avec crédit" est inclus dans ce groupe : c'est un
+                            // recoupement du flag its_Client_De_Jamale avec les 4 filtres
+                            // crédit ci-dessus, pas un filtre de statut à part.
                             val creditFilterModes = listOf(
                                 MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
                                 MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
                                 MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
                                 MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+                                MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
                             )
                             val otherFilterModes = MapClientsViewModel.VisibleClientsNow.entries
                                 .filter { it !in creditFilterModes }
@@ -619,6 +623,7 @@ private fun getFilterLabel(mode: MapClientsViewModel.VisibleClientsNow): String 
     MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term -> "Crédit (long terme)"
     MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit -> "Crédit Fournisseurs / Grossistes (court terme)"
     MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit -> "Crédit Fournisseurs / Grossistes (long terme)"
+    MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit -> "Clients de Jamale avec crédit"
     MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "Commande confirmée"
     MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> "Commande livrée"
     MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> "Cible vendeur"

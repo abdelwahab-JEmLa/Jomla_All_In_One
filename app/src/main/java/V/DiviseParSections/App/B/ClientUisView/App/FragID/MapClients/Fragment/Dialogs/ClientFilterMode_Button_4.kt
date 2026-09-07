@@ -294,6 +294,8 @@ fun getFilterLabelForMode(mode: MapClientsViewModel.VisibleClientsNow, count: In
             "Crédit Fournisseurs / Grossistes"
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
             "Targeted Clients"
+        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit ->
+            count?.let { "Clients de Jamale avec crédit ($it)" } ?: "Clients de Jamale avec crédit"
         else -> "Unknown Filter"
     }
 }

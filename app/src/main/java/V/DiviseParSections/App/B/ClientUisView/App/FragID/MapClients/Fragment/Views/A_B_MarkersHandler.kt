@@ -46,6 +46,7 @@ import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
+
 fun addOuUpdateMapMarkers(
     uiState: UiState,
     viewModel: MapClientsViewModel,

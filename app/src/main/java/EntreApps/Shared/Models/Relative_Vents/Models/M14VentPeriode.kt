@@ -24,7 +24,7 @@ data class M14VentPeriode(
     // Section StatuesMutable
     val saved_produits_au_depot: Double = 0.0,
     val saved_totale_credits_clients: Double = 0.0,
-    val saved_sums_fournisseurs: Double = 0.0,
+    val saved_sums_fournisseurs_Short_Term: Double = 0.0,
     val saved_cache_au_coffre: Double = 0.0,
     val save_balence_par_chiffre: Double = 0.0,
 

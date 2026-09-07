@@ -220,6 +220,35 @@ fun filterClientsBasedOnMode(
             clientDataBaseSnapList.filter { it.keyID in keyIdsAvecCredit }
         }
 
+        // Clients de Jamale avec un crédit en cours : on recoupe le flag
+        // its_Client_De_Jamale avec l'union des 4 map crédit (client/fournisseur
+        // x court/long terme), pour couvrir un client de Jamale peu importe
+        // son statut fournisseur ou son ancienneté de crédit.
+        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit -> {
+            val bons = viewModel.getter.repo8BonVent.datasValue
+            val keyIdsAvecCredit = M2Client.calculateCreditsMap(
+                clients = clientDataBaseSnapList,
+                bons = bons,
+                forFournisseurs = false,
+            ).keys + M2Client.calculateIgnoredCreditsMap(
+                clients = clientDataBaseSnapList,
+                bons = bons,
+                forFournisseurs = false,
+            ).keys + M2Client.calculateCreditsMap(
+                clients = clientDataBaseSnapList,
+                bons = bons,
+                forFournisseurs = true,
+            ).keys + M2Client.calculateIgnoredCreditsMap(
+                clients = clientDataBaseSnapList,
+                bons = bons,
+                forFournisseurs = true,
+            ).keys
+
+            clientDataBaseSnapList.filter {
+                it.its_Client_De_Jamale && it.keyID in keyIdsAvecCredit
+            }
+        }
+
         else -> {
             clientDataBaseSnapList
         }
