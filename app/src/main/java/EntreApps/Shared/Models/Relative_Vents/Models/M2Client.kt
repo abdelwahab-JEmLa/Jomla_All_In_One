@@ -2,6 +2,7 @@ package EntreApps.Shared.Models.Relative_Vents.Models
 
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps.Companion.central_MainDataBases_RefProduction
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client.Companion.calculateCreditsMap
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -16,6 +17,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.mongodb.kbson.BsonObjectId
 
+
 @Entity
 data class M2Client(
     @PrimaryKey
@@ -28,10 +30,11 @@ data class M2Client(
     //Forging Keys
     var its_Fournisseur: Boolean = false,
 
-    var its_Client_De_Jamale: Boolean = false,
-    
+    var its_Client_De_Jamale: Boolean = false,       //<--
+    //TODO(1): fait que si ca de pas inclue ces credits don tout les terms 
+
     var its_Fournisseur_Grossisst_A_Jomla: Boolean = false,
-    var ignore_sont_credit: Boolean = false,
+    var ces_credits_son_a_long_term: Boolean = false,
 
 
     var cUnClientTemporaire: Boolean = true,
@@ -224,7 +227,7 @@ data class M2Client(
                 .groupBy { it.parent_M2Client_KeyID }
 
             return clients
-                .filter { !it.ignore_sont_credit }
+                .filter { !it.ces_credits_son_a_long_term }
                 .filter { if (forFournisseurs) it.its_Fournisseur_Grossisst_A_Jomla else !it.its_Fournisseur_Grossisst_A_Jomla }
                 .mapNotNull { client ->
                     val lastSituation = bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
@@ -239,6 +242,39 @@ data class M2Client(
             forFournisseurs: Boolean = false,
         ): Double {
             return calculateCreditsMap(clients, bons, forFournisseurs).values.sum()
+        }
+
+        /**
+         * Same as [calculateCreditsMap] but for clients whose credit is currently
+         * being ignored (ignore_sont_credit == true), based on their last
+         * New_Situation_Credit bon. Lets the UI surface "ignored credits" totals
+         * separately from the normally-tracked credit total.
+         */
+        fun calculateIgnoredCreditsMap(
+            clients: List<M2Client>,
+            bons: List<M8BonVent>,
+            forFournisseurs: Boolean = false,
+        ): Map<String, Double> {
+            val bonsByClient = bons
+                .filter { it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit }
+                .groupBy { it.parent_M2Client_KeyID }
+
+            return clients
+                .filter { it.ces_credits_son_a_long_term }
+                .filter { if (forFournisseurs) it.its_Fournisseur_Grossisst_A_Jomla else !it.its_Fournisseur_Grossisst_A_Jomla }
+                .mapNotNull { client ->
+                    val lastSituation = bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
+                    val montant = lastSituation?.montant_principale_du_type ?: 0.0
+                    if (montant > 0.0) client.keyID to montant else null
+                }.toMap()
+        }
+
+        fun calculateTotalIgnoredCredit(
+            clients: List<M2Client>,
+            bons: List<M8BonVent>,
+            forFournisseurs: Boolean = false,
+        ): Double {
+            return calculateIgnoredCreditsMap(clients, bons, forFournisseurs).values.sum()
         }
 
         fun get_default(): M2Client {

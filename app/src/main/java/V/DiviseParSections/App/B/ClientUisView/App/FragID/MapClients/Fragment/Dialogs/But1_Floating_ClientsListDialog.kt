@@ -94,9 +94,13 @@ fun But1_Floating_ClientsListDialog(
     // one that's currently rendered as a marker.
     val allClients = viewModel.getter.repo2Client.datasValue
     val isCreditFilter = currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit
+            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ||
+            currentFilterMode ==
+            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term
     val isFournisseursCreditFilter = currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit
+            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ||
+            currentFilterMode ==
+            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
     val isAnyCreditFilter = isCreditFilter || isFournisseursCreditFilter
 
     val repo8Bons = viewModel.getter.repo8BonVent.datasValue
@@ -118,9 +122,25 @@ fun But1_Floating_ClientsListDialog(
         creditMontantByClientKeyId.values.sum()
     }
 
+    // Total credits of clients whose credit is flagged long term
+    // (ces_credits_son_a_long_term == true). Shown next to the filter button
+    // so it's visible regardless of which filter mode is active.
+    val ignoredCreditMontantByClientKeyId = remember(allClients, repo8Bons, isFournisseursCreditFilter) {
+        M2Client.calculateIgnoredCreditsMap(
+            clients = allClients,
+            bons = repo8Bons,
+            forFournisseurs = isFournisseursCreditFilter
+        )
+    }
+    val totalIgnoredCreditChezClients = remember(ignoredCreditMontantByClientKeyId) {
+        ignoredCreditMontantByClientKeyId.values.sum()
+    }
+
     val isGlobalModeFilter = currentFilterMode in listOf(
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
         MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
@@ -192,6 +212,14 @@ fun But1_Floating_ClientsListDialog(
                                 color = MaterialTheme.colorScheme.error,
                             )
                         }
+                        if (totalIgnoredCreditChezClients > 0.0) {
+                            Text(
+                                text = "Crédits long terme : ${"%.2f".format(totalIgnoredCreditChezClients)} DA",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Gray,
+                            )
+                        }
                     }
                     IconButton(onClick = onDismiss) {
                         Icon(imageVector = Icons.Default.Close, contentDescription = "Fermer")
@@ -233,13 +261,30 @@ fun But1_Floating_ClientsListDialog(
                                 modifier = Modifier.padding(start = 8.dp),
                                 style = MaterialTheme.typography.bodySmall,
                             )
-                        }
+                        }     //<--
                         DropdownMenu(
                             expanded = modeMenuExpanded,
                             onDismissRequest = { modeMenuExpanded = false },
                             modifier = Modifier.widthIn(min = 240.dp),
                         ) {
-                            ActiveCentralValues.Click_On_Marque.entries.forEach { clickMode ->
+                            // Les modes "toggle/état" (fixent un statut/flag sur le client au
+                            // clic, plutôt que d'ouvrir une action) sont regroupés sous un
+                            // header dédié, séparé du reste par un Divider — même pattern
+                            // que le regroupement "Crédits" du menu Filtre ci-dessous.
+                            // Les 4 boutons Set_* fixent explicitement les deux flags
+                            // (client/fournisseur x court/long terme) en un clic, plutôt
+                            // que de les inverser indépendamment.
+                            val toggleClickModes = listOf(
+                                ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme,
+                                ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme,
+                                ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme,
+                                ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme,
+                                ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale,
+                            )
+                            val otherClickModes = ActiveCentralValues.Click_On_Marque.entries
+                                .filter { it !in toggleClickModes }
+
+                            otherClickModes.forEach { clickMode ->
                                 DropdownMenuItem(
                                     text = {
                                         Row(
@@ -269,6 +314,48 @@ fun But1_Floating_ClientsListDialog(
                                     },
                                 )
                             }
+
+                            Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            Text(
+                                text = "Changeurs de statut",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                            )
+                            toggleClickModes.forEach { clickMode ->
+                                DropdownMenuItem(       //<--
+                                    text = {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(10.dp)
+                                                    .background(
+                                                        color = clickMode.couleur,
+                                                        shape = CircleShape
+                                                    ),
+                                            )
+                                            Text(
+                                                text = getModeLabel(clickMode),
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = if (clickMode == currentMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                                                fontWeight = if (clickMode == currentMode) FontWeight.Bold else FontWeight.Normal,
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        compt?.let {
+                                            viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
+                                        }
+                                        viewModel.mapReloadTrigger++
+                                        modeMenuExpanded = false
+                                    },
+                                )
+                            }
                         }
                     }
 
@@ -284,13 +371,67 @@ fun But1_Floating_ClientsListDialog(
                                 modifier = Modifier.padding(start = 6.dp),
                                 style = MaterialTheme.typography.bodySmall,
                             )
-                        }
+                        }      //<--
                         DropdownMenu(
                             expanded = filterMenuExpanded,
                             onDismissRequest = { filterMenuExpanded = false },
                             modifier = Modifier.widthIn(min = 240.dp),
                         ) {
-                            MapClientsViewModel.VisibleClientsNow.entries.forEach { filterMode ->
+                            // Les filtres liés au crédit sont regroupés sous un header
+                            // "Crédits", séparé du reste par un Divider, avec leur
+                            // couleur propre (celle définie sur l'enum) pour bien les
+                            // distinguer des autres modes de filtre.
+                            //
+                            val creditFilterModes = listOf(
+                                MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+                                MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+                                MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+                                MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+                            )
+                            val otherFilterModes = MapClientsViewModel.VisibleClientsNow.entries
+                                .filter { it !in creditFilterModes }
+
+                            Text(
+                                text = "Crédits",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                            )
+                            creditFilterModes.forEach { filterMode ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(10.dp)
+                                                    .background(
+                                                        color = filterMode.couleur,
+                                                        shape = CircleShape,
+                                                    ),
+                                            )
+                                            Text(
+                                                text = getFilterLabel(filterMode),
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = if (filterMode == currentFilterMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                                                fontWeight = if (filterMode == currentFilterMode) FontWeight.Bold else FontWeight.Normal,
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        viewModel.update_filter_marqueClient(filterMode)
+                                        viewModel.mapReloadTrigger++
+                                        filterMenuExpanded = false
+                                    },
+                                )
+                            }
+
+                            Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            otherFilterModes.forEach { filterMode ->
                                 DropdownMenuItem(
                                     text = {
                                         Text(
@@ -474,8 +615,10 @@ private fun ClientRow(
 
 private fun getFilterLabel(mode: MapClientsViewModel.VisibleClientsNow): String = when (mode) {
     MapClientsViewModel.VisibleClientsNow.showAll -> "Tous les clients"
-    MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> "Crédit"
-    MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit -> "Crédit Fournisseurs / Grossistes"
+    MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> "Crédit (court terme)"
+    MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term -> "Crédit (long terme)"
+    MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit -> "Crédit Fournisseurs / Grossistes (court terme)"
+    MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit -> "Crédit Fournisseurs / Grossistes (long terme)"
     MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "Commande confirmée"
     MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> "Commande livrée"
     MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> "Cible vendeur"

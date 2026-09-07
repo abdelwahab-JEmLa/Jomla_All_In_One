@@ -4,14 +4,14 @@ import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Compts
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
-import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
-import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
-import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
+import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Utilisateur
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.Filter.Model.FilterState_Facad_Boutique_FragId5
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
@@ -209,7 +209,7 @@ data class ActiveCentralValues(
         PrixHanled(Color(0xFFFF5722)),
     }
 
-    enum class Click_On_Marque(val couleur: Color = Color(0xFF000000)) {
+    enum class Click_On_Marque(val couleur: Color = Color(0xFF000000)) {       //<--
         Standart,
         Call(Color(0xFF3F51B5)),
         Navigate(Color(0xFFFFEB3B)),
@@ -222,8 +222,17 @@ data class ActiveCentralValues(
         Delete_Client(Color(0xFFF44336)),
         Passe_Client(Color(0xFF747680)),
         Livre_Client(Color(0xFF0099CC)),
-        Toggle_Fournisseur_Grossist(Color(0xFFFF9800)),
-        Toggle_Ignore_Sont_Credit(Color(0xFF795548)),
+        // Les 4 combinaisons possibles de (client/fournisseur) x (court/long terme),
+        // en couleurs alignées sur les 4 filtres crédit de VisibleClientsNow
+        // (Filter_Leur_Last_TRX_Est_Credit / _Long_Term, Filter_Fournisseurs_Short/Long_Term_Credit) :
+        // rouge = client, orange = fournisseur/grossiste, teinte plus foncée = long terme.
+        // Chaque bouton fixe les deux flags (its_Fournisseur_Grossisst_A_Jomla,
+        // ces_credits_son_a_long_term) à leur état cible exact en un clic, plutôt
+        // que de les inverser indépendamment — voir performClickOnMarqueAction.
+        Set_Client_Court_Terme(Color(0xFFE53935)),
+        Set_Client_Long_Terme(Color(0xFFB71C1C)),
+        Set_Fournisseur_Court_Terme(Color(0xFFFF9800)),
+        Set_Fournisseur_Long_Terme(Color(0xFFE65100)),
         Toggle_Client_De_Jamale(Color(0xFF009688)),
     }
 

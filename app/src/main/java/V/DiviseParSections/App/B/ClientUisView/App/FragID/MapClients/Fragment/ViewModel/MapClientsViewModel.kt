@@ -293,8 +293,8 @@ class MapClientsViewModel(
                     .flatMap { dir -> dir.listFiles()?.toList() ?: emptyList() }
                     .filter { file ->
                         file.isFile &&
-                        file.name.startsWith("expo", ignoreCase = true) &&
-                        file.name.endsWith(".csv", ignoreCase = true)
+                                file.name.startsWith("expo", ignoreCase = true) &&
+                                file.name.endsWith(".csv", ignoreCase = true)
                     }
                     .sortedByDescending { it.lastModified() }
 
@@ -447,8 +447,13 @@ class MapClientsViewModel(
     }
 
     enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
+        // Les 4 filtres crédit : client / fournisseur, court terme / long terme.
+        // "Long terme" = crédit ouvert depuis plus de CREDIT_LONG_TERM_THRESHOLD_DAYS
+        // jours (voir HandleFilter.kt) — seuil à valider/ajuster côté métier.
         Filter_Leur_Last_TRX_Est_Credit(Icons.Default.Map, Color.Red),
-        Filter_Fournisseurs_Grossistes_Credit(Icons.Default.Store, Color(0xFFFF9800)),
+        Filter_Leur_Last_TRX_Est_Credit_Long_Term(Icons.Default.Map, Color(0xFFB71C1C)),
+        Filter_Fournisseurs_Short_Term_Credit(Icons.Default.Store, Color(0xFFFF9800)),
+        Filter_Fournisseurs_Long_Term_Credit(Icons.Default.Store, Color(0xFFE65100)),
         Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME(Icons.Default.Map, Color.Red),
         AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Filter, Color.Blue),
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),
@@ -461,6 +466,7 @@ class MapClientsViewModel(
         showClientsWithConfirmedProducts(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
+
 
     fun relod_map_marques_du_3km_du_centre_map(centerLat: Double, centerLng: Double) {
         _uiState.value = _uiState.value.copy(

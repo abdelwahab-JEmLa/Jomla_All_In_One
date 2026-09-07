@@ -1,14 +1,13 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
+import EntreApps.Shared.Models.Relative_Vents.Models.Fournisseur_Speciale
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import EntreApps.Shared.Models.Relative_Vents.Models.Fournisseur_Speciale
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.find_its_Confirmation_de_Transaction
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import org.checkerframework.checker.units.qual.s
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import kotlin.math.atan2
@@ -178,38 +177,47 @@ fun filterClientsBasedOnMode(
             }
         }
 
+        // Les 4 filtres crédit (client/fournisseur x court/long terme).
+        // "Court terme" / "long terme" est le flag ces_credits_son_a_long_term
+        // sur M2Client (pas une notion d'ancienneté calculée) — voir M2Client.kt.
+        // On réutilise M2Client.calculateCreditsMap / calculateIgnoredCreditsMap
+        // (mêmes fonctions que celles qui calculent les totaux affichés dans
+        // But1_Floating_ClientsListDialog) pour que la liste de clients montrée
+        // ici corresponde exactement aux totaux affichés là-bas.
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> {
-            clientDataBaseSnapList.filter { client ->
-                if (client.its_Fournisseur_Grossisst_A_Jomla) {
-                    false
-                } else {
-                    val lastTrx = viewModel.getLastTransaction(client)
-                    val lastNewSituation = viewModel.getter.repo8BonVent.datasValue.filter {
-                        it.parent_M2Client_KeyID == client.keyID &&
-                        it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
-                    }.maxByOrNull { it.creationTimestamps }
-
-                    lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit ||
-                    (lastNewSituation != null && lastNewSituation.montant_principale_du_type > 0.0)
-                }
-            }
+            val keyIdsAvecCredit = M2Client.calculateCreditsMap(
+                clients = clientDataBaseSnapList,
+                bons = viewModel.getter.repo8BonVent.datasValue,
+                forFournisseurs = false,
+            ).keys
+            clientDataBaseSnapList.filter { it.keyID in keyIdsAvecCredit }
         }
 
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit -> {
-            clientDataBaseSnapList.filter { client ->
-                if (!client.its_Fournisseur_Grossisst_A_Jomla) {
-                    false
-                } else {
-                    val lastTrx = viewModel.getLastTransaction(client)
-                    val lastNewSituation = viewModel.getter.repo8BonVent.datasValue.filter {
-                        it.parent_M2Client_KeyID == client.keyID &&
-                        it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
-                    }.maxByOrNull { it.creationTimestamps }
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term -> {
+            val keyIdsAvecCredit = M2Client.calculateIgnoredCreditsMap(
+                clients = clientDataBaseSnapList,
+                bons = viewModel.getter.repo8BonVent.datasValue,
+                forFournisseurs = false,
+            ).keys
+            clientDataBaseSnapList.filter { it.keyID in keyIdsAvecCredit }
+        }
 
-                    lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cette_Transaction_Type_Est_Credit ||
-                    (lastNewSituation != null && lastNewSituation.montant_principale_du_type > 0.0)
-                }
-            }
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit -> {
+            val keyIdsAvecCredit = M2Client.calculateCreditsMap(
+                clients = clientDataBaseSnapList,
+                bons = viewModel.getter.repo8BonVent.datasValue,
+                forFournisseurs = true,
+            ).keys
+            clientDataBaseSnapList.filter { it.keyID in keyIdsAvecCredit }
+        }
+
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit -> {
+            val keyIdsAvecCredit = M2Client.calculateIgnoredCreditsMap(
+                clients = clientDataBaseSnapList,
+                bons = viewModel.getter.repo8BonVent.datasValue,
+                forFournisseurs = true,
+            ).keys
+            clientDataBaseSnapList.filter { it.keyID in keyIdsAvecCredit }
         }
 
         else -> {

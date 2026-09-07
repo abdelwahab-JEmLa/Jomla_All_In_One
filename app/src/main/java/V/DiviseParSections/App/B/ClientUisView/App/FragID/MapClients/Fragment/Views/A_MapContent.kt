@@ -114,6 +114,7 @@ fun MapContent(
         config.expirationOverrideDuration = 7 * 24 * 60 * 60 * 1000L
         MapView(context)
     }
+
     val showMarkerDetails by remember { mutableStateOf(true) }
     var showClientsListDialog by remember { mutableStateOf(false) }
 

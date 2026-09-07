@@ -220,8 +220,7 @@ fun ClientFilterMode_Button_4(
                         viewModel = mapClientsViewModel,
                         currentFilterMode = visibleClientsNow3
                     )
-                    DropdownMenuItem(     //<--
-                    //TODO(1): pk il ya des cieln
+                    DropdownMenuItem(
                         modifier = Modifier
                             .semantics(mergeDescendants = true) {
                                 set(
@@ -262,7 +261,7 @@ fun ClientFilterMode_Button_4(
                     )
 
                     // Credit Fournisseurs / Grossistes
-                    val visibleClientsNowFournisseurs = MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit
+                    val visibleClientsNowFournisseurs = MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -291,7 +290,7 @@ fun getFilterLabelForMode(mode: MapClientsViewModel.VisibleClientsNow, count: In
             count?.let { "COMMANDE_LIVRAI Filter ($it)" } ?: "COMMANDE_LIVRAI Filter"
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ->
             count?.let { "Credit Filter ($it)" } ?: "Credit Filter"
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit ->
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ->
             "Crédit Fournisseurs / Grossistes"
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
             "Targeted Clients"

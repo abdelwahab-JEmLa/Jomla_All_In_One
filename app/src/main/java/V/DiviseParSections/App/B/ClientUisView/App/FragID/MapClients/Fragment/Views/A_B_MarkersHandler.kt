@@ -46,7 +46,6 @@ import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
-
 fun addOuUpdateMapMarkers(
     uiState: UiState,
     viewModel: MapClientsViewModel,
@@ -58,15 +57,16 @@ fun addOuUpdateMapMarkers(
     fragmentNavigationHandler_NewProto: FragmentNavigationHandler_NewProto,
     list_M13TarificationInfos: List<M13TarificationInfos>,
 ) {
-    val clientDataBaseSnapList = uiState.b_ClientInfosProtoJuin3List
-
     val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
     existingMarkers.forEach { it.closeInfoWindow() }
 
-    val markersOnMap = mapView.overlays.filterIsInstance<Marker>()
-    val markersToRemove = markersOnMap
-        .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
-    mapView.overlays.removeAll(markersToRemove)
+    // Remove every existing client marker so the map redraws cleanly from
+    // the current filter's result below. The previous version only removed
+    // markers whose client was still present in the (unfiltered) repo
+    // snapshot, which is backwards: it left stale markers on the map for
+    // clients that had just been filtered out (or deleted), so switching
+    // filter modes did not reliably hide/refresh markers.
+    mapView.overlays.removeAll(existingMarkers)
 
     val locationOverlay = preserveLocationOverlay(mapView)
 
@@ -106,8 +106,13 @@ fun getClientsCurrentlyVisibleOnMap(
     val modeFilteredClients = filterClientsBasedOnMode(viewModel, currentFilterMode)
 
     val isGlobalModeFilter = currentFilterMode in listOf(
+        // Les 4 filtres crédit (client/fournisseur x court/long terme) sont
+        // globaux : un crédit ne dépend pas de la position actuelle sur la
+        // carte, donc pas de restriction par proximityFilterRadiusMeters.
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Grossistes_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
         MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
@@ -243,25 +248,234 @@ fun performClickOnMarqueAction(
     showMarkerDetails: Boolean = false,
 ) {
     val activeCentralValues = focusedValuesGetter.active_Central_Values
-            val actuelle_Ciblage_MaxPosition = activeCentralValues.actuelle_Ciblage_MaxPosition
-            val newPosition = actuelle_Ciblage_MaxPosition + 1
+    val actuelle_Ciblage_MaxPosition = activeCentralValues.actuelle_Ciblage_MaxPosition
+    val newPosition = actuelle_Ciblage_MaxPosition + 1
 
-            val modeLabel = when (currentMode) {
-                ActiveCentralValues.Click_On_Marque.Standart                                  -> "Standard"
-                ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients                    -> "Ajouter Ciblage"
-                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction  -> "Afficher Commande"
-                ActiveCentralValues.Click_On_Marque.Lence_New_Command                         -> "Lancer Nouvelle Commande"
-                ActiveCentralValues.Click_On_Marque.Call                                      -> "Appeler Client"
-                ActiveCentralValues.Click_On_Marque.Navigate                                  -> "Navigation GPS"
-                ActiveCentralValues.Click_On_Marque.Marck_Ferme                              -> "Marquer Fermé"
-                ActiveCentralValues.Click_On_Marque.Marck_Command_Livret                     -> "Marquer Livré"
-                ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf               -> "Envoyer PDF WhatsApp"
-                ActiveCentralValues.Click_On_Marque.Delete_Client                            -> "Supprimer Client"
-                ActiveCentralValues.Click_On_Marque.Passe_Client                             -> "Passer le client"
-                ActiveCentralValues.Click_On_Marque.Livre_Client                             -> "Livrer le client"
-                else -> {"non difinie"}
+    val modeLabel = when (currentMode) {
+        ActiveCentralValues.Click_On_Marque.Standart                                  -> "Standard"
+        ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients                    -> "Ajouter Ciblage"
+        ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction  -> "Afficher Commande"
+        ActiveCentralValues.Click_On_Marque.Lence_New_Command                         -> "Lancer Nouvelle Commande"
+        ActiveCentralValues.Click_On_Marque.Call                                      -> "Appeler Client"
+        ActiveCentralValues.Click_On_Marque.Navigate                                  -> "Navigation GPS"
+        ActiveCentralValues.Click_On_Marque.Marck_Ferme                              -> "Marquer Fermé"
+        ActiveCentralValues.Click_On_Marque.Marck_Command_Livret                     -> "Marquer Livré"
+        ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf               -> "Envoyer PDF WhatsApp"
+        ActiveCentralValues.Click_On_Marque.Delete_Client                            -> "Supprimer Client"
+        ActiveCentralValues.Click_On_Marque.Passe_Client                             -> "Passer le client"
+        ActiveCentralValues.Click_On_Marque.Livre_Client                             -> "Livrer le client"
+        ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme                   -> "Définir Client (court terme)"
+        ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme                    -> "Définir Client (long terme)"
+        ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme              -> "Définir Fournisseur (court terme)"
+        ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme               -> "Définir Fournisseur (long terme)"
+        ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale                 -> "Basculer Client de Jamale"
+    }
+    Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_LONG).show()
+    val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+
+    val onCommandBon_ventPeriod = datasValue.lastOrNull {
+        it.parent_M2Client_KeyID == m2Client.keyID
+                &&
+                it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+            ?.keyID ?: "")
+                && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    }
+
+    when (currentMode) {
+        ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> {
+            val bonToOpen = onCommandBon_ventPeriod ?: run {
+                val foundOrDefault = get_Found_Or_Default_M8BonVent(
+                    aCentralFacade = aCentralFacade,
+                    relative_M2Client = m2Client,
+                    etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                )
+                foundOrDefault?.let { f ->
+                    if (f.found != null) {
+                        aCentralFacade.repositorysMainSetter.update_M8BonVent(f.found)
+                    } else {
+                        aCentralFacade.repositorysMainSetter.addNew_M8BonVent(f.default_If_No_Found)
+                    }
+                    f.found ?: f.default_If_No_Found
+                }
             }
-            Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_LONG).show()
+
+            if (bonToOpen != null) {
+                aCentralFacade.focusedActiveValuesFacade
+                    .focusedValuesSetter
+                    .setIN_M9CurrentApp_onVentM8BonVentKey(bonToOpen)
+
+                if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
+                    fragmentNavigationHandler_NewProto.navigateTo(
+                        Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
+                    )
+                } else {
+                    fragmentNavigationHandler.navigateToCartScreen()
+                }
+            } else {
+                Toast.makeText(
+                    context,
+                    "Aucune commande en cours",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        ActiveCentralValues.Click_On_Marque.Lence_New_Command -> {
+            val foundOrDefault = get_Found_Or_Default_M8BonVent(
+                aCentralFacade = aCentralFacade,
+                relative_M2Client = m2Client,
+                etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+            )
+            foundOrDefault?.let { f ->
+                if (f.found != null) {
+                    aCentralFacade.repositorysMainSetter.update_M8BonVent(f.found)
+                } else {
+                    aCentralFacade.repositorysMainSetter.addNew_M8BonVent(f.default_If_No_Found)
+                }
+                val bonToOpen = f.found ?: f.default_If_No_Found
+                aCentralFacade.focusedActiveValuesFacade
+                    .focusedValuesSetter
+                    .setIN_M9CurrentApp_onVentM8BonVentKey(bonToOpen)
+
+                if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
+                    fragmentNavigationHandler_NewProto.navigateTo(
+                        Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
+                    )
+                } else {
+                    fragmentNavigationHandler.navigateToCartScreen()
+                }
+            } ?: Toast.makeText(context, "Impossible de créer la commande", Toast.LENGTH_SHORT).show()
+        }
+        ActiveCentralValues.Click_On_Marque.Standart -> {
+            viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
+
+            if (showMarkerDetails) marker?.showInfoWindow()
+        }
+
+        // Add client to targeting list
+        ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> {
+            viewModel.addCibleOptimistic(m2Client)
+            Toast.makeText(
+                context,
+                "Client ajouté à la liste de ciblage (Position: $newPosition)",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        // Direct phone call to client
+        ActiveCentralValues.Click_On_Marque.Call -> {
+            val phoneNumber = m2Client.numTelephone
+
+            if (phoneNumber.isNotEmpty() && phoneNumber != "null") {
+                try {
+                    val truecallerIntent = Intent(
+                        Intent.ACTION_DIAL,
+                        Uri.fromParts("tel", phoneNumber, null)
+                    ).apply {
+                        setPackage("com.truecaller")
+                    }
+
+                    val packageManager = context.packageManager
+                    val isTruecallerInstalled =
+                        truecallerIntent.resolveActivity(packageManager) != null
+
+                    if (isTruecallerInstalled) {
+                        context.startActivity(truecallerIntent)
+                        Toast.makeText(
+                            context,
+                            "Appel vers ${m2Client.nom} via Truecaller",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        val defaultDialerIntent = Intent(Intent.ACTION_DIAL).apply {
+                            data = Uri.parse("tel:$phoneNumber")
+                        }
+                        context.startActivity(defaultDialerIntent)
+
+                        Toast.makeText(
+                            context,
+                            "Appel vers ${m2Client.nom} (Truecaller non installé)",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        context,
+                        "Impossible de lancer l'appel",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } else {
+                Toast.makeText(
+                    context,
+                    "Aucun numéro de téléphone pour ${m2Client.nom}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        }
+
+        // Navigate to client using Google Maps
+        ActiveCentralValues.Click_On_Marque.Navigate -> {
+            val latitude = m2Client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE
+            val longitude = m2Client.longitude
+
+            try {
+                val gmmIntentUri =
+                    Uri.parse("google.navigation:q=$latitude,$longitude&mode=d")
+                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
+                    setPackage("com.google.android.apps.maps")
+                }
+
+                context.startActivity(mapIntent)
+
+                Toast.makeText(
+                    context,
+                    "Navigation vers ${m2Client.nom}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (e: Exception) {
+                try {
+                    val geoUri = Uri.parse(
+                        "geo:$latitude,$longitude?q=$latitude,$longitude(${m2Client.nom})"
+                    )
+                    val fallbackIntent = Intent(Intent.ACTION_VIEW, geoUri)
+                    context.startActivity(fallbackIntent)
+                } catch (e2: Exception) {
+                    Toast.makeText(
+                        context,
+                        "Aucune application de navigation disponible",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+        }
+
+        // Mark client as closed/fermé
+        ActiveCentralValues.Click_On_Marque.Marck_Ferme -> {
+            val found_Or_Default = get_Found_Or_Default_M8BonVent(
+                aCentralFacade = aCentralFacade,
+                relative_M2Client = m2Client,
+                etateActuellementEst = M8BonVent.EtateActuellementEst.FERME,
+            ) ?: run {
+                Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT)
+                    .show()
+                return
+            }
+
+            aCentralFacade.repositorysMainSetter
+                .addNew_M8BonVent(found_Or_Default.default_If_No_Found)
+
+            Toast.makeText(
+                context,
+                "${m2Client.nom} marqué comme fermé",
+                Toast.LENGTH_SHORT
+            ).show()
+
+        }
+
+        // Mark client command as delivered (livré)
+        ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> {
             val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
 
             val onCommandBon_ventPeriod = datasValue.lastOrNull {
@@ -269,358 +483,171 @@ fun performClickOnMarqueAction(
                         &&
                         it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
                     ?.keyID ?: "")
-                        && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        && it.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             }
 
-            when (currentMode) {
-                ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> {
-                    val bonToOpen = onCommandBon_ventPeriod ?: run {
-                        val foundOrDefault = get_Found_Or_Default_M8BonVent(
-                            aCentralFacade = aCentralFacade,
-                            relative_M2Client = m2Client,
-                            etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+            if (onCommandBon_ventPeriod != null) {
+                aCentralFacade.repositorysMainSetter
+                    .addNew_M8BonVent(
+                        onCommandBon_ventPeriod.copy(
+                            etateActuellementEst = M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                         )
-                        foundOrDefault?.let { f ->
-                            if (f.found != null) {
-                                aCentralFacade.repositorysMainSetter.update_M8BonVent(f.found)
-                            } else {
-                                aCentralFacade.repositorysMainSetter.addNew_M8BonVent(f.default_If_No_Found)
-                            }
-                            f.found ?: f.default_If_No_Found
-                        }
-                    }
-
-                    if (bonToOpen != null) {
-                        aCentralFacade.focusedActiveValuesFacade
-                            .focusedValuesSetter
-                            .setIN_M9CurrentApp_onVentM8BonVentKey(bonToOpen)
-
-                        if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
-                            fragmentNavigationHandler_NewProto.navigateTo(
-                                Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
-                            )
-                        } else {
-                            fragmentNavigationHandler.navigateToCartScreen()
-                        }
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Aucune commande en cours",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-                ActiveCentralValues.Click_On_Marque.Lence_New_Command -> {
-                    val foundOrDefault = get_Found_Or_Default_M8BonVent(
-                        aCentralFacade = aCentralFacade,
-                        relative_M2Client = m2Client,
-                        etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                     )
-                    foundOrDefault?.let { f ->
-                        if (f.found != null) {
-                            aCentralFacade.repositorysMainSetter.update_M8BonVent(f.found)
-                        } else {
-                            aCentralFacade.repositorysMainSetter.addNew_M8BonVent(f.default_If_No_Found)
+
+                Toast.makeText(
+                    context,
+                    "Commande de ${m2Client.nom} marquée comme livrée",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    "Aucune commande confirmée à livrer pour ce client",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        }
+
+        ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> {
+            val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+            val activePeriodKeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?: ""
+
+            // --- PDF diagnostic logs (resolves empty-PDF issue) ---
+            android.util.Log.d("WhatsAppPdf", "=== Cree_et_envoi_whatsapp_pdf triggered ===")
+            android.util.Log.d("WhatsAppPdf", "client: id=${m2Client.id}  nom=${m2Client.nom}  phone=${m2Client.numTelephone}")
+            android.util.Log.d("WhatsAppPdf", "activePeriodKeyId='$activePeriodKeyId'  (null=${focusedValuesGetter.currentActiveFocuced_M14VentPeriode == null})")
+            android.util.Log.d("WhatsAppPdf", "total bons in period: ${datasValue.count { it.parent_M14VentPeriod_KeyId == activePeriodKeyId }}")
+            if (onCommandBon_ventPeriod != null) {
+                val activeOnVent = focusedValuesGetter.activeOnVentM2ClientInfos
+                android.util.Log.d("WhatsAppPdf", "activeOnVentM2ClientInfos: id=${activeOnVent?.id}  nom=${activeOnVent?.nom}")
+                android.util.Log.d("WhatsAppPdf", "list_M13TarificationInfos injected to PDF call: will log in onPdfSaved")
+            }
+
+            // No bon found: fall back to the standard marker dialog (same UX as
+            // Affiche_OnCommand_VentPeriod_Transaction) so the user can still see client info.
+            if (onCommandBon_ventPeriod == null) {
+                viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
+                return
+            }
+
+            val phoneNumber = m2Client.numTelephone.trim()
+
+            // Phone missing: open phone-entry dialog via ViewModel state so the user can
+            // enter the number (same pattern as Button_Click_Send_Stored_Bon_Par_whatsappBuisness).
+            if (phoneNumber.isEmpty() || phoneNumber == "null") {
+                aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+                    .setIN_M9CurrentApp_onVentM8BonVentKey(onCommandBon_ventPeriod)
+                viewModel.set_pendingWhatsAppSend(m2Client)
+                return
+            }
+
+            // Phone exists: activate the bon then generate + send the PDF.
+            aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+                .setIN_M9CurrentApp_onVentM8BonVentKey(onCommandBon_ventPeriod)
+
+            MainScope().launch {
+                // Small delay so focused-values propagate before PDF creation reads them,
+                // which was the root cause of the "Aucun client actif" error logs.
+                delay(300)
+                initiateBackgroundPdfCreation_NewP(
+                    context = context,
+                    aCentralFacade = aCentralFacade,
+                    onPdfSaved = { savedPath ->
+                        val pdfFile = File(savedPath)
+                        android.util.Log.d("WhatsAppPdf", "onPdfSaved: path=$savedPath  exists=${pdfFile.exists()}  size=${pdfFile.length()} bytes")
+                        if (pdfFile.length() == 0L) android.util.Log.e("WhatsAppPdf", "⚠️ PDF is EMPTY — focused values may not have settled before PDF creation. Check activeOnVentM2ClientInfos and lignesBonVentList above.")
+                        var cleaned = phoneNumber.replace(Regex("[^0-9]"), "")
+                        if (!cleaned.startsWith("213")) {
+                            if (cleaned.startsWith("0")) cleaned = cleaned.drop(1)
+                            cleaned = "213$cleaned"
                         }
-                        val bonToOpen = f.found ?: f.default_If_No_Found
-                        aCentralFacade.focusedActiveValuesFacade
-                            .focusedValuesSetter
-                            .setIN_M9CurrentApp_onVentM8BonVentKey(bonToOpen)
-
-                        if (M00CentralParametresOfAllApps.get_Default().its_AppType != AppType.AllInOne) {
-                            fragmentNavigationHandler_NewProto.navigateTo(
-                                Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
-                            )
-                        } else {
-                            fragmentNavigationHandler.navigateToCartScreen()
-                        }
-                    } ?: Toast.makeText(context, "Impossible de créer la commande", Toast.LENGTH_SHORT).show()
-                }
-                ActiveCentralValues.Click_On_Marque.Standart -> {
-                    viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
-
-                    if (showMarkerDetails) marker?.showInfoWindow()
-                }
-
-                // Add client to targeting list
-                ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> {
-                    viewModel.addCibleOptimistic(m2Client)
-                    Toast.makeText(
-                        context,
-                        "Client ajouté à la liste de ciblage (Position: $newPosition)",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                // Direct phone call to client
-                ActiveCentralValues.Click_On_Marque.Call -> {
-                    val phoneNumber = m2Client.numTelephone
-
-                    if (phoneNumber.isNotEmpty() && phoneNumber != "null") {
                         try {
-                            val truecallerIntent = Intent(
-                                Intent.ACTION_DIAL,
-                                Uri.fromParts("tel", phoneNumber, null)
-                            ).apply {
-                                setPackage("com.truecaller")
+                            val pdfUri = FileProvider.getUriForFile(
+                                context, "${context.packageName}.fileprovider", pdfFile
+                            )
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "application/pdf"
+                                setPackage("com.whatsapp.w4b")
+                                putExtra(Intent.EXTRA_STREAM, pdfUri)
+                                putExtra(Intent.EXTRA_TEXT, "Voici votre bon de commande")
+                                putExtra("jid", "$cleaned@s.whatsapp.net")
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             }
-
-                            val packageManager = context.packageManager
-                            val isTruecallerInstalled =
-                                truecallerIntent.resolveActivity(packageManager) != null
-
-                            if (isTruecallerInstalled) {
-                                context.startActivity(truecallerIntent)
-                                Toast.makeText(
-                                    context,
-                                    "Appel vers ${m2Client.nom} via Truecaller",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                val defaultDialerIntent = Intent(Intent.ACTION_DIAL).apply {
-                                    data = Uri.parse("tel:$phoneNumber")
-                                }
-                                context.startActivity(defaultDialerIntent)
-
-                                Toast.makeText(
-                                    context,
-                                    "Appel vers ${m2Client.nom} (Truecaller non installé)",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            context.startActivity(intent)
                         } catch (e: Exception) {
                             Toast.makeText(
                                 context,
-                                "Impossible de lancer l'appel",
+                                "Erreur WhatsApp: ${e.message}",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Aucun numéro de téléphone pour ${m2Client.nom}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                }
-
-                // Navigate to client using Google Maps
-                ActiveCentralValues.Click_On_Marque.Navigate -> {
-                    val latitude = m2Client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE
-                    val longitude = m2Client.longitude
-
-                    try {
-                        val gmmIntentUri =
-                            Uri.parse("google.navigation:q=$latitude,$longitude&mode=d")
-                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
-                            setPackage("com.google.android.apps.maps")
-                        }
-
-                        context.startActivity(mapIntent)
-
-                        Toast.makeText(
-                            context,
-                            "Navigation vers ${m2Client.nom}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } catch (e: Exception) {
-                        try {
-                            val geoUri = Uri.parse(
-                                "geo:$latitude,$longitude?q=$latitude,$longitude(${m2Client.nom})"
-                            )
-                            val fallbackIntent = Intent(Intent.ACTION_VIEW, geoUri)
-                            context.startActivity(fallbackIntent)
-                        } catch (e2: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Aucune application de navigation disponible",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-
-                }
-
-                // Mark client as closed/fermé
-                ActiveCentralValues.Click_On_Marque.Marck_Ferme -> {
-                    val found_Or_Default = get_Found_Or_Default_M8BonVent(
-                        aCentralFacade = aCentralFacade,
-                        relative_M2Client = m2Client,
-                        etateActuellementEst = M8BonVent.EtateActuellementEst.FERME,
-                    ) ?: run {
-                        Toast.makeText(context, "Période non initialisée", Toast.LENGTH_SHORT)
-                            .show()
-                        return
-                    }
-
-                    aCentralFacade.repositorysMainSetter
-                        .addNew_M8BonVent(found_Or_Default.default_If_No_Found)
-
-                    Toast.makeText(
-                        context,
-                        "${m2Client.nom} marqué comme fermé",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                }
-
-                // Mark client command as delivered (livré)
-                ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> {
-                    val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-
-                    val onCommandBon_ventPeriod = datasValue.lastOrNull {
-                        it.parent_M2Client_KeyID == m2Client.keyID
-                                &&
-                                it.parent_M14VentPeriod_KeyId == (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
-                            ?.keyID ?: "")
-                                && it.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                    }
-
-                    if (onCommandBon_ventPeriod != null) {
-                        aCentralFacade.repositorysMainSetter
-                            .addNew_M8BonVent(
-                                onCommandBon_ventPeriod.copy(
-                                    etateActuellementEst = M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                                )
-                            )
-
-                        Toast.makeText(
-                            context,
-                            "Commande de ${m2Client.nom} marquée comme livrée",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Aucune commande confirmée à livrer pour ce client",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                }
-
-                ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> {
-                    val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
-                    val activePeriodKeyId = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID ?: ""
-
-                    // --- PDF diagnostic logs (resolves empty-PDF issue) ---
-                    android.util.Log.d("WhatsAppPdf", "=== Cree_et_envoi_whatsapp_pdf triggered ===")
-                    android.util.Log.d("WhatsAppPdf", "client: id=${m2Client.id}  nom=${m2Client.nom}  phone=${m2Client.numTelephone}")
-                    android.util.Log.d("WhatsAppPdf", "activePeriodKeyId='$activePeriodKeyId'  (null=${focusedValuesGetter.currentActiveFocuced_M14VentPeriode == null})")
-                    android.util.Log.d("WhatsAppPdf", "total bons in period: ${datasValue.count { it.parent_M14VentPeriod_KeyId == activePeriodKeyId }}")
-                    if (onCommandBon_ventPeriod != null) {
-                        val activeOnVent = focusedValuesGetter.activeOnVentM2ClientInfos
-                        android.util.Log.d("WhatsAppPdf", "activeOnVentM2ClientInfos: id=${activeOnVent?.id}  nom=${activeOnVent?.nom}")
-                        android.util.Log.d("WhatsAppPdf", "list_M13TarificationInfos injected to PDF call: will log in onPdfSaved")
-                    }
-
-                    // No bon found: fall back to the standard marker dialog (same UX as
-                    // Affiche_OnCommand_VentPeriod_Transaction) so the user can still see client info.
-                    if (onCommandBon_ventPeriod == null) {
-                        viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
-                        return
-                    }
-
-                    val phoneNumber = m2Client.numTelephone.trim()
-
-                    // Phone missing: open phone-entry dialog via ViewModel state so the user can
-                    // enter the number (same pattern as Button_Click_Send_Stored_Bon_Par_whatsappBuisness).
-                    if (phoneNumber.isEmpty() || phoneNumber == "null") {
-                        aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
-                            .setIN_M9CurrentApp_onVentM8BonVentKey(onCommandBon_ventPeriod)
-                        viewModel.set_pendingWhatsAppSend(m2Client)
-                        return
-                    }
-
-                    // Phone exists: activate the bon then generate + send the PDF.
-                    aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
-                        .setIN_M9CurrentApp_onVentM8BonVentKey(onCommandBon_ventPeriod)
-
-                    MainScope().launch {
-                        // Small delay so focused-values propagate before PDF creation reads them,
-                        // which was the root cause of the "Aucun client actif" error logs.
-                        delay(300)
-                        initiateBackgroundPdfCreation_NewP(
-                            context = context,
-                            aCentralFacade = aCentralFacade,
-                            onPdfSaved = { savedPath ->
-                                val pdfFile = File(savedPath)
-                                android.util.Log.d("WhatsAppPdf", "onPdfSaved: path=$savedPath  exists=${pdfFile.exists()}  size=${pdfFile.length()} bytes")
-                                if (pdfFile.length() == 0L) android.util.Log.e("WhatsAppPdf", "⚠️ PDF is EMPTY — focused values may not have settled before PDF creation. Check activeOnVentM2ClientInfos and lignesBonVentList above.")
-                                var cleaned = phoneNumber.replace(Regex("[^0-9]"), "")
-                                if (!cleaned.startsWith("213")) {
-                                    if (cleaned.startsWith("0")) cleaned = cleaned.drop(1)
-                                    cleaned = "213$cleaned"
-                                }
-                                try {
-                                    val pdfUri = FileProvider.getUriForFile(
-                                        context, "${context.packageName}.fileprovider", pdfFile
-                                    )
-                                    val intent = Intent(Intent.ACTION_SEND).apply {
-                                        type = "application/pdf"
-                                        setPackage("com.whatsapp.w4b")
-                                        putExtra(Intent.EXTRA_STREAM, pdfUri)
-                                        putExtra(Intent.EXTRA_TEXT, "Voici votre bon de commande")
-                                        putExtra("jid", "$cleaned@s.whatsapp.net")
-                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                    }
-                                    context.startActivity(intent)
-                                } catch (e: Exception) {
-                                    Toast.makeText(
-                                        context,
-                                        "Erreur WhatsApp: ${e.message}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            },
-                            list_M13TarificationInfos = list_M13TarificationInfos,
-                            relative_List_M13Vent = focusedValuesGetter
-                                .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
-                                .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 },
-                            on_vent_client = focusedValuesGetter.activeOnVentM2ClientInfos,
-                            on_vent_bon = focusedValuesGetter.activeOnVent_M8BonVent
-                        )
-                    }
-                }
-                ActiveCentralValues.Click_On_Marque.Delete_Client -> {
-                    viewModel.deleteClientOptimistic(m2Client)
-                    Toast.makeText(
-                        context,
-                        "Client ${m2Client.nom} supprimé",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                ActiveCentralValues.Click_On_Marque.Passe_Client -> {
-                    viewModel.addPasseOptimistic(m2Client)
-                    Toast.makeText(context, "${m2Client.nom} → Passé", Toast.LENGTH_SHORT).show()
-                }
-                ActiveCentralValues.Click_On_Marque.Livre_Client -> {
-                    viewModel.addLivreOptimistic(m2Client)
-                    Toast.makeText(context, "${m2Client.nom} → Livré", Toast.LENGTH_SHORT).show()
-                }
-                ActiveCentralValues.Click_On_Marque.Toggle_Fournisseur_Grossist -> {
-                    val newStatut = !m2Client.its_Fournisseur_Grossisst_A_Jomla
-                    val updated = m2Client.copy(its_Fournisseur_Grossisst_A_Jomla = newStatut)
-                    viewModel.updateData(updated)
-                    val label = if (newStatut) "Défini comme Fournisseur/Grossiste" else "Défini comme Client standard"
-                    Toast.makeText(context, "${m2Client.nom} : $label", Toast.LENGTH_SHORT).show()
-                }
-                ActiveCentralValues.Click_On_Marque.Toggle_Ignore_Sont_Credit -> {
-                    val newStatut = !m2Client.ignore_sont_credit
-                    val updated = m2Client.copy(ignore_sont_credit = newStatut)
-                    viewModel.updateData(updated)
-                    val label = if (newStatut) "Crédit ignoré du calcul" else "Crédit inclus dans le calcul"
-                    Toast.makeText(context, "${m2Client.nom} : $label", Toast.LENGTH_SHORT).show()
-                }
-                ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale -> {
-                    val newStatut = !m2Client.its_Client_De_Jamale
-                    val updated = m2Client.copy(its_Client_De_Jamale = newStatut)
-                    viewModel.updateData(updated)
-                    val label = if (newStatut) "Défini comme Client de Jamale" else "Retiré des Clients de Jamale"
-                    Toast.makeText(context, "${m2Client.nom} : $label", Toast.LENGTH_SHORT).show()
-                }
+                    },
+                    list_M13TarificationInfos = list_M13TarificationInfos,
+                    relative_List_M13Vent = focusedValuesGetter
+                        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+                        .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 },
+                    on_vent_client = focusedValuesGetter.activeOnVentM2ClientInfos,
+                    on_vent_bon = focusedValuesGetter.activeOnVent_M8BonVent
+                )
             }
+        }
+        ActiveCentralValues.Click_On_Marque.Delete_Client -> {
+            viewModel.deleteClientOptimistic(m2Client)
+            Toast.makeText(
+                context,
+                "Client ${m2Client.nom} supprimé",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        ActiveCentralValues.Click_On_Marque.Passe_Client -> {
+            viewModel.addPasseOptimistic(m2Client)
+            Toast.makeText(context, "${m2Client.nom} → Passé", Toast.LENGTH_SHORT).show()
+        }
+        ActiveCentralValues.Click_On_Marque.Livre_Client -> {
+            viewModel.addLivreOptimistic(m2Client)
+            Toast.makeText(context, "${m2Client.nom} → Livré", Toast.LENGTH_SHORT).show()
+        }
+        ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme -> {
+            val updated = m2Client.copy(
+                its_Fournisseur_Grossisst_A_Jomla = false,
+                ces_credits_son_a_long_term = false,
+            )
+            viewModel.updateData(updated)
+            Toast.makeText(context, "${m2Client.nom} : Client, crédit court terme", Toast.LENGTH_SHORT).show()
+        }
+        ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme -> {
+            val updated = m2Client.copy(
+                its_Fournisseur_Grossisst_A_Jomla = false,
+                ces_credits_son_a_long_term = true,
+            )
+            viewModel.updateData(updated)
+            Toast.makeText(context, "${m2Client.nom} : Client, crédit long terme", Toast.LENGTH_SHORT).show()
+        }
+        ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme -> {
+            val updated = m2Client.copy(
+                its_Fournisseur_Grossisst_A_Jomla = true,
+                ces_credits_son_a_long_term = false,
+            )
+            viewModel.updateData(updated)
+            Toast.makeText(context, "${m2Client.nom} : Fournisseur/Grossiste, crédit court terme", Toast.LENGTH_SHORT).show()
+        }
+        ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme -> {
+            val updated = m2Client.copy(
+                its_Fournisseur_Grossisst_A_Jomla = true,
+                ces_credits_son_a_long_term = true,
+            )
+            viewModel.updateData(updated)
+            Toast.makeText(context, "${m2Client.nom} : Fournisseur/Grossiste, crédit long terme", Toast.LENGTH_SHORT).show()
+        }
+        ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale -> {
+            val newStatut = !m2Client.its_Client_De_Jamale
+            val updated = m2Client.copy(its_Client_De_Jamale = newStatut)
+            viewModel.updateData(updated)
+            val label = if (newStatut) "Défini comme Client de Jamale" else "Retiré des Clients de Jamale"
+            Toast.makeText(context, "${m2Client.nom} : $label", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
 private fun String.cleanClientNameFromPhone(): String {
