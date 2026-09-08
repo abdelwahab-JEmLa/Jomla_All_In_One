@@ -17,7 +17,9 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -88,6 +90,7 @@ fun get_New_Datas(
             keyID = keyIDM3CouleurProduitInfos,
             creationTimestamp = System.currentTimeMillis(),
             parentBProduitInfosKeyID = it.keyID,
+            affiche_que_c_don_le_panie = true,
             parentId1ProduitInfosDebugName = newProduit.nom,
             parentBProduitOldID = newProduit.id,
         )
@@ -96,6 +99,7 @@ fun get_New_Datas(
     return Pair(newProduit, newCouleurP)
 }
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun MainFastSearchProduitPourVent(
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto =koinInject(),

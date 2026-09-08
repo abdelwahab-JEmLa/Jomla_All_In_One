@@ -6,6 +6,8 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.graphics.drawable.Drawable
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,12 +39,12 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
+import com.example.clientjetpack.R
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerView
 import java.io.File
-
 enum class ImageQualite(
     val encodeQuality: Int = 0,
     val override: Int = 0
@@ -98,6 +100,7 @@ private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     )
     .skipMemoryCache(qualite == ImageQualite.min_possible)
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Image_Displaye_app2(
@@ -107,6 +110,23 @@ fun Image_Displaye_app2(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_MainFragment
 ) {
+    if (relative_M3CouleurProduitInfos.affiche_que_c_don_le_panie) {
+        GlideImage(
+            model = R.drawable.panie,
+            contentDescription = "Panier",
+            modifier = modifier.fillMaxSize(),
+            contentScale = contentScale
+        ) {
+            it.dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .priority(Priority.NORMAL)
+                .disallowHardwareConfig()
+                .format(DecodeFormat.PREFER_RGB_565)
+                .override(400)
+        }
+        return
+    }
+
     val qualite = resolveQualite(expandState)
 
     // Get WiFi state to determine if user can interact with images

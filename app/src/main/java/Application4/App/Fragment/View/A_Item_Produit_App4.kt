@@ -287,6 +287,7 @@ fun A_Item_Produit_App4(
                         val newCouleur = M3CouleurProduitInfos.get_default().copy(
                             aAffiche = M3CouleurProduitInfos.Type.Nom,
                             nomCouleurStrSiSonImageDispo = "Couleur $colorIndex",
+                            affiche_que_c_don_le_panie = true,
                             nomImageFichieSansEtansion = "Non Dispo",
                             indexCouleurDansAncienProto = colorIndex,
                             parentBProduitOldID = relative_M1produit.id,

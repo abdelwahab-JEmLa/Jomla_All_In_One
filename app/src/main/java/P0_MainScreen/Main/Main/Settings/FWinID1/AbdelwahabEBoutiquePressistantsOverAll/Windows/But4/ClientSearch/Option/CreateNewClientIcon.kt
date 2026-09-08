@@ -42,6 +42,7 @@ fun CreateNewClientIcon(
         },
         latitude = 36.720027701275505,
         longitude = 3.1436710147865483,
+        its_Client_De_Jamale = true,
         caMarqueGpsEstOuvert = currentLocation != null,
         its_Fournisseur = isFournisseurMode, // Set based on toggle state
         snippet = currentLocation?.let {

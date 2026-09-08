@@ -47,6 +47,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
+import com.example.clientjetpack.R
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -70,6 +71,23 @@ fun Image_Displaye(
     list_M1Produit: List<M01Produit>?,
     image_pourcetage_qualite: pourcentage = pourcentage.min_possible
 ) {
+    if (relative_M3CouleurProduitInfos.affiche_que_c_don_le_panie) {
+        GlideImage(
+            model = R.drawable.panie,
+            contentDescription = "Panier",
+            modifier = modifier.fillMaxSize(),
+            contentScale = contentScale
+        ) {
+            it.dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .priority(Priority.NORMAL)
+                .disallowHardwareConfig()
+                .format(DecodeFormat.PREFER_RGB_565)
+                .override(400)
+        }
+        return
+    }
+
     val (_, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
     val centralValues = wifiState

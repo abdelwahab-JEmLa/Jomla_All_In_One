@@ -410,8 +410,15 @@ fun Lenceur_Vent_Handler_App4(
                         selectedCouleur.copy(its_couleur_ac_imgVid_presentative_de_tout_les_couleur = !selectedCouleur.its_couleur_ac_imgVid_presentative_de_tout_les_couleur)
                     )
                 },
+                on_toggle_affiche_panie = {
+                    val afficheQueCDonLePanie = !selectedCouleur.affiche_que_c_don_le_panie
+                    viewModel.update_m3couleur(
+                        selectedCouleur.copy(
+                            affiche_que_c_don_le_panie = afficheQueCDonLePanie
+                        )
+                    )
+                },
                 on_set_c_unite_key = { key ->
-
                     val parentColor = mode_selection_parent_couleur
                     if (parentColor != null) {
                         viewModel.update_m3couleur(parentColor.copy(c_unite_couleur_de_couleurKey = selectedCouleur.keyID))

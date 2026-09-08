@@ -70,7 +70,9 @@ private fun MediaPickerBar(
     onPickVideo: (() -> Unit)?,
     textStyle: TextStyle
 ) {
+
     if (onPickImage != null) {
+
         Card(
             modifier = Modifier.clickable { onPickImage() },
             shape = RoundedCornerShape(20.dp),
@@ -129,6 +131,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     onPickVideo: (() -> Unit)? = null,
     its_couleur_ac_imgVid_presentative_de_tout_les_couleur: Boolean = false,
     on_toggle_presentative: (() -> Unit)? = null,
+    affiche_que_c_don_le_panie: Boolean = false,
+    on_toggle_affiche_panie: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
 
@@ -234,7 +238,23 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                             color = if (mode_c_unite_actif) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-
+                    if (on_toggle_affiche_panie != null) {
+                        Card(
+                            modifier = Modifier.clickable { on_toggle_affiche_panie() },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (affiche_que_c_don_le_panie) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = if (affiche_que_c_don_le_panie) "🧺 P" else "🧺",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = textStyle,
+                                fontWeight = FontWeight.Bold,
+                                color = if (affiche_que_c_don_le_panie) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                     MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
                 }
 
