@@ -65,6 +65,7 @@ data class M3CouleurProduitInfos(
 
         "processPositioningInFactory" to processPositioningInFactory.name,
         "aAffiche" to aAffiche.name,
+        "dropBox_key" to dropBox_key,
         "nomImageFichieSansEtansion" to nomImageFichieSansEtansion,
         "telephone_Prise_depuit" to telephone_Prise_depuit,
         "count_Don_Depot" to count_Don_Depot,
@@ -72,6 +73,7 @@ data class M3CouleurProduitInfos(
         "il_a_une_video_presentaion" to il_a_une_video_presentaion,
         "a_cammende_depuit_grossist" to a_cammende_depuit_grossist,
         "nomCouleurStrSiSonImageDispo" to nomCouleurStrSiSonImageDispo,
+        "affiche_que_c_don_le_panie" to affiche_que_c_don_le_panie,
         "parentBProduitInfosKeyID" to parentBProduitInfosKeyID,
         "parentBProduitOldID" to parentBProduitOldID,
         "parentId1ProduitInfosDebugName" to parentId1ProduitInfosDebugName,

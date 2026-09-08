@@ -25,7 +25,7 @@ data class M8BonVent(
     var pourcentage_AffichageDuCatalogue_Conficerie: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_Cosmitiques: Double = 0.0,
     var pourcentage_AffichageDuCatalogue_tebnage: Double = 0.0,
-    
+
     var its_Cartons_Bon: Boolean = false,
 
     val nombre_produits_don_dernier_pdf_stoked: Int = 0,
@@ -85,6 +85,7 @@ data class M8BonVent(
             "pourcentage_AffichageDuCatalogue_Conficerie" to pourcentage_AffichageDuCatalogue_Conficerie,
             "pourcentage_AffichageDuCatalogue_Cosmitiques" to pourcentage_AffichageDuCatalogue_Cosmitiques,
             "pourcentage_AffichageDuCatalogue_tebnage" to pourcentage_AffichageDuCatalogue_tebnage,
+            "its_Cartons_Bon" to its_Cartons_Bon,
             "nombre_produits_don_dernier_pdf_stoked" to nombre_produits_don_dernier_pdf_stoked,
             "last_sort_pdf_locale_totale_a_paye" to last_sort_pdf_locale_totale_a_paye,
             "path_pdf_bon_file" to path_pdf_bon_file,
@@ -296,6 +297,8 @@ data class M8BonVent(
                     ?: 0.0,
                 pourcentage_AffichageDuCatalogue_tebnage = map["pourcentage_AffichageDuCatalogue_tebnage"]?.toDoubleOrNull()
                     ?: 0.0,
+                its_Cartons_Bon = map["its_Cartons_Bon"]?.equals("true", ignoreCase = true)
+                    ?: false,
                 nombre_produits_don_dernier_pdf_stoked = map["nombre_produits_don_dernier_pdf_stoked"]?.toIntOrNull()
                     ?: 0,
                 last_sort_pdf_locale_totale_a_paye = map["last_sort_pdf_locale_totale_a_paye"]?.toDoubleOrNull()
