@@ -389,7 +389,7 @@ private fun PanierNamePriceDisplay(
 
                 if (prixVente > 0.0) {
                     Text(
-                        text = "تبيعها على ${prixVente.toInt()} DA",
+                        text = "تبيعها على ",
                         color = Color.Black,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = priceFontSize,

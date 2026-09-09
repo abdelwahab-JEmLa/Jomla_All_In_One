@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import android.content.Context
 import android.widget.Toast
@@ -90,6 +90,43 @@ class Repo11AchatOperation(
     }
 
     fun add_New(data: M11AchatOperation) {
+        val existingIndex = datasValue.indexOfFirst {
+            it.parent_M3CouleurProduit_KeyID == data.parent_M3CouleurProduit_KeyID &&
+            (it.parent_M14VentPeriod_KeyID == data.parent_M14VentPeriod_KeyID || data.parent_M14VentPeriod_KeyID == "null" || it.parent_M14VentPeriod_KeyID == "null")
+        }
+
+        if (existingIndex >= 0) {
+            val existing = datasValue[existingIndex]
+            val existingKeys = existing.joined_Str_keys_De_Relatives_FCouleurVentOperation
+                .split(",").map { it.trim() }.filter { it.isNotBlank() && it != "null" }.toSet()
+            val newKeys = data.joined_Str_keys_De_Relatives_FCouleurVentOperation
+                .split(",").map { it.trim() }.filter { it.isNotBlank() && it != "null" }.toSet()
+
+            val mergedKeysSet = existingKeys + newKeys
+            val mergedKeysStr = mergedKeysSet.joinToString(",")
+
+            val existingNonDispoKeys = existing.joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve
+                .split(",").map { it.trim() }.filter { it.isNotBlank() && it != "null" }.toSet()
+            val newNonDispoKeys = data.joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve
+                .split(",").map { it.trim() }.filter { it.isNotBlank() && it != "null" }.toSet()
+            val mergedNonDispoKeysStr = (existingNonDispoKeys + newNonDispoKeys).joinToString(",")
+
+            // Only add quantity for newly merged sale operation keys to prevent double counting
+            val trulyNewKeysCount = (newKeys - existingKeys).size
+            val addedQuantity = if (existingKeys.isEmpty()) data.sumAchatQantity else if (trulyNewKeysCount > 0) data.sumAchatQantity else 0
+
+            val updated = existing.copy(
+                sumAchatQantity = existing.sumAchatQantity + addedQuantity,
+                joined_Str_keys_De_Relatives_FCouleurVentOperation = mergedKeysStr,
+                joined_Str_keys_List_M10Vent_NonDispo_Que_Parent_Non_Trouve = mergedNonDispoKeysStr,
+                parent_M14VentPeriod_KeyID = if (existing.parent_M14VentPeriod_KeyID != "null") existing.parent_M14VentPeriod_KeyID else data.parent_M14VentPeriod_KeyID,
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+
+            update_If_Exist(updated)
+            return
+        }
+
         val updated =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         scope.launch {

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.AppBar.Settings
 
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -10,13 +11,22 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -25,6 +35,7 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -33,7 +44,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,6 +68,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
@@ -90,10 +105,10 @@ fun TopAppBar_With_DropDownMenu(
             val focusedValuesGetter =
                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 
-            val filtered_ListM10Vent_BY_Curr_M14VentPeriod =
-                focusedValuesGetter
-                    .filtered_ListM10Vent_BY_Curr_M14VentPeriod
+            var showGenerateAchatsForPeriodDialog by remember { mutableStateOf(false) }
 
+            val filtered_ListM10Vent_BY_Curr_M14VentPeriod =
+                focusedValuesGetter.filtered_ListM10Vent_BY_Curr_M14VentPeriod
 
             val achats_Depuit_M11AchatOperation_List =
                 viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
@@ -193,11 +208,7 @@ fun TopAppBar_With_DropDownMenu(
                         },
                         text = { Text("genere_Achats_Depuit_M11AchatOperation_List()") },
                         onClick = {
-                            achats_Depuit_M11AchatOperation_List.map {
-                                viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_add_New(
-                                    it
-                                )
-                            }
+                            showGenerateAchatsForPeriodDialog = true
                             viewModel.updateShowMenu(false)
                         }
                     )
@@ -225,6 +236,105 @@ fun TopAppBar_With_DropDownMenu(
                         }
                     )
                 }
+            }
+
+            if (showGenerateAchatsForPeriodDialog) {
+                val allVentPeriods = remember {
+                    viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
+                        .sortedByDescending { it.creationTimestamp }
+                }
+                var selectedPeriod by remember {
+                    mutableStateOf<M14VentPeriode?>(
+                        allVentPeriods.firstOrNull() ?: focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+                    )
+                }
+
+                AlertDialog(
+                    onDismissRequest = { showGenerateAchatsForPeriodDialog = false },
+                    title = { Text("توليد المشتريات لفترة بيع / Générer achats") },
+                    text = {
+                        Column {
+                            Text("اختر فترة البيع لتوليد المشتريات منها:")
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            if (allVentPeriods.isEmpty()) {
+                                Text("لا توجد فترات بيع متاحة")
+                            } else {
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp)
+                                ) {
+                                    items(allVentPeriods) { period ->
+                                        val isSelected = period.keyID == selectedPeriod?.keyID
+                                        val periodLabel = "فترة: ${period.get_DebugInfos()}"
+
+                                        Surface(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp)
+                                                .clickable { selectedPeriod = period },
+                                            color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                            shape = RoundedCornerShape(8.dp)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.padding(12.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                RadioButton(
+                                                    selected = isSelected,
+                                                    onClick = { selectedPeriod = period }
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    text = periodLabel,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(
+                            enabled = selectedPeriod != null,
+                            onClick = {
+                                val targetPeriod = selectedPeriod ?: return@TextButton
+                                val bonVentsForPeriod = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+                                    .filter { it.parent_M14VentPeriod_KeyId == targetPeriod.keyID }
+                                val filteredListM10Vent = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
+                                    .filter { op ->
+                                        op.parent_M14VentPeriod_KeyId == targetPeriod.keyID ||
+                                        bonVentsForPeriod.any { it.keyID == op.parent_M8BonVent_KeyId }
+                                    }
+
+                                val generatedAchats = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                                    .genere_Achats_Depuit_M11AchatOperation_List(
+                                        targetPeriod,
+                                        filteredListM10Vent,
+                                        produits = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue,
+                                        bonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+                                    )
+
+                                generatedAchats.forEach {
+                                    viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_add_New(it)
+                                }
+
+                                showGenerateAchatsForPeriodDialog = false
+                            }
+                        ) {
+                            Text("توليد / Confirmer")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showGenerateAchatsForPeriodDialog = false }) {
+                            Text("إلغاء / Annuler")
+                        }
+                    }
+                )
             }
         }
     )

@@ -4,6 +4,7 @@ import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_Ne
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.AddToStockDialog
@@ -26,6 +27,7 @@ import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +37,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -58,6 +62,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -489,7 +495,7 @@ fun View_MainItem(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Move Bon to Last Vent Period",
+                                contentDescription = "Move Bon to Selected Vent Period",
                                 tint = Color.White
                             )
                         }
@@ -982,27 +988,78 @@ fun View_MainItem(
     }
 
     if (showMoveToLastVentPeriodDialog) {
+        val allVentPeriods = remember {
+            repositorysMainGetter.repo14VentPeriode.datasValue
+                .sortedByDescending { it.creationTimestamp }
+        }
+        var selectedVentPeriod by remember {
+            mutableStateOf<M14VentPeriode?>(allVentPeriods.firstOrNull())
+        }
+
         AlertDialog(
             onDismissRequest = { showMoveToLastVentPeriodDialog = false },
-            title = { Text("نقل إلى آخر فترة بيع (Last Vent Period)") },
-            text = { Text("هل تريد نقل هذا البون وكل عملياته إلى آخر فترة بيع؟") },
+            title = { Text("نقل إلى فترة بيع / Move Bon to Sales Period") },
+            text = {
+                Column {
+                    Text("اختر فترة البيع لنقل هذا البون وكل عملياته إليها:")
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    if (allVentPeriods.isEmpty()) {
+                        Text("لا توجد فترات بيع متاحة")
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        ) {
+                            items(allVentPeriods) { period ->
+                                val isSelected = period.keyID == selectedVentPeriod?.keyID
+                                val dateTime = datesHandler.getDateAndTimString(period.creationTimestamp)
+                                val dateStr = "${dateTime.date} ${dateTime.time}"
+                                val periodLabel = "فترة: ${period.get_DebugInfos()} ($dateStr)"
+
+                                Surface(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                        .clickable { selectedVentPeriod = period },
+                                    color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = isSelected,
+                                            onClick = { selectedVentPeriod = period }
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = periodLabel,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             confirmButton = {
                 TextButton(
+                    enabled = selectedVentPeriod != null,
                     onClick = {
-                        val lastVentPeriode = repositorysMainGetter.repo14VentPeriode.datasValue
-                            .maxByOrNull { it.creationTimestamp }
+                        val targetPeriod = selectedVentPeriod ?: return@TextButton
+                        val targetPeriodKeyId = targetPeriod.keyID
+                        val targetPeriodDebugInfos = targetPeriod.get_DebugInfos()
 
-                        val lastVentPeriodKeyId = lastVentPeriode?.keyID
-                            ?: focusedValuesGetter.active_Central_Values.active_M14VentPeriode?.keyID
-                            ?: relative_M8BonVent.parent_M14VentPeriod_KeyId
-                        val lastVentPeriodDebugInfos = lastVentPeriode?.get_DebugInfos()
-                            ?: relative_M8BonVent.parent_M14VentPeriod_DebugInfos
-
-                        // Update the M8BonVent itself to point at the last vent period
+                        // Update the M8BonVent itself to point at the selected vent period
                         repositorysMainSetter.update_M8BonVent(
                             relative_M8BonVent.copy(
-                                parent_M14VentPeriod_KeyId = lastVentPeriodKeyId,
-                                parent_M14VentPeriod_DebugInfos = lastVentPeriodDebugInfos,
+                                parent_M14VentPeriod_KeyId = targetPeriodKeyId,
+                                parent_M14VentPeriod_DebugInfos = targetPeriodDebugInfos,
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                             )
                         )
@@ -1011,11 +1068,12 @@ fun View_MainItem(
                         val bonOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {
                             it.parent_M8BonVent_KeyId == relative_M8BonVent.keyID
                         }
+
                         bonOperations.forEach { opVent ->
                             repositorysMainSetter.repo10OperationVentCouleur.addOrUpdateData(
                                 opVent.copy(
-                                    parent_M14VentPeriod_KeyId = lastVentPeriodKeyId,
-                                    parent_M14VentPeriod_DebugInfos = lastVentPeriodDebugInfos,
+                                    parent_M14VentPeriod_KeyId = targetPeriodKeyId,
+                                    parent_M14VentPeriod_DebugInfos = targetPeriodDebugInfos,
                                     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                 )
                             )
@@ -1023,13 +1081,13 @@ fun View_MainItem(
 
                         Toast.makeText(
                             context,
-                            "تم نقل البون و ${bonOperations.size} عمليات إلى آخر فترة بيع",
+                            "تم نقل البون و ${bonOperations.size} عمليات إلى فترة البيع المختارة",
                             Toast.LENGTH_SHORT
                         ).show()
                         showMoveToLastVentPeriodDialog = false
                     }
                 ) {
-                    Text("نعم / Confirmer")
+                    Text("تأكيد / Confirmer")
                 }
             },
             dismissButton = {

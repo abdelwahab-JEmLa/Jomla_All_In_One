@@ -76,15 +76,6 @@ private fun resolveQualite(expandState: ProduitExpandState) = when {
     expandState.isAnyExpanded -> ImageQualite.min_possible
     else -> ImageQualite.standart
 }
-// Quand affiche_que_c_don_le_panie == true : l'image panier reste en fond (dans tous les
-// cas, presenter expand ou non) avec un cadre à fond blanc semi-transparent par-dessus.
-// Le nom du produit est en haut, toujours grand avec l'animation de couleur en boucle
-// infinie (que la couleur soit le presenter expand ou non). En dessous : le prix de vente
-// en texte secondaire, accompagné des petites images de monnaie (getPrixDrawables)
-// représentant le prix, comme dans le badge de la couleur sélectionnée.
-// (Fix: la couleur panier a maintenant son propre .clickable pour déclencher le toggle
-// d'expansion — avant elle n'était jamais cliquable donc ne pouvait jamais devenir
-// "expanded", ce qui empêchait aussi bien le clic que l'affichage du nom.)
 /** For static images: suppress animation, apply quality/size overrides. */
 private fun RequestBuilder<Drawable>.applyOptimizedImageOptions(
     couleur: M3CouleurProduitInfos,
@@ -373,7 +364,7 @@ private fun PanierNamePriceDisplay(
 
                 if (prixVente > 0.0) {
                     Text(
-                        text = "تبيعها على ${prixVente.toInt()} DA",
+                        text = "تتباع على",
                         color = Color.Black,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = priceFontSize,
@@ -396,6 +387,15 @@ private fun PanierNamePriceDisplay(
                             }
                         }
                     }
+                    Text(
+                        text = "و كيما تحب",
+                        color = Color.Black,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = priceFontSize,
+                        lineHeight = priceFontSize,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
                 }
             }
         }
