@@ -43,7 +43,7 @@ fun ColorImageCard_App4(
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val focusedValuesGetter: FocusedValuesGetter = koinInject()
     val isEditMode = focusedValuesGetter.active_Central_Values.affiche_buttons_lien_unite_couleur_au_couleut_parent
-        || focusedValuesGetter.active_Central_Values.currentApp_Est_Admin
+            || focusedValuesGetter.active_Central_Values.currentApp_Est_Admin
 
     val relative_M1produit = remember(relative_M3CouleurProduitInfos.parentBProduitInfosKeyID) {
         viewModel.active_Datas.list_M1Produit?.find {
@@ -103,6 +103,9 @@ fun ColorImageCard_App4(
                         ) {
                             drawables.forEachIndexed { index, res ->
                                 val shiftLeft = if (drawables.size >= 2) (drawables.size - 1) * 14 else 0
+                                // Coins de monnaie (getPrixDrawables) : même pattern maintenant
+                                // réutilisé dans PanierNamePriceDisplay (Image_Displaye.kt) pour
+                                // représenter le prix des couleurs "panier".
                                 Image(
                                     painter = painterResource(id = res),
                                     contentDescription = null,
