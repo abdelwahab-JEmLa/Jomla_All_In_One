@@ -35,7 +35,7 @@ android {
 
         val appSuffix =  ""
         // if (project.hasProperty("appSuffix")) project.property("appSuffix").toString() else ".c_JomLaElectroLivreurGrossist_PresenterScreen"
-        versionName = "1.14.20$appSuffix featre :click_epande_produit"
+        versionName = "1.15.1$appSuffix featre :count_au_vents"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
