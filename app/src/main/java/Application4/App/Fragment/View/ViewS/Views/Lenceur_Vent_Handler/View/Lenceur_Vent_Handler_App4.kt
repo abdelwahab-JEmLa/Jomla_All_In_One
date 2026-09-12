@@ -159,6 +159,7 @@ fun Lenceur_Vent_Handler_App4(
                         val oldFile = File(localPath, "${fileNameWithoutExtension}.${selectedCouleur.extensionDisponible}")
                         if (oldFile.exists()) {
                             oldFile.delete()
+
                         }
                     }
 
@@ -286,6 +287,11 @@ fun Lenceur_Vent_Handler_App4(
         )
         val newList = (currentList ?: emptyList()) + newOperation
         viewModel.addNew_listM10OperationVentCouleur(newList)
+
+        // Dès qu'une nouvelle vente est lancée sur une couleur, on rattrape automatiquement
+        // toutes les couleurs marquées its_delicate_a_regle_apres qui n'ont pas encore de ligne
+        // de vente sur ce bon (voir A_ViewModel_NewProtoPatterns.lanceVentesPourCouleursDelicates).
+        viewModel.lanceVentesPourCouleursDelicates()
     }
 
     fun handleLenceVent_When_There_Is_Old(

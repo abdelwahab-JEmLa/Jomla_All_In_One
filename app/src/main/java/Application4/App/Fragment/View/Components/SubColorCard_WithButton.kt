@@ -43,6 +43,7 @@ fun SubColorCard_WithButton(
             affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent
         )
 
+
         shouldShowButtons.ifTrue {
             Lenceur_Vent_Handler_App4(
                 modifier = Modifier.fillMaxWidth(),

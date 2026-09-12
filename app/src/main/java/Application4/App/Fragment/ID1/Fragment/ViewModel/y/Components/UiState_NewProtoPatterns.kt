@@ -17,6 +17,7 @@ data class UiState_NewProtoPatterns(
         get() = list_Datas?.m13TarificationInfos ?: emptyList()
 }
 
+
 data class List_Datas(
     val m2Client: List<M2Client> = emptyList(),
     val m14VentPeriode: List<M14VentPeriode> = emptyList(),

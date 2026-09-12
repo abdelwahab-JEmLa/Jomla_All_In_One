@@ -215,6 +215,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
         }
     }
 
+
     selectedProductForCategoryChange?.let { product ->
         CategorySelectionDialog(
             product = product,

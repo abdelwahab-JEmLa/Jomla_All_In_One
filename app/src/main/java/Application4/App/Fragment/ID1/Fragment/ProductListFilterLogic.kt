@@ -16,12 +16,12 @@ object ProductListFilterLogic {
         val productHasStock = list.groupBy { it.parentBProduitInfosKeyID }.mapValues { (_, productColors) ->
             productColors.any { color ->
                 !color.its_couleur_ac_imgVid_presentative_de_tout_les_couleur && (
-                    if (color.c_unite_couleur_de_couleurKey.isNotEmpty()) {
-                        (counts[color.c_unite_couleur_de_couleurKey] ?: 0) > 0
-                    } else {
-                        color.count_Don_Depot > 0
-                    }
-                )
+                        if (color.c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                            (counts[color.c_unite_couleur_de_couleurKey] ?: 0) > 0
+                        } else {
+                            color.count_Don_Depot > 0
+                        }
+                        )
             }
         }
         return list.filter {
@@ -89,6 +89,10 @@ object ProductListFilterLogic {
                 .toSet()
             list.filter { it.keyID in recentColorKeys }
         }
+        Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres ->
+            // Ignore all other display rules: only surface colors flagged as
+            // "delicate a regle apres", regardless of depot/echantillant/etc.
+            list.filter { it.its_delicate_a_regle_apres }
     }
 
     enum class Sort_Order {
@@ -186,19 +190,21 @@ object ProductListFilterLogic {
         list: List<M3CouleurProduitInfos>,
         mode: Filter_Affichage_Mode_Proto,
     ): List<M3CouleurProduitInfos> {
-        if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres) {
+        if (mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres ||
+            mode == Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres
+        ) {
             return list
         }
         val counts = list.associate { it.keyID to it.count_Don_Depot }
         val productHasStock = list.groupBy { it.parentBProduitInfosKeyID }.mapValues { (_, productColors) ->
             productColors.any { color ->
                 !color.its_couleur_ac_imgVid_presentative_de_tout_les_couleur && (
-                    if (color.c_unite_couleur_de_couleurKey.isNotEmpty()) {
-                        (counts[color.c_unite_couleur_de_couleurKey] ?: 0) > 0
-                    } else {
-                        color.count_Don_Depot > 0
-                    }
-                )
+                        if (color.c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                            (counts[color.c_unite_couleur_de_couleurKey] ?: 0) > 0
+                        } else {
+                            color.count_Don_Depot > 0
+                        }
+                        )
             }
         }
         return list.filter {
@@ -226,6 +232,13 @@ object ProductListFilterLogic {
         sort_Order: Sort_Order = Sort_Order.Produits_Grouped_Par_Categories,
         prioritize_cartons: Boolean = true,
     ): List<Pair<M01Produit, List<M3CouleurProduitInfos>>> {
+        // Couleurs_AC_its_delicate_a_regle_apres doit ignorer tous les autres filtres (dépôt,
+        // recherche, etc) : seul filterByMode (qui ne garde que its_delicate_a_regle_apres)
+        // doit s'appliquer. Avant ce fix, filterByQuery restait actif pour ce mode, donc une
+        // recherche texte laissée active pouvait masquer des couleurs delicates dont le nom/produit
+        // ne matchait pas la requête — ainsi que leur produit parent, groupé plus bas dans groupAndSort.
+        val ignoreOtherFilters = mode == Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres
+
         val skipModeFilter =
             mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres &&
                     query.trim().isNotEmpty()
@@ -233,7 +246,7 @@ object ProductListFilterLogic {
         val cleanColors = rawColors?.let { filterLinkedColors(it, mode) }
 
         val filtered = cleanColors
-            ?.let { filterByQuery(it, query, productMap) }
+            ?.let { if (ignoreOtherFilters) it else filterByQuery(it, query, productMap) }
             ?.let { if (skipModeFilter) it else filterByMode(it, mode, ventCouleurs) }
             ?: return emptyList()
 

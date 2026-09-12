@@ -40,6 +40,7 @@ class ActiveDatasFragNewProto {
     /** Search query that filters displayed products by name (case-insensitive). */
     var filter_echatilaten: String by mutableStateOf("")
 
+
     var list_M1Produit: List<M01Produit>? by mutableStateOf(null)
     var list_M03CouleurProduitInfos: List<M3CouleurProduitInfos>? by mutableStateOf(null)
     var list_M16CategorieProduit: List<M16CategorieProduit>? by mutableStateOf(null)

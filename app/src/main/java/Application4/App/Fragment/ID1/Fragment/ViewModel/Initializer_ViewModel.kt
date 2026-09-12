@@ -124,14 +124,23 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         val limit = AViewModel_NewProtoPatterns.active_Datas
             .active_M9Compt?.limite_couleurs_ou_leur_last_achate_est_moin_que_jour
         val mode = AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto
-        val colours = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
-            .filter_passive_datas(limit)
-            .let {
-                if (mode == Filter_Affichage_Mode_Proto.Panie ||
-                    mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
-                ) it
-                else ProductListFilterLogic.filterByDepot(it)
-            }
+        val rawColours = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
+        val colours = if (mode == Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres) {
+            // Ce mode ignore tous les autres filtres (dépôt, recherche, ET la fenêtre de recency
+            // "dernier achat < N jours") : des couleurs delicates non achetées récemment ne doivent
+            // pas disparaître avant même d'atteindre filterByMode.
+            rawColours
+        } else {
+            rawColours
+                .filter_passive_datas(limit)
+                .let {
+                    if (mode == Filter_Affichage_Mode_Proto.Panie ||
+                        mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres ||
+                        mode == Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent
+                    ) it
+                    else ProductListFilterLogic.filterByDepot(it)
+                }
+        }
         AViewModel_NewProtoPatterns.active_Datas.list_M03CouleurProduitInfos = colours
         val products = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()
             .filter_passive(colours.map { it.parentBProduitInfosKeyID }.distinct())
@@ -171,16 +180,26 @@ class Initializer_ViewModel(private val AViewModel_NewProtoPatterns: A_ViewModel
         val limiteCouleursOuLeurLastAchateEstMoinQueJour =
             appCompt?.limite_couleurs_ou_leur_last_achate_est_moin_que_jour
 
-        val colours = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
-            .filter_passive_datas(limiteCouleursOuLeurLastAchateEstMoinQueJour)
-            .let {
-                val mode = AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto
-                if (mode == Filter_Affichage_Mode_Proto.Panie ||
-                    mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres ||
-                    mode == Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent
-                ) it
-                else ProductListFilterLogic.filterByDepot(it)
+        val colours = run {
+            val rawColours = AViewModel_NewProtoPatterns.appDatabase.dao_M03CouleurProduitInfos().getAll()
+            val mode = AViewModel_NewProtoPatterns.active_Datas.filterAffichageMode_Proto
+            if (mode == Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres) {
+                // Ce mode ignore tous les autres filtres (dépôt, recherche, ET la fenêtre de
+                // recency "dernier achat < N jours") : des couleurs delicates non achetées
+                // récemment ne doivent pas disparaître avant même d'atteindre filterByMode.
+                rawColours
+            } else {
+                rawColours
+                    .filter_passive_datas(limiteCouleursOuLeurLastAchateEstMoinQueJour)
+                    .let {
+                        if (mode == Filter_Affichage_Mode_Proto.Panie ||
+                            mode == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres ||
+                            mode == Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent
+                        ) it
+                        else ProductListFilterLogic.filterByDepot(it)
+                    }
             }
+        }
 
         progress(2 / 9f)
         val products = AViewModel_NewProtoPatterns.appDatabase.dao_M1Produit().getAll()

@@ -18,4 +18,7 @@ enum class Filter_Affichage_Mode_Proto(val mais_sort_order : ProductListFilterLo
 
     /** Affiche uniquement les couleurs qui ont une vente de moins d'un mois. */
     Panie_Couleurs_Ac_Vent_Recent(ProductListFilterLogic.Sort_Order.Vents_Creation),
+
+    /** Affiche uniquement les couleurs marquées its_delicate_a_regle_apres, en ignorant tous les autres filtres (dépôt, recherche de mode, etc). */
+    Couleurs_AC_its_delicate_a_regle_apres,
 }

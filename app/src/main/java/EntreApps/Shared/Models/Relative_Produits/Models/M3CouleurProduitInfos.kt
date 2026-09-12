@@ -28,6 +28,7 @@ data class M3CouleurProduitInfos(
 
     var its_delicate_a_regle_apres: Boolean = false,
 
+
     val nomCouleurStrSiSonImageDispo: String = "",
 
 
@@ -223,16 +224,18 @@ data class M3CouleurProduitInfos(
         fun List<M3CouleurProduitInfos>.filter_passive_datas(
             limite_couleurs_ou_leur_last_achate_est_moin_que_jour: Int?,
         ): List<M3CouleurProduitInfos> {
-            val limitMs: Long? =
-                limite_couleurs_ou_leur_last_achate_est_moin_que_jour?.times(24L)
-                    ?.times(60L)?.times(60L)?.times(1_000L)
+            // Pas de limite configurée => pas de restriction (on garde tout), plutôt que de
+            // retomber sur une fenêtre de 0ms qui excluait silencieusement toutes les couleurs.
+            val limitMs: Long = limite_couleurs_ou_leur_last_achate_est_moin_que_jour
+                ?.let { it * 24L * 60L * 60L * 1_000L }
+                ?: return this
             val now = System.currentTimeMillis()
 
             return filter { m3 ->
                 val referenceTimestamp =
                     if (m3.dernier_achant_timeTamp > 0L) m3.dernier_achant_timeTamp
                     else m3.creationTimestamp
-                (now - referenceTimestamp) < (limitMs ?: 0L)
+                (now - referenceTimestamp) < limitMs
             }
         }
     }

@@ -87,6 +87,7 @@ fun PressistatntMainActivityButtons_App4(
         Filter_Affichage_Mode_Proto.Echants_Seulement -> MaterialTheme.colorScheme.primary
         Filter_Affichage_Mode_Proto.Panie,
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> MaterialTheme.colorScheme.tertiary
+        Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres -> MaterialTheme.colorScheme.error
 
         else -> MaterialTheme.colorScheme.surfaceVariant
     }
@@ -95,6 +96,7 @@ fun PressistatntMainActivityButtons_App4(
         Filter_Affichage_Mode_Proto.Echants_Seulement -> Icons.Default.Check
         Filter_Affichage_Mode_Proto.Panie,
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> Icons.Default.ShoppingCart
+        Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres -> Icons.Default.Star
 
         else -> Icons.Default.FilterList
     }
@@ -113,6 +115,7 @@ fun PressistatntMainActivityButtons_App4(
         Filter_Affichage_Mode_Proto.Panie -> "Panier"
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> "Panier + frères"
         Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent -> "Ventes récentes"
+        Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres -> "À régler après"
     }
 
     val uiState by viewModelNewProtoPatterns.uiState.collectAsState()
@@ -228,11 +231,11 @@ fun PressistatntMainActivityButtons_App4(
             },
     ) {
 
-           val listM13tarificationinfos = uiState.list_M13TarificationInfos
+        val listM13tarificationinfos = uiState.list_M13TarificationInfos
 
-           val on_vent_couleurs =
-               activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-           val on_vent_bon = activeDatas.activeOnVent_M8BonVent
+        val on_vent_couleurs =
+            activeDatas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+        val on_vent_bon = activeDatas.activeOnVent_M8BonVent
         val datas = Datas(
             activeDatas.list_M1Produit,
             activeDatas.list_M03CouleurProduitInfos,
@@ -506,6 +509,16 @@ fun PressistatntMainActivityButtons_App4(
                                 isSelected = currentMode == Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent,
                                 onClick = {
                                     setMode(Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent)
+                                    showDropdown = false
+                                }
+                            )
+                            HorizontalDivider()
+                            ModeMenuItem(
+                                label = "Couleurs à régler après",
+                                icon = Icons.Default.Check,
+                                isSelected = currentMode == Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres,
+                                onClick = {
+                                    setMode(Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres)
                                     showDropdown = false
                                 }
                             )

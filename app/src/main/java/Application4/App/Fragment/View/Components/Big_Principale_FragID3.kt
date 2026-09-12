@@ -88,6 +88,7 @@ fun Big_Principale_FragID3(
                     color = Color.White.copy(alpha = 0.95f),
                     shape = RoundedCornerShape(16.dp)
                 )
+
                 .padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
