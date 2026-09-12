@@ -9,6 +9,8 @@ This skill instructs the assistant on how to automatically search for, identify,
 
 Additionally, this skill supports the **`t_models`** sub-trigger, which automatically adds `appDatabase.kt` and the `Models` package to the active restricted context before proceeding with the standard steps.
 
+If **`t_ai`** (or **`t_agy`**) is triggered, the assistant will specifically search for, identify, and fix TODOs located inside the reference directory **`r_aa__GeminiAi_Agent_AGY`** (`app/src/main/java/a__GeminiAi_Agent_AGY`).
+
 If **`t_usage`** is triggered, the assistant will also compute and display the percentage and amount of model tokens consumed so far, and what remains in the current session (out of the calibrated 200,000 token limit) at the end of the execution report.
 
 If **`>clientApp`** or **`>ca`** is triggered, the assistant will automatically redirect and execute the **Client JetPack Fix TODOs & Coding Patterns (t_appClient_chain_todo)** skill to inspect relative/chained TODOs and search coding patterns or files in the external client codebase.
@@ -19,6 +21,8 @@ If **`>clientApp`** or **`>ca`** is triggered, the assistant will automatically 
 
 ## Trigger Phrases
 - "t_"
+- "t_ai"
+- "t_agy"
 - "t_models"
 - "t_usage"
 - ">clientApp"
@@ -78,6 +82,27 @@ At the end of the standard execution steps, estimate the total token count of th
 
 #### 1. Dispatch to Client JetPack Fix TODOs & Coding Patterns Skill
 Immediately redirect execution to the **Client JetPack Fix TODOs & Coding Patterns (t_appClient_chain_todo)** skill. Run its steps to locate outstanding relative/chained TODOs in the client codebase, search coding patterns or files, apply fixes, and report success. Do not execute the standard local codebase TODO steps.
+
+### When "t_ai" (or "t_agy") is triggered:
+
+#### 1. Target the a__GeminiAi_Agent_AGY Directory (r_aa__GeminiAi_Agent_AGY)
+When `t_ai` is triggered, resolve the path for `r_aa__GeminiAi_Agent_AGY` (from `references.json` -> `a__GeminiAi_Agent_AGY`, located at `<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY`) and restrict the TODO search exclusively to this directory.
+
+*Méthode de Scan Recommandée pour `t_ai` :*
+1. Utiliser prioritairement `grep_search` avec le pattern `//\s*TODO|#\s*TODO|<!--\s*TODO` sur `<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY`.
+2. Inspecter également les fichiers de référence et d'historique (ex: `references/hist_copie.md`, scripts `.py`, `.md`).
+3. Filtrer les exemples statiques dans les fichiers `SKILL.md` pour cibler exclusivement les TODOs actifs (marqués par `//<--` ou formulés comme actions concrètes).
+4. Lors de la résolution d'un TODO dans un fichier de référence non-code (ex: `hist_copie.md`), nettoyer intégralement les marqueurs de pointage (`//<--`) et lignes d'instructions temporaires pour restituer le format cible attendu.
+
+*Commande PowerShell de repli (si grep non disponible) :*
+```powershell
+$targetPath = "<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY"
+Get-ChildItem -Recurse -Include "*.kt","*.java","*.xml","*.md","*.txt","*.py","*.bat" $targetPath `
+  | Select-String -Pattern "//\s*TODO|#\s*TODO|<!--\s*TODO" `
+  | Where-Object { $_.Line -notmatch "//TODO\(1 De branche A regle apre\):" } `
+  | Select-Object Filename, LineNumber, Line | Format-Table -AutoSize -Wrap
+```
+Proceed directly with the standard steps to analyze, fix the TODOs found in `a__GeminiAi_Agent_AGY`, and remove the TODO comments without compiling.
 
 ---
 

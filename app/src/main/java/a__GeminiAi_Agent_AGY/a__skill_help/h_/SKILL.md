@@ -128,23 +128,24 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 
 ---
 
-## 📂 3. Gestion des Références de Projets (`ref_<nom>` / `ref_json`)
+## 📂 3. Gestion des Références de Projets (`r_<nom>` / `ref_<nom>` / `ref_json`)
 
 **Répertoire de référence** :
 ```
 C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\b__References_Files\
 ```
 
-Lorsque l'assistant rencontre un mot-clé ou déclencheur sous la forme `ref_<nom>` (par exemple `ref_DevApp`, `ref_agy_c`) ou `ref_json` (équivalent à `references`), il **doit** :
+Lorsque l'assistant rencontre un mot-clé ou déclencheur sous la forme **`r_<nom>`** (par exemple `r_aa__GeminiAi_Agent_AGY`, `r_DevApp`, `r_agy_c`) ou **`ref_<nom>`** (par exemple `ref_DevApp`), cela désigne directement une référence issue de **`ref_json`** (`references.json`), c'est-à-dire **`ref_json_<la_ref>`**. L'assistant **doit** :
 1. Chercher le fichier de configuration dans le répertoire [`b__References_Files`](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/b__References_Files) (ex: `references.json`, ou tout autre fichier de mapping présent dans ce dossier).
 2. Le lire via PowerShell :
    ```powershell
    Get-Content -Path "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\b__References_Files\references.json"
    ```
-3. Rechercher dans `projects` la clé dont la liste `noms` contient le nom demandé, de manière insensible à la casse.
-4. Extraire le chemin `path` spécifié pour ce projet.
-5. Appliquer ce `path` comme répertoire racine cible pour toutes les opérations liées à ce projet.
+3. Rechercher dans `projects` la clé ou la liste `noms` correspondant à `<nom>` (en ignorant le préfixe `r_` ou `ref_`, de manière insensible à la casse).
+4. Extraire le chemin `path` spécifié pour ce projet / référence.
+5. Appliquer ce `path` comme répertoire racine cible pour toutes les opérations liées à cette référence.
 
+> 💡 **Notation raccourcie** : `r_<nom>` = `ref_<nom>` = `ref_json_<nom>`.
 > ⚠️ **Chemin canonique** : Toujours résoudre `ref_json` depuis `b__References_Files\`. Ne pas utiliser l'ancien chemin `antigravity-cli\references.json` sauf si `b__References_Files` est absent.
 
 ---

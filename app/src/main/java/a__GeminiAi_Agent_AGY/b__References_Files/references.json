@@ -60,6 +60,7 @@
     "a__GeminiAi_Agent_AGY": {
       "path": "D:\\AndroidStudioProjects\\ClientJetPack\\app\\src\\main\\java\\a__GeminiAi_Agent_AGY",
       "noms": [
+        "_agy",
         "a__GeminiAi_Agent_AGY",
         "GeminiAi_Agent_AGY",
         "agy_agent",
