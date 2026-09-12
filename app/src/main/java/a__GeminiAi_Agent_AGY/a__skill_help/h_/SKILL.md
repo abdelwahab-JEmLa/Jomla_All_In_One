@@ -63,6 +63,7 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 | [smart_build_router](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/smart_build_router) | `b+1`, `b_+1`, `b+1+z`, `b_v+1+z` | Router de build : redirige vers Tahfid ou Client selon le workspace |
 | [p_v](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/p_v) | `p_v` | Commit avec la version comme message + tag `par_version_instaled` + push |
 | [push_tagged](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/push_tagged) | `push_`, `p_`, `push_taged`, `p_tag=cleanup` | Commit, tag auto-versionné et push distant |
+| [p_skills](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/p_skills) | `p_skills`, `p_sk`, `p_ski`, `revers_p_skill`, `r_p_sk` | Synchronisation bidirectionnelle des skills entre AGY Global et le projet Android (`a__GeminiAi_Agent_AGY`) |
 | [fusion_au_master](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/fusion_au_master) | `fusion_au_master`, `fusion`, `merge_master` | Fusionne la branche courante vers master/main |
 | [fusion_app_tahfide](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/fusion_app_tahfide) | `fusion_tahfid`, `fusion_a_tahfid`, `merge_tahfid` | Fusionne la branche courante vers app_tahfid_quran |
 | [git_branch_todos](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/git_branch_todos) | `b_t`, `gbt_`, `git_branch_todos`, `sub_branch_todo` | Crée une branche Git à partir de la liste des TODOs |
@@ -160,3 +161,4 @@ Si l'utilisateur ajoute un terme ou une requête après le mot-clé (ex: `h_ t_`
    - Les **Triggers**
    - La **Description courte**
 4. Afficher uniquement les compétences correspondantes sous forme de tableau à 3 colonnes (Skill, Triggers, Description). Si aucun match n'est trouvé, afficher un message l'indiquant et lister le catalogue complet.
+

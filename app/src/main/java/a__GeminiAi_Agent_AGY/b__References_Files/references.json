@@ -48,6 +48,14 @@
         "a_parSections",
         "ref_skill_section"
       ]
+    },
+    "hist_copie": {
+      "path": "C:\\Users\\Abou Mohamed\\.gemini\\antigravity-cli\\skills\\Copy_Skills\\copy_skill\\references\\hist_copie.md",
+      "noms": [
+        "hist_copie",
+        "hist_copie_md",
+        "ref_hist_copie"
+      ]
     }
   }
 }
