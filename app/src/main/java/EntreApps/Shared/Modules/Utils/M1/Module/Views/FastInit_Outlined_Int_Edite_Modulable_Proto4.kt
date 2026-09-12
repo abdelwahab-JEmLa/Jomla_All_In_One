@@ -201,6 +201,33 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                     horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End)
                 ) {
                     if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
+                        item {
+                            Card(
+                                modifier = Modifier.clickable(enabled = isAvailable) {
+                                    when {
+                                        start_count == 0 -> {
+                                            if (start_au_premier_click_par_add_outlined) isEditMode = true
+                                            else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
+                                        }
+                                        else -> isEditMode = true
+                                    }
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = containerColor)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
+                                    Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
+                                }
+                            }
+                        }
+                    }
+
+                    if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
                         if (au_depot > 0 || affichable_mem_si_zero_depot) {
                             item {
                                 Card(
@@ -264,32 +291,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                         }
                     }
 
-                    if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
-                        item {
-                            Card(
-                                modifier = Modifier.clickable(enabled = isAvailable) {
-                                    when {
-                                        start_count == 0 -> {
-                                            if (start_au_premier_click_par_add_outlined) isEditMode = true
-                                            else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
-                                        }
-                                        else -> isEditMode = true
-                                    }
-                                },
-                                shape = RoundedCornerShape(20.dp),
-                                colors = CardDefaults.cardColors(containerColor = containerColor)
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
-                                    Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
-                                }
-                            }
-                        }
-                    }
 
                     if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
                         item {

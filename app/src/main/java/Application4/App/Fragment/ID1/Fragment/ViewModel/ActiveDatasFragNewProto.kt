@@ -1,6 +1,7 @@
 package Application4.App.Fragment.ID1.Fragment.ViewModel
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
@@ -29,7 +30,11 @@ class ActiveDatasFragNewProto {
         null
     )
 
-    var filterAffichageMode_Proto: Filter_Affichage_Mode_Proto by mutableStateOf(Filter_Affichage_Mode_Proto.Panie)
+    var filterAffichageMode_Proto: Filter_Affichage_Mode_Proto by mutableStateOf(
+        if (M00CentralParametresOfAllApps.get_Default().itsDevMode)
+            Filter_Affichage_Mode_Proto.Tablette_Et_Echants else
+            Filter_Affichage_Mode_Proto.Panie
+    )
     var filter_relode_tiger: Int by mutableStateOf(0)
 
     /** Search query that filters displayed products by name (case-insensitive). */

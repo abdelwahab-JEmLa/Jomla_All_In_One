@@ -60,7 +60,9 @@ data class ActiveCentralValues(
     val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod: List<M8BonVent>? = null,
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------------
-    val affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    val affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean =
+        M00CentralParametresOfAllApps.get_Default().itsDevMode
+        ,
 
     val click_On_Marque: Click_On_Marque = Click_On_Marque.Standart,
     val actuelle_Ciblage_MaxPosition: Int = 1,
