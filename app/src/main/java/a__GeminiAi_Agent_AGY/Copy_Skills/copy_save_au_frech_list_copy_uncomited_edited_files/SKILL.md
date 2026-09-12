@@ -26,7 +26,7 @@ C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\Copy_Skills\copy_skill\refe
 ```
 
 ---
-                                                               /
+                                                               
 ## 🚀 Étapes d'exécution
 
 ### Étape 1 — Détecter la racine Git du projet actif

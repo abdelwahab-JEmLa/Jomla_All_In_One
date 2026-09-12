@@ -92,3 +92,8 @@
 ## ProductListFilterLogic — Comportement du `classement`
 - Le paramètre `classement` (map `keyID → index`) dans `groupAndSort()` représente l'ordre de la **session en cours**. Il doit être ignoré sur le PresenterScreen pour éviter qu'un classement résiduel de session antérieure ne perturbe l'ordre par groupes de catégories.
 - Quand `prioritize_cartons = false`, le tri final est : **catalogue.position → catégorie.positionDouble uniquement**, sans `.thenBy { classement[...] }`.
+
+## Windows PowerShell Clipboard File Drop Compatibility
+- Under Windows PowerShell 5.1, `Set-Clipboard -Path` is not supported and throws a parameter matching error.
+- Always use the .NET `[System.Windows.Forms.Clipboard]::SetFileDropList($fileCollection)` method with `Add-Type -AssemblyName System.Windows.Forms` when placing file paths onto the Windows clipboard.
+

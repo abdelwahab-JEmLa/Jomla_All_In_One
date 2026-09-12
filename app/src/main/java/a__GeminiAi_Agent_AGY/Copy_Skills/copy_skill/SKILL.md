@@ -9,9 +9,11 @@ description: Use this skill to automatically copy, bundle, and format all siblin
 - "cop_last"
 - "cop_"
 - "ca_"
-- "ca+t"
+- "ca+t"       //<--
+//TODO(1): fait que ca ref au t_ skill pas la pene de mete le text au his_copie 
 - "dc_"
-
+     //<--
+     //TODO(1): le hist copie doit etre un tree affiche les files 
 # Skill - Copy to Clipboard & Backup (copy_skill)
 
 This skill instructs the assistant on how to automatically copy, bundle, and format all sibling files and subdirectories of a specified reference package. It handles both direct copying to the Windows Clipboard and bundling into a text backup file (`hist_copie.md`).
