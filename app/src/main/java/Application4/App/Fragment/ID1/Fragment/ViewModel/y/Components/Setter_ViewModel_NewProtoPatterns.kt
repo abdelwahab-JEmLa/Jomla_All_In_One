@@ -137,17 +137,6 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
         upsert_M10OperationVentCouleur(updatedList)
     }
 
-    fun update_listM10OperationVentCouleur_FilteredBy_activeM8BonVent(
-        updatedList: List<M10OperationVentCouleur>?,
-    ) {
-        val updatedMap = updatedList?.associateBy { it.keyID } ?: emptyMap()
-        vm.active_Datas.list_M10OperationVentCouleur =
-            vm.active_Datas.list_M10OperationVentCouleur?.map { existing ->
-                updatedMap[existing.keyID] ?: existing
-            }
-        upsert_M10OperationVentCouleur(updatedList)
-    }
-
     /**
      * Removes [op] from in-memory state and propagates the delete to DAO + Firebase.
      * Use this when quantity drops to 0 — do NOT route through [update_listM10OperationVentCouleur],

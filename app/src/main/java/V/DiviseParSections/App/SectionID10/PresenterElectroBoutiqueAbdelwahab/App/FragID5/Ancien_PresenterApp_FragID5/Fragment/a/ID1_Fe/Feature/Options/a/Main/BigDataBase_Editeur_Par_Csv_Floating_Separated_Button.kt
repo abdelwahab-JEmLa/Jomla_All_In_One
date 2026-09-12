@@ -25,10 +25,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AllInbox
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.PlaylistAddCheck
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -72,6 +75,9 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     on_vent_key: String = "",
     onClick_Lence_Capture: (() -> Unit)? = null,
     onClick_Affiche_Pub: () -> Unit = {},
+    onClick_Lence_Ventes_Delicates: () -> Unit = {},
+    onClick_Activer_Delicates_Pour_Ventes_Actives: () -> Unit = {},
+    onClick_Desactiver_Delicates_Pour_Ventes_Actives: () -> Unit = {},
     context: Context = LocalContext.current,
     appDatabase: AppDatabase,
     viewModel: FeatureID1_ViewModel = viewModel(
@@ -169,6 +175,113 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                 Icon(
                                     imageVector = if (affiche_buttons_lien_unite_couleur_au_couleut_parent) Icons.Default.Edit else Icons.Default.EditOff,
                                     contentDescription = "Edit Switch",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp),
+                                )
+                            }
+                        }
+                    }
+                    // ── Lancer ventes délicates ──────────────────────────────
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text = "Ventes délicates",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0xFF2E7D32).copy(alpha = 0.92f))
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                        )
+                        Box {
+                            FloatingActionButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onClick_Lence_Ventes_Delicates()
+                                },
+                                modifier = Modifier.size(46.dp),
+                                containerColor = Color(0xFF2E7D32),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(4.dp),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PlaylistAddCheck,
+                                    contentDescription = "Lancer ventes délicates",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp),
+                                )
+                            }
+                        }
+                    }
+
+                    // ── Activer délicates (pour chaque vente active) ──────────
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text = "Activer délicates",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0xFF00838F).copy(alpha = 0.92f))
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                        )
+                        Box {
+                            FloatingActionButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onClick_Activer_Delicates_Pour_Ventes_Actives()
+                                },
+                                modifier = Modifier.size(46.dp),
+                                containerColor = Color(0xFF00838F),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(4.dp),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = "Activer délicates",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp),
+                                )
+                            }
+                        }
+                    }
+
+                    // ── Désactiver délicates (pour chaque vente active) ───────
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text = "Désactiver délicates",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0xFFB71C1C).copy(alpha = 0.92f))
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                        )
+                        Box {
+                            FloatingActionButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onClick_Desactiver_Delicates_Pour_Ventes_Actives()
+                                },
+                                modifier = Modifier.size(46.dp),
+                                containerColor = Color(0xFFB71C1C),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(4.dp),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Cancel,
+                                    contentDescription = "Désactiver délicates",
                                     tint = Color.White,
                                     modifier = Modifier.size(22.dp),
                                 )

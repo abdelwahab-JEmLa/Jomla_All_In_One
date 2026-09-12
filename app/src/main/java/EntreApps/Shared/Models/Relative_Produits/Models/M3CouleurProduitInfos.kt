@@ -30,6 +30,7 @@ data class M3CouleurProduitInfos(
 
     val nomCouleurStrSiSonImageDispo: String = "",
 
+
     var affiche_que_c_don_le_panie : Boolean = false,
 
     var its_couleur_ac_imgVid_presentative_de_tout_les_couleur: Boolean = false,
@@ -82,8 +83,9 @@ data class M3CouleurProduitInfos(
         "parentId1ProduitInfosDebugName" to parentId1ProduitInfosDebugName,
         "indexCouleurDansAncienProto" to indexCouleurDansAncienProto,
         "extensionDisponible" to extensionDisponible,
-
         "dernier_achant_timeTamp" to dernier_achant_timeTamp,
+
+        "its_delicate_a_regle_apres" to its_delicate_a_regle_apres,
     )
 
     fun get_DebugsInfos(): String {

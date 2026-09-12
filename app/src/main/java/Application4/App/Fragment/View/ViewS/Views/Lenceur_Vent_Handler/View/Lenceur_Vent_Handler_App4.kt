@@ -308,17 +308,13 @@ fun Lenceur_Vent_Handler_App4(
         val currentList =
             viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
         val currentOp =
-            currentList?.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
+            currentList.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
 
-        // When quantity drops to 0 we delete rather than update:
-        // update_listM10OperationVentCouleur only maps/replaces existing entries and
-        // would silently keep the filtered-out item alive in DAO + Firebase.
         when {
             newQuantity == 0 && currentOp != null -> {
                 viewModel.delete_M10OperationVentCouleur(currentOp)
             }
             newQuantity == 0 -> {
-                // Rien à faire : pas d'opération existante et quantité = 0
             }
             currentOp == null -> handleLenceVent_WhenNew(newQuantity, currentList)
             else -> handleLenceVent_When_There_Is_Old(newQuantity, currentOp, currentList)

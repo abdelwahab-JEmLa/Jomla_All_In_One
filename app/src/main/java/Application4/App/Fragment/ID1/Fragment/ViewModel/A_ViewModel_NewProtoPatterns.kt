@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 
+
 class A_ViewModel_NewProtoPatterns(
     private val context: Context,
     val appDatabase: AppDatabase,
@@ -160,6 +161,75 @@ class A_ViewModel_NewProtoPatterns(
 
     fun update_M13TarificationInfos(tariff: M13TarificationInfos) =
         updater.update_M13TarificationInfos(tariff)
+
+    /**
+     * TODO(1) [BigDataBase_Editeur_Par_Csv_Floating_Separated_Button] /
+     * TODO(2.C Relative Au Todo(1)) [Lenceur_Vent_Handler_App4]:
+     * pour chaque [M3CouleurProduitInfos] marquée [M3CouleurProduitInfos.its_delicate_a_regle_apres],
+     * crée une vente (M10OperationVentCouleur) de quantité 1 sur le bon de vente actif,
+     * si cette couleur n'a pas déjà une ligne de vente dessus.
+     *
+     * Appelée à la fois manuellement (bouton du menu flottant) et automatiquement
+     * dès qu'une nouvelle vente est lancée sur une couleur (voir handleLenceVent_WhenNew).
+     */
+    fun lanceVentesPourCouleursDelicates() {
+        val currentBonVent = active_Datas.activeOnVent_M8BonVent ?: return
+        val currentList = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+        val delicateCouleurs = active_Datas.list_M03CouleurProduitInfos
+            ?.filter { it.its_delicate_a_regle_apres }
+            ?: return
+
+        val newTariff = M13TarificationInfos.get_default()
+            .copy(typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable)
+
+        val newOperations = delicateCouleurs
+            .map { couleur ->
+                M10OperationVentCouleur.get_Default().copy(
+                    creationTimestamps = System.currentTimeMillis(),
+                    quantity = 1,
+                    prix_de_Vent_entre_directement_NewProto = newTariff.prixCurrency,
+                    parentM13TarificationKeyID = "Prix_Progressive_Editable Non Saved",
+                    parentM13TarificationDebugInfos = newTariff.getDebugInfos(),
+                    parent_M1Produit_KeyId = couleur.parentBProduitInfosKeyID,
+                    parent_M1Produit_DebugInfos = "par.produit ${couleur.parentId1ProduitInfosDebugName}",
+                    parent_M3CouleurProduit_KeyID = couleur.keyID,
+                    parent_M3CouleurProduit_DebugInfos = couleur.get_DebugsInfos(),
+                    parent_M8BonVent_KeyId = currentBonVent.keyID,
+                    parent_M8BonVent_DebugInfos = currentBonVent.get_DebugInfos(),
+                    parent_M2Client_KeyID = currentBonVent.parent_M2Client_KeyID,
+                    typeTarificationEnumT2 = newTariff.typeChoisi,
+                    its_created_in_working_for_wholesaler = active_Datas.currentApp_ItsWorkChezGrossisst
+                )
+            }
+
+            update_listM10OperationVentCouleur(newOperations)
+    }
+
+    /**
+     * Pour chaque vente (M10OperationVentCouleur) actuellement active sur le bon courant,
+     * active ou désactive [M3CouleurProduitInfos.its_delicate_a_regle_apres] sur la couleur
+     * correspondante. [delicate] = true pour activer, false pour désactiver (l'inverse).
+     */
+    fun set_New_DelicatePourAll(delicate: Boolean) {
+        val couleurs = active_Datas.list_M03CouleurProduitInfos ?: return
+        couleurs
+            .forEach { couleur ->
+                update_m3couleur(couleur.copy(its_delicate_a_regle_apres = delicate))
+            }
+    }
+
+    fun setDelicatePourCouleursDesVentesActives(delicate: Boolean) {
+        val currentList = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+        val couleurs = active_Datas.list_M03CouleurProduitInfos ?: return
+
+        currentList
+            .mapNotNull { op -> couleurs.find { it.keyID == op.parent_M3CouleurProduit_KeyID } }
+            .distinctBy { it.keyID }
+            .filter { it.its_delicate_a_regle_apres != delicate }
+            .forEach { couleur ->
+                update_m3couleur(couleur.copy(its_delicate_a_regle_apres = delicate))
+            }
+    }
 
     fun insert_M16CategorieProduit(new: M16CategorieProduit) =
         updater.insert_M16CategorieProduit(new)

@@ -187,6 +187,13 @@ fun A_Compact_Presentoire_App_Produits_App4(
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)
 
             FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
+                onClick_Lence_Ventes_Delicates = { viewModelNewProtoPatterns.lanceVentesPourCouleursDelicates() },
+                onClick_Activer_Delicates_Pour_Ventes_Actives = {
+                    viewModelNewProtoPatterns.set_New_DelicatePourAll(true)
+                },
+                onClick_Desactiver_Delicates_Pour_Ventes_Actives = {
+                    viewModelNewProtoPatterns.set_New_DelicatePourAll(false)
+                },
                 appDatabase = viewModelNewProtoPatterns.appDatabase,
                 onClick_Affiche_Pub = {
                     val bool = !affiche_pub_abdelwahab_electro_gro_store
