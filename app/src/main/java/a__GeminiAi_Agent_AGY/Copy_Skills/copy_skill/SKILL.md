@@ -1,4 +1,4 @@
----
+﻿---
 name: copy_skill
 description: Use this skill to automatically copy, bundle, and format all sibling files and subdirectories of a specified reference package. Trigger this whenever the user asks to copy files to the clipboard, trigger `c_`, `cl_`, `cc_`, `cop_last`, `cop_`, `ca_`, `ca+t`, `dc_`, or explicitly mentions backing up files from clipboard or copying files to a prompt.
 ---
@@ -44,9 +44,9 @@ Toute modification (création, mise à jour ou suppression) de `hist_copie.md` d
 
 ### 2. Action: Copy to Clipboard (`cl_`, `cc_`, `cop_last`, `cop_`, `ca+t`)
 
-- **Trigger `ca+t` (Append t_ Skill Reference)**: Si le trigger contient `+t` (ex: `ca+t`), en plus du comportement normal `ca_` (append des fichiers ciblés), appender **automatiquement** la référence cliquable du skill `t_` à la fin des deux fichiers `hist_copie.md` (Global & r_ai) :
+- **Trigger `ca+t` (Append Simple_Todo Reference)**: Si le trigger contient `+t` (ex: `ca+t`), en plus du comportement normal `ca_` (append des fichiers ciblés), appender **automatiquement** la référence cliquable de `Simple_Todo.md` à la fin des deux fichiers `hist_copie.md` (Global & r_ai) :
   ```markdown
-  ### 📄 [t_ SKILL.md](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/Todo_Skills/t_/SKILL.md)
+  ### 📝 [Simple_Todo.md](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/b__References_Files/Simple_Todo.md)
   ```
 
 - **Placer dans le Presse-papiers Windows** :
