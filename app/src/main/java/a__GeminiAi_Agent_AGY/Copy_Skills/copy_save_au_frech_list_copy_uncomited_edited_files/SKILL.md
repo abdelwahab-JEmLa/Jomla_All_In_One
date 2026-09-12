@@ -55,11 +55,14 @@ Write-Host "Projet Git détecté: $projectRoot"
 
 **Extensions exclues (binaires)** : `.apk`, `.zip`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.so`, `.aar`, `.jar`, `.webp`, `.db`, `.keystore`
 
+**Fichiers exclus** : `hist_copie.md`, `list_copied_files`
+
 **Répertoires exclus** : `build/`, `.gradle/`, `.git/`, `node_modules/`
 
 ```powershell
 $excludeExtensions = @('.apk','.zip','.png','.jpg','.jpeg','.gif','.so','.aar','.jar','.webp','.db','.keystore')
 $excludeDirs = @('build', '.gradle', '.git', 'node_modules')
+$excludeFiles = @('hist_copie.md', 'list_copied_files')
 
 $gitLines = git -C $projectRoot status --short --porcelain 2>&1
 $uncommittedFiles = @()
@@ -74,6 +77,10 @@ foreach ($line in $gitLines) {
     }
 
     $absPath = Join-Path $projectRoot $filePart
+
+    # Filtrer fichiers exclus (ex: hist_copie.md)
+    $leaf = Split-Path $absPath -Leaf
+    if ($leaf -in $excludeFiles) { continue }
 
     # Filtrer répertoires exclus
     $skip = $false
