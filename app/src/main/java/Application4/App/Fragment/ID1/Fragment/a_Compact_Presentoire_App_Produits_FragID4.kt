@@ -303,6 +303,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
                         )
                     )
                 },
+                compact_buttons = active_Central_Values.compact_button_au_edite_base_donne_options,
             )
         }
     }

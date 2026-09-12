@@ -156,6 +156,8 @@ fun But1_OnClickMode(
                     }
                     // Dropdown items below update the active click mode
                     // (compt.click_On_Marque) and trigger a map reload.
+                    //<--
+
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
@@ -190,6 +192,39 @@ fun But1_OnClickMode(
                             },
                             onClick = {
                                 viewModel.passAllCibleClientsForCurrentVentPeriod()
+                                expanded = false
+                            },
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.LocalShipping,
+                                        contentDescription = null,
+                                        tint = Color(0xFF747680),
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = "Livrer tous les confirmés",
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 14.sp
+                                        )
+                                        Text(
+                                            text = "Passe les clients 'Passé' au statut 'Livré'",
+                                            fontSize = 11.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                viewModel.passAllConfirmedClientsToLivre()
                                 expanded = false
                             },
                             modifier = Modifier.padding(horizontal = 4.dp)

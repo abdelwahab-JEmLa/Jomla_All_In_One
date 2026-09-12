@@ -274,6 +274,7 @@ class MapClientsViewModel(
         viewModelScope.launch {
             val currentClients = repo2Client.datasState.value
             var count = 0
+
             currentClients.forEach { client ->
                 val lastTrx = getLastTransaction(client)
                 if (lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible) {
@@ -292,6 +293,34 @@ class MapClientsViewModel(
             android.widget.Toast.makeText(
                 context,
                 "Mis à jour $count clients en 'Passé'",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    fun passAllConfirmedClientsToLivre() {
+        viewModelScope.launch {
+            val currentClients = repo2Client.datasState.value
+            var count = 0
+
+            currentClients.forEach { client ->
+                val lastTrx = getLastTransaction(client)
+                if (lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME) {
+                    val foundOrDefault = get_Found_Or_Default_M8BonVent(
+                        aCentralFacade = aCentralFacade,
+                        relative_M2Client = client,
+                        etateActuellementEst = M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI,
+                    )
+                    if (foundOrDefault != null) {
+                        aCentralFacade.repositorysMainSetter.addNew_M8BonVent(foundOrDefault.default_If_No_Found)
+                        count++
+                    }
+                }
+            }
+            mapReloadTrigger++
+            android.widget.Toast.makeText(
+                context,
+                "Mis à jour $count clients en 'Livré'",
                 android.widget.Toast.LENGTH_SHORT
             ).show()
         }
