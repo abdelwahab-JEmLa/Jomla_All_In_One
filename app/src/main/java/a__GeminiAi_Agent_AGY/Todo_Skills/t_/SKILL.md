@@ -89,7 +89,7 @@ Immediately redirect execution to the **Client JetPack Fix TODOs & Coding Patter
 When `t_ai` is triggered, resolve the path for `r_aa__GeminiAi_Agent_AGY` (from `references.json` -> `a__GeminiAi_Agent_AGY`, located at `<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY`) and restrict the TODO search exclusively to this directory.
 
 *Méthode de Scan Recommandée pour `t_ai` :*
-1. Utiliser prioritairement `grep_search` avec le pattern `//\s*TODO|#\s*TODO|<!--\s*TODO` sur `<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY`.
+1. **Recherche directe sans pré-lecture** : Ne pas inspecter ni lire préalablement les fichiers `SKILL.md` des autres skills. Lancer immédiatement `grep_search` avec le pattern `//\s*TODO|#\s*TODO|<!--\s*TODO` restreint au dossier `<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY`.
 2. Inspecter également les fichiers de référence et d'historique (ex: `references/hist_copie.md`, scripts `.py`, `.md`).
 3. Filtrer les exemples statiques dans les fichiers `SKILL.md` pour cibler exclusivement les TODOs actifs (marqués par `//<--` ou formulés comme actions concrètes).
 4. Lors de la résolution d'un TODO dans un fichier de référence non-code (ex: `hist_copie.md`), nettoyer intégralement les marqueurs de pointage (`//<--`) et lignes d'instructions temporaires pour restituer le format cible attendu.

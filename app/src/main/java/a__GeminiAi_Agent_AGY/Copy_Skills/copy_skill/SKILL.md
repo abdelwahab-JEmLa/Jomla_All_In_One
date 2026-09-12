@@ -2,6 +2,15 @@
 name: copy_skill
 description: Use this skill to automatically copy, bundle, and format all sibling files and subdirectories of a specified reference package. Trigger this whenever the user asks to copy files to the clipboard, trigger `c_`, `cl_`, `cc_`, `cop_last`, `cop_`, `ca_`, `dc_`, or explicitly mentions backing up files from clipboard or copying files to a prompt.
 ---
+## Trigger Phrases
+- "c_"
+- "cl_"
+- "cc_"
+- "cop_last"
+- "cop_"
+- "ca_"
+- "ca+t"
+- "dc_"
 
 # Skill - Copy to Clipboard & Backup (copy_skill)
 
