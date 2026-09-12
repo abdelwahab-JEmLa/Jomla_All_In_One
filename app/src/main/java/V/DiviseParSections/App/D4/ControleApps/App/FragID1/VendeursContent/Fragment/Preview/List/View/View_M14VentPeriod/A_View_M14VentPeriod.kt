@@ -4,6 +4,7 @@ import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -112,6 +113,7 @@ fun View_M14VentPeriod(
             "saved_clients_credit" -> relative_M14VentPeriode.copy(saved_totale_credits_clients = newValue)
             "saved_fournisseurs_credit" -> relative_M14VentPeriode.copy(saved_sums_fournisseurs_Short_Term = newValue)
             "saved_cache_au_coffre" -> relative_M14VentPeriode.copy(saved_cache_au_coffre = newValue)
+            "saved_confirmed_commant_va_arrive" -> relative_M14VentPeriode.copy(saved_confirmed_commant_va_arrive = newValue)
             "saved_balance_par_chiffre" -> relative_M14VentPeriode.copy(save_balence_par_chiffre = newValue)
             else -> relative_M14VentPeriode
         }
@@ -190,7 +192,24 @@ fun View_M14VentPeriod(
         )
     }
 
-    val dynamicBalance = totalDepotStockValue + totalClientsCredit - totalFournisseursCredit
+    // Total des commandes confirmées dont le montant va arriver — voir
+    // M8BonVent.calculateTotalCommandesConfirmees pour la logique complète
+    // (partagée avec But1_Floating_ClientsListDialog).
+    val totalCommandesConfirmeesVaArrive = remember(
+        repositorysMainGetter.repo2Client.datasValue,
+        repositorysMainGetter.repo8BonVent.datasValue,
+        repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+        repositorysMainGetter.repo13TarificationInfos.datasValue
+    ) {
+        M8BonVent.calculateTotalCommandesConfirmees(
+            clients = repositorysMainGetter.repo2Client.datasValue,
+            bons = repositorysMainGetter.repo8BonVent.datasValue,
+            vents = repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+            tariffs = repositorysMainGetter.repo13TarificationInfos.datasValue
+        )
+    }
+
+    val dynamicBalance = totalDepotStockValue + totalClientsCredit - totalFournisseursCredit + totalCommandesConfirmeesVaArrive
 
 
     if (showDeleteDialog) {
@@ -424,6 +443,15 @@ fun View_M14VentPeriod(
                     savedValue = relative_M14VentPeriode.saved_cache_au_coffre,
                     dynamicColor = MaterialTheme.colorScheme.secondary
                 )
+                // Commandes confirmées dont le montant va arriver — voir le
+                // calcul de totalCommandesConfirmeesVaArrive ci-dessus.
+                ResumeRow(
+                    label = "Commandes confirmées à venir:",
+                    dynamic = totalCommandesConfirmeesVaArrive,
+                    savedKey = "saved_confirmed_commant_va_arrive",
+                    savedValue = relative_M14VentPeriode.saved_confirmed_commant_va_arrive,
+                    dynamicColor = Color(0xFF00897B)
+                )
 
                 Divider(modifier = Modifier.padding(vertical = 4.dp))
 
@@ -477,6 +505,7 @@ fun View_M14VentPeriod(
                                 saved_produits_au_depot = totalDepotStockValue,
                                 saved_totale_credits_clients = totalClientsCredit,
                                 saved_sums_fournisseurs_Short_Term = totalFournisseursCredit,
+                                saved_confirmed_commant_va_arrive = totalCommandesConfirmeesVaArrive,
                                 save_balence_par_chiffre = dynamicBalance
                             )
                         )

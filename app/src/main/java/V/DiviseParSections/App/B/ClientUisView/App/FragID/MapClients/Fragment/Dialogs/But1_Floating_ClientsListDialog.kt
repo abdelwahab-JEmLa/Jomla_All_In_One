@@ -164,6 +164,20 @@ fun But1_Floating_ClientsListDialog(
         ignoredCreditMontantByClientKeyId.values.sum()
     }
 
+    val repo10Vents = viewModel.getter.repo10OperationVentCouleur.datasValue
+
+    // Total des commandes confirmées dont le montant va arriver — voir
+    // M8BonVent.calculateTotalCommandesConfirmees pour la logique complète
+    // (partagée avec A_View_M14VentPeriod).
+    val totalCommandesConfirmees = remember(allClients, repo8Bons, repo10Vents) {
+        M8BonVent.calculateTotalCommandesConfirmees(
+            clients = allClients,
+            bons = repo8Bons,
+            vents = repo10Vents,
+            tariffs = viewModel.getter.repo13TarificationInfos.datasValue
+        )
+    }
+
     val isGlobalModeFilter = currentFilterMode in listOf(
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
         MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
@@ -275,6 +289,14 @@ fun But1_Floating_ClientsListDialog(
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color.Gray,
+                            )
+                        }
+                        if (totalCommandesConfirmees > 0.0) {
+                            Text(
+                                text = "Total commandes confirmées : ${"%.2f".format(totalCommandesConfirmees)} DA",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary,
                             )
                         }
                     }
@@ -457,7 +479,6 @@ fun But1_Floating_ClientsListDialog(
                             }
                         }
                     }
-
                     Box {
                         TextButton(onClick = { filterMenuExpanded = true }) {
                             Icon(
@@ -618,7 +639,18 @@ fun But1_Floating_ClientsListDialog(
                                         fragmentNavigationHandler_NewProto = fragmentNavigationHandler_NewProto,
                                         list_M13TarificationInfos = list_M13TarificationInfos,
                                     )
-                                    onDismiss()
+                                    // Marck_Ferme / Passe_Client / Livre_Client ne font que
+                                    // fixer un statut sur le client (comme les modes
+                                    // Set_*/Toggle_Client_De_Jamale plus haut) : on garde le
+                                    // dialogue ouvert pour enchaîner sur d'autres clients.
+                                    val modesSansFermeture = setOf(
+                                        ActiveCentralValues.Click_On_Marque.Marck_Ferme,
+                                        ActiveCentralValues.Click_On_Marque.Passe_Client,
+                                        ActiveCentralValues.Click_On_Marque.Livre_Client,
+                                    )
+                                    if (currentMode !in modesSansFermeture) {
+                                        onDismiss()
+                                    }
                                 },
                                 onCenterOnMap = {
                                     mapView.controller.animateTo(GeoPoint(client.latitude, client.longitude))

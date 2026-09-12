@@ -11,6 +11,8 @@ import android.os.VibratorManager
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,12 +23,14 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warehouse
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -105,6 +109,7 @@ private fun MediaPickerBar(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Affiche_Vent_Et_Couleur_Relatives(
     start_count: Int,
@@ -141,15 +146,49 @@ fun Affiche_Vent_Et_Couleur_Relatives(
     val context = LocalContext.current
 
     var isEditMode by remember { mutableStateOf(false) }
+    var flow_row by remember { mutableStateOf(true) }
     var quantityInput by remember(start_count) { mutableStateOf("") }
     var isEditDepotMode by remember { mutableStateOf(false) }
     var depotInput by remember(au_depot) { mutableStateOf("") }
+    var isEditingNomCouleur by remember { mutableStateOf(false) }
+    var nomCouleurInput by remember(relative_couleur?.nomCouleurStrSiSonImageDispo) {
+        mutableStateOf(relative_couleur?.nomCouleurStrSiSonImageDispo ?: "")
+    }
     val mode_c_unite_actif = c_unite_couleur_de_couleurKey.isNotEmpty() || is_this_color_selected_as_parent_for_link
     val focusRequester = remember { FocusRequester() }
     val depotFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(isEditMode) { if (isEditMode) focusRequester.requestFocus() }
     LaunchedEffect(isEditDepotMode) { if (isEditDepotMode) depotFocusRequester.requestFocus() }
+
+    if (isEditingNomCouleur && relative_couleur != null && on_update_m3couleur != null) {
+        AlertDialog(
+            onDismissRequest = { isEditingNomCouleur = false },
+            title = { Text("Nom de la couleur") },
+            text = {
+                OutlinedTextField(
+                    value = nomCouleurInput,
+                    onValueChange = { nomCouleurInput = it },
+                    singleLine = true,
+                    label = { Text("Nom") },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        on_update_m3couleur(relative_couleur.copy(nomCouleurStrSiSonImageDispo = nomCouleurInput))
+                        isEditingNomCouleur = false
+                    })
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    on_update_m3couleur(relative_couleur.copy(nomCouleurStrSiSonImageDispo = nomCouleurInput))
+                    isEditingNomCouleur = false
+                }) { Text("Valider") }
+            },
+            dismissButton = {
+                TextButton(onClick = { isEditingNomCouleur = false }) { Text("Annuler") }
+            }
+        )
+    }
 
     val horizontalPadding = if (compact_taille) 8.dp else 12.dp
     val verticalPadding = if (compact_taille) 4.dp else 6.dp
@@ -199,13 +238,10 @@ fun Affiche_Vent_Et_Couleur_Relatives(
 
         if (show_depot_card_on_top_in_flow_row) {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                LazyRow(
-                    modifier = modifier,
-                    horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End)
-                ) {
+                val rowItems = buildList<@Composable () -> Unit> {
                     if (on_update_m3couleur != null && relative_couleur != null && is_admin) {
                         val its_delicate_a_regle_apres = relative_couleur.its_delicate_a_regle_apres
-                        item {
+                        add {
                             Card(
                                 modifier = Modifier.clickable {
                                     on_update_m3couleur(relative_couleur.copy(its_delicate_a_regle_apres = !its_delicate_a_regle_apres))
@@ -225,9 +261,28 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                             }
                         }
                     }
-
-                    if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
-                        item {
+                    if (on_update_m3couleur != null && relative_couleur != null && is_admin) {
+                        add {
+                            Card(
+                                modifier = Modifier.clickable {
+                                    nomCouleurInput = relative_couleur.nomCouleurStrSiSonImageDispo
+                                    isEditingNomCouleur = true
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                            ) {
+                                Text(
+                                    text = "✏️",
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    style = textStyle,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                    if ((!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) || start_count > 0) {
+                        add {
                             Card(
                                 modifier = Modifier.clickable(enabled = isAvailable) {
                                     when {
@@ -253,9 +308,9 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                         }
                     }
 
-                    if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
+                    if ((!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) || au_depot > 0) {
                         if (au_depot > 0 || affichable_mem_si_zero_depot) {
-                            item {
+                            add {
                                 Card(
                                     modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
                                     shape = RoundedCornerShape(20.dp),
@@ -275,7 +330,7 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                     }
                     if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
                         if (on_toggle_affiche_panie != null) {
-                            item {
+                            add {
                                 Card(
                                     modifier = Modifier.clickable { on_toggle_affiche_panie() },
                                     shape = RoundedCornerShape(20.dp),
@@ -296,7 +351,7 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                     }
                     val showStar = affiche_buttons_lien_unite_couleur_au_couleut_parent || its_couleur_ac_imgVid_presentative_de_tout_les_couleur
                     if (on_toggle_presentative != null && is_admin && showStar) {
-                        item {
+                        add {
                             Card(
                                 modifier = Modifier.clickable {
                                     on_toggle_presentative()
@@ -319,10 +374,10 @@ fun Affiche_Vent_Et_Couleur_Relatives(
 
 
                     if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
-                        item {
+                        add {
                             MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
                         }
-                        item {
+                        add {
                             Card(
                                 modifier = Modifier.clickable {
                                     if (c_unite_couleur_de_couleurKey.isNotEmpty()) on_set_c_unite_key("") else on_pour_mode_selection_parent_couleur()
@@ -345,7 +400,7 @@ fun Affiche_Vent_Et_Couleur_Relatives(
 
                     val showValidationButton = mode_c_unite_actif || (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link)
                     if (showValidationButton && is_admin) {
-                        item {
+                        add {
                             Card(
                                 modifier = Modifier.clickable {
                                     if (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link) {
@@ -369,7 +424,7 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                     }
 
                     if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isNotEmpty()) {
-                        item {
+                        add {
                             Card(
                                 shape = RoundedCornerShape(20.dp),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -383,6 +438,22 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                                 )
                             }
                         }
+                    }
+                }
+
+                if (flow_row) {
+                    FlowRow(
+                        modifier = modifier,
+                        horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End)
+                    ) {
+                        rowItems.forEach { renderItem -> renderItem() }
+                    }
+                } else {
+                    LazyRow(
+                        modifier = modifier,
+                        horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End)
+                    ) {
+                        rowItems.forEach { renderItem -> item { renderItem() } }
                     }
                 }
             }

@@ -19,6 +19,7 @@ import java.util.Objects
 data class M8BonVent(
     @PrimaryKey
     var keyID: String = generePushKey(),
+
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var confirmeCommande_TimeTamp: Long = 0,
@@ -427,6 +428,60 @@ data class M8BonVent(
             vents: List<M10OperationVentCouleur>,
             tariffs: List<M13TarificationInfos>,
         ): Double = sum_totale_et_benifice(vents, tariffs).totale_vents
+
+        /**
+         * Total des commandes confirmées dont le montant va arriver : pour
+         * chaque client on prend son dernier bon (par creationTimestamps) et,
+         * seulement si ce dernier bon est dans l'état A_COMMANDE_CONFIRME, on
+         * calcule sa valeur réelle en sommant quantité x tarif sur ses lignes
+         * M10OperationVentCouleur.
+         *
+         * Les lignes M10OperationVentCouleur sont créées pendant que le bon
+         * est dans l'état ON_MODE_COMMEND_ACTUELLEMENT (c'est là que la
+         * commande est construite) : elles sont donc parentées à CE bon-là,
+         * pas au bon A_COMMANDE_CONFIRME qui vient ensuite simplement acter
+         * la confirmation. On cherche donc, pour chaque client, le dernier
+         * bon ON_MODE_COMMEND_ACTUELLEMENT antérieur (ou égal) au bon
+         * confirmé, et on calcule à partir de ses ventes.
+         *
+         * montant_principale_du_type n'est pas utilisable ici : ce champ
+         * n'est renseigné que pour les états crédit (voir
+         * fun_calculative_du_main_val, branche "else -> 0.0").
+         */
+        fun calculateTotalCommandesConfirmees(
+            clients: List<M2Client>,
+            bons: List<M8BonVent>,
+            vents: List<M10OperationVentCouleur>,
+            tariffs: List<M13TarificationInfos>,
+        ): Double {
+            val tariffsByKeyID = tariffs.associateBy { it.keyID }
+
+            return clients.sumOf { client ->
+                val clientBons = bons.filter { it.parent_M2Client_KeyID == client.keyID }
+                val lastBon = clientBons.maxByOrNull { it.creationTimestamps }
+                if (lastBon?.etateActuellementEst != EtateActuellementEst.A_COMMANDE_CONFIRME) {
+                    return@sumOf 0.0
+                }
+
+                val lastCommandeBon = clientBons
+                    .filter {
+                        it.etateActuellementEst == EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT &&
+                                it.creationTimestamps <= lastBon.creationTimestamps
+                    }
+                    .maxByOrNull { it.creationTimestamps }
+                    ?: return@sumOf 0.0
+
+                vents
+                    .filter {
+                        it.parent_M8BonVent_KeyId == lastCommandeBon.keyID &&
+                                it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+                    }
+                    .sumOf { vent ->
+                        val prix = tariffsByKeyID[vent.parentM13TarificationKeyID]?.prixCurrency ?: 0.0
+                        vent.quantity * prix
+                    }
+            }
+        }
     }
 }
 

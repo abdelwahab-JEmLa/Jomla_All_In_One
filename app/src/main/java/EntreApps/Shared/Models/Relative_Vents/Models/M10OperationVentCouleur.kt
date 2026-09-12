@@ -15,6 +15,7 @@ data class M10OperationVentCouleur(
 
     var its_created_in_working_for_wholesaler: Boolean = false,
 
+
     var commetaire: String = "",
 
     var prix_de_Vent_entre_directement_NewProto : Double = 0.0,

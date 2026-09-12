@@ -116,7 +116,10 @@ fun ID4ClientSearchButton(
                             .filter { client ->
                                 !deletionKeyIds.contains(client.keyID) &&
                                         (client.nom.contains(query, ignoreCase = true) ||
-                                                client.numTelephone.contains(query, ignoreCase = true))
+                                                client.numTelephone.contains(
+                                                    query,
+                                                    ignoreCase = true
+                                                ))
                             }
                         filteredClients = filtered
                         showDropdown = filtered.isNotEmpty()
@@ -173,7 +176,14 @@ fun ID4ClientSearchButton(
                     } else {
                         onVentId8BonVent?.let { bon ->
                             val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
-                            val (totalProducts, totalValue) = get_vents_datas(aCentralFacade,list_m13_uiState_viewModelNewProtoPatterns)
+                            // Total calculé dynamiquement à partir des vents actifs du bon
+                            // et des tarifs M13 courants (get_vents_datas), plutôt que lu
+                            // depuis un champ sauvegardé — pour toujours refléter les
+                            // derniers changements de quantité/tarif en temps réel.
+                            val (totalProducts, totalValue) = get_vents_datas(
+                                aCentralFacade,
+                                list_m13_uiState_viewModelNewProtoPatterns
+                            )
 
                             if (bon.parent_M2Client_DebugInfos.isNotEmpty() &&
                                 bon.parent_M2Client_DebugInfos != "Non Defini"
@@ -283,10 +293,13 @@ fun ID4ClientSearchButton(
                                 if (searchQuery.trim().equals("supp", ignoreCase = true)) {
                                     IconButton(
                                         onClick = {
-                                            val clientsToDelete = currentValues.list_clients_por_suprime
+                                            val clientsToDelete =
+                                                currentValues.list_clients_por_suprime
                                             if (clientsToDelete.isNotEmpty()) {
                                                 clientsToDelete.forEach { client ->
-                                                    viewModel.aCentralFacade.repositorysMainSetter.delete_M2Client(client)
+                                                    viewModel.aCentralFacade.repositorysMainSetter.delete_M2Client(
+                                                        client
+                                                    )
                                                 }
                                                 focusedValuesGetter.update_activeCentralValues(
                                                     currentValues.copy(list_clients_por_suprime = emptyList())
@@ -358,7 +371,7 @@ fun get_vents_datas(
 ): Pair<Int, Double> {
 
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-    val  its_non_gros =!focusedValuesGetter.currentApp_ItsWorkChezGrossisst
+    val its_non_gros = !focusedValuesGetter.currentApp_ItsWorkChezGrossisst
 
     val onVentList = focusedValuesGetter
         .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
@@ -371,8 +384,8 @@ fun get_vents_datas(
 
     val totalValue = ventsTrouve.sumOf { vent ->
         val findM13tarificationByKeyid =
-              if (its_non_gros) list_m13_uiState_viewModelNewProtoPatterns.find { it.keyID == vent.parentM13TarificationKeyID }
-              else aCentralFacade.repositorysMainGetter.find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
+            if (its_non_gros) list_m13_uiState_viewModelNewProtoPatterns.find { it.keyID == vent.parentM13TarificationKeyID }
+            else aCentralFacade.repositorysMainGetter.find_M13Tarification_By_KeyID(vent.parentM13TarificationKeyID)
 
         val provisoireMonPrix = findM13tarificationByKeyid
             ?.prixCurrency ?: 0.0

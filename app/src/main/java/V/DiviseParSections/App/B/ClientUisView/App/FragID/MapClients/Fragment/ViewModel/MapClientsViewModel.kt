@@ -472,6 +472,7 @@ class MapClientsViewModel(
         // Clients de Jamale (its_Client_De_Jamale == true) ayant un crédit en
         // cours, tous flags court/long terme confondus — recoupement des 4
         // filtres crédit ci-dessus avec le flag Jamale plutôt qu'un nouveau
+
         // couple court/long terme dédié.
         Filter_Clients_De_Jamale_Avec_Credit(Icons.Default.Map, Color(0xFF009688)),
         Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME(Icons.Default.Map, Color.Red),
