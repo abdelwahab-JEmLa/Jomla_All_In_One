@@ -10,9 +10,8 @@ import android.os.VibratorManager
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -102,7 +101,6 @@ private fun MediaPickerBar(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     start_count: Int,
@@ -194,146 +192,160 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
         else MaterialTheme.colorScheme.onPrimary
 
         if (show_depot_card_on_top_in_flow_row) {
-            FlowRow(     //<--
-            //TODO(1): fait que les items soit don lazy row au lieux flow row 
+            // TODO(1) resolved: items now scroll horizontally in a LazyRow instead of wrapping in a FlowRow.
+            LazyRow(
                 modifier = modifier,
-                horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End),
-                verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
-                maxItemsInEachRow = 2
+                horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End)
             ) {
                 val showStar = affiche_buttons_lien_unite_couleur_au_couleut_parent || its_couleur_ac_imgVid_presentative_de_tout_les_couleur
                 if (on_toggle_presentative != null && is_admin && showStar) {
-                    Card(
-                        modifier = Modifier.clickable {
-                            on_toggle_presentative()
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (its_couleur_ac_imgVid_presentative_de_tout_les_couleur) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Text(
-                            text = "⭐",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            style = textStyle,
-                            fontWeight = FontWeight.Bold,
-                            color = if (its_couleur_ac_imgVid_presentative_de_tout_les_couleur) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-                if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
-                    Card(
-                        modifier = Modifier.clickable {
-                            if (c_unite_couleur_de_couleurKey.isNotEmpty()) on_set_c_unite_key("") else on_pour_mode_selection_parent_couleur()
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (mode_c_unite_actif) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Text(
-                            text = if (mode_c_unite_actif) "⛓ cé" else "⛓",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            style = textStyle,
-                            fontWeight = FontWeight.Bold,
-                            color = if (mode_c_unite_actif) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    if (on_toggle_affiche_panie != null) {
+                    item {
                         Card(
-                            modifier = Modifier.clickable { on_toggle_affiche_panie() },
+                            modifier = Modifier.clickable {
+                                on_toggle_presentative()
+                            },
                             shape = RoundedCornerShape(20.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (affiche_que_c_don_le_panie) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                                containerColor = if (its_couleur_ac_imgVid_presentative_de_tout_les_couleur) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
                             )
                         ) {
                             Text(
-                                text = if (affiche_que_c_don_le_panie) "🧺 P" else "🧺",
+                                text = "⭐",
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 style = textStyle,
                                 fontWeight = FontWeight.Bold,
-                                color = if (affiche_que_c_don_le_panie) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                color = if (its_couleur_ac_imgVid_presentative_de_tout_les_couleur) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
-                    MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
+                }
+                if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
+                    item {
+                        Card(
+                            modifier = Modifier.clickable {
+                                if (c_unite_couleur_de_couleurKey.isNotEmpty()) on_set_c_unite_key("") else on_pour_mode_selection_parent_couleur()
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (mode_c_unite_actif) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = if (mode_c_unite_actif) "⛓ cé" else "⛓",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = textStyle,
+                                fontWeight = FontWeight.Bold,
+                                color = if (mode_c_unite_actif) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    if (on_toggle_affiche_panie != null) {
+                        item {
+                            Card(
+                                modifier = Modifier.clickable { on_toggle_affiche_panie() },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (affiche_que_c_don_le_panie) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            ) {
+                                Text(
+                                    text = if (affiche_que_c_don_le_panie) "🧺 P" else "🧺",
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    style = textStyle,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (affiche_que_c_don_le_panie) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                    item {
+                        MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
+                    }
                 }
 
                 val showValidationButton = mode_c_unite_actif || (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link)
                 if (showValidationButton && is_admin) {
-                    Card(
-                        modifier = Modifier.clickable {
-                            if (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link) {
-                                on_set_c_unite_key(mode_selection_parent_couleur_key)
-                            } else {
-                                on_set_c_unite_key(c_unite_couleur_de_couleurKey)
-                            }
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
-                    ) {
-                        Text(
-                            text = "✓",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            style = textStyle,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSecondary
-                        )
+                    item {
+                        Card(
+                            modifier = Modifier.clickable {
+                                if (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link) {
+                                    on_set_c_unite_key(mode_selection_parent_couleur_key)
+                                } else {
+                                    on_set_c_unite_key(c_unite_couleur_de_couleurKey)
+                                }
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+                        ) {
+                            Text(
+                                text = "✓",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = textStyle,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
                     }
                 }
 
                 if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
                     if (au_depot > 0 || affichable_mem_si_zero_depot) {
-                        Card(
-                            modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.Red)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        item {
+                            Card(
+                                modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.Red)
                             ) {
-                                Icon(imageVector = Icons.Default.Warehouse, contentDescription = "Dépôt", tint = Color.Black, modifier = Modifier.size((iconSize.value * 0.7f).dp))
-                                Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
+                                Row(
+                                    modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Icon(imageVector = Icons.Default.Warehouse, contentDescription = "Dépôt", tint = Color.Black, modifier = Modifier.size((iconSize.value * 0.7f).dp))
+                                    Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
+                                }
                             }
                         }
                     }
 
-                    Card(
-                        modifier = Modifier.clickable(enabled = isAvailable) {
-                            when {
-                                start_count == 0 -> {
-                                    if (start_au_premier_click_par_add_outlined) isEditMode = true
-                                    else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
+                    item {
+                        Card(
+                            modifier = Modifier.clickable(enabled = isAvailable) {
+                                when {
+                                    start_count == 0 -> {
+                                        if (start_au_premier_click_par_add_outlined) isEditMode = true
+                                        else { vibrateOnUpdate(context); on_Data_Update(standard_count) }
+                                    }
+                                    else -> isEditMode = true
                                 }
-                                else -> isEditMode = true
-                            }
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = containerColor)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = containerColor)
                         ) {
-                            icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
-                            Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
+                            Row(
+                                modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                icon?.let { Icon(imageVector = it, contentDescription = "Quantity", tint = contentColor, modifier = Modifier.size(iconSize)) }
+                                Text(text = start_count.toString(), style = textStyle, fontWeight = FontWeight.Bold, color = contentColor)
+                            }
                         }
                     }
                 } else if (c_unite_couleur_de_couleurKey.isNotEmpty()) {
-                    Card(
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                    ) {
-                        Text(
-                            text = "🔗 Lié",
-                            modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
-                            style = textStyle,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                    item {
+                        Card(
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Text(
+                                text = "🔗 Lié",
+                                modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding),
+                                style = textStyle,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }

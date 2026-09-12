@@ -38,7 +38,7 @@ Le skill `h_` est le catalogue d'aide central des compétences personnalisées d
 |:---|:---|:---|
 | [t_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Todo_Skills/t_) | `t_`, `fix_todo`, `t_ai`, `t_agy`, `t_models`, `t_usage` | Résout automatiquement les TODOs du codebase actif. `t_ai` cible le répertoire AGY avec scan 2-passes filtré + sync vers skills globaux miroirs. |
 | [lit_patterns (c_)](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/a__Section_Pattern_Copie/lit_patterns) | `c_p`, `c_`, `tc`, `t_c`, `lit_patterns`, `read_c_p`, `integre_ici` | Cherche, copie et adapte des patterns/composables entre projets |
-| [zip_colle (z_)](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/zip_colle) | `z_`, `zip_colle`, `colle_`, `ok_` | Extrait et remplace des fichiers Kotlin depuis les téléchargements |
+| [zip_colle (z_)](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/zip_colle) | `z_`, `z_c`, `zip_colle`, `colle_`, `ok_` | Extrait et remplace des fichiers Kotlin depuis les téléchargements |
 | [build_client (b+1)](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/build_client) | `b+1`, `b_c`, `b_c_all`, `build_client` | Compile l'app client JetPack et incrémente la version |
 | [p_v](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/p_v) | `p_v` | Commit avec la version comme message + tag + push |
 | [h_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/a__skill_help/h_/SKILL.md) | `h_`, `h_ <terme>` | Affiche ce catalogue ou filtre par terme |
@@ -76,7 +76,7 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 | [copie_paterns_et_fit](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/copie_paterns_et_fit) | `copie_paterns_et_fit`, `t_c_client`, `t_copie_compos_et_fit` | Copie et adapte des patterns/composables entre projets |
 | [t_contex_files_relative_pour_regle_todo](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/t_contex_files_relative_pour_regle_todo) | `t_contex`, `todo_context`, `save_c` | Extrait le contexte complet d'un TODO dans un fichier Markdown |
 | [t_extract](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/t_extract) | `t_extract`, `extract_todo`, `TODO: extract` | Extrait des blocs de code ou dépendances identifiés |
-| [zip_colle](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/zip_colle) | `zip_colle`, `colle_`, `colle`, `z_`, `ok_` | Extrait et remplace des fichiers Kotlin depuis les téléchargements |
+| [zip_colle](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/zip_colle) | `zip_colle`, `colle_`, `colle`, `z_`, `z_c`, `ok_` | Extrait et remplace des fichiers Kotlin depuis les téléchargements |
 | [cop_last](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/cop_last) | `cop_last` | Copie le dernier fichier actif |
 | [copy_skill](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/Copy_Skills/copy_skill) | `c_`, `cl_`, `cc_`, `cop_last`, `cop_`, `ca_`, `ca+t`, `dc_`, `copy_skill` | Copie des fichiers vers le presse-papiers et sauvegarde dans hist_copie.md (support +t) |
 | [copy_save_au_frech_list_copy_uncomited_edited_files](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/copy_save_au_frech_list_copy_uncomited_edited_files) | `copy_uncomited`, `cu_`, `sc_u`, `save_uncomited_`, `copy_edited` | Copie tous les fichiers non commités (edited) du projet Android actif et sauvegarde leurs chemins dans `cop_last/list_copied_files` |
@@ -145,7 +145,7 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 | [tap](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/tap) | `tap` | Capture l'écran, identifie le FAB et exécute un tap ADB |
 | [tap_lit_debug_log_cat](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/tap_lit_debug_log_cat) | `tap_lit` | Tap + lecture du logcat pour debug rapide |
 | [fm_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/fm_) | `fm_`, `fm_flow` | Synchro Room/CSV/Firebase dans les écrans FragMap |
-| [learn_improve_skill_depuit_convesation_imp_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/learn_improve_skill_depuit_convesation_imp_) | `/improve`, `/learn/learn`, `/learn_improve_skill_depuit_convesation_imp_` | Améliore un skill à partir des corrections de la conversation |
+| [learn_improve_skill_depuit_convesation_imp_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/learn_improve_skill_depuit_convesation_imp_) | `/improve`, `imp_`, `improv_`, `iprov_`, `/learn/learn` | Améliore un skill à partir des corrections de la conversation |
 
 ---
 

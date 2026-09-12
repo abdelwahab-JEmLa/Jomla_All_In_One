@@ -1,7 +1,8 @@
-$downloadsDir = "C:\Users\Abou Mohamed\Downloads"
 param(
     [string]$Workspace = (Get-Location).Path
 )
+
+$downloadsDir = "C:\Users\Abou Mohamed\Downloads"
 
 # 1. Trouver le dernier téléchargement zip, rar, ou kt
 $latest = Get-ChildItem -Path $downloadsDir | Where-Object { $_.Extension -match '^\.(zip|rar|kt)$' } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
@@ -45,7 +46,12 @@ if ($latest.Extension -eq ".kt") {
 $historyPath = Join-Path $Workspace ".zip_colle_history.json"
 $history = @{}
 if (Test-Path $historyPath) {
-    $history = Get-Content $historyPath | ConvertFrom-Json -AsHashtable
+    try {
+        $rawJson = Get-Content $historyPath -Raw | ConvertFrom-Json
+        if ($rawJson) {
+            $rawJson.PSObject.Properties | ForEach-Object { $history[$_.Name] = $_.Value }
+        }
+    } catch {}
 }
 
 $refHistPath = Join-Path $Workspace "app/src/main/java/skill_agent/copy_context/copy_skill/references/hist_copie.md"
@@ -90,5 +96,6 @@ if (Test-Path $tempDir) { Remove-Item -Path $tempDir -Recurse -Force }
 Write-Host "`n=== RESULTS ==="
 foreach ($f in $updatedFiles) {
     $uriPath = $f.Path.Replace(" ", "%20")
-    Write-Host "### 🔗 [$($f.Name)](file:///$uriPath)"
+    Write-Host "### [LINK] [$($f.Name)](file:///$uriPath)"
 }
+

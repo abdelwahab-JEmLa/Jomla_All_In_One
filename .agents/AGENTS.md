@@ -50,8 +50,8 @@
 - **Media Picking & Cleanup**: In edit panels, provide separate options for image (🖼) and video (🎥) gallery pickers. When a new file is picked, delete/erase any existing files under the previous media extension to prevent stale files, update `extensionDisponible`, and update `il_a_une_video_presentaion` accordingly.
 - **GIF Conversion & Playback**: Instead of playing heavy raw video files using video players (like ExoPlayer) in presentation screens, convert the picked videos to GIFs (or render them as GIF) to display them using lightweight GIF loaders (e.g., Glide or looping animations). This limits memory footprint and avoids native media player crashes.
 
-## Fast File Deployment (zip_colle / z_)
-- **History Mapping Lookup**: When the user triggers the file copy skill (`z_` or `zip_colle`), always prioritize using the local mapping file `.zip_colle_history.json` at the root of the workspace. If the filename exists as a key, use its absolute path immediately.
+## Fast File Deployment (zip_colle / z_ / z_c)
+- **History Mapping Lookup**: When the user triggers the file copy skill (`z_`, `z_c`, or `zip_colle`), always prioritize using the local mapping file `.zip_colle_history.json` at the root of the workspace. If the filename exists as a key, use its absolute path immediately.
 - **Search Optimization**: If the file path is not found in the history mapping, restrict any recursive file searches strictly to the `app/src/` subdirectory of the workspace to avoid scanning heavy generated folders (like `.gradle`, `.git`, or `build`), which reduces search times from 20s to <0.2s.
 - **History Update**: Upon successfully copying or updating a file, update or create the `.zip_colle_history.json` file in the workspace root with the new mapping `{"FileName.kt": "Absolute/Path/To/FileName.kt"}`.
 
