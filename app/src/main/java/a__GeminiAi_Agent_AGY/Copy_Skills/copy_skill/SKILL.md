@@ -25,7 +25,14 @@ The following files were targeted during the last execution:
   If the user manually copied files in Windows/Android Studio, this script will quickly extract their paths and line counts. If no files are in the clipboard, fallback to reading the **Last Copied Files** section above.
 - **Case B: Dynamic Request**: If a path is provided with `cop_` or `c_`, scan that directory recursively for `.kt` files. Overwrite the **Active Reference Package** and **Last Copied Files** sections in this file (`SKILL.md`).
 
-### 2. Action: Copy to Clipboard (`cl_`, `cc_`, `cop_last`, `cop_`)
+### 2. Action: Copy to Clipboard (`cl_`, `cc_`, `cop_last`, `cop_`, `ca+t`)               //<--
+
+- **Trigger `ca+t` (Append t_ Skill)**: Si le trigger contient `+t` (ex: `ca+t`), en plus du comportement normal `ca_` (append des fichiers ciblés), appender **automatiquement** le contenu complet du fichier `C:\Users\Abou Mohamed\.gemini\config\skills\t_\SKILL.md` à la fin de `hist_copie.md` (s'il n'y est pas déjà), sous le format :
+  ```
+  ### 🔗 [t_ SKILL.md](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/t_/SKILL.md)
+  <contenu complet du fichier>
+  ```
+
 - Pour garantir la vitesse maximale (copie quasi-instantanée du contenu), exécutez le fichier batch :
   ```bash
   "C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\app\src\main\java\skill_agent\copy_skill\run_cc.bat"

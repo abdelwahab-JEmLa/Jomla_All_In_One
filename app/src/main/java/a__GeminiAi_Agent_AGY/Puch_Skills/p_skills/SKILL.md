@@ -1,6 +1,6 @@
 ---
 name: p_skills
-description: Synchronise les skills entre AGY global et le projet Android. Vide la destination puis copie l'ensemble des dossiers par section (Mode direct: p_sk / Mode inverse: revers_p_skill). Triggered by p_skills, puch_skills, push_skills, p_ski, p_sk, revers_p_skill, reverse_p_skills, r_p_sk, rev_p_sk.
+description: Synchronise les skills entre AGY global et le projet Android. Vide la destination puis copie l'ensemble des dossiers par section (Mode direct: p_sk / Mode inverse: revers_p_skill). Triggered by p_skills, puch_skills, push_skills, p_ski, p_sk, revers_p_skill, reverse_p_skills, reverse_p_sk, r_p_sk, rev_p_sk, rev_p_ski, reverse_c_sk, rev_c_sk.
 ---
 
 # Skill — Synchronisation des Skills AGY (p_skills / revers_p_skill)
@@ -16,11 +16,17 @@ Ce skill gère la synchronisation bidirectionnelle des skills entre le répertoi
 - `p_ski`
 - `p_sk`
 
-### Mode Inverse (Android ➡️ AGY Global)
+### Mode Inverse Global (Android ➡️ AGY Global)
 - `revers_p_skill`
 - `reverse_p_skills`
+- `reverse_p_sk`
 - `r_p_sk`
 - `rev_p_sk`
+- `rev_p_ski`
+
+### Mode Inverse Ciblé (Section Copy_Skills uniquement)
+- `reverse_c_sk`
+- `rev_c_sk`
 
 ---
 
@@ -37,28 +43,26 @@ Ce skill gère la synchronisation bidirectionnelle des skills entre le répertoi
 
 ### 1. Mode Direct (`p_skills` / `p_sk` / `push_skills`)
 
-#### Étape A : Vider le dossier destination Android
-```powershell
-$dest = "D:\AndroidStudioProjects\ClientJetPack\app\src\main\java\a__GeminiAi_Agent_AGY"
-if (Test-Path $dest) {
-    Get-ChildItem -Path $dest | Remove-Item -Recurse -Force
-    Write-Host "🗑️ Dossier destination Android vidé."
-} else {
-    New-Item -ItemType Directory -Path $dest -Force | Out-Null
-    Write-Host "📁 Dossier destination Android créé."
-}
-```
-
-#### Étape B : Copier depuis AGY Global vers Android
 ```powershell
 $source = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills"
 $dest   = "D:\AndroidStudioProjects\ClientJetPack\app\src\main\java\a__GeminiAi_Agent_AGY"
 
 if (Test-Path $source) {
-    $items = Get-ChildItem -Path $source
-    foreach ($item in $items) {
-        Copy-Item -Path $item.FullName -Destination (Join-Path $dest $item.Name) -Recurse -Force
-        Write-Host "✅ $($item.Name) copié."
+    if (-not (Test-Path $dest)) {
+        New-Item -ItemType Directory -Path $dest -Force | Out-Null
+    }
+    $sections = Get-ChildItem -Path $source -Directory
+    foreach ($sec in $sections) {
+        $targetSec = Join-Path $dest $sec.Name
+        if (Test-Path $targetSec) {
+            Get-ChildItem -Path $targetSec | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        } else {
+            New-Item -ItemType Directory -Path $targetSec -Force | Out-Null
+        }
+        Get-ChildItem -Path $sec.FullName | ForEach-Object {
+            Copy-Item -Path $_.FullName -Destination (Join-Path $targetSec $_.Name) -Recurse -Force
+        }
+        Write-Host "✅ $($sec.Name) copié vers Android."
     }
     Write-Host "🎉 Synchronisation Directe terminée vers : $dest"
 } else {
@@ -68,38 +72,35 @@ if (Test-Path $source) {
 
 ---
 
-### 2. Mode Inverse (`revers_p_skill` / `reverse_p_skills` / `r_p_sk`)
+### 2. Mode Inverse Global (`revers_p_skill` / `rev_p_sk` / `rev_p_ski`)
 
-#### Étape A : Vider les répertoires de skills AGY Global
+Copie l'ensemble des sections depuis Android vers les deux dossiers globaux AGY (`config\skills` et `antigravity-cli\skills`) sans risque d'imbrication de dossiers.
+
 ```powershell
-$globalCli    = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills"
-$globalConfig = "C:\Users\Abou Mohamed\.gemini\config\skills"
-
-foreach ($gDest in @($globalCli, $globalConfig)) {
-    if (Test-Path $gDest) {
-        Remove-Item -Path "$gDest\*" -Recurse -Force -ErrorAction SilentlyContinue
-        Write-Host "🗑️ Dossier global AGY skills vidé : $gDest"
-    } else {
-        New-Item -ItemType Directory -Path $gDest -Force | Out-Null
-        Write-Host "📁 Dossier global AGY skills créé : $gDest"
-    }
-}
-```
-
-#### Étape B : Copier les dossiers de section depuis Android (`a__GeminiAi_Agent_AGY`) vers AGY Global
-```powershell
-$source = "D:\AndroidStudioProjects\ClientJetPack\app\src\main\java\a__GeminiAi_Agent_AGY"
+$source       = "D:\AndroidStudioProjects\ClientJetPack\app\src\main\java\a__GeminiAi_Agent_AGY"
 $globalCli    = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills"
 $globalConfig = "C:\Users\Abou Mohamed\.gemini\config\skills"
 
 if (Test-Path $source) {
-    $items = Get-ChildItem -Path $source
-    foreach ($item in $items) {
-        Copy-Item -Path $item.FullName -Destination (Join-Path $globalCli $item.Name) -Recurse -Force
-        Copy-Item -Path $item.FullName -Destination (Join-Path $globalConfig $item.Name) -Recurse -Force
-        Write-Host "✅ Section copiée : $($item.Name)"
+    $sections = Get-ChildItem -Path $source -Directory
+    foreach ($gDest in @($globalCli, $globalConfig)) {
+        if (-not (Test-Path $gDest)) {
+            New-Item -ItemType Directory -Path $gDest -Force | Out-Null
+        }
+        foreach ($sec in $sections) {
+            $targetSec = Join-Path $gDest $sec.Name
+            if (Test-Path $targetSec) {
+                Get-ChildItem -Path $targetSec | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+            } else {
+                New-Item -ItemType Directory -Path $targetSec -Force | Out-Null
+            }
+            Get-ChildItem -Path $sec.FullName | ForEach-Object {
+                Copy-Item -Path $_.FullName -Destination (Join-Path $targetSec $_.Name) -Recurse -Force
+            }
+        }
+        Write-Host "✅ Synchronisé vers : $gDest"
     }
-    Write-Host "🎉 Synchronisation Inverse terminée vers AGY Global."
+    Write-Host "🎉 Synchronisation Inverse terminée avec succès !"
 } else {
     Write-Host "⚠️ Source introuvable : $source"
 }
@@ -107,6 +108,32 @@ if (Test-Path $source) {
 
 ---
 
-### 3. Confirmation
-Afficher à l'utilisateur un résumé clair de l'opération de synchronisation (mode direct ou inverse) et la liste des dossiers copiés.
+### 3. Mode Inverse Ciblé (`reverse_c_sk` / `rev_c_sk`)
+
+Synchronise uniquement la section `Copy_Skills` depuis Android vers AGY Global.
+
+```powershell
+$sourceSec    = "D:\AndroidStudioProjects\ClientJetPack\app\src\main\java\a__GeminiAi_Agent_AGY\Copy_Skills"
+$globalCli    = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\Copy_Skills"
+$globalConfig = "C:\Users\Abou Mohamed\.gemini\config\skills\Copy_Skills"
+
+if (Test-Path $sourceSec) {
+    foreach ($targetSec in @($globalCli, $globalConfig)) {
+        if (Test-Path $targetSec) {
+            Get-ChildItem -Path $targetSec | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        } else {
+            New-Item -ItemType Directory -Path $targetSec -Force | Out-Null
+        }
+        Get-ChildItem -Path $sourceSec | ForEach-Object {
+            Copy-Item -Path $_.FullName -Destination (Join-Path $targetSec $_.Name) -Recurse -Force
+        }
+        Write-Host "✅ Copy_Skills synchronisé vers : $targetSec"
+    }
+}
+```
+
+---
+
+### 4. Confirmation
+Afficher à l'utilisateur un résumé clair de l'opération de synchronisation et la liste des dossiers mis à jour.
 
