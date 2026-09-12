@@ -1,5 +1,6 @@
 package EntreApps.Shared.Modules.Utils.M1.Module.Views
 
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -133,8 +134,10 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     its_couleur_ac_imgVid_presentative_de_tout_les_couleur: Boolean = false,
     on_toggle_presentative: (() -> Unit)? = null,
     affiche_que_c_don_le_panie: Boolean = false,
-    on_toggle_affiche_panie: (() -> Unit)? = null,   //<--
-    //TODO(1): ajout on_update_m3couleur(m3 
+    on_toggle_affiche_panie: (() -> Unit)? = null,
+    its_pour_affiche_au_presenter: Boolean = false,
+    currentM3: M3CouleurProduitInfos? = null,
+    on_update_m3couleur: ((M3CouleurProduitInfos) -> Unit)? = null,
 ) {
     val context = LocalContext.current
 
@@ -197,12 +200,32 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
 
         if (show_depot_card_on_top_in_flow_row) {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                //<--
-                //TODO(1): ajout un button qui togle on_update_m3couleur its_delicate_a_regle_apre 
                 LazyRow(
                     modifier = modifier,
                     horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End)
                 ) {
+                    if (on_update_m3couleur != null && currentM3 != null && is_admin) {
+                        item {
+                            Card(
+                                modifier = Modifier.clickable {
+                                    on_update_m3couleur(currentM3.copy(its_pour_affiche_au_presenter = !its_pour_affiche_au_presenter))
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (its_pour_affiche_au_presenter) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            ) {
+                                Text(
+                                    text = "👁",
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    style = textStyle,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (its_pour_affiche_au_presenter) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+
                     if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
                         item {
                             Card(

@@ -45,6 +45,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
+
 @Composable
 fun Lenceur_Vent_Handler_App4(
     modifier: Modifier = Modifier,
@@ -418,6 +419,11 @@ fun Lenceur_Vent_Handler_App4(
                             affiche_que_c_don_le_panie = afficheQueCDonLePanie
                         )
                     )
+                },
+                its_pour_affiche_au_presenter = selectedCouleur.its_pour_affiche_au_presenter,
+                currentM3 = selectedCouleur,
+                on_update_m3couleur = { updatedM3 ->
+                    viewModel.update_m3couleur(updatedM3)
                 },
                 on_set_c_unite_key = { key ->
                     val parentColor = mode_selection_parent_couleur

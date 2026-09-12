@@ -25,8 +25,9 @@ data class M3CouleurProduitInfos(
     var count_Don_Depot: Int = 0,
 
     var a_cammende_depuit_grossist: Int = 0,
-         //<--
-         //TODO(1): ajout its_delicate_a_regle_apre
+
+    var its_delicate_a_regle_apres: Boolean = false,
+
     val nomCouleurStrSiSonImageDispo: String = "",
 
     var affiche_que_c_don_le_panie : Boolean = false,
@@ -73,6 +74,7 @@ data class M3CouleurProduitInfos(
         "c_unite_couleur_de_couleurKey" to c_unite_couleur_de_couleurKey,
         "il_a_une_video_presentaion" to il_a_une_video_presentaion,
         "a_cammende_depuit_grossist" to a_cammende_depuit_grossist,
+        "its_delicate_a_regle_apres" to its_delicate_a_regle_apres,
         "nomCouleurStrSiSonImageDispo" to nomCouleurStrSiSonImageDispo,
         "affiche_que_c_don_le_panie" to affiche_que_c_don_le_panie,
         "parentBProduitInfosKeyID" to parentBProduitInfosKeyID,
