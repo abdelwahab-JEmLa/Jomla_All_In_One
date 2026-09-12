@@ -47,32 +47,36 @@ def get_clipboard_files():
 if __name__ == "__main__":
     files = get_clipboard_files()
     if not files:
-        # Fallback to the last one if we want, or just exit. 
-        # For max speed, let's just assume we return "EMPTY" and the agent handles it, 
-        # but if we have files, we do EVERYTHING here.
         print("EMPTY")
         sys.exit(0)
         
-    hist_path = r"C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\app\src\main\java\skill_agent\copy_skill\references\hist_copie.md"
-    os.makedirs(os.path.dirname(hist_path), exist_ok=True)
+    hist_paths = [
+        r"C:\Users\Abou Mohamed\.gemini\config\skills\Copy_Skills\copy_skill\references\hist_copie.md",
+        os.path.join(os.getcwd(), r"app\src\main\java\a__GeminiAi_Agent_AGY\Copy_Skills\copy_skill\references\hist_copie.md")
+    ]
     
     package = os.path.basename(os.path.dirname(files[0]))
-    
     out_table = []
     
-    with open(hist_path, 'w', encoding='utf-8') as f:
-        for f_path in files:
-            f_url = "file:///" + f_path.replace('\\', '/')
-            f.write(f"### 🔗 [{os.path.basename(f_path)}]({f_url})\n")
+    for hist_path in hist_paths:
+        try:
+            os.makedirs(os.path.dirname(hist_path), exist_ok=True)
+            with open(hist_path, 'w', encoding='utf-8') as f:
+                f.write("# 📁 Arborescence des Fichiers Copiés\n\n")
+                for f_path in files:
+                    f_url = "file:///" + f_path.replace('\\', '/')
+                    f.write(f"- 📄 [{os.path.basename(f_path)}]({f_url})\n")
+        except Exception:
+            pass
+
+    for f_path in files:
+        lines = 0
+        try:
+            with open(f_path, 'r', encoding='utf-8') as src:
+                lines = sum(1 for _ in src)
+        except: pass
+        out_table.append((os.path.basename(f_path), lines))
             
-            lines = 0
-            try:
-                with open(f_path, 'r', encoding='utf-8') as src:
-                    lines = sum(1 for _ in src)
-            except: pass
-            out_table.append((os.path.basename(f_path), lines))
-            
-    # Output the exact markdown the agent needs to print:
     print(package)
     for name, lines in out_table:
         print(f"| `{name}` | {lines} |")

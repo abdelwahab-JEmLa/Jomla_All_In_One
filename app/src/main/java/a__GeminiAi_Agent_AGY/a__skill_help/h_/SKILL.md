@@ -78,7 +78,7 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 | [t_extract](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/t_extract) | `t_extract`, `extract_todo`, `TODO: extract` | Extrait des blocs de code ou dépendances identifiés |
 | [zip_colle](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/zip_colle) | `zip_colle`, `colle_`, `colle`, `z_`, `ok_` | Extrait et remplace des fichiers Kotlin depuis les téléchargements |
 | [cop_last](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/cop_last) | `cop_last` | Copie le dernier fichier actif |
-| [copy_skill](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/copy_skill) | `copy_skill` | Copie un skill vers un autre répertoire |
+| [copy_skill](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/Copy_Skills/copy_skill) | `c_`, `cl_`, `cc_`, `cop_last`, `cop_`, `ca_`, `ca+t`, `dc_`, `copy_skill` | Copie des fichiers vers le presse-papiers et sauvegarde dans hist_copie.md (support +t) |
 | [copy_save_au_frech_list_copy_uncomited_edited_files](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/copy_save_au_frech_list_copy_uncomited_edited_files) | `copy_uncomited`, `cu_`, `sc_u`, `save_uncomited_`, `copy_edited` | Copie tous les fichiers non commités (edited) du projet Android actif et sauvegarde leurs chemins dans `cop_last/list_copied_files` |
 
 ---

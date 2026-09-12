@@ -35,9 +35,19 @@ def set_clipboard_files(files):
     user32.CloseClipboard()
 
 def fast_cc():
-    hist_path = r"C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\app\src\main\java\skill_agent\copy_skill\references\hist_copie.md"
+    hist_paths = [
+        r"C:\Users\Abou Mohamed\.gemini\config\skills\Copy_Skills\copy_skill\references\hist_copie.md",
+        os.path.join(os.getcwd(), r"app\src\main\java\a__GeminiAi_Agent_AGY\Copy_Skills\copy_skill\references\hist_copie.md"),
+        r"C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\app\src\main\java\skill_agent\copy_skill\references\hist_copie.md"
+    ]
     
-    if not os.path.exists(hist_path):
+    hist_path = None
+    for p in hist_paths:
+        if os.path.exists(p):
+            hist_path = p
+            break
+            
+    if not hist_path:
         print("EMPTY")
         return
         
