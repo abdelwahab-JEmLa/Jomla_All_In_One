@@ -20,6 +20,9 @@ Puis il copie les fichiers dans le presse-papiers Windows (compatible Windows Po
 - `sc_u`
 - `save_uncomited_`
 - `copy_edited`
+- `v_u`
+- `vu_`
+- `v_cu_`
 - `TODO: copy_uncomited`
 
 ---
@@ -146,7 +149,7 @@ if ($uncommittedFiles.Count -gt 0) {
 
     # Écriture dans les deux hist_copie.md (Global + r_ai)
     foreach ($hPath in $targetsHist) {
-        Set-Content -Path $hPath -Value $histMd -Encoding UTF8
+        [System.IO.File]::WriteAllText($hPath, $histMd, [System.Text.Encoding]::UTF8)
     }
 
     # 2. Mise à jour de list_copied_files
@@ -162,7 +165,21 @@ if ($uncommittedFiles.Count -gt 0) {
 
 ---
 
-### Étape 4 - Copier dans le presse-papiers Windows
+### 💡 Mode `v_u` / `vu_` (Vide, Structuré & Simple_Todo sans Copie)
+
+Lorsque le déclencheur est `v_u`, `vu_` ou `v_cu_` :
+1. **Effacer le contenu existant** : Écraser intégralement le contenu des deux fichiers `hist_copie.md` (Global & r_ai).
+2. **Écrire l'arborescence des fichiers non commités** (fichiers qualifiés détectés à l'Étape 2).
+3. **Appender la référence `Simple_Todo.md`** à la fin des deux fichiers `hist_copie.md` :
+   ```markdown
+   ### 📝 [Simple_Todo.md](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/b__References_Files/Simple_Todo.md)
+   ```
+4. **Ignorer l'Étape 4 (Copie presse-papiers)** : Ne PAS placer la liste de fichiers dans le presse-papiers Windows.
+5. **Rapport** : Indiquer que `hist_copie.md` a été réinitialisé et mis à jour avec `Simple_Todo.md` sans copie au presse-papiers.
+
+---
+
+### Étape 4 - Copier dans le presse-papiers Windows (Ignoré en mode `v_u`)
 
 ```powershell
 if ($uncommittedFiles.Count -gt 0) {

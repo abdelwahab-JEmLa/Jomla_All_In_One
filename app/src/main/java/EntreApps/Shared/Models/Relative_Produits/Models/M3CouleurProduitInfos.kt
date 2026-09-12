@@ -25,7 +25,8 @@ data class M3CouleurProduitInfos(
     var count_Don_Depot: Int = 0,
 
     var a_cammende_depuit_grossist: Int = 0,
-
+         //<--
+         //TODO(1): ajout its_delicate_a_regle_apre
     val nomCouleurStrSiSonImageDispo: String = "",
 
     var affiche_que_c_don_le_panie : Boolean = false,

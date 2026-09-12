@@ -133,7 +133,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     its_couleur_ac_imgVid_presentative_de_tout_les_couleur: Boolean = false,
     on_toggle_presentative: (() -> Unit)? = null,
     affiche_que_c_don_le_panie: Boolean = false,
-    on_toggle_affiche_panie: (() -> Unit)? = null,
+    on_toggle_affiche_panie: (() -> Unit)? = null,   //<--
+    //TODO(1): ajout on_update_m3couleur(m3 
 ) {
     val context = LocalContext.current
 
@@ -196,6 +197,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
 
         if (show_depot_card_on_top_in_flow_row) {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                //<--
+                //TODO(1): ajout un button qui togle on_update_m3couleur its_delicate_a_regle_apre 
                 LazyRow(
                     modifier = modifier,
                     horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End)

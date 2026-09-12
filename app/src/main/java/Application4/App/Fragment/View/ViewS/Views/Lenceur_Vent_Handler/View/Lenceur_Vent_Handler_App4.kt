@@ -409,6 +409,7 @@ fun Lenceur_Vent_Handler_App4(
                     viewModel.update_m3couleur(
                         selectedCouleur.copy(its_couleur_ac_imgVid_presentative_de_tout_les_couleur = !selectedCouleur.its_couleur_ac_imgVid_presentative_de_tout_les_couleur)
                     )
+
                 },
                 on_toggle_affiche_panie = {
                     val afficheQueCDonLePanie = !selectedCouleur.affiche_que_c_don_le_panie
