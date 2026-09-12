@@ -77,6 +77,7 @@
 
 ## Skill Triggers in TODOs
 - Si le déclencheur d'un skill (ex: `t_copie_compos_et_fit`, `zip_colle`, etc.) est présent dans un commentaire `TODO`, l'agent doit automatiquement lancer ce skill.
+- Si un TODO contient le motif `v_u` (ou `v_u_`) lors de l'exécution du skill `t_`, l'agent ne doit pas résoudre les TODOs et doit lancer directement et automatiquement le skill `v_u` (copie des fichiers modifiés non commités dans le presse-papiers et l'historique).
 - L'agent doit également lire les instructions du skill `t_` (qui gère les TODOs) pour adopter le même comportement de résolution, et analyser/apprendre du contexte fourni pour exécuter la tâche.
 
 ## Jetpack Compose Navigation Parameter Binding

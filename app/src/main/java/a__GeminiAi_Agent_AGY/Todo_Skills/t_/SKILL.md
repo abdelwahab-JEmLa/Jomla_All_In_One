@@ -15,7 +15,7 @@ If **`t_usage`** is triggered, the assistant will also compute and display the p
 
 If **`>clientApp`** or **`>ca`** is triggered, the assistant will automatically redirect and execute the **Client JetPack Fix TODOs & Coding Patterns (t_appClient_chain_todo)** skill to inspect relative/chained TODOs and search coding patterns or files in the external client codebase.
 
-**Central Dispatcher Capability**: If a `TODO` comment contains a trigger phrase for another custom skill (e.g., `TODO: log_`, `TODO: sem_`, `TODO: con_c`, `TODO: cop_`, `TODO: room_d`), the assistant must automatically chain and execute the corresponding custom skill's steps on that file/package, rather than applying a manual code fix.
+**Central Dispatcher & Priority Override Capability**: If a `TODO` comment contains `v_u` (or `v_u_`), do NOT resolve any TODOs; immediately redirect and automatically execute the **`v_u`** skill (detecting uncommitted files and copying them to clipboard and hist_copie.md). If a `TODO` comment contains a trigger phrase for another custom skill (e.g., `TODO: log_`, `TODO: sem_`, `TODO: con_c`, `TODO: cop_`, `TODO: room_d`), the assistant must automatically chain and execute the corresponding custom skill's steps on that file/package, rather than applying a manual code fix.
 
 ---
 
@@ -202,6 +202,8 @@ Cela fournit 3 lignes avant + 12 lignes après chaque appel — suffisant pour v
 **CRITICAL RULE**: Before explaining the details of the code changes, the assistant MUST present a beginner-friendly summary of the problem, the list of concerned files to change, and a brief explanation of what changes will be made. **CRITICAL EXECUTION MANDATE**: The assistant MUST invoke `replace_file_content` (or other write tools) to apply the code modifications and delete the TODO comments in the VERY SAME turn. NEVER end the turn after outputting the summary without calling the file editing tools.
 
 ### 2. Implement the fixes in Code / Delegate to Skills
+- **`v_u` Priority Override Check**: Immediately after scanning TODOs (and regardless of whether the TODO is relative, deferred, or standard), check if ANY scanned `TODO` line contains `v_u` or `v_u_`.
+  - If a `TODO` containing `v_u` or `v_u_` is detected anywhere in the results, **stop fixing/resolving TODOs immediately** and redirect execution to launch the **`v_u`** skill instead. Do NOT resolve or delete any TODOs in this run.
 - **Skill Dispatcher Check**: For each found `TODO` comment, check if it contains a trigger for another custom skill:
   - If it contains `/installer_globale_skill moi le skill <nom>` (e.g. `TODO: /installer_globale_skill moi le skill passe>recieve>val`) :
     1. Extraire `<nom>` depuis le commentaire (ex: `passe_recieve_val`).
