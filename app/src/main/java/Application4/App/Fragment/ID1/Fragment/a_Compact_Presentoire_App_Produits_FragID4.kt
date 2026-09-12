@@ -45,7 +45,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.clientjetpack.R
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 @Composable
@@ -83,10 +85,12 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
 
     LaunchedEffect(Unit) {
-        couleur = appDatabase.dao_M03CouleurProduitInfos().getAll()
-
-        couleur_f = appDatabase.dao_M03CouleurProduitInfos().getAll()
-            .filter { it.its_delicate_a_regle_apres }
+        val all = withContext(Dispatchers.IO) {
+            appDatabase.dao_M03CouleurProduitInfos().getAll()
+        }
+        // Back on Main here: withContext returns to the caller's dispatcher.
+        couleur = all
+        couleur_f = all.filter { it.its_delicate_a_regle_apres }
     }
 
     LaunchedEffect(Unit) {
@@ -132,30 +136,12 @@ fun A_Compact_Presentoire_App_Produits_App4(
             delay(1500)
             justMovedProductKeyID = null
         }
-    }               //<--
-    //TODO(1):   FATAL EXCEPTION: main
-    //                               Process: com.example.clientjetpack, PID: 4734
-    //                               java.lang.IllegalStateException: Cannot access database on the main thread since it may potentially lock the UI for a long period of time.
-    //                               	at androidx.room.RoomDatabase.assertNotMainThread(RoomDatabase.kt:439)
-    //                               	at androidx.room.RoomDatabase.query(RoomDatabase.kt:479)
-    //                               	at androidx.room.util.DBUtil.query(DBUtil.kt:75)
-    //                               	at Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Dao_M9AppCompt_Impl.getAll(Dao_M9AppCompt_Impl.java:1356)
-    //                               	at Application4.App.Fragment.ID1.Fragment.A_Compact_Presentoire_App_Produits_FragID4Kt$A_Compact_Presentoire_App_Produits_App4$5.invokeSuspend(a_Compact_Presentoire_App_Produits_FragID4.kt:147)
-    //                               	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
-    //                               	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:108)
-    //                               	at androidx.compose.ui.platform.AndroidUiDispatcher.performTrampolineDispatch(AndroidUiDispatcher.android.kt:81)
-    //                               	at androidx.compose.ui.platform.AndroidUiDispatcher.access$performTrampolineDispatch(AndroidUiDispatcher.android.kt:41)
-    //                               	at androidx.compose.ui.platform.AndroidUiDispatcher$dispatchCallback$1.run(AndroidUiDispatcher.android.kt:57)
-    //                               	at android.os.Handler.handleCallback(Handler.java:938)
-    //                               	at android.os.Handler.dispatchMessage(Handler.java:99)
-    //                               	at android.os.Looper.loop(Looper.java:236)
-    //                               	at android.app.ActivityThread.main(ActivityThread.java:8037)
-    //                               	at java.lang.reflect.Method.invoke(Native Method)
-    //                               	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:656)
-    //                               	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:967)
-    //                               	Suppressed: kotlinx.coroutines.internal.DiagnosticCoroutineContextException: [androidx.compose.ui.platform.MotionDurationScaleImpl@75a4db0, androidx.compose.runtime.BroadcastFrameClock@b3ee429, StandaloneCoroutine{Cancelling}@401d3ae, AndroidUiDispatcher@9da554f]
-    //20:06:46.060 Process           Sending signal. PID: 4734 SIG: 9
-    //---------------------------- PROCESS ENDED (4734) for package com.example.clientjetpack --------------------
+    }
+
+    // FIXED: previously this block ran dao_M9AppCompt()/dao_M8BonVent() queries directly
+    // inside LaunchedEffect (main dispatcher), causing:
+    // IllegalStateException: Cannot access database on the main thread.
+    // Now wrapped in withContext(Dispatchers.IO) above.
 
     var couleursAuDepot by remember { mutableStateOf<List<M3CouleurProduitInfos>?>(null) }
     var current_m9 by remember { mutableStateOf<M09AppCompt?>(null) }
@@ -165,14 +151,20 @@ fun A_Compact_Presentoire_App_Produits_App4(
         viewModelNewProtoPatterns.active_Datas.activeOnVent_M8BonVent
 
     LaunchedEffect(Unit) {
-         current_m9 = viewModelNewProtoPatterns.appDatabase
-            .dao_M9AppCompt()
-            .getAll()
-            .find { it.keyID == M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId }
+        val (m9, bonVent) = withContext(Dispatchers.IO) {
+            val m9Result = viewModelNewProtoPatterns.appDatabase
+                .dao_M9AppCompt()
+                .getAll()
+                .find { it.keyID == M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId }
 
-        currentBonVent_m9 =
-            viewModelNewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
-                .find { it.keyID == current_m9?.onVentM8BonVentKey }
+            val bonVentResult = viewModelNewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
+                .find { it.keyID == m9Result?.onVentM8BonVentKey }
+
+            m9Result to bonVentResult
+        }
+        // Back on Main here: withContext returns to the caller's dispatcher.
+        current_m9 = m9
+        currentBonVent_m9 = bonVent
 
         couleursAuDepot = viewModelNewProtoPatterns.active_Datas.list_M03CouleurProduitInfos
             ?.filter { it.count_Don_Depot > 0 }
