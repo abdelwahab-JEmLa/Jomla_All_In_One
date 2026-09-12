@@ -194,7 +194,8 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
         else MaterialTheme.colorScheme.onPrimary
 
         if (show_depot_card_on_top_in_flow_row) {
-            FlowRow(
+            FlowRow(     //<--
+            //TODO(1): fait que les items soit don lazy row au lieux flow row 
                 modifier = modifier,
                 horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End),
                 verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
