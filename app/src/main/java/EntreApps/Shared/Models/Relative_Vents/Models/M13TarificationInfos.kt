@@ -75,6 +75,7 @@ data class M13TarificationInfos(
 
         Tariff_ItsWorkInGrossist_SuperGros(
             Icons.Filled.Warning,
+
             Color(0xFF000000),
             "سعر السوبر جملة عند الكمية",
             Color(0xFFF44336),

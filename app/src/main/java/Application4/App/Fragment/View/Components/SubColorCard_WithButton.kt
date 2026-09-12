@@ -4,6 +4,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatt
 import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
 import Application4.App.Fragment.View.Components.A_Header.View.ColorImageCard_App4
 import Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View.Lenceur_Vent_Handler_App4
+import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
@@ -27,6 +28,7 @@ fun SubColorCard_WithButton(
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
     mode_selection_parent_couleur: M3CouleurProduitInfos? = null,
     on_pour_update_mode_selection_parent_couleur: (M3CouleurProduitInfos?) -> Unit = {},
+    active_Central_Values: ActiveCentralValues,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
@@ -44,8 +46,10 @@ fun SubColorCard_WithButton(
         )
 
 
+
         shouldShowButtons.ifTrue {
             Lenceur_Vent_Handler_App4(
+                active_Central_Values=active_Central_Values,
                 modifier = Modifier.fillMaxWidth(),
                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                 relative_M1produit = relative_M1produit,

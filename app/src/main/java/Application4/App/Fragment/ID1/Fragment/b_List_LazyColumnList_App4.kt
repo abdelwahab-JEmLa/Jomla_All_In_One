@@ -7,6 +7,7 @@ import Application4.App.Fragment.View.A_Item_Produit_App4
 import Application4.App.Modules.Wi.Module.HandlePresenterClientScroll
 import Application4.App.Modules.Wi.Module.HandlePresenterScrollBroadcast
 import EntreApps.Shared.Models.Compts
+import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
@@ -55,6 +56,7 @@ fun Main_LazyColumnList_App4(
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     ventCouleurs: List<M10OperationVentCouleur>,
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    active_Central_Values: ActiveCentralValues,
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val viewModel = uiState_NewProtoPatterns_viewModel.second
@@ -187,6 +189,7 @@ fun Main_LazyColumnList_App4(
                     uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                     on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
                     affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+                    active_Central_Values=active_Central_Values,
                 )
             }
         }
@@ -203,6 +206,7 @@ fun LazyStigerList_Produits_FragID4(
     uiState_NewProtoPatterns_viewModel: Pair<UiState_NewProtoPatterns, A_ViewModel_NewProtoPatterns>,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    active_Central_Values: ActiveCentralValues,
 ) {
     val backgroundColor by animateColorAsState(
         targetValue = if (justMoved) Color(0xFF4CAF50).copy(alpha = 0.3f) else Color.Transparent,
@@ -230,6 +234,7 @@ fun LazyStigerList_Produits_FragID4(
             relative_ListM3Couleurs_override = colors,
             on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
             affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+            active_Central_Values=active_Central_Values,
         )
     }
 }

@@ -3,6 +3,7 @@ package Application4.App.Fragment.View.Components.A_Header.View
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.CategoryBadge
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.View.ViewS.DeleteProductHeader
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
@@ -37,11 +39,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -61,6 +62,7 @@ fun A_Compact_Header_App4(
     affiche_ProduitDataBaseEdites_ComposableViews: Boolean,
     isPanierMode: Boolean = false,
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    compact_button_au_edite_base_donne_options: Boolean = false,
     shouldShowButtons: Boolean = affiche_ProduitDataBaseEdites_ComposableViews || affiche_buttons_lien_unite_couleur_au_couleut_parent,
     onDelete: (M01Produit) -> Unit,
     catalogueName: String? = null,
@@ -211,12 +213,10 @@ fun A_Compact_Header_App4(
                 }
             }
 
-            // Second row: Info cards in FlowRow
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(itemPadding),
-                verticalArrangement = Arrangement.spacedBy(itemPadding)
-            ) {
+            // Second row: Info cards — LazyRow (single-line, scrollable) when
+            // compact_button_au_edite_base_donne_options is active, FlowRow (wraps
+            // to multiple lines) otherwise.
+            val infoCardsContent: @Composable () -> Unit = {
                 // Delete button - only visible for admin users
                 if (shouldShowButtons && isEditMode) {
                     DeleteProductHeader(
@@ -471,6 +471,30 @@ fun A_Compact_Header_App4(
                         valueTextSize = valueTextSize,
                         itemPadding = itemPadding
                     )
+                }
+            }
+
+            if (compact_button_au_edite_base_donne_options) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(itemPadding)
+                ) {
+                    item {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(itemPadding),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            infoCardsContent()
+                        }
+                    }
+                }
+            } else {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(itemPadding),
+                    verticalArrangement = Arrangement.spacedBy(itemPadding)
+                ) {
+                    infoCardsContent()
                 }
             }
         }

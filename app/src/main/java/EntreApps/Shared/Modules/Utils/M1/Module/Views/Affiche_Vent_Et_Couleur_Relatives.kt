@@ -1,5 +1,6 @@
 package EntreApps.Shared.Modules.Utils.M1.Module.Views
 
+import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import android.Manifest
 import android.annotation.SuppressLint
@@ -112,6 +113,7 @@ private fun MediaPickerBar(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Affiche_Vent_Et_Couleur_Relatives(
+    active_Central_Values: ActiveCentralValues,
     start_count: Int,
     affichable_mem_si_zero_depot: Boolean = true,
     au_depot: Int = 0,
@@ -146,7 +148,7 @@ fun Affiche_Vent_Et_Couleur_Relatives(
     val context = LocalContext.current
 
     var isEditMode by remember { mutableStateOf(false) }
-    var flow_row by remember { mutableStateOf(true) }
+    val flow_row = !active_Central_Values.compact_button_au_edite_base_donne_options
     var quantityInput by remember(start_count) { mutableStateOf("") }
     var isEditDepotMode by remember { mutableStateOf(false) }
     var depotInput by remember(au_depot) { mutableStateOf("") }

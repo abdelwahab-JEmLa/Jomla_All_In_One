@@ -17,7 +17,6 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -155,6 +154,7 @@ class A_ViewModel_NewProtoPatterns(
         updater.delete_M10OperationVentCouleur(op)
     fun update_depot_count(
         couleur: M3CouleurProduitInfos,
+
         newDepotCount: Int,
         onSuccess: () -> Unit = {}
     ) =

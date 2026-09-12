@@ -160,7 +160,8 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(Color(0xFFE91E63).copy(alpha = 0.92f))
                                 .padding(horizontal = 10.dp, vertical = 5.dp),
-                        )
+                        )        //<--
+                        //TODO(1): ajout buton qui toggle upddate compact_button_au_edite_base_donne_options 
                         Box {
                             FloatingActionButton(
                                 onClick = {   //<--

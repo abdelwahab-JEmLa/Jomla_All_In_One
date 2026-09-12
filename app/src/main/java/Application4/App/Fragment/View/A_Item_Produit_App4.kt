@@ -7,6 +7,7 @@ import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_New
 import Application4.App.Fragment.View.Components.A_Header.View.A_Compact_Header_App4
 import Application4.App.Fragment.View.Components.Big_Principale_FragID3
 import Application4.App.Fragment.View.Components.SubColorCard_WithButton
+import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Home.find_ListM3CouleurInfos_By_Parent_Produit_KeyID
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
@@ -57,6 +58,7 @@ fun A_Item_Produit_App4(
     relative_ListM3Couleurs_override: List<M3CouleurProduitInfos>? = null,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
+    active_Central_Values: ActiveCentralValues,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
     val wifiState by viewModel.wifiState.collectAsState()
@@ -237,6 +239,7 @@ fun A_Item_Produit_App4(
     ) {
         A_Compact_Header_App4(
 
+
             prix_achat = tariff_ItsWorkInGrossist_SuperGros?.prixCurrency,
             relative_M1produit = relative_M1produit,
             isExpanded = isThisProductExpanded,
@@ -250,6 +253,7 @@ fun A_Item_Produit_App4(
             isPanierMode = centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Panie
                     || centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres,
             affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
+            compact_button_au_edite_base_donne_options = active_Central_Values.compact_button_au_edite_base_donne_options,
             onDelete = { viewModel.delete_m1Produit(it) },
             modifier = modifier,
             onCategoryClick = categoryClickForHeader,
@@ -334,6 +338,7 @@ fun A_Item_Produit_App4(
         )
 
         Big_Principale_FragID3(
+            active_Central_Values=active_Central_Values,
             on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
             uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
             relative_M1produit = relative_M1produit,
@@ -403,6 +408,7 @@ fun A_Item_Produit_App4(
                     relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                         if (index != big_presenter_couleur_produit) {
                             SubColorCard_WithButton(
+                                active_Central_Values=active_Central_Values,
                                 uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                                 couleur = couleur,
                                 relative_M1produit = relative_M1produit,
@@ -431,13 +437,14 @@ fun A_Item_Produit_App4(
                     relative_ListM3Couleurs.forEachIndexed { index, couleur ->
                         if (index != big_presenter_couleur_produit) {
                             SubColorCard_WithButton(
-                                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+                                active_Central_Values=active_Central_Values,
                                 couleur = couleur,
                                 relative_M1produit = relative_M1produit,
                                 selectedTariff = selectedTariff,
-                                shouldShowButtons = shouldShowButtons,
                                 isExpanded = false,
                                 modifier = Modifier.fillMaxWidth(),
+                                shouldShowButtons = shouldShowButtons,
+                                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
                                 affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                                 mode_selection_parent_couleur = mode_selection_parent_couleur,
                                 on_pour_update_mode_selection_parent_couleur = { clickedColor ->

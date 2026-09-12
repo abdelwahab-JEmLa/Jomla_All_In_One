@@ -2,6 +2,7 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
+import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
@@ -57,6 +58,7 @@ fun Lenceur_Vent_Handler_App4(
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
     mode_selection_parent_couleur: M3CouleurProduitInfos? = null,
     on_pour_update_mode_selection_parent_couleur: (M3CouleurProduitInfos?) -> Unit = {},
+    active_Central_Values: ActiveCentralValues,
 ) {
     val (uiState, viewModel) = uiState_NewProtoPatterns_viewModel
 
@@ -386,6 +388,7 @@ fun Lenceur_Vent_Handler_App4(
             contentAlignment = Alignment.CenterEnd
         ) {
             Affiche_Vent_Et_Couleur_Relatives(
+                active_Central_Values=active_Central_Values,
                 start_count = currentQuantity,
                 au_depot = au_depot,
                 standard_count = standardCount,

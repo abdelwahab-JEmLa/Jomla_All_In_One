@@ -60,8 +60,9 @@ fun A_Compact_Presentoire_App_Produits_App4(
 ) {
     val context = LocalContext.current
     val focusedValuesGetter: FocusedValuesGetter = koinInject()
+    val active_Central_Values = focusedValuesGetter.active_Central_Values
     val activeAfficheButtons =
-        focusedValuesGetter.active_Central_Values.affiche_buttons_lien_unite_couleur_au_couleut_parent
+        active_Central_Values.affiche_buttons_lien_unite_couleur_au_couleut_parent
     val repo13TarificationInfos =
         koinInject<V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos>()
 
@@ -131,6 +132,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
     var currentBonVent_m9 by remember { mutableStateOf<M8BonVent?>(null) }
     var vents_de_count by remember { mutableStateOf<List<M10OperationVentCouleur>?>(null) }
 
+    var tariffs by remember { mutableStateOf<List<M13TarificationInfos>?>(null) }
+
     LaunchedEffect(Unit) {
         val (m9, bonVent) = withContext(Dispatchers.IO) {
             val m9Result = viewModelNewProtoPatterns.appDatabase
@@ -143,20 +146,30 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
             m9Result to bonVentResult
         }
-        // Back on Main here: withContext returns to the caller's dispatcher.
+
         currentBonVent_m9 = bonVent
         val all = withContext(Dispatchers.IO) {
             appDatabase.dao_M03CouleurProduitInfos().getAll()
         }
-        // Back on Main here: withContext returns to the caller's dispatcher.
+        val tariffs_dao = withContext(Dispatchers.IO) {
+            appDatabase.dao_M13TarificationInfos().getAll()
+        }
+        tariffs= tariffs_dao
         val depotList = all.filter { it.count_Don_Depot > 0 }
         couleursAuDepot_by_dao = depotList
 
         if (currentBonVent_m9 != null) {
-            val newTariff = M13TarificationInfos.get_default()
-                .copy(typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable)
 
+
+            val currentTariffs = tariffs.orEmpty()
             val newOperations = depotList.map { couleur ->
+                val newTariff =
+                    currentTariffs
+                        .sortedBy { it.creationTimestamps }
+                        .lastOrNull {
+                            it.parent_M1Produit_KeyId == couleur.parentBProduitInfosKeyID &&
+                                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+                        } ?: M13TarificationInfos.get_default()
                 M10OperationVentCouleur.get_Default().copy(
                     creationTimestamps = System.currentTimeMillis(),
                     quantity = couleur.count_Don_Depot,
@@ -225,6 +238,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 )
             } else {
                 Main_LazyColumnList_App4(
+                    active_Central_Values=active_Central_Values,
                     modifier = modifier,
                     uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),
                     onProductCategoryClick = { product ->
@@ -277,11 +291,13 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 affiche_buttons_lien_unite_couleur_au_couleut_parent = activeAfficheButtons,
                 on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = { newVal ->
                     focusedValuesGetter.update_activeCentralValues(
-                        focusedValuesGetter.active_Central_Values.copy(
+                        active_Central_Values.copy(
                             affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
                         )
                     )
-                },
+                },        //<--
+                //TODO(2.C Relative Au Todo(1): 
+                        //... ici ca update  compact_button_au_edite_base_donne_options
             )
         }
     }
@@ -336,7 +352,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
             affiche_ProduitDataBaseEdites_ComposableViews = activeAfficheButtons,
             on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = { newVal ->
                 focusedValuesGetter.update_activeCentralValues(
-                    focusedValuesGetter.active_Central_Values.copy(
+                    active_Central_Values.copy(
                         affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
                     )
                 )

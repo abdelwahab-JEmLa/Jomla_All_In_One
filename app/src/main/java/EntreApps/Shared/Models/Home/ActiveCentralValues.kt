@@ -64,6 +64,10 @@ data class ActiveCentralValues(
         M00CentralParametresOfAllApps.get_Default().itsDevMode
         ,
 
+    val compact_button_au_edite_base_donne_options: Boolean =
+        M00CentralParametresOfAllApps.get_Default().itsDevMode
+        ,
+
     val click_On_Marque: Click_On_Marque = Click_On_Marque.Standart,
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
