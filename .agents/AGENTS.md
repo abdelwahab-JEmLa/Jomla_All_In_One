@@ -103,3 +103,8 @@
   - Always explicitly exclude auto-generated copy tracking and history files (`hist_copie.md`, `list_copied_files`).
   - History files should only be used as recording destinations, never as source payload files to copy to the clipboard.
 
+## Reliable Multi-Line PowerShell Execution
+- When executing complex multi-line PowerShell scripts (e.g. scripts with `foreach`, nested string formatting, or multiple variable assignments), avoid passing them inline via `pwsh -Command "..."`.
+- Instead, write the script to a `.ps1` file inside the `scratch/` directory and execute it via `pwsh -ExecutionPolicy Bypass -File "<scratch_path>\script.ps1"`.
+
+
