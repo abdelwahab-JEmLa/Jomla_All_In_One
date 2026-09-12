@@ -2,7 +2,6 @@ package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Fragment.ID1.Fragment.ViewModel.y.Components.UiState_NewProtoPatterns
-import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.CatronAdd.CartonVentHandler_App4
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
@@ -361,7 +360,7 @@ fun Lenceur_Vent_Handler_App4(
             },
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        if (boitParCarton > 1 && isAdmin && affiche_buttons_lien_unite_couleur_au_couleut_parent == true) {
+        /*if (boitParCarton > 1 && isAdmin && affiche_buttons_lien_unite_couleur_au_couleut_parent == true) {
             CartonVentHandler_App4(
                 currentCartons = currentCartons,
                 depotEnCartons = depotEnCartons,
@@ -375,7 +374,7 @@ fun Lenceur_Vent_Handler_App4(
                     handleLenceVent(newCartons * boitParCarton)
                 },
             )
-        }
+        }         */
 
         // ── Boit / unit handler ───────────────────────────────────────────
         Box(

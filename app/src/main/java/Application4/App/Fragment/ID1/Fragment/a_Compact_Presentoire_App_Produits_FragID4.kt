@@ -9,10 +9,10 @@ import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
-import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
@@ -80,18 +80,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
             }
         )
 
-    var couleur by remember { mutableStateOf<List<M3CouleurProduitInfos>?>(null) }
-    var couleur_f by remember { mutableStateOf<List<M3CouleurProduitInfos>?>(null) }
-
-
-    LaunchedEffect(Unit) {
-        val all = withContext(Dispatchers.IO) {
-            appDatabase.dao_M03CouleurProduitInfos().getAll()
-        }
-        // Back on Main here: withContext returns to the caller's dispatcher.
-        couleur = all
-        couleur_f = all.filter { it.its_delicate_a_regle_apres }
-    }
 
     LaunchedEffect(Unit) {
         viewModelNewProtoPatterns.retryLoadingData()
@@ -138,17 +126,10 @@ fun A_Compact_Presentoire_App_Produits_App4(
         }
     }
 
-    // FIXED: previously this block ran dao_M9AppCompt()/dao_M8BonVent() queries directly
-    // inside LaunchedEffect (main dispatcher), causing:
-    // IllegalStateException: Cannot access database on the main thread.
-    // Now wrapped in withContext(Dispatchers.IO) above.
 
-    var couleursAuDepot by remember { mutableStateOf<List<M3CouleurProduitInfos>?>(null) }
-    var current_m9 by remember { mutableStateOf<M09AppCompt?>(null) }
+    var couleursAuDepot_by_dao by remember { mutableStateOf<List<M3CouleurProduitInfos>?>(null) }
     var currentBonVent_m9 by remember { mutableStateOf<M8BonVent?>(null) }
-
-    val currentBonVent =
-        viewModelNewProtoPatterns.active_Datas.activeOnVent_M8BonVent
+    var vents_de_count by remember { mutableStateOf<List<M10OperationVentCouleur>?>(null) }
 
     LaunchedEffect(Unit) {
         val (m9, bonVent) = withContext(Dispatchers.IO) {
@@ -163,12 +144,41 @@ fun A_Compact_Presentoire_App_Produits_App4(
             m9Result to bonVentResult
         }
         // Back on Main here: withContext returns to the caller's dispatcher.
-        current_m9 = m9
         currentBonVent_m9 = bonVent
+        val all = withContext(Dispatchers.IO) {
+            appDatabase.dao_M03CouleurProduitInfos().getAll()
+        }
+        // Back on Main here: withContext returns to the caller's dispatcher.
+        val depotList = all.filter { it.count_Don_Depot > 0 }
+        couleursAuDepot_by_dao = depotList
 
-        couleursAuDepot = viewModelNewProtoPatterns.active_Datas.list_M03CouleurProduitInfos
-            ?.filter { it.count_Don_Depot > 0 }
+        if (currentBonVent_m9 != null) {
+            val newTariff = M13TarificationInfos.get_default()
+                .copy(typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable)
+
+            val newOperations = depotList.map { couleur ->
+                M10OperationVentCouleur.get_Default().copy(
+                    creationTimestamps = System.currentTimeMillis(),
+                    quantity = couleur.count_Don_Depot,
+                    prix_de_Vent_entre_directement_NewProto = newTariff.prixCurrency,
+                    parentM13TarificationKeyID = "Prix_Progressive_Editable Non Saved",
+                    parentM13TarificationDebugInfos = newTariff.getDebugInfos(),
+                    parent_M1Produit_KeyId = couleur.parentBProduitInfosKeyID,
+                    parent_M1Produit_DebugInfos = "par.produit ${couleur.parentId1ProduitInfosDebugName}",
+                    parent_M3CouleurProduit_KeyID = couleur.keyID,
+                    parent_M3CouleurProduit_DebugInfos = couleur.get_DebugsInfos(),
+                    parent_M8BonVent_KeyId = currentBonVent_m9!!.keyID,
+                    parent_M8BonVent_DebugInfos = currentBonVent_m9!!.get_DebugInfos(),
+                    parent_M2Client_KeyID = currentBonVent_m9!!.parent_M2Client_KeyID,
+                    typeTarificationEnumT2 = newTariff.typeChoisi,
+                )
+            }
+
+            vents_de_count = newOperations
+        }
     }
+
+
 
     if (!isInitDone) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -182,36 +192,12 @@ fun A_Compact_Presentoire_App_Produits_App4(
     } else {
         Box(
             modifier = Modifier.semantics(mergeDescendants = true) {
-                set(value = currentBonVent, key = SemanticsPropertyKey("currentBonVent"))
                 set(value = currentBonVent_m9, key = SemanticsPropertyKey("currentBonVent_m9"))
-
-                set(value = couleursAuDepot, key = SemanticsPropertyKey("couleursAuDepot"))
-
-                set(value = active_Datas.list_M03CouleurProduitInfos?.find {
-                    it.keyID == "-OWDMGKsnReAaqOHO5iH"
-                }, key = SemanticsPropertyKey(""))
-
                 set(
-                    value = active_Datas.list_M03CouleurProduitInfos?.size,
-                    key = SemanticsPropertyKey("size")
+                    value = couleursAuDepot_by_dao,
+                    key = SemanticsPropertyKey("couleursAuDepot_by_dao")
                 )
-
-                set(
-                    value = active_Datas.active_M9Compt?.onVentM8BonVentDebugInfos,
-                    key = SemanticsPropertyKey("onVentM8BonVentDebugInfos")
-                )
-                set(
-                    value = active_Datas.active_M9Compt?.onVentM8BonVentKey,
-                    key = SemanticsPropertyKey("onVentM8BonVentKey")
-                )
-                set(
-                    value = couleur,
-                    key = SemanticsPropertyKey("couleur")
-                )
-                set(
-                    value = couleur_f,
-                    key = SemanticsPropertyKey("couleur_f")
-                )
+                set(value = vents_de_count, key = SemanticsPropertyKey("vents_de_count"))
             }
         ) {
             if (affiche_pub_abdelwahab_electro_gro_store) {
@@ -251,27 +237,24 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 )
             }
 
-            // Floating action buttons are always visible regardless of pub mode
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)
             val haptic = LocalHapticFeedback.current
 
             FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
-                onClick_Lence_Ventes_Delicates = {
-                    viewModelNewProtoPatterns.active_Datas.list_M03CouleurProduitInfos
-                        ?.filter { it.its_delicate_a_regle_apres }?.let {
-                            viewModelNewProtoPatterns.lanceVentesPourCouleursDelicates(
-                                it
-                            )
-                        }
+                onClick_Lence_Ventes_Depot = {
+                    viewModelNewProtoPatterns.addNew_listM10OperationVentCouleur(vents_de_count)
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 },
-                onClick_Lence_Ventes_Depot = {
-                    couleursAuDepot?.let {
-                        viewModelNewProtoPatterns.lanceVentesPourCouleursAuDepot(
-                            it,
-                            currentBonVent_m9
-                        )
-                    }
+                onClick_Lence_Ventes_Delicates = {
+                    couleursAuDepot_by_dao
+                        ?.filter { it.its_delicate_a_regle_apres }?.let {
+                            currentBonVent_m9?.let { currentBonVent ->
+                                viewModelNewProtoPatterns.lanceVentesPourCouleursDelicates(
+                                    it,
+                                    currentBonVent
+                                )
+                            }
+                        }
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 },
                 onClick_Activer_Delicates_Pour_Ventes_Actives = {
