@@ -49,6 +49,7 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 | [zip_colle](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/zip_colle) | `zip_colle`, `colle_`, `colle`, `z_`, `ok_` | Extrait et remplace des fichiers Kotlin depuis les téléchargements |
 | [cop_last](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/cop_last) | `cop_last` | Copie le dernier fichier actif |
 | [copy_skill](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/copy_skill) | `copy_skill` | Copie un skill vers un autre répertoire |
+| [copy_save_au_frech_list_copy_uncomited_edited_files](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/copy_save_au_frech_list_copy_uncomited_edited_files) | `copy_uncomited`, `cu_`, `sc_u`, `save_uncomited_`, `copy_edited` | Copie tous les fichiers non commités (edited) du projet Android actif et sauvegarde leurs chemins dans `cop_last/list_copied_files` |
 
 ---
 
@@ -128,13 +129,25 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 
 ## 📂 3. Gestion des Références de Projets (`ref_<nom>` / `ref_json`)
 
+**Répertoire de référence** :
+```
+C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\b__References_Files\
+```
+
 Lorsque l'assistant rencontre un mot-clé ou déclencheur sous la forme `ref_<nom>` (par exemple `ref_DevApp`, `ref_agy_c`) ou `ref_json` (équivalent à `references`), il **doit** :
-1. Lire le fichier de configuration `ref_json` (qui correspond au fichier [references.json](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/references.json)) via PowerShell (`Get-Content`).
-2. Rechercher dans `projects` la clé dont la liste `noms` contient le nom demandé, de manière insensible à la casse.
-3. Extraire le chemin `path` spécifié pour ce projet.
-4. Appliquer ce `path` comme répertoire racine cible pour toutes les opérations liées à ce projet.
+1. Chercher le fichier de configuration dans le répertoire [`b__References_Files`](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/b__References_Files) (ex: `references.json`, ou tout autre fichier de mapping présent dans ce dossier).
+2. Le lire via PowerShell :
+   ```powershell
+   Get-Content -Path "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\b__References_Files\references.json"
+   ```
+3. Rechercher dans `projects` la clé dont la liste `noms` contient le nom demandé, de manière insensible à la casse.
+4. Extraire le chemin `path` spécifié pour ce projet.
+5. Appliquer ce `path` comme répertoire racine cible pour toutes les opérations liées à ce projet.
+
+> ⚠️ **Chemin canonique** : Toujours résoudre `ref_json` depuis `b__References_Files\`. Ne pas utiliser l'ancien chemin `antigravity-cli\references.json` sauf si `b__References_Files` est absent.
 
 ---
+
 
 ## 🔍 Instructions de Recherche / Filtrage
 

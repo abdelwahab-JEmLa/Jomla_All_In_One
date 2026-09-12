@@ -21,7 +21,9 @@ Lorsque ce skill est déclenché par l'utilisateur :
 
 1. **Identifier le nom du skill ciblé et les options de destination** :
    - Déduisez le `<nom_du_skill>` à partir de la requête (par exemple, si la requête est `installe_t_`, le nom est `t_`).
-   - **Règle Sections (`skills_sections` / `a_parSections`)** : Vérifiez si la requête spécifie une section (ex: `cop_s`, `copy_skills` ou `dans la section <NomSection>`).
+   - **Règle Sections (`skills_sections` / `a_parSections`)** : Vérifiez si la requête spécifie une section (ex: `cop_s`, `copy_skills`, `/copie_s`, ou `dans la section <NomSection>`).
+
+   > ⚠️ **Règle `/copie_s` (Section Only)** : Si l'utilisateur mentionne `/copie_s`, `cop_s`, `copy_skills`, ou toute autre section nommée explicitement, le skill doit être installé **UNIQUEMENT dans la section** (`antigravity-cli/skills/<NomSection>/<nom_du_skill>/`). **Ne pas copier dans les répertoires racine** (`antigravity-cli/skills/<nom>` ni `config/skills/<nom>`). Cette règle prévaut sur le comportement par défaut.
 
 2. **Demander la permission globale** :
    Utilisez l'outil `ask_permission` pour demander les permissions d'écriture (`write_file`) sur les répertoires globaux concernés :
@@ -36,41 +38,48 @@ Lorsque ce skill est déclenché par l'utilisateur :
 
 4. **Copier le skill aux répertoires cibles et supprimer le dossier local** :
    Utilisez l'outil de ligne de commande (`run_command` avec PowerShell) pour :
-   - Copier le skill dans `config/skills/<nom_du_skill>` et `antigravity-cli/skills/<nom_du_skill>`.
-   - Si une section est spécifiée (`<NomSection>`), copier également le skill dans `C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\a_parSections\<NomSection>\<nom_du_skill>\`.
-   - Mettre à jour `h_/SKILL.md` pour y déclarer la nouvelle section et/ou le nouveau skill sous `## 📂 3. Skills Organisés par Sections (a_parSections)`.
+
+   - **Mode par défaut (sans section)** : Copier dans `config/skills/<nom>` ET `antigravity-cli/skills/<nom>`.
+   - **Mode section (`/copie_s` / `cop_s` / section nommée)** : Copier **UNIQUEMENT** dans `antigravity-cli/skills/<NomSection>/<nom_du_skill>/`. Ne pas créer de copie racine.
+   - Mettre à jour `h_/SKILL.md` pour y déclarer le nouveau skill dans la section concernée.
    - Supprimer le dossier local après la copie pour éviter les doublons dans l'affichage du CLI.
 
-   Exemple de commande PowerShell à exécuter :
+   Exemple de commande PowerShell — **Mode Section Only** (`/copie_s` mentionné) :
+   ```powershell
+   $skillName  = "<nom_du_skill>"
+   $sectionName = "<NomSection>"  # ex: Copy_Skills, Todo_Skills, etc.
+   $source      = "<chemin_local_du_skill>"
+   $destSection = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\$sectionName\$skillName"
+
+   # Créer le dossier de section si nécessaire
+   $sectionDir = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\$sectionName"
+   if (-not (Test-Path $sectionDir)) { New-Item -ItemType Directory -Path $sectionDir -Force }
+
+   # Copier UNIQUEMENT dans la section (pas de copies racine)
+   if (Test-Path $destSection) { Remove-Item -Path $destSection -Recurse -Force }
+   Copy-Item -Path $source -Destination $destSection -Recurse -Force
+   Write-Host "✅ Skill '$skillName' installé UNIQUEMENT dans la section: $sectionName"
+
+   # Supprimer le dossier local
+   if (Test-Path $source) { Remove-Item -Path $source -Recurse -Force }
+   Write-Host "🗑️ Dossier local supprimé."
+   ```
+
+   Exemple de commande PowerShell — **Mode Global par défaut** (aucune section mentionnée) :
    ```powershell
    $skillName = "<nom_du_skill>"
-   $sectionName = "<NomSection>" # ex: Copy_Skills, UI_Skills, etc.
-   $source = "C:\Users\Abou Mohamed\AndroidStudioProjects\Light_App_Controles\.agents\skills\$skillName"
-   $dest1 = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\$skillName"
-   $dest2 = "C:\Users\Abou Mohamed\.gemini\config\skills\$skillName"
-   $destSection = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\a_parSections\$sectionName\$skillName"
+   $source    = "<chemin_local_du_skill>"
+   $dest1     = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\$skillName"
+   $dest2     = "C:\Users\Abou Mohamed\.gemini\config\skills\$skillName"
 
-   if (Test-Path $source) {
-       if (Test-Path $dest1) { Remove-Item -Path $dest1 -Recurse -Force -ErrorAction SilentlyContinue }
-       if (Test-Path $dest2) { Remove-Item -Path $dest2 -Recurse -Force -ErrorAction SilentlyContinue }
+   foreach ($d in @($dest1, $dest2)) {
+       if (Test-Path $d) { Remove-Item -Path $d -Recurse -Force }
+       Copy-Item -Path $source -Destination $d -Recurse -Force
+   }
+   Write-Host "✅ Skill '$skillName' copié dans les répertoires globaux (racine)."
 
-       Copy-Item -Path $source -Destination $dest1 -Recurse -Force
-       Copy-Item -Path $source -Destination $dest2 -Recurse -Force
-       Write-Host "Le skill $skillName a ete copie avec succes dans les repertoires globaux."
-
-       if ($sectionName) {
-           $sectionDir = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\a_parSections\$sectionName"
-           if (-not (Test-Path $sectionDir)) { New-Item -ItemType Directory -Path $sectionDir -Force }
-           if (Test-Path $destSection) { Remove-Item -Path $destSection -Recurse -Force -ErrorAction SilentlyContinue }
-           Copy-Item -Path $source -Destination $destSection -Recurse -Force
-           Write-Host "Le skill $skillName a egalement ete installe dans la section a_parSections/$sectionName."
-       }
-
-       Remove-Item -Path $source -Recurse -Force
-       Write-Host "Le dossier local a ete supprime pour prioriser l'affichage global."
-    } else {
-        Write-Host "Le skill $skillName n'existe pas localement. Creation ex-nihilo en cours..."
-    }
+   if (Test-Path $source) { Remove-Item -Path $source -Recurse -Force }
+   Write-Host "🗑️ Dossier local supprimé."
    ```
 
 5. **Valider et corriger le frontmatter YAML du SKILL.md** :

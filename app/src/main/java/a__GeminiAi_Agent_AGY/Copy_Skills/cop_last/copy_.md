@@ -26,6 +26,22 @@ The current default reference package is set below:
 ### 1. Identify Target Directory & Files
 - **Case A: cl_ / cop_l / cop_last (Default Trigger)**: If the user triggers `cl_`, `cop_l`, or `cop_last` without a path, the assistant must read the exact list of file paths defined in [list_copied_files.md](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/copy_/list_copied_files.md). Copy *exactly* those files to the Windows clipboard.
 - **Case B: Dynamic Request**: If the user provides a path (e.g. `<directory_path> cop_`), or a dynamic comment `//TODO: cop_` is found, set the target directory to that path or the parent folder of the file containing the comment. Scan that directory recursively for `.kt` files.
+- **Case C: `+t_` suffix (Add t_ skill to list)**: If the user triggers `cop_ +t_`, `cl_ +t_`, or any cop variant followed by `+t_`, **do NOT copy files to clipboard**. Instead, append the absolute path of the `t_` skill file to the `list_copied_files` at:
+  ```
+  C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\Copy_Skills\cop_last\list_copied_files
+  ```
+  The path to append is always:
+  ```
+  C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\Todo_Skills\t_\SKILL.md
+  ```
+  Use PowerShell to append (not overwrite):
+  ```powershell
+  $listFile = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\Copy_Skills\cop_last\list_copied_files"
+  $t_skillPath = "C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\Todo_Skills\t_\SKILL.md"
+  Add-Content -Path $listFile -Value $t_skillPath -Encoding UTF8
+  Write-Host "✅ t_ skill ajouté à list_copied_files"
+  ```
+  Then confirm with a concise message: `✅ +t_ ajouté → list_copied_files` without copying anything to clipboard.
 
 ### 2. Copy Files Directly to Windows Clipboard (Ctrl+C Simulation)
 - Run the PowerShell `Set-Clipboard` command to populate the Windows system clipboard with the actual `.kt` file objects, allowing the user to paste them directly into Android Studio or Windows Explorer using `Ctrl+V`:
@@ -35,6 +51,7 @@ The current default reference package is set below:
 
 ### 3. Save Copied Files to list_copied_files.md
 - If files were scanned dynamically (Case B), overwrite the contents of [list_copied_files.md](file:///C:/Users/Abou%20Mohamed/AndroidStudioProjects/ClientJetPack/copy_/list_copied_files.md) with the absolute paths of all the `.kt` files that were successfully copied, ensuring they are saved for subsequent fast triggers.
+- **Case C (`+t_`)** is handled fully in Step 1 above (append only, no clipboard, no overwrite).
 
 ### 4. Report Copy Success (Ultra-concise)
 Always output a highly concise response containing ONLY:
