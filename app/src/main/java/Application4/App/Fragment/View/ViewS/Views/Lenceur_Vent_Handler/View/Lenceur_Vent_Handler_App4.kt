@@ -7,7 +7,7 @@ import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
-import EntreApps.Shared.Modules.Utils.M1.Module.Views.FastInit_Outlined_Int_Edite_Modulable_Proto4
+import EntreApps.Shared.Modules.Utils.M1.Module.Views.Affiche_Vent_Et_Couleur_Relatives
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -288,10 +288,6 @@ fun Lenceur_Vent_Handler_App4(
         val newList = (currentList ?: emptyList()) + newOperation
         viewModel.addNew_listM10OperationVentCouleur(newList)
 
-        // Dès qu'une nouvelle vente est lancée sur une couleur, on rattrape automatiquement
-        // toutes les couleurs marquées its_delicate_a_regle_apres qui n'ont pas encore de ligne
-        // de vente sur ce bon (voir A_ViewModel_NewProtoPatterns.lanceVentesPourCouleursDelicates).
-        viewModel.lanceVentesPourCouleursDelicates()
     }
 
     fun handleLenceVent_When_There_Is_Old(
@@ -389,7 +385,7 @@ fun Lenceur_Vent_Handler_App4(
                 .padding(horizontal = horizontalPadding, vertical = verticalPadding),
             contentAlignment = Alignment.CenterEnd
         ) {
-            FastInit_Outlined_Int_Edite_Modulable_Proto4(
+            Affiche_Vent_Et_Couleur_Relatives(
                 start_count = currentQuantity,
                 au_depot = au_depot,
                 standard_count = standardCount,
@@ -399,9 +395,22 @@ fun Lenceur_Vent_Handler_App4(
                 show_depot_card_on_top_in_flow_row = true,
                 is_admin = isAdmin,
                 add_spacing_between_depot_and_sale = isAdmin,
+                on_admin_depot_update = { newDepotCount ->
+                    viewModel.update_depot_count(selectedCouleur, newDepotCount)
+                },
+                on_Data_Update = { newQuantity -> handleLenceVent(newQuantity) },
                 affiche_ProduitDataBaseEdites = affiche_buttons_lien_unite_couleur_au_couleut_parent== true,
-                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                 c_unite_couleur_de_couleurKey = selectedCouleur.c_unite_couleur_de_couleurKey,
+                on_set_c_unite_key = { key ->
+                    val parentColor = mode_selection_parent_couleur
+                    if (parentColor != null) {
+                        viewModel.update_m3couleur(parentColor.copy(c_unite_couleur_de_couleurKey = selectedCouleur.keyID))
+                        on_pour_update_mode_selection_parent_couleur(null)
+                    } else {
+                        viewModel.update_m3couleur(selectedCouleur.copy(c_unite_couleur_de_couleurKey = key))
+                    }
+                },
+                affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
                 mode_selection_parent_couleur_key = mode_selection_parent_couleur?.keyID ?: "",
                 is_this_color_selected_as_parent_for_link = mode_selection_parent_couleur?.keyID == selectedCouleur.keyID,
                 on_pour_mode_selection_parent_couleur = { on_pour_update_mode_selection_parent_couleur(selectedCouleur) },
@@ -422,25 +431,10 @@ fun Lenceur_Vent_Handler_App4(
                         )
                     )
                 },
-                its_pour_affiche_au_presenter = selectedCouleur.its_pour_affiche_au_presenter,
-                currentM3 = selectedCouleur,
-                on_update_m3couleur = { updatedM3 ->
-                    viewModel.update_m3couleur(updatedM3)
-                },
-                on_set_c_unite_key = { key ->
-                    val parentColor = mode_selection_parent_couleur
-                    if (parentColor != null) {
-                        viewModel.update_m3couleur(parentColor.copy(c_unite_couleur_de_couleurKey = selectedCouleur.keyID))
-                        on_pour_update_mode_selection_parent_couleur(null)
-                    } else {
-                        viewModel.update_m3couleur(selectedCouleur.copy(c_unite_couleur_de_couleurKey = key))
-                    }
-                },
-                on_admin_depot_update = { newDepotCount ->
-                    viewModel.update_depot_count(selectedCouleur, newDepotCount)
-                },
-                on_Data_Update = { newQuantity -> handleLenceVent(newQuantity) },
-            )
+                relative_couleur = selectedCouleur,
+            ) { updatedM3 ->
+                viewModel.update_m3couleur(updatedM3)
+            }
         }
     } // end Column
 }

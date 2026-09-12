@@ -106,7 +106,7 @@ private fun MediaPickerBar(
 }
 
 @Composable
-fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
+fun Affiche_Vent_Et_Couleur_Relatives(
     start_count: Int,
     affichable_mem_si_zero_depot: Boolean = true,
     au_depot: Int = 0,
@@ -135,8 +135,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
     on_toggle_presentative: (() -> Unit)? = null,
     affiche_que_c_don_le_panie: Boolean = false,
     on_toggle_affiche_panie: (() -> Unit)? = null,
-    its_pour_affiche_au_presenter: Boolean = false,
-    currentM3: M3CouleurProduitInfos? = null,
+    relative_couleur: M3CouleurProduitInfos? = null,
     on_update_m3couleur: ((M3CouleurProduitInfos) -> Unit)? = null,
 ) {
     val context = LocalContext.current
@@ -204,15 +203,16 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                     modifier = modifier,
                     horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End)
                 ) {
-                    if (on_update_m3couleur != null && currentM3 != null && is_admin) {
+                    if (on_update_m3couleur != null && relative_couleur != null && is_admin) {
+                        val its_delicate_a_regle_apres = relative_couleur.its_delicate_a_regle_apres
                         item {
                             Card(
                                 modifier = Modifier.clickable {
-                                    on_update_m3couleur(currentM3.copy(its_pour_affiche_au_presenter = !its_pour_affiche_au_presenter))
+                                    on_update_m3couleur(relative_couleur.copy(its_delicate_a_regle_apres = !its_delicate_a_regle_apres))
                                 },
                                 shape = RoundedCornerShape(20.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = if (its_pour_affiche_au_presenter) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                                    containerColor = if (its_delicate_a_regle_apres) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
                                 )
                             ) {
                                 Text(
@@ -220,7 +220,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                     style = textStyle,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (its_pour_affiche_au_presenter) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = if (its_delicate_a_regle_apres) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }

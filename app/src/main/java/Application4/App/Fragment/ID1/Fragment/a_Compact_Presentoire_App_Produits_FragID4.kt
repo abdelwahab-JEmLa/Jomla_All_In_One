@@ -10,6 +10,7 @@ import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.a.ID1_Fe.Feature.Options.a.Main.FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button
@@ -31,7 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -52,7 +55,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
 ) {
     val context = LocalContext.current
     val focusedValuesGetter: FocusedValuesGetter = koinInject()
-    val activeAfficheButtons = focusedValuesGetter.active_Central_Values.affiche_buttons_lien_unite_couleur_au_couleut_parent
+    val activeAfficheButtons =
+        focusedValuesGetter.active_Central_Values.affiche_buttons_lien_unite_couleur_au_couleut_parent
     val repo13TarificationInfos =
         koinInject<V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos>()
 
@@ -70,6 +74,17 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 }
             }
         )
+
+    var couleur by remember { mutableStateOf<List<M3CouleurProduitInfos>?>(null) }
+    var couleur_f by remember { mutableStateOf<List<M3CouleurProduitInfos>?>(null) }
+
+
+    LaunchedEffect(Unit) {
+        couleur = appDatabase.dao_M03CouleurProduitInfos().getAll()
+
+        couleur_f = appDatabase.dao_M03CouleurProduitInfos().getAll()
+            .filter { it.its_delicate_a_regle_apres }
+    }
 
     LaunchedEffect(Unit) {
         viewModelNewProtoPatterns.retryLoadingData()
@@ -145,6 +160,14 @@ fun A_Compact_Presentoire_App_Produits_App4(
                     value = active_Datas.active_M9Compt?.onVentM8BonVentKey,
                     key = SemanticsPropertyKey("onVentM8BonVentKey")
                 )
+                set(
+                    value = couleur,
+                    key = SemanticsPropertyKey("couleur")
+                )
+                set(
+                    value = couleur_f,
+                    key = SemanticsPropertyKey("couleur_f")
+                )
             }
         ) {
             if (affiche_pub_abdelwahab_electro_gro_store) {
@@ -158,7 +181,8 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 val landscapeImages = remember(allImageIds) {
                     allImageIds.filter { resId ->
                         val opts = android.graphics.BitmapFactory.Options().apply {
-                            inJustDecodeBounds = true  // lecture seule des dimensions, sans décode complet
+                            inJustDecodeBounds =
+                                true  // lecture seule des dimensions, sans décode complet
                         }
                         BitmapFactory.decodeResource(context.resources, resId, opts)
                         opts.outWidth > opts.outHeight   // true = paysage
@@ -185,14 +209,23 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
             // Floating action buttons are always visible regardless of pub mode
             PressistatntMainActivityButtons_App4(viewModelNewProtoPatterns)
+            val haptic = LocalHapticFeedback.current
 
             FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
-                onClick_Lence_Ventes_Delicates = { viewModelNewProtoPatterns.lanceVentesPourCouleursDelicates() },
+                onClick_Lence_Ventes_Delicates = {
+                    viewModelNewProtoPatterns.active_Datas.list_M03CouleurProduitInfos
+                        ?.filter { it.its_delicate_a_regle_apres }?.let {
+                            viewModelNewProtoPatterns.lanceVentesPourCouleursDelicates(
+                                it
+                            )
+                        }
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                },
                 onClick_Activer_Delicates_Pour_Ventes_Actives = {
-                    viewModelNewProtoPatterns.set_New_DelicatePourAll(true)
+                    viewModelNewProtoPatterns.setDelicatePourCouleursDesVentesActives(true)
                 },
                 onClick_Desactiver_Delicates_Pour_Ventes_Actives = {
-                    viewModelNewProtoPatterns.set_New_DelicatePourAll(false)
+                    viewModelNewProtoPatterns.setDelicatePourTout()
                 },
                 appDatabase = viewModelNewProtoPatterns.appDatabase,
                 onClick_Affiche_Pub = {
@@ -200,8 +233,9 @@ fun A_Compact_Presentoire_App_Produits_App4(
                     affiche_pub_abdelwahab_electro_gro_store =
                         bool
                     wifiTransferDatas_ControllerApp.sendOrderToClientDisplayerT(
-                        Wifi_Messages_Types_NewProto.Update_affiche_pub_abdelwahab_electro_gro_store
-                        ,bool.toString())
+                        Wifi_Messages_Types_NewProto.Update_affiche_pub_abdelwahab_electro_gro_store,
+                        bool.toString()
+                    )
                 },
                 affiche_buttons_lien_unite_couleur_au_couleut_parent = activeAfficheButtons,
                 on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent = { newVal ->
@@ -214,7 +248,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
             )
         }
     }
-
 
     selectedProductForCategoryChange?.let { product ->
         CategorySelectionDialog(

@@ -163,24 +163,19 @@ class A_ViewModel_NewProtoPatterns(
         updater.update_M13TarificationInfos(tariff)
 
     /**
-     * [BigDataBase_Editeur_Par_Csv_Floating_Separated_Button] / [Lenceur_Vent_Handler_App4]:
+     * TODO(1) [BigDataBase_Editeur_Par_Csv_Floating_Separated_Button] /
+     * TODO(2.C Relative Au Todo(1)) [Lenceur_Vent_Handler_App4]:
      * pour chaque [M3CouleurProduitInfos] marquée [M3CouleurProduitInfos.its_delicate_a_regle_apres],
      * crée une vente (M10OperationVentCouleur) de quantité 1 sur le bon de vente actif,
-     * si cette couleur n'a pas déjà une ligne de vente dessus (voir [couleursKeys_dejaEnVente]).
+     * si cette couleur n'a pas déjà une ligne de vente dessus.
      *
      * Appelée à la fois manuellement (bouton du menu flottant) et automatiquement
      * dès qu'une nouvelle vente est lancée sur une couleur (voir handleLenceVent_WhenNew).
      */
-    fun lanceVentesPourCouleursDelicates() {
+    fun lanceVentesPourCouleursDelicates(list_M3: List<M3CouleurProduitInfos>) {
         val currentBonVent = active_Datas.activeOnVent_M8BonVent ?: return
         val currentList = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-        val couleursKeys_dejaEnVente = currentList.map { it.parent_M3CouleurProduit_KeyID }.toSet()
-
-        val delicateCouleurs = active_Datas.list_M03CouleurProduitInfos
-            ?.filter { it.its_delicate_a_regle_apres && it.keyID !in couleursKeys_dejaEnVente }
-            ?: return
-
-        if (delicateCouleurs.isEmpty()) return
+        val delicateCouleurs = list_M3
 
         val newTariff = M13TarificationInfos.get_default()
             .copy(typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable)
@@ -205,7 +200,7 @@ class A_ViewModel_NewProtoPatterns(
                 )
             }
 
-        update_listM10OperationVentCouleur(newOperations)
+            update_listM10OperationVentCouleur(currentList + newOperations)
     }
 
     /**
@@ -213,15 +208,6 @@ class A_ViewModel_NewProtoPatterns(
      * active ou désactive [M3CouleurProduitInfos.its_delicate_a_regle_apres] sur la couleur
      * correspondante. [delicate] = true pour activer, false pour désactiver (l'inverse).
      */
-    fun set_New_DelicatePourAll(delicate: Boolean) {
-        val couleurs = active_Datas.list_M03CouleurProduitInfos ?: return
-        couleurs
-
-            .forEach { couleur ->
-                update_m3couleur(couleur.copy(its_delicate_a_regle_apres = delicate))
-            }
-    }
-
     fun setDelicatePourCouleursDesVentesActives(delicate: Boolean) {
         val currentList = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
         val couleurs = active_Datas.list_M03CouleurProduitInfos ?: return
@@ -232,6 +218,14 @@ class A_ViewModel_NewProtoPatterns(
             .filter { it.its_delicate_a_regle_apres != delicate }
             .forEach { couleur ->
                 update_m3couleur(couleur.copy(its_delicate_a_regle_apres = delicate))
+            }
+    }
+    fun setDelicatePourTout () {
+        val couleurs = active_Datas.list_M03CouleurProduitInfos ?: return
+
+        couleurs
+            .forEach { couleur ->
+                update_m3couleur(couleur.copy(its_delicate_a_regle_apres = false))
             }
     }
 

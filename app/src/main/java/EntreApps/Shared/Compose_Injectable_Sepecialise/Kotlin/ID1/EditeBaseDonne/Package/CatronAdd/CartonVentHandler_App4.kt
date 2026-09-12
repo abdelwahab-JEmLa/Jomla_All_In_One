@@ -1,7 +1,7 @@
 package EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.CatronAdd
 
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.ActivationTigger
-import EntreApps.Shared.Modules.Utils.M1.Module.Views.FastInit_Outlined_Int_Edite_Modulable_Proto4
+import EntreApps.Shared.Modules.Utils.M1.Module.Views.Affiche_Vent_Et_Couleur_Relatives
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.FunctionsBase.ifTrue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -45,7 +45,7 @@ fun CartonVentHandler_App4(
                 .padding(horizontal = horizontalPadding, vertical = verticalPadding / 2),
             contentAlignment = Alignment.CenterEnd
         ) {
-            FastInit_Outlined_Int_Edite_Modulable_Proto4(
+            Affiche_Vent_Et_Couleur_Relatives(
                 start_count = currentCartons,
                 au_depot = depotEnCartons,
                 standard_count = 1,                     // 1 carton par premier clic

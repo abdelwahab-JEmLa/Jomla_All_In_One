@@ -76,8 +76,8 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     onClick_Lence_Capture: (() -> Unit)? = null,
     onClick_Affiche_Pub: () -> Unit = {},
     onClick_Lence_Ventes_Delicates: () -> Unit = {},
-    onClick_Activer_Delicates_Pour_Ventes_Actives: () -> Unit = {},
-    onClick_Desactiver_Delicates_Pour_Ventes_Actives: () -> Unit = {},
+    onClick_Activer_Delicates_Pour_Ventes_Actives: () -> Unit = {} ,
+    onClick_Desactiver_Delicates_Pour_Ventes_Actives: () -> Unit= {} ,
     context: Context = LocalContext.current,
     appDatabase: AppDatabase,
     viewModel: FeatureID1_ViewModel = viewModel(
@@ -199,7 +199,6 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                         Box {
                             FloatingActionButton(
                                 onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     onClick_Lence_Ventes_Delicates()
                                 },
                                 modifier = Modifier.size(46.dp),
