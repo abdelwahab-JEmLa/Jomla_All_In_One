@@ -46,6 +46,7 @@ fun CartonVentHandler_App4(
             contentAlignment = Alignment.CenterEnd
         ) {
             Affiche_Vent_Et_Couleur_Relatives(
+
                 start_count = currentCartons,
                 au_depot = depotEnCartons,
                 standard_count = 1,                     // 1 carton par premier clic
