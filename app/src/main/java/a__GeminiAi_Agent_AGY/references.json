@@ -1,0 +1,53 @@
+{
+  "projects": {
+    "Light_App_Controles": {
+      "path": "C:\\Users\\Abou Mohamed\\AndroidStudioProjects\\Light_App_Controles",
+      "noms": [
+        "Light_App_Controles",
+        "Light_App_Controle",
+        "LightAppControles",
+        "DevApp"
+      ]
+    },
+    "agy_centrale_user": {
+      "path": "C:\\Users\\Abou Mohamed\\.gemini\\antigravity-cli",
+      "noms": [
+        "agy_centrale_user",
+        "agy_c"
+      ]
+    },
+    "ancien_skills": {
+      "path": "C:\\Users\\Abou Mohamed\\.gemini\\antigravity-cli\\Client S\\skill_agent",
+      "noms": [
+        "ancien_skills"
+      ]
+    },
+    "references": {
+      "path": "C:\\Users\\Abou Mohamed\\.gemini\\antigravity-cli",
+      "noms": [
+        "references",
+        "ref_json"
+      ]
+    },
+    "copy_skills": {
+      "path": "C:\\Users\\Abou Mohamed\\.gemini\\antigravity-cli\\skills\\a_parSections\\Copy_Skills",
+      "noms": [
+        "copy_skills",
+        "copy_skill",
+        "Copy_Skills",
+        "ref_copy_skills",
+        "cop_s",
+        "cop_s_"
+      ]
+    },
+    "skill_section": {
+      "path": "C:\\Users\\Abou Mohamed\\.gemini\\antigravity-cli\\skills\\a_parSections",
+      "noms": [
+        "skill_section",
+        "skills_sections",
+        "a_parSections",
+        "ref_skill_section"
+      ]
+    }
+  }
+}
