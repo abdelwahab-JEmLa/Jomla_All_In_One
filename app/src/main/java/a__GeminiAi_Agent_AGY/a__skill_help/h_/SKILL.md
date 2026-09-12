@@ -30,7 +30,37 @@ Le skill `h_` est le catalogue d'aide central des compétences personnalisées d
 
 ---
 
-## 📂 2. Skills par Sections (`antigravity-cli/skills/`)
+## ⭐ 2. Major Skills (Les plus utilisés)
+
+> Les compétences les plus fréquemment utilisées au quotidien. Mémorisez leurs triggers !
+
+| Skill | Triggers | Description courte |
+|:---|:---|:---|
+| [t_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Todo_Skills/t_) | `t_`, `fix_todo`, `t_ai`, `t_agy`, `t_models`, `t_usage` | Résout automatiquement les TODOs du codebase actif. `t_ai` cible le répertoire AGY avec scan 2-passes filtré + sync vers skills globaux miroirs. |
+| [lit_patterns (c_)](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/a__Section_Pattern_Copie/lit_patterns) | `c_p`, `c_`, `tc`, `t_c`, `lit_patterns`, `read_c_p`, `integre_ici` | Cherche, copie et adapte des patterns/composables entre projets |
+| [zip_colle (z_)](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Copy_Skills/zip_colle) | `z_`, `zip_colle`, `colle_`, `ok_` | Extrait et remplace des fichiers Kotlin depuis les téléchargements |
+| [build_client (b+1)](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/build_client) | `b+1`, `b_c`, `b_c_all`, `build_client` | Compile l'app client JetPack et incrémente la version |
+| [p_v](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/p_v) | `p_v` | Commit avec la version comme message + tag + push |
+| [h_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/a__skill_help/h_/SKILL.md) | `h_`, `h_ <terme>` | Affiche ce catalogue ou filtre par terme |
+| [log_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/log_) | `log_` | Inspecte le logcat ADB en temps réel |
+| [p_skills](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Puch_Skills/p_skills) | `p_skills`, `p_sk` | Synchronise les skills entre AGY Global et le projet Android |
+
+### 🔍 Skill `c_` / `lit_patterns` — Détail
+
+> **Alias :** `c_`, `c_p`, `tc`, `t_c`, `lit_patterns`, `read_c_p`, `integre_ici`, `<interg`
+
+Ce skill est le couteau suisse du **copier-adapter de code** entre projets. Il permet de :
+- Chercher des patterns / composables dans le projet source (via TODOs ou instruction directe)
+- Les copier et les adapter automatiquement aux paramètres locaux de la destination
+- Résoudre les projets cibles via `references.json`
+- Nettoyer les TODOs après intégration
+
+**Localisation du SKILL.md :**
+[lit_patterns/SKILL.md](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/Copy_Skills/a__Section_Pattern_Copie/lit_patterns/SKILL.md)
+
+---
+
+## 📂 3. Skills par Sections (`antigravity-cli/skills/`)
 
 Les compétences spécialisées sont organisées par sous-dossiers thématiques dans :
 `C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\`
@@ -75,7 +105,7 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 
 | Skill | Triggers | Description courte |
 |:---|:---|:---|
-| [t_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Todo_Skills/t_) | `t_`, `fix_todo` | Résout automatiquement les TODOs du codebase actif |
+| [t_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Todo_Skills/t_) | `t_`, `fix_todo`, `t_ai`, `t_agy`, `t_models`, `t_usage` | Résout automatiquement les TODOs. `t_ai` = scan AGY 2-passes filtré (kt/md séparés) + sync skills globaux miroirs. |
 | [chain_todos_au_autres_projects](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Todo_Skills/chain_todos_au_autres_projects) | `chain_todos_au_autres_projects`, `t>cli`, `>clientApp`, `>light app` | Détecte et traite les TODOs inter-projets |
 | [t_appClient_chain_todo](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Todo_Skills/t_appClient_chain_todo) | `t>cli`, `>ca`, `clientApp` | TODOs chaînés vers l'application cliente |
 | [t_contex_files_relative_pour_regle_todo](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/Todo_Skills/t_contex_files_relative_pour_regle_todo) | `t_contex`, `todo_context`, `save_c` | Extrait le contexte complet d'un TODO dans un fichier Markdown |
@@ -128,7 +158,7 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 
 ---
 
-## 📂 3. Gestion des Références de Projets (`r_<nom>` / `ref_<nom>` / `ref_json`)
+## 📂 4. Gestion des Références de Projets (`r_<nom>` / `ref_<nom>` / `ref_json`)
 
 **Répertoire de référence** :
 ```
@@ -151,7 +181,7 @@ Lorsque l'assistant rencontre un mot-clé ou déclencheur sous la forme **`r_<no
 ---
 
 
-## 🔍 Instructions de Recherche / Filtrage
+## 🔍 5. Instructions de Recherche / Filtrage
 
 Si l'utilisateur ajoute un terme ou une requête après le mot-clé (ex: `h_ t_`, `h_ build`, `h_<terme>`) :
 1. Extraire la `<requête>` recherchée.

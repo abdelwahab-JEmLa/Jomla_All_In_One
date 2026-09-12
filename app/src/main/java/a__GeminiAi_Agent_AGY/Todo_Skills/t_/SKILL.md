@@ -85,23 +85,53 @@ Immediately redirect execution to the **Client JetPack Fix TODOs & Coding Patter
 
 ### When "t_ai" (or "t_agy") is triggered:
 
-#### 1. Target the a__GeminiAi_Agent_AGY Directory (r_aa__GeminiAi_Agent_AGY)
-When `t_ai` is triggered, resolve the path for `r_aa__GeminiAi_Agent_AGY` (from `references.json` -> `a__GeminiAi_Agent_AGY`, located at `<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY`) and restrict the TODO search exclusively to this directory.
+#### 1. Target the a__GeminiAi_Agent_AGY Directory
+Le répertoire cible est toujours :
+`<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY`
+(= `D:\AndroidStudioProjects\ClientJetPack\app\src\main\java\a__GeminiAi_Agent_AGY` sur le workspace actif)
 
-*Méthode de Scan Recommandée pour `t_ai` :*
-1. **Recherche directe sans pré-lecture** : Ne pas inspecter ni lire préalablement les fichiers `SKILL.md` des autres skills. Lancer immédiatement `grep_search` avec le pattern `//\s*TODO|#\s*TODO|<!--\s*TODO` restreint au dossier `<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY`.
-2. Inspecter également les fichiers de référence et d'historique (ex: `references/hist_copie.md`, scripts `.py`, `.md`).
-3. Filtrer les exemples statiques dans les fichiers `SKILL.md` pour cibler exclusivement les TODOs actifs (marqués par `//<--` ou formulés comme actions concrètes).
-4. Lors de la résolution d'un TODO dans un fichier de référence non-code (ex: `hist_copie.md`), nettoyer intégralement les marqueurs de pointage (`//<--`) et lignes d'instructions temporaires pour restituer le format cible attendu.
+*Méthode de Scan Rapide — 2 passes filtrées :*
 
-*Commande PowerShell de repli (si grep non disponible) :*
+**Passe 1 — Fichiers code actifs (`.kt`, `.java`, `.xml`) :**
 ```powershell
-$targetPath = "<project_root>\app\src\main\java\a__GeminiAi_Agent_AGY"
-Get-ChildItem -Recurse -Include "*.kt","*.java","*.xml","*.md","*.txt","*.py","*.bat" $targetPath `
-  | Select-String -Pattern "//\s*TODO|#\s*TODO|<!--\s*TODO" `
-  | Where-Object { $_.Line -notmatch "//TODO\(1 De branche A regle apre\):" } `
-  | Select-Object Filename, LineNumber, Line | Format-Table -AutoSize -Wrap
+Get-ChildItem -Recurse -Include "*.kt","*.java","*.xml" "D:\AndroidStudioProjects\ClientJetPack\app\src\main\java\a__GeminiAi_Agent_AGY" |
+  Select-String -Pattern "//\s*TODO|<!--\s*TODO" |
+  Select-Object Filename, LineNumber, Line | Format-Table -AutoSize -Wrap
 ```
+
+**Passe 2 — Fichiers non-code (`.md`, `.py`, `.txt`, `.bat`), en excluant SKILL.md et dossiers References/Examples :**
+```powershell
+Get-ChildItem -Recurse -Include "*.md","*.py","*.txt","*.bat" "D:\AndroidStudioProjects\ClientJetPack\app\src\main\java\a__GeminiAi_Agent_AGY" |
+  Where-Object {
+    $_.Name -ne "SKILL.md" -and
+    $_.FullName -notmatch "\\References\\" -and
+    $_.FullName -notmatch "\\Examples\\"
+  } |
+  Select-String -Pattern "//\s*TODO|#\s*TODO|<!--\s*TODO" |
+  Select-Object Filename, LineNumber, Line | Format-Table -AutoSize -Wrap
+```
+
+**Règles de filtrage des résultats :**
+- Ignorer les lignes dont le contenu est une description de skill (phrases longues en prose).
+- Ne retenir que les TODOs qui ressemblent à des **actions concrètes** (ex: `//TODO(1): ...`).
+- Nettoyer les marqueurs `//<--` et lignes temporaires dans les fichiers non-code après résolution.
+
+#### 2. Fix + Sync vers le skill global correspondant
+
+Après avoir résolu un TODO dans un fichier de `a__GeminiAi_Agent_AGY`, **synchroniser automatiquement le même fix vers les fichiers skill globaux miroirs**.
+
+**Règle de résolution du miroir global :**
+Pour chaque fichier AGY modifié (`a__GeminiAi_Agent_AGY/<Section>/<skill_name>/SKILL.md`), construire les 2 chemins globaux :
+- `C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\<Section>\<skill_name>\SKILL.md`
+- `C:\Users\Abou Mohamed\.gemini\config\skills\<Section>\<skill_name>\SKILL.md`
+
+**Étapes de synchronisation :**
+1. Identifier le chemin relatif `<Section>/<skill_name>` du fichier AGY modifié.
+2. Construire les 2 chemins globaux.
+3. Vérifier leur existence (`Test-Path`).
+4. Si existants → appliquer le **même fix** (`replace_file_content`) sur chacun.
+5. Si non existants → signaler dans le rapport final sans bloquer.
+
 Proceed directly with the standard steps to analyze, fix the TODOs found in `a__GeminiAi_Agent_AGY`, and remove the TODO comments without compiling.
 
 ---

@@ -22,11 +22,11 @@ Ce skill détecte automatiquement tous les fichiers **modifiés, stagés ou non 
 ## 📂 Destination fixe de la liste
 
 ```
-C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\Copy_Skills\cop_last\list_copied_files
+C:\Users\Abou Mohamed\.gemini\antigravity-cli\skills\Copy_Skills\copy_skill\references\hist_copie.md
 ```
 
 ---
-
+                                                               /
 ## 🚀 Étapes d'exécution
 
 ### Étape 1 — Détecter la racine Git du projet actif
