@@ -295,9 +295,14 @@ fun A_Compact_Presentoire_App_Produits_App4(
                             affiche_buttons_lien_unite_couleur_au_couleut_parent = newVal
                         )
                     )
-                },        //<--
-                //TODO(2.C Relative Au Todo(1): 
-                        //... ici ca update  compact_button_au_edite_base_donne_options
+                },
+                on_pour_update_compact_buttons = { newVal ->
+                    focusedValuesGetter.update_activeCentralValues(
+                        active_Central_Values.copy(
+                            compact_button_au_edite_base_donne_options = newVal
+                        )
+                    )
+                },
             )
         }
     }

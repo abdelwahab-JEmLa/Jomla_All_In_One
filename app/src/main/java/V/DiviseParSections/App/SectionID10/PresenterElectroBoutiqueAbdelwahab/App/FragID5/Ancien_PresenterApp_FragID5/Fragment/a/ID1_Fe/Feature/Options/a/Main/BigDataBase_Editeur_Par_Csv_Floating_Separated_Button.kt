@@ -32,6 +32,8 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.PhotoSizeSelectLarge
+import androidx.compose.material.icons.filled.PhotoSizeSelectSmall
 import androidx.compose.material.icons.filled.PlaylistAddCheck
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.FloatingActionButton
@@ -87,6 +89,8 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     ),
     affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,             //<--
     on_pour_update_affiche_buttons_lien_unite_couleur_au_couleut_parent: (Boolean) -> Unit = {}, //<--
+    compact_buttons: Boolean = false,             //<--
+    on_pour_update_compact_buttons: (Boolean) -> Unit, //<--
 ) {
 
     val haptic = LocalHapticFeedback.current
@@ -98,6 +102,10 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
     val fabSizePx = with(density) { 58.dp.toPx() }
     val paddingPx = with(density) { 16.dp.toPx() }
+
+    // Taille des boutons enfants : réduite quand le mode compact est actif
+    val childFabSize = if (compact_buttons) 34.dp else 46.dp
+    val childIconSize = if (compact_buttons) 16.dp else 22.dp
 
     // Initial position: bottom-right corner (mirrors A_FastAdd_FloatingSeparated_Button_1)
     var offsetX by remember { mutableFloatStateOf(screenWidthPx - fabSizePx - paddingPx) }
@@ -161,7 +169,6 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                 .background(Color(0xFFE91E63).copy(alpha = 0.92f))
                                 .padding(horizontal = 10.dp, vertical = 5.dp),
                         )        //<--
-                        //TODO(1): ajout buton qui toggle upddate compact_button_au_edite_base_donne_options 
                         Box {
                             FloatingActionButton(
                                 onClick = {   //<--
@@ -178,6 +185,25 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                 Icon(
                                     imageVector = if (affiche_buttons_lien_unite_couleur_au_couleut_parent) Icons.Default.Edit else Icons.Default.EditOff,
                                     contentDescription = "Edit Switch",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp),
+                                )
+                            }
+                        }
+                        Box {
+                            FloatingActionButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    on_pour_update_compact_buttons(!compact_buttons)
+                                },
+                                modifier = Modifier.size(46.dp),
+                                containerColor = if (compact_buttons) Color(0xFFE91E63) else Color(0xFF757575),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(4.dp),
+                            ) {
+                                Icon(
+                                    imageVector = if (compact_buttons) Icons.Default.PhotoSizeSelectSmall else Icons.Default.PhotoSizeSelectLarge,
+                                    contentDescription = "Compact Buttons Switch",
                                     tint = Color.White,
                                     modifier = Modifier.size(22.dp),
                                 )
@@ -206,7 +232,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     onClick_Lence_Ventes_Depot()
                                 },
-                                modifier = Modifier.size(46.dp),
+                                modifier = Modifier.size(childFabSize),
                                 containerColor = Color(0xFFEF6C00),
                                 shape = CircleShape,
                                 elevation = FloatingActionButtonDefaults.elevation(4.dp),
@@ -215,7 +241,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     imageVector = Icons.Default.Inventory2,
                                     contentDescription = "Lancer ventes dépôt",
                                     tint = Color.White,
-                                    modifier = Modifier.size(22.dp),
+                                    modifier = Modifier.size(childIconSize),
                                 )
                             }
                         }
@@ -241,7 +267,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                 onClick = {
                                     onClick_Lence_Ventes_Delicates()
                                 },
-                                modifier = Modifier.size(46.dp),
+                                modifier = Modifier.size(childFabSize),
                                 containerColor = Color(0xFF2E7D32),
                                 shape = CircleShape,
                                 elevation = FloatingActionButtonDefaults.elevation(4.dp),
@@ -250,7 +276,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     imageVector = Icons.Default.PlaylistAddCheck,
                                     contentDescription = "Lancer ventes délicates",
                                     tint = Color.White,
-                                    modifier = Modifier.size(22.dp),
+                                    modifier = Modifier.size(childIconSize),
                                 )
                             }
                         }
@@ -277,7 +303,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     onClick_Activer_Delicates_Pour_Ventes_Actives()
                                 },
-                                modifier = Modifier.size(46.dp),
+                                modifier = Modifier.size(childFabSize),
                                 containerColor = Color(0xFF00838F),
                                 shape = CircleShape,
                                 elevation = FloatingActionButtonDefaults.elevation(4.dp),
@@ -286,7 +312,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     imageVector = Icons.Default.CheckCircle,
                                     contentDescription = "Activer délicates",
                                     tint = Color.White,
-                                    modifier = Modifier.size(22.dp),
+                                    modifier = Modifier.size(childIconSize),
                                 )
                             }
                         }
@@ -313,7 +339,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     onClick_Desactiver_Delicates_Pour_Ventes_Actives()
                                 },
-                                modifier = Modifier.size(46.dp),
+                                modifier = Modifier.size(childFabSize),
                                 containerColor = Color(0xFFB71C1C),
                                 shape = CircleShape,
                                 elevation = FloatingActionButtonDefaults.elevation(4.dp),
@@ -322,7 +348,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     imageVector = Icons.Default.Cancel,
                                     contentDescription = "Désactiver délicates",
                                     tint = Color.White,
-                                    modifier = Modifier.size(22.dp),
+                                    modifier = Modifier.size(childIconSize),
                                 )
                             }
                         }
@@ -349,7 +375,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     onClick_Affiche_Pub()
                                 },
-                                modifier = Modifier.size(46.dp),
+                                modifier = Modifier.size(childFabSize),
                                 containerColor = Color(0xFF1565C0),
                                 shape = CircleShape,
                                 elevation = FloatingActionButtonDefaults.elevation(4.dp),
@@ -358,7 +384,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     imageVector = Icons.Default.Public,
                                     contentDescription = "Public",
                                     tint = Color.White,
-                                    modifier = Modifier.size(22.dp),
+                                    modifier = Modifier.size(childIconSize),
                                 )
                             }
                             // dropdown ancré sur ce Box
@@ -393,7 +419,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     dialState = DialState.M8Open
                                 },
-                                modifier = Modifier.size(46.dp),
+                                modifier = Modifier.size(childFabSize),
                                 containerColor = Color(0xFF1565C0),
                                 shape = CircleShape,
                                 elevation = FloatingActionButtonDefaults.elevation(4.dp),
@@ -402,7 +428,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     imageVector = Icons.Default.AllInbox,
                                     contentDescription = "M8",
                                     tint = Color.White,
-                                    modifier = Modifier.size(22.dp),
+                                    modifier = Modifier.size(childIconSize),
                                 )
                             }
                             // dropdown ancré sur ce Box
@@ -438,7 +464,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     dialState = DialState.M03Open
                                 },
-                                modifier = Modifier.size(46.dp),
+                                modifier = Modifier.size(childFabSize),
                                 containerColor = Color(0xFF6A1B9A),
                                 shape = CircleShape,
                                 elevation = FloatingActionButtonDefaults.elevation(4.dp),
@@ -447,7 +473,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                                     imageVector = Icons.Default.Palette,
                                     contentDescription = "M03",
                                     tint = Color.White,
-                                    modifier = Modifier.size(22.dp),
+                                    modifier = Modifier.size(childIconSize),
                                 )
                             }
 

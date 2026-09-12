@@ -110,7 +110,13 @@ fun Ancien_PresenterApp_FragID5(
                 )
             )
         },
-
+        on_pour_update_compact_buttons = { newVal ->
+            focusedValuesGetter.update_activeCentralValues(
+                focusedValuesGetter.active_Central_Values.copy(
+                    compact_button_au_edite_base_donne_options = newVal
+                )
+            )
+        },
     )
 
 

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -481,6 +482,7 @@ fun A_Compact_Header_App4(
                 ) {
                     item {
                         Row(
+                            modifier = Modifier.heightIn(max = if (compact_button_au_edite_base_donne_options) 28.dp else Dp.Infinity),
                             horizontalArrangement = Arrangement.spacedBy(itemPadding),
                             verticalAlignment = Alignment.CenterVertically
                         ) {

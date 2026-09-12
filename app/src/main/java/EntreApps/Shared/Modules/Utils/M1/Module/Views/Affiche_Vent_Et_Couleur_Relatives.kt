@@ -241,7 +241,7 @@ fun Affiche_Vent_Et_Couleur_Relatives(
         if (show_depot_card_on_top_in_flow_row) {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 val rowItems = buildList<@Composable () -> Unit> {
-                    if (on_update_m3couleur != null && relative_couleur != null && is_admin) {
+                    if (affiche_ProduitDataBaseEdites && on_update_m3couleur != null && relative_couleur != null && is_admin) {
                         val its_delicate_a_regle_apres = relative_couleur.its_delicate_a_regle_apres
                         add {
                             Card(
@@ -263,7 +263,7 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                             }
                         }
                     }
-                    if (on_update_m3couleur != null && relative_couleur != null && is_admin) {
+                    if (affiche_ProduitDataBaseEdites && on_update_m3couleur != null && relative_couleur != null && is_admin) {
                         add {
                             Card(
                                 modifier = Modifier.clickable {
