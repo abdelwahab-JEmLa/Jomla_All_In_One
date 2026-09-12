@@ -117,6 +117,7 @@ class Setter_ViewModel_NewProtoPatterns(private val vm: A_ViewModel_NewProtoPatt
      */
     fun update_listM10OperationVentCouleur(
         updatedList: List<M10OperationVentCouleur>?,
+
     ) {
         val currentAll = vm.active_Datas.list_M10OperationVentCouleur ?: emptyList()
         val existingKeys = currentAll.map { it.keyID }.toSet()

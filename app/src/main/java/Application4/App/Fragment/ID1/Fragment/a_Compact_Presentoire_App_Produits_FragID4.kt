@@ -8,10 +8,13 @@ import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_Facad
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
 import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Compose_Injectable_Sepecialise.Kotlin.ID1.EditeBaseDonne.Package.M16Categorie.Dialog.CategorySelectionDialog
+import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.M09AppCompt
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
 import EntreApps.Shared.Models.Relative_Produits.Models.M16CategorieProduit
 import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.a.ID1_Fe.Feature.Options.a.Main.FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -42,7 +45,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.clientjetpack.R
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 @Composable
@@ -80,10 +85,12 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
 
     LaunchedEffect(Unit) {
-        couleur = appDatabase.dao_M03CouleurProduitInfos().getAll()
-
-        couleur_f = appDatabase.dao_M03CouleurProduitInfos().getAll()
-            .filter { it.its_delicate_a_regle_apres }
+        val all = withContext(Dispatchers.IO) {
+            appDatabase.dao_M03CouleurProduitInfos().getAll()
+        }
+        // Back on Main here: withContext returns to the caller's dispatcher.
+        couleur = all
+        couleur_f = all.filter { it.its_delicate_a_regle_apres }
     }
 
     LaunchedEffect(Unit) {
@@ -131,6 +138,38 @@ fun A_Compact_Presentoire_App_Produits_App4(
         }
     }
 
+    // FIXED: previously this block ran dao_M9AppCompt()/dao_M8BonVent() queries directly
+    // inside LaunchedEffect (main dispatcher), causing:
+    // IllegalStateException: Cannot access database on the main thread.
+    // Now wrapped in withContext(Dispatchers.IO) above.
+
+    var couleursAuDepot by remember { mutableStateOf<List<M3CouleurProduitInfos>?>(null) }
+    var current_m9 by remember { mutableStateOf<M09AppCompt?>(null) }
+    var currentBonVent_m9 by remember { mutableStateOf<M8BonVent?>(null) }
+
+    val currentBonVent =
+        viewModelNewProtoPatterns.active_Datas.activeOnVent_M8BonVent
+
+    LaunchedEffect(Unit) {
+        val (m9, bonVent) = withContext(Dispatchers.IO) {
+            val m9Result = viewModelNewProtoPatterns.appDatabase
+                .dao_M9AppCompt()
+                .getAll()
+                .find { it.keyID == M00CentralParametresOfAllApps.get_Default().au_Lence_Set_Compt_Ac_KeyId }
+
+            val bonVentResult = viewModelNewProtoPatterns.appDatabase.dao_M8BonVent().getAll()
+                .find { it.keyID == m9Result?.onVentM8BonVentKey }
+
+            m9Result to bonVentResult
+        }
+        // Back on Main here: withContext returns to the caller's dispatcher.
+        current_m9 = m9
+        currentBonVent_m9 = bonVent
+
+        couleursAuDepot = viewModelNewProtoPatterns.active_Datas.list_M03CouleurProduitInfos
+            ?.filter { it.count_Don_Depot > 0 }
+    }
+
     if (!isInitDone) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(
@@ -143,6 +182,11 @@ fun A_Compact_Presentoire_App_Produits_App4(
     } else {
         Box(
             modifier = Modifier.semantics(mergeDescendants = true) {
+                set(value = currentBonVent, key = SemanticsPropertyKey("currentBonVent"))
+                set(value = currentBonVent_m9, key = SemanticsPropertyKey("currentBonVent_m9"))
+
+                set(value = couleursAuDepot, key = SemanticsPropertyKey("couleursAuDepot"))
+
                 set(value = active_Datas.list_M03CouleurProduitInfos?.find {
                     it.keyID == "-OWDMGKsnReAaqOHO5iH"
                 }, key = SemanticsPropertyKey(""))
@@ -221,12 +265,22 @@ fun A_Compact_Presentoire_App_Produits_App4(
                         }
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 },
+                onClick_Lence_Ventes_Depot = {
+                    couleursAuDepot?.let {
+                        viewModelNewProtoPatterns.lanceVentesPourCouleursAuDepot(
+                            it,
+                            currentBonVent_m9
+                        )
+                    }
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                },
                 onClick_Activer_Delicates_Pour_Ventes_Actives = {
                     viewModelNewProtoPatterns.setDelicatePourCouleursDesVentesActives(true)
                 },
                 onClick_Desactiver_Delicates_Pour_Ventes_Actives = {
                     viewModelNewProtoPatterns.setDelicatePourTout()
                 },
+
                 appDatabase = viewModelNewProtoPatterns.appDatabase,
                 onClick_Affiche_Pub = {
                     val bool = !affiche_pub_abdelwahab_electro_gro_store

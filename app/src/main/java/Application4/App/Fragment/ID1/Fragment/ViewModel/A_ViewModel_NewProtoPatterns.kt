@@ -17,6 +17,7 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Modules.Base.AppDatabase
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -162,6 +163,44 @@ class A_ViewModel_NewProtoPatterns(
     fun update_M13TarificationInfos(tariff: M13TarificationInfos) =
         updater.update_M13TarificationInfos(tariff)
 
+    /**
+     * Au click : pour chaque couleur (M3CouleurProduitInfos) du bon actif dont
+     * [M3CouleurProduitInfos.count_Don_Depot] > 0, crée une nouvelle vente
+     * (M10OperationVentCouleur) dont la quantité correspond au compte actuellement au dépôt.
+     */
+    fun lanceVentesPourCouleursAuDepot(
+        couleursAuDepot: List<M3CouleurProduitInfos>, currentBonVent: M8BonVent?
+    ) {
+        if (currentBonVent == null) {
+            Toast.makeText(context, "Boom", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val newTariff = M13TarificationInfos.get_default()
+            .copy(typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable)
+
+        val newOperations = couleursAuDepot.map { couleur ->
+            M10OperationVentCouleur.get_Default().copy(
+                creationTimestamps = System.currentTimeMillis(),
+                quantity = couleur.count_Don_Depot,
+                prix_de_Vent_entre_directement_NewProto = newTariff.prixCurrency,
+                parentM13TarificationKeyID = "Prix_Progressive_Editable Non Saved",
+                parentM13TarificationDebugInfos = newTariff.getDebugInfos(),
+                parent_M1Produit_KeyId = couleur.parentBProduitInfosKeyID,
+                parent_M1Produit_DebugInfos = "par.produit ${couleur.parentId1ProduitInfosDebugName}",
+                parent_M3CouleurProduit_KeyID = couleur.keyID,
+                parent_M3CouleurProduit_DebugInfos = couleur.get_DebugsInfos(),
+                parent_M8BonVent_KeyId = currentBonVent.keyID,
+                parent_M8BonVent_DebugInfos = currentBonVent.get_DebugInfos(),
+                parent_M2Client_KeyID = currentBonVent.parent_M2Client_KeyID,
+                typeTarificationEnumT2 = newTariff.typeChoisi,
+                its_created_in_working_for_wholesaler = active_Datas.currentApp_ItsWorkChezGrossisst
+            )
+        }
+
+        update_listM10OperationVentCouleur(newOperations)
+    }
+
     fun lanceVentesPourCouleursDelicates(list_M3: List<M3CouleurProduitInfos>) {
         val currentBonVent = active_Datas.activeOnVent_M8BonVent ?: return
         val currentList = active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
@@ -190,7 +229,7 @@ class A_ViewModel_NewProtoPatterns(
                 )
             }
 
-            update_listM10OperationVentCouleur(currentList + newOperations)
+        update_listM10OperationVentCouleur(currentList + newOperations)
     }
 
     /**

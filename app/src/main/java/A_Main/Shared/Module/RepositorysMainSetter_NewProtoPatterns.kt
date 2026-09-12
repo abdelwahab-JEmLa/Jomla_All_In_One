@@ -284,6 +284,7 @@ class RepositorysMainSetter_NewProtoPatterns(
         }
     }
 
+
     fun upsert_M10OperationVentCouleur(
         operation: M10OperationVentCouleur,
         selectedTariff: M13TarificationInfos

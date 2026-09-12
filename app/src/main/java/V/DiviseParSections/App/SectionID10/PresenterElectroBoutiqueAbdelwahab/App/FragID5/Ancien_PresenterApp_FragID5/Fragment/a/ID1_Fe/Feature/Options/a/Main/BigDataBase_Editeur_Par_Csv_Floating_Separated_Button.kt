@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditOff
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlaylistAddCheck
 import androidx.compose.material.icons.filled.Public
@@ -76,6 +77,7 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
     onClick_Lence_Capture: (() -> Unit)? = null,
     onClick_Affiche_Pub: () -> Unit = {},
     onClick_Lence_Ventes_Delicates: () -> Unit = {},
+    onClick_Lence_Ventes_Depot: () -> Unit = {},
     onClick_Activer_Delicates_Pour_Ventes_Actives: () -> Unit = {} ,
     onClick_Desactiver_Delicates_Pour_Ventes_Actives: () -> Unit= {} ,
     context: Context = LocalContext.current,
@@ -181,6 +183,43 @@ fun FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                             }
                         }
                     }
+
+                    // ── Lancer ventes dépôt ────────────────────────────────────
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text = "Ventes dépôt",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0xFFEF6C00).copy(alpha = 0.92f))
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                        )
+                        Box {
+                            FloatingActionButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onClick_Lence_Ventes_Depot()
+                                },
+                                modifier = Modifier.size(46.dp),
+                                containerColor = Color(0xFFEF6C00),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(4.dp),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Inventory2,
+                                    contentDescription = "Lancer ventes dépôt",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp),
+                                )
+                            }
+                        }
+                    }
+
                     // ── Lancer ventes délicates ──────────────────────────────
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

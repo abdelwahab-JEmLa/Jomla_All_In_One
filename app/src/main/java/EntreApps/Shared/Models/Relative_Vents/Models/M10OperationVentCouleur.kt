@@ -20,6 +20,7 @@ data class M10OperationVentCouleur(
 
     var prix_de_Vent_entre_directement_NewProto : Double = 0.0,
 
+
     //---------------------------------LinkedVent----------------------------------------------------------------------------------------------------------------------------------
     var its_Linked_To_Autre_Vent_Si_NonDispo: Boolean = false,
     val linked_To_M10OperationVent_KeyID: String = "",

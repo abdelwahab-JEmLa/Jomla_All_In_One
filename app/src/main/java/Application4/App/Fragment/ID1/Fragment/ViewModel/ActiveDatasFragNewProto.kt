@@ -34,6 +34,7 @@ class ActiveDatasFragNewProto {
         if (M00CentralParametresOfAllApps.get_Default().itsDevMode)
             Filter_Affichage_Mode_Proto.Tablette_Et_Echants else
             Filter_Affichage_Mode_Proto.Panie
+
     )
     var filter_relode_tiger: Int by mutableStateOf(0)
 

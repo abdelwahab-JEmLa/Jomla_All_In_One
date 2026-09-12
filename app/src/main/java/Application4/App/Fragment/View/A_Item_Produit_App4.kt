@@ -236,6 +236,7 @@ fun A_Item_Produit_App4(
             .padding(cardPadding)
     ) {
         A_Compact_Header_App4(
+
             prix_achat = tariff_ItsWorkInGrossist_SuperGros?.prixCurrency,
             relative_M1produit = relative_M1produit,
             isExpanded = isThisProductExpanded,
@@ -245,8 +246,7 @@ fun A_Item_Produit_App4(
                 }
             },
             onUpdateProduit = { viewModel.update_m1Produit(it) },
-            affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin
-                    && affiche_buttons_lien_unite_couleur_au_couleut_parent == true,
+            affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin && affiche_buttons_lien_unite_couleur_au_couleut_parent,
             isPanierMode = centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Panie
                     || centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres,
             affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
