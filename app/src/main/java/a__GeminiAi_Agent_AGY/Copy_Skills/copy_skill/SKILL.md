@@ -1,6 +1,6 @@
-﻿---
+---
 name: copy_skill
-description: Use this skill to automatically copy, bundle, and format all sibling files and subdirectories of a specified reference package. Trigger this whenever the user asks to copy files to the clipboard, trigger `c_`, `cl_`, `cc_`, `cop_last`, `cop_`, `ca_`, `ca+t`, `dc_`, or explicitly mentions backing up files from clipboard or copying files to a prompt.
+description: Use this skill to automatically copy, bundle, and format all sibling files and subdirectories of a specified reference package. Trigger this whenever the user asks to copy files to the clipboard, trigger `c_` (copy files from hist_copie.md to clipboard), `cl_`, `cc_`, `cop_last`, `cop_`, `ca_`, `ca+t`, `dc_`, or explicitly mentions backing up files from clipboard or copying files to a prompt.
 ---
 ## Trigger Phrases
 - "c_"
@@ -14,7 +14,7 @@ description: Use this skill to automatically copy, bundle, and format all siblin
 
 # Skill - Copy to Clipboard & Backup (copy_skill)
 
-This skill instructs the assistant on how to automatically copy, bundle, and format all sibling files and subdirectories of a specified reference package. It handles both direct copying to the Windows Clipboard and bundling into structured text backup files (`hist_copie.md` Global et r_ai du projet).
+This skill instructs the assistant on how to automatically copy, bundle, and format files. It handles both direct copying to the Windows Clipboard (notamment depuis `hist_copie.md` via `c_`) and bundling into structured text backup files (`hist_copie.md` Global et r_ai du projet).
 
 ## Active Reference Package
 
@@ -36,24 +36,23 @@ Toute modification (création, mise à jour ou suppression) de `hist_copie.md` d
 
 ## Steps to Execute
 
-### 1. Identify Target Directory & Files
-- **Case A: Default Trigger**: If the user triggers `cl_`, `cc_`, `cop_last`, `c_`, `ca_`, or `ca+t` without a path, first check the **actual Windows Clipboard** using the native Python script or PowerShell:
-  `python "C:\Users\Abou Mohamed\.gemini\config\skills\Copy_Skills\copy_skill\scripts\read_clipboard_files.py"`
-  If the user manually copied files in Windows/Android Studio, this script will quickly extract their paths and line counts. If no files are in the clipboard, fallback to reading the **Last Copied Files** section above.
-- **Case B: Dynamic Request**: If a path is provided with `cop_` or `c_`, scan that directory recursively for `.kt` files. Overwrite the **Active Reference Package** and **Last Copied Files** sections in this file (`SKILL.md`).
+### 1. Identify Target Action & Files
+- **Case 1: Trigger `c_` (Copy from `hist_copie.md` to Clipboard)**:
+  - Lire le contenu de `references/hist_copie.md` (Global ou Projet).
+  - Extraire tous les chemins de fichiers référencés (formats Markdown `[Nom](file:///...)` ou chemins relatifs).
+  - Vérifier l'existence physique de chaque fichier.
+  - Placer la liste complète des fichiers dans le presse-papiers Windows (Clipboard FileDropList).
+  - Afficher un rapport concis des fichiers copiés prêts pour `Ctrl+V`.
 
-### 2. Action: Copy to Clipboard (`cl_`, `cc_`, `cop_last`, `cop_`, `ca+t`)
+- **Case 2: Trigger `cl_` / `cc_` / `cop_last` (Copy active clipboard / last copied)**:
+  - Vérifier le presse-papiers Windows réel (`read_clipboard_files.py`) ou utiliser **Last Copied Files**.
 
-- **Trigger `ca+t` (Append Simple_Todo Reference)**: Si le trigger contient `+t` (ex: `ca+t`), en plus du comportement normal `ca_` (append des fichiers ciblés), appender **automatiquement** la référence cliquable de `Simple_Todo.md` à la fin des deux fichiers `hist_copie.md` (Global & r_ai) :
-  ```markdown
-  ### 📝 [Simple_Todo.md](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/b__References_Files/Simple_Todo.md)
-  ```
+- **Case 3: Dynamic Request (`cop_ <path>`)**:
+  - Scanner le dossier cible pour `.kt` et mettre à jour **Active Reference Package** et **Last Copied Files**.
+
+### 2. Action: Copy to Clipboard (`c_`, `cl_`, `cc_`, `cop_last`, `cop_`)
 
 - **Placer dans le Presse-papiers Windows** :
-  - **Via Python** :
-    ```bash
-    python "C:\Users\Abou Mohamed\.gemini\config\skills\Copy_Skills\copy_skill\scripts\fast_cc.py"
-    ```
   - **Via PowerShell (.NET)** :
     ```powershell
     Add-Type -AssemblyName System.Windows.Forms
@@ -62,16 +61,22 @@ Toute modification (création, mise à jour ou suppression) de `hist_copie.md` d
     $fileCollection.Add("<chemin_absolu_fichier_2>")
     [System.Windows.Forms.Clipboard]::SetFileDropList($fileCollection)
     ```
+  - **Via Python** :
+    ```bash
+    python "C:\Users\Abou Mohamed\.gemini\config\skills\Copy_Skills\copy_skill\scripts\fast_cc.py"
+    ```
 
-### 3. Action: Manage Backup Files en Parallèle (`c_`, `ca_`, `dc_`)
-These triggers interact with the `references/hist_copie.md` files (Global & r_ai) without touching the clipboard.
-- **Trigger `c_` (Delete & Recreate as Tree)** : Écraser complètement les deux fichiers `hist_copie.md` (Global & r_ai) avec les nouveaux fichiers ciblés organisés sous forme d'**arborescence hiérarchique (Tree)** des dossiers et fichiers avec liens Markdown cliquables.
-- **Trigger `ca_` / `ca+t` (Append Backup as Tree)** : Insère ou fusionne les liens Markdown cliquables des fichiers ciblés dans l'arborescence (tree) des deux `hist_copie.md` sous leur dossier parent respectif.
-- **Trigger `dc_` (Delete Backup)** : Supprime les deux fichiers `hist_copie.md` (Global & r_ai).
+### 3. Action: Manage Backup Files en Parallèle (`ca_,` `ca+t`, `dc_`)
+Ces triggers interagissent avec les fichiers `references/hist_copie.md` (Global & r_ai).
+- **Trigger `ca_` (Append / Update Backup as Tree)** : Insère ou fusionne les liens Markdown cliquables des fichiers ciblés dans l'arborescence (tree) des deux `hist_copie.md` sous leur dossier parent respectif.
+- **Trigger `ca+t` (Append Simple_Todo Reference)** : En plus du comportement normal `ca_`, appender automatiquement la référence cliquable de `Simple_Todo.md` à la fin des deux fichiers `hist_copie.md` (Global & r_ai) :
+  ```markdown
+  ### 📝 [Simple_Todo.md](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/b__References_Files/Simple_Todo.md)
+  ```
+- **Trigger `dc_` (Delete / Clear Backup)** : Supprime ou réinitialise les deux fichiers `hist_copie.md` (Global & r_ai).
 
 ### 4. Report Success (Table)
-- Output a highly concise response containing:
-  1. **Sauvegardes mises à jour** : Liens cliquables vers les deux `hist_copie.md`.
-  2. **Nom court du package**.
-  3. **Tableau des fichiers** (Nom du fichier | Lignes).
-- Do not output the code in the chat.
+- Afficher une réponse ultra-concise :
+  1. Action effectuée (ex: `c_ -> Fichiers de hist_copie.md copiés au presse-papiers`).
+  2. Liens cliquables vers les deux `hist_copie.md`.
+  3. Liste / tableau des fichiers concernés (Nom du fichier | Lignes).
