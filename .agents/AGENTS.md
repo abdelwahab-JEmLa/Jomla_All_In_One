@@ -96,6 +96,7 @@
 ## Windows PowerShell Clipboard File Drop Compatibility
 - Under Windows PowerShell 5.1, `Set-Clipboard -Path` is not supported and throws a parameter matching error.
 - Always use the .NET `[System.Windows.Forms.Clipboard]::SetFileDropList($fileCollection)` method with `Add-Type -AssemblyName System.Windows.Forms` when placing file paths onto the Windows clipboard.
+- When calling PowerShell inline commands via `run_command` (e.g. `pwsh -Command "..."`), always escape `$` signs in variable names (e.g. `\$fileCollection`) or execute dedicated python/powershell script files (like `fast_cc.py`) to prevent shell variable substitution syntax errors.
 
 ## Copy Skills & Uncommitted Files Exclusion (`cu_` / `copy_uncomited`)
 - When collecting, bundling, or copying uncommitted or modified files (e.g., via `cu_`, `copy_uncomited`, `sc_u`, or git status filters):

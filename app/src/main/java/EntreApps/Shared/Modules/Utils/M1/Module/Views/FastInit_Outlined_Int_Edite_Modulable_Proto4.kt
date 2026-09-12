@@ -11,10 +11,10 @@ import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,10 +40,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 @SuppressLint("ObsoleteSdkInt")
@@ -192,11 +195,36 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
         else MaterialTheme.colorScheme.onPrimary
 
         if (show_depot_card_on_top_in_flow_row) {
-            // TODO(1) resolved: items now scroll horizontally in a LazyRow instead of wrapping in a FlowRow.
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             LazyRow(
                 modifier = modifier,
                 horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards, Alignment.End)
             ) {
+                if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
+                    if (au_depot > 0 || affichable_mem_si_zero_depot) {
+                        item {
+                            Card(
+                                modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.Red)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Icon(imageVector = Icons.Default.Warehouse, contentDescription = "Dépôt", tint = Color.Black, modifier = Modifier.size((iconSize.value * 0.7f).dp))
+                                    Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
+                                }
+                            }
+                        }
+                    }
+                }
+                if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
+                    item {
+                        MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
+                    }
+                }
                 val showStar = affiche_buttons_lien_unite_couleur_au_couleut_parent || its_couleur_ac_imgVid_presentative_de_tout_les_couleur
                 if (on_toggle_presentative != null && is_admin && showStar) {
                     item {
@@ -258,9 +286,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                             }
                         }
                     }
-                    item {
-                        MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
-                    }
                 }
 
                 val showValidationButton = mode_c_unite_actif || (mode_selection_parent_couleur_key.isNotEmpty() && !is_this_color_selected_as_parent_for_link)
@@ -289,25 +314,6 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                 }
 
                 if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
-                    if (au_depot > 0 || affichable_mem_si_zero_depot) {
-                        item {
-                            Card(
-                                modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
-                                shape = RoundedCornerShape(20.dp),
-                                colors = CardDefaults.cardColors(containerColor = Color.Red)
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-                                ) {
-                                    Icon(imageVector = Icons.Default.Warehouse, contentDescription = "Dépôt", tint = Color.Black, modifier = Modifier.size((iconSize.value * 0.7f).dp))
-                                    Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
-                                }
-                            }
-                        }
-                    }
-
                     item {
                         Card(
                             modifier = Modifier.clickable(enabled = isAvailable) {
@@ -348,6 +354,7 @@ fun FastInit_Outlined_Int_Edite_Modulable_Proto4(
                         }
                     }
                 }
+            }
             }
         } else {
             Row(
