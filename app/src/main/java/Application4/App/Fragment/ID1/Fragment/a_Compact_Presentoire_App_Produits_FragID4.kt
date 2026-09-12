@@ -49,9 +49,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
     appDatabase: AppDatabase,
     fragmentNavigationHandler: FragmentNavigationHandler_NewProto,
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit,
-    affiche_buttons_lien_unite_couleur_au_couleut_parent: Boolean = false,
-    affiche_ProduitDataBaseEdites_ComposableViews: Boolean = false,
-    on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews: (Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
     val focusedValuesGetter: FocusedValuesGetter = koinInject()
