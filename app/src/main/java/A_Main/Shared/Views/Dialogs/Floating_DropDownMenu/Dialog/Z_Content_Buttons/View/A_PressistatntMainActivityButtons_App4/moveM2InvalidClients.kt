@@ -75,6 +75,7 @@ fun moveM2InvalidClients(
         .filter { it.isNotEmpty() }
 
     val toMove = repositorysMainGetter.repo2Client.datasValue.filter { client ->
+        if (client.its_non_deletable_client_et_trxs) return@filter false
         if (client.keyID in clientsWithProtectedBonVent) return@filter false
         if (protectedTerms.any { term -> client.nom.lowercase().contains(term) }) return@filter false
         invalidM2ClientPredicate(client.keyID, client.numTelephone, client.latitude, client.longitude)

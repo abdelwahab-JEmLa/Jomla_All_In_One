@@ -143,6 +143,7 @@ fun Fab_CleanupM8AndM10(
     var summaryText by remember { mutableStateOf("") }
 
     val nomContainsFilter = repo9AppCompt.currentAppCompt?.nom_contains_a_evite_de_delete_leur_oeprations ?: ""
+
     var showFilterDialog by remember { mutableStateOf(false) }
     var filterText by remember(nomContainsFilter) { mutableStateOf(nomContainsFilter) }
 
@@ -280,11 +281,18 @@ fun Fab_CleanupM8AndM10(
                         }
                     }
 
+                    val clientsById = repositorysMainGetter.repo2Client.datasValue.associateBy { it.keyID }
+                    val nonDeletableClientNames = repositorysMainGetter.repo2Client.datasValue
+                        .filter { it.its_non_deletable_client_et_trxs }
+                        .map { it.nom }
+                        .toSet()
+
                     Log.d(TAG_CLEANUP, "launching cleanupOldBonVents_Np …")
                     cleanupOldBonVents_Np(
                         repo8BonVent = repositorysMainGetter.repo8BonVent,
                         bonVents = repositorysMainGetter.repo8BonVent.datasValue,
-                        on_vent_key = on_vent_key,
+                        on_vent_period_key = on_vent_key,
+                        clientsById = clientsById,
                         nom_contains_a_evite_de_delete_leur_oeprations = nomContainsFilter,
                         onDone = onOneDone
                     )
@@ -293,6 +301,7 @@ fun Fab_CleanupM8AndM10(
                     cleanupInvalidOperations_Np(
                         repo10OperationVentCouleur = repositorysMainGetter.repo10OperationVentCouleur,
                         on_vent_key = on_vent_key,
+                        nonDeletableClientNames = nonDeletableClientNames,
                         nom_contains_a_evite_de_delete_leur_oeprations = nomContainsFilter,
                         onDone = onOneDone
                     )

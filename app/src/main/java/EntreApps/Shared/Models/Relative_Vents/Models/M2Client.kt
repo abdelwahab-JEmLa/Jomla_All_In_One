@@ -31,14 +31,18 @@ data class M2Client(
     //Forging Keys
     var its_Fournisseur: Boolean = false,
 
+    var its_non_deletable_client_et_trxs: Boolean = false,
+
     var its_Client_De_Jamale: Boolean = false,
     var its_Fournisseur_Grossisst_A_Jomla: Boolean = false,
     var ces_credits_son_a_long_term: Boolean = false,
 
 
+
     var cUnClientTemporaire: Boolean = true,
 
     var parentComptCreateurKEyID: String = "",
+
     // Section Etates Mutable
     var numTelephone: String = "",
     var couleur: String = "#FFFFFF",
@@ -66,8 +70,12 @@ data class M2Client(
     val nomPrenomArabe: String = "حمنيش عبد الوهاب",
     val register_Commerce_Nm: String = "16/00 – 5138424 D20",
     val nif_Num: String = "16291403036"
-) {
+    ,    var secteur: String = "",
+    ) {
     fun toFirebaseMap(): Map<String, Any?> = mapOf(
+        "secteur"                                          to secteur,
+        "its_non_deletable_client_et_trxs"                                          to its_non_deletable_client_et_trxs,
+
         "keyID"                                          to keyID,
         "dernierTimeTampsSynchronisationAvecFireBase"    to dernierTimeTampsSynchronisationAvecFireBase,
         "creationTimestamps"                             to creationTimestamps,
