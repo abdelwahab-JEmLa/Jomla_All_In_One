@@ -164,6 +164,40 @@ data class M2Client(
         }
     }
 
+    /**
+     * Numéro de téléphone du worker actuellement actif
+     * (active_worker_actullement_idx). L'index 1 correspond au numéro
+     * principal (numTelephone), 2..6 aux nom_worker_N/telep_worker_N.
+     * Si le worker actif n'a pas de numéro renseigné, on retombe sur
+     * numTelephone.
+     */
+    fun getActiveWorkerPhoneNumber(): String {
+        val activeNumber = when (active_worker_actullement_idx) {
+            2 -> telep_worker_2
+            3 -> telep_worker_3
+            4 -> telep_worker_4
+            5 -> telep_worker_5
+            6 -> telep_worker_6
+            else -> numTelephone
+        }
+        return activeNumber.takeIf { it.isNotBlank() } ?: numTelephone
+    }
+
+    /**
+     * Nom du worker actuellement actif (voir [getActiveWorkerPhoneNumber]).
+     */
+    fun getActiveWorkerName(): String {
+        val activeName = when (active_worker_actullement_idx) {
+            2 -> nom_worker_2
+            3 -> nom_worker_3
+            4 -> nom_worker_4
+            5 -> nom_worker_5
+            6 -> nom_worker_6
+            else -> nom
+        }
+        return activeName.takeIf { it.isNotBlank() } ?: nom
+    }
+
     fun getTempKeyByParent(): String {
         return this.nom.withOutFireBaseInvalidCharacters()
     }
