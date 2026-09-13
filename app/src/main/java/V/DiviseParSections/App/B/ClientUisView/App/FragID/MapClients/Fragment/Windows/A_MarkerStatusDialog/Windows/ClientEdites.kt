@@ -25,16 +25,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,7 +52,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.io.File
-
 @Composable
 fun ClientEdites(
     viewModel: MapClientsViewModel,
@@ -56,10 +65,18 @@ fun ClientEdites(
     onShowEditDialogChange: (Boolean) -> Unit = {},
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
     onTriggerCreditCapture: () -> Unit = {},
+    isEditMode: Boolean = false,
 ) {
 
     val context = LocalContext.current
     val clientTypeMode = relative_Client?.clientTypeMode
+    // Slot worker (2..6) en cours d'édition dans le dialog ci-dessous, ou
+    // null si aucun dialog n'est ouvert. On garde juste l'index : le
+    // nom/numéro affichés dans le dialog sont relus depuis relative_Client
+    // à chaque ouverture, donc si le slot était vide les champs partent
+    // bien de "" ; s'il avait déjà un nom/numéro, ils sont préremplis avec
+    // l'ancienne valeur pour permettre de la modifier sans la retaper.
+    var editingWorkerIdx by remember { mutableStateOf<Int?>(null) }
     val hasPhoneNumber = !relative_Client?.numTelephone.isNullOrEmpty() &&
             relative_Client?.numTelephone != "null"
     val hasValidLocation = relative_Client?.latitude != null &&
@@ -425,13 +442,25 @@ fun ClientEdites(
                 // Liste des workers 2..6, avec surlignage de celui pointé par
                 // active_worker_actullement_idx (index 1 = worker principal /
                 // numTelephone déjà affiché ci-dessus, 2..6 = nom_worker_N/telep_worker_N).
-                val workers = listOf(
+                //
+                // En mode édition (isEditMode = true) on affiche les 6 slots,
+                // y compris ceux qui sont encore vides, pour permettre d'en
+                // ajouter un nouveau (icône "+") ou de modifier un slot déjà
+                // rempli (icône crayon) via un dialog d'édition. Hors édition on
+                // ne garde que le comportement historique : seuls les workers
+                // déjà renseignés sont listés, en lecture seule + toggle actif.
+                val allWorkerSlots = listOf(
                     2 to (relative_Client.nom_worker_2 to relative_Client.telep_worker_2),
                     3 to (relative_Client.nom_worker_3 to relative_Client.telep_worker_3),
                     4 to (relative_Client.nom_worker_4 to relative_Client.telep_worker_4),
                     5 to (relative_Client.nom_worker_5 to relative_Client.telep_worker_5),
                     6 to (relative_Client.nom_worker_6 to relative_Client.telep_worker_6),
-                ).filter { (_, pair) -> pair.first.isNotBlank() || pair.second.isNotBlank() }
+                )
+                val workers = if (isEditMode) {
+                    allWorkerSlots
+                } else {
+                    allWorkerSlots.filter { (_, pair) -> pair.first.isNotBlank() || pair.second.isNotBlank() }
+                }
 
                 if (workers.isNotEmpty()) {
                     Column(
@@ -442,6 +471,7 @@ fun ClientEdites(
                         workers.forEach { (workerIdx, nomTelep) ->
                             val (nomWorker, telepWorker) = nomTelep
                             val isActive = relative_Client.active_worker_actullement_idx == workerIdx
+                            val isEmptySlot = nomWorker.isBlank() && telepWorker.isBlank()
 
                             Row(
                                 modifier = Modifier
@@ -453,27 +483,79 @@ fun ClientEdites(
                                             Color.Transparent
                                     )
                                     .clickable {
-                                        val updated = relative_Client.copy(
-                                            active_worker_actullement_idx = workerIdx
-                                        )
-                                        viewModel.updateData(updated)
+                                        if (isEditMode && isEmptySlot) {
+                                            // Slot vide en mode édition : on ouvre
+                                            // directement l'édition pour l'ajouter,
+                                            // plutôt que de l'activer (il n'y a rien
+                                            // à activer tant qu'il est vide).
+                                            editingWorkerIdx = workerIdx
+                                        } else {
+                                            val updated = relative_Client.copy(
+                                                active_worker_actullement_idx = workerIdx
+                                            )
+                                            viewModel.updateData(updated)
+                                        }
                                     }
                                     .padding(vertical = 4.dp, horizontal = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                Text(
-                                    text = nomWorker.ifBlank { "Worker $workerIdx" },
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal
-                                )
-                                if (telepWorker.isNotBlank()) {
+                                if (isEditMode && isEmptySlot) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add worker $workerIdx",
+                                        modifier = Modifier.padding(end = 2.dp)
+                                    )
                                     Text(
-                                        text = telepWorker,
-                                        modifier = Modifier.clickable { onShowPhoneDialogChange(true) },
+                                        text = "Ajouter worker $workerIdx",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.primary
                                     )
+                                } else {
+                                    Text(
+                                        text = nomWorker.ifBlank { "Worker $workerIdx" },
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                    if (isEditMode) {
+                                        // Bouton d'activation séparé du reste de la
+                                        // Row : en mode édition, tap ici pour
+                                        // choisir ce worker comme
+                                        // active_worker_actullement_idx. Vert
+                                        // quand c'est déjà le choix actif, gris
+                                        // sinon — indépendant du clic sur le nom
+                                        // ou le numéro juste à côté.
+                                        Icon(
+                                            imageVector = Icons.Default.CheckCircle,
+                                            contentDescription = "Activate worker $workerIdx",
+                                            tint = if (isActive) Color(0xFF4CAF50) else Color.Gray,
+                                            modifier = Modifier
+                                                .padding(horizontal = 2.dp)
+                                                .clickable {
+                                                    val updated = relative_Client.copy(
+                                                        active_worker_actullement_idx = workerIdx
+                                                    )
+                                                    viewModel.updateData(updated)
+                                                }
+                                        )
+                                    }
+                                    if (telepWorker.isNotBlank()) {
+                                        Text(
+                                            text = telepWorker,
+                                            modifier = Modifier.clickable { onShowPhoneDialogChange(true) },
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                    if (isEditMode) {
+                                        Icon(
+                                            imageVector = Icons.Default.Edit,
+                                            contentDescription = "Edit worker $workerIdx",
+                                            modifier = Modifier
+                                                .padding(start = 4.dp)
+                                                .clickable { editingWorkerIdx = workerIdx }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -481,6 +563,70 @@ fun ClientEdites(
                 }
             }
         }
+    }
+
+    // Dialog d'ajout/édition d'un worker (2..6). Les champs sont
+    // initialisés avec l'ancien nom/numéro du slot (relevés depuis
+    // relative_Client), ou "" si le slot était vide — donc "créer" un
+    // worker vide revient juste à ouvrir ce dialog avec des champs vides,
+    // et "éditer" un worker existant l'ouvre avec l'ancien nom/numéro déjà
+    // en place pour pouvoir les modifier.
+    val workerIdxBeingEdited = editingWorkerIdx
+    if (workerIdxBeingEdited != null && relative_Client != null) {
+        val (initialNom, initialTelep) = when (workerIdxBeingEdited) {
+            2 -> relative_Client.nom_worker_2 to relative_Client.telep_worker_2
+            3 -> relative_Client.nom_worker_3 to relative_Client.telep_worker_3
+            4 -> relative_Client.nom_worker_4 to relative_Client.telep_worker_4
+            5 -> relative_Client.nom_worker_5 to relative_Client.telep_worker_5
+            6 -> relative_Client.nom_worker_6 to relative_Client.telep_worker_6
+            else -> "" to ""
+        }
+        var nomWorkerInput by remember(workerIdxBeingEdited) { mutableStateOf(initialNom) }
+        var telepWorkerInput by remember(workerIdxBeingEdited) { mutableStateOf(initialTelep) }
+
+        AlertDialog(
+            onDismissRequest = { editingWorkerIdx = null },
+            title = { Text(text = "Worker $workerIdxBeingEdited") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = nomWorkerInput,
+                        onValueChange = { nomWorkerInput = it },
+                        label = { Text("Nom") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = telepWorkerInput,
+                        onValueChange = { telepWorkerInput = it },
+                        label = { Text("Téléphone") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val updated = when (workerIdxBeingEdited) {
+                        2 -> relative_Client.copy(nom_worker_2 = nomWorkerInput, telep_worker_2 = telepWorkerInput)
+                        3 -> relative_Client.copy(nom_worker_3 = nomWorkerInput, telep_worker_3 = telepWorkerInput)
+                        4 -> relative_Client.copy(nom_worker_4 = nomWorkerInput, telep_worker_4 = telepWorkerInput)
+                        5 -> relative_Client.copy(nom_worker_5 = nomWorkerInput, telep_worker_5 = telepWorkerInput)
+                        6 -> relative_Client.copy(nom_worker_6 = nomWorkerInput, telep_worker_6 = telepWorkerInput)
+                        else -> relative_Client
+                    }
+                    viewModel.updateData(updated)
+                    editingWorkerIdx = null
+                }) {
+                    Text("Enregistrer")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingWorkerIdx = null }) {
+                    Text("Annuler")
+                }
+            }
+        )
     }
 }
 
@@ -586,6 +732,7 @@ fun checkAndSendLocalImagesForClient(context: Context, client: M2Client) {
             context.grantUriPermission("com.whatsapp.w4b", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         } catch (_: Exception) {}
     }
+
 
 
     try {
