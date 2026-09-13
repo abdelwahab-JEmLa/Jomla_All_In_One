@@ -587,6 +587,7 @@ fun checkAndSendLocalImagesForClient(context: Context, client: M2Client) {
         } catch (_: Exception) {}
     }
 
+
     try {
         context.startActivity(intent)
         Log.d(tag, "WhatsApp Business intent launched with ${uris.size} image(s).")
