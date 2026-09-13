@@ -228,13 +228,8 @@ data class ActiveCentralValues(
         Delete_Client(Color(0xFFF44336)),
         Passe_Client(Color(0xFF747680)),
         Livre_Client(Color(0xFF0099CC)),
-        // Les 4 combinaisons possibles de (client/fournisseur) x (court/long terme),
-        // en couleurs alignées sur les 4 filtres crédit de VisibleClientsNow
-        // (Filter_Leur_Last_TRX_Est_Credit / _Long_Term, Filter_Fournisseurs_Short/Long_Term_Credit) :
-        // rouge = client, orange = fournisseur/grossiste, teinte plus foncée = long terme.
-        // Chaque bouton fixe les deux flags (its_Fournisseur_Grossisst_A_Jomla,
-        // ces_credits_son_a_long_term) à leur état cible exact en un clic, plutôt
-        // que de les inverser indépendamment — voir performClickOnMarqueAction.
+        Toggle_Non_Deletable(Color(0xFF4CAF50)),
+
         Set_Client_Court_Terme(Color(0xFFE53935)),
         Set_Client_Long_Terme(Color(0xFFB71C1C)),
         Set_Fournisseur_Court_Terme(Color(0xFFFF9800)),

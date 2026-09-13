@@ -71,6 +71,7 @@ data class UiState(
 
 class MapClientsViewModel(
     private val context: Context,
+
     val aCentralFacade: ACentralFacade,
     val focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
@@ -82,6 +83,11 @@ class MapClientsViewModel(
     ),
     val active_Datas: ActiveDatasFragNewProto = ActiveDatasFragNewProto(),
 ) : ViewModel() {
+    // Le mode Click_On_Marque.Toggle_Non_Deletable (bascule
+    // m2.its_non_deletable_client_et_trxs) est géré dans
+    // A_B_MarkersHandler.performClickOnMarqueAction, au même endroit que
+    // Toggle_Client_De_Jamale et les 4 Set_*, pas ici : ce ViewModel n'a pas
+    // besoin de logique dédiée, il expose déjà updateData() qu'ils utilisent.
     val repo2Client = aCentralFacade.repositorysMainGetter.repo2Client
     val getter = aCentralFacade.repositorysMainGetter
     val setter = aCentralFacade.repositorysMainSetter
@@ -514,6 +520,12 @@ class MapClientsViewModel(
         showClientsOnlyAcEtateCIBLE_POUR_2(Icons.Default.CheckCircleOutline),
         showAlimentionlients(LottieJsonGetterR_Raw_Icons.alimentation),
         showClientsWithConfirmedProducts(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
+        // Clients/transactions verrouillés (its_non_deletable_client_et_trxs ==
+        // true), voir Toggle_Non_Deletable dans Click_On_Marque : ce filtre
+        // permet de retrouver rapidement tous les clients ainsi verrouillés,
+        // indépendamment de leur position sur la carte (filtre global — voir
+        // isGlobalModeFilter dans But1_Floating_ClientsListDialog).
+        showNonDeletableClientsOnly(Icons.Default.CheckCircleOutline, Color(0xFF616161)),
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
 

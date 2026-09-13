@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Share
@@ -381,6 +382,7 @@ private fun getModeIcon(mode: ActiveCentralValues.Click_On_Marque): ImageVector 
     ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme -> Icons.Default.Store
     ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme -> Icons.Default.Store
     ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale -> Icons.Default.Person
+    ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable -> Icons.Default.Lock
 }
 
 fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
@@ -401,6 +403,7 @@ fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode
     ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme -> "Fournisseur (court terme)"
     ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme -> "Fournisseur (long terme)"
     ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale -> "Client de Jamale"
+    ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable -> "Non-Supprimable"
 }
 
 private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
@@ -421,4 +424,5 @@ private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): Strin
     ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme -> "Définir comme Fournisseur/Grossiste, crédit court terme"
     ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme -> "Définir comme Fournisseur/Grossiste, crédit long terme"
     ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale -> "Basculer son statut Client de Jamale"
+    ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable -> "Verrouiller/déverrouiller le client et ses transactions (non supprimables)"
 }

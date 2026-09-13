@@ -61,6 +61,7 @@ fun addOuUpdateMapMarkers(
     val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
     existingMarkers.forEach { it.closeInfoWindow() }
 
+
     // Remove every existing client marker so the map redraws cleanly from
     // the current filter's result below. The previous version only removed
     // markers whose client was still present in the (unfiltered) repo
@@ -274,6 +275,7 @@ fun performClickOnMarqueAction(
         ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme              -> "Définir Fournisseur (court terme)"
         ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme               -> "Définir Fournisseur (long terme)"
         ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale                 -> "Basculer Client de Jamale"
+        ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable                    -> "Basculer Non-Supprimable"
     }
     Toast.makeText(context, "▶ $modeLabel — ${m2Client.nom}", Toast.LENGTH_LONG).show()
     val datasValue = aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
@@ -650,6 +652,14 @@ fun performClickOnMarqueAction(
             val updated = m2Client.copy(its_Client_De_Jamale = newStatut)
             viewModel.updateData(updated)
             val label = if (newStatut) "Défini comme Client de Jamale" else "Retiré des Clients de Jamale"
+            Toast.makeText(context, "${m2Client.nom} : $label", Toast.LENGTH_SHORT).show()
+        }
+
+        ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable -> {
+            val newStatut = !m2Client.its_non_deletable_client_et_trxs
+            val updated = m2Client.copy(its_non_deletable_client_et_trxs = newStatut)
+            viewModel.updateData(updated)
+            val label = if (newStatut) "Client & transactions verrouillés (non supprimables)" else "Client & transactions déverrouillés (supprimables)"
             Toast.makeText(context, "${m2Client.nom} : $label", Toast.LENGTH_SHORT).show()
         }
     }

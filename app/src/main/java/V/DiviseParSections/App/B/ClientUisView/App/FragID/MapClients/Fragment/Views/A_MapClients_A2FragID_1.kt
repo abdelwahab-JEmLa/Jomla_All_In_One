@@ -30,8 +30,7 @@ fun A_MapClients_A2FragID_1(
     onClear: () -> Unit = {},
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
 ) {
-    // the active Click_On_Marque mode) lives in But1_Floating_ClientsListDialog and is
-    // opened from MapContent's floating buttons row via showClientsListDialog state.
+
     val uiState by viewModel.uiState.collectAsState()
     val progress = uiState.mainLoadingProgress
 

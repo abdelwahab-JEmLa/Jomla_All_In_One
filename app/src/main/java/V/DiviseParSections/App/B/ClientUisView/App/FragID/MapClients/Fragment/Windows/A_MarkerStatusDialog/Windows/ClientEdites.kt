@@ -56,6 +56,7 @@ fun ClientEdites(
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
     onTriggerCreditCapture: () -> Unit = {},
 ) {
+
     val context = LocalContext.current
     val clientTypeMode = relative_Client?.clientTypeMode
     val hasPhoneNumber = !relative_Client?.numTelephone.isNullOrEmpty() &&

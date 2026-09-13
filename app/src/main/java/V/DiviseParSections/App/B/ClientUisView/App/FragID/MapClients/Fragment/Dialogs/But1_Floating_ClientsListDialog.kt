@@ -46,6 +46,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,6 +90,19 @@ fun But1_Floating_ClientsListDialog(
 
     val compt = viewModel.active_Datas.active_M9Compt
     val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
+
+    // Dès que la recherche atteint 3 caractères, on bascule automatiquement le
+    // filtre actif sur "Tous les clients" : sans ça, une recherche tapée
+    // pendant qu'un filtre restrictif (crédit, cible, etc.) est actif ne
+    // portait que sur les clients déjà retenus par ce filtre, ce qui
+    // contredit le comportement voulu (chercher n'importe quel client de la
+    // base dès 3 caractères — voir le commentaire sur allClients ci-dessous).
+    LaunchedEffect(searchQuery) {
+        val query = searchQuery.trim()
+        if (query.length >= 3 && currentFilterMode != MapClientsViewModel.VisibleClientsNow.showAll) {
+            viewModel.update_filter_marqueClient(MapClientsViewModel.VisibleClientsNow.showAll)
+        }
+    }
 
     // Below 3 characters, search stays scoped to the clients currently shown
     // on the map (the same mode-filtered + proximity-filtered `clients` list
@@ -188,6 +202,10 @@ fun But1_Floating_ClientsListDialog(
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
         MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
         MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
+        // Filtre global comme les autres ci-dessus : its_non_deletable_client_et_trxs
+        // ne dépend pas de la position sur la carte, donc pas de restriction
+        // de proximité pour ce filtre non plus.
+        MapClientsViewModel.VisibleClientsNow.showNonDeletableClientsOnly,
     )
 
     val baseClientsList = remember(clients, allClients, currentFilterMode, isCreditFilter, isGlobalModeFilter, creditMontantByClientKeyId) {
@@ -340,7 +358,8 @@ fun But1_Floating_ClientsListDialog(
                                 modifier = Modifier.padding(start = 8.dp),
                                 style = MaterialTheme.typography.bodySmall,
                             )
-                        }     //<--
+                        }
+
                         DropdownMenu(
                             expanded = modeMenuExpanded,
                             onDismissRequest = { modeMenuExpanded = false },
@@ -363,6 +382,7 @@ fun But1_Floating_ClientsListDialog(
                                 ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme,
                                 ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme,
                                 ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale,
+                                ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable,
                             )
                             val otherClickModes = ActiveCentralValues.Click_On_Marque.entries
                                 .filter { it !in toggleClickModes }
@@ -440,10 +460,13 @@ fun But1_Floating_ClientsListDialog(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                             )
-                            //<--
-                            // Centrer la carte sur un client donné n'est pas un mode
-                            // Click_On_Marque (ça ne change aucun statut) — c'est géré via
-                            // le bouton MyLocation sur chaque ClientRow de la liste, pas ici.
+
+                            // Toggle_Non_Deletable (m2.its_non_deletable_client_et_trxs) est
+                            // inclus dans toggleClickModes ci-dessus : comme les autres
+                            // Set_*/Toggle_Client_De_Jamale, un clic ici active juste le mode
+                            // sur le compte (click_On_Marque) — le flag n'est réellement
+                            // basculé sur le client qu'au clic sur son marqueur/sa ligne,
+                            // via performClickOnMarqueAction dans A_B_MarkersHandler.kt.
                             toggleClickModes.forEach { clickMode ->
                                 DropdownMenuItem(       //<--
                                     text = {
@@ -460,7 +483,8 @@ fun But1_Floating_ClientsListDialog(
                                                     ),
                                             )
                                             Text(
-                                                text = getModeLabel(clickMode),
+                                                text = getModeLabel(clickMode),            //<--
+                                                //TODO(1): cree moi ca 
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = if (clickMode == currentMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
                                                 fontWeight = if (clickMode == currentMode) FontWeight.Bold else FontWeight.Normal,
@@ -793,4 +817,5 @@ private fun getFilterLabel(mode: MapClientsViewModel.VisibleClientsNow): String 
     MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> "Cible pour 2"
     MapClientsViewModel.VisibleClientsNow.showAlimentionlients -> "Alimentation"
     MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts -> "Produits confirmés"
+    MapClientsViewModel.VisibleClientsNow.showNonDeletableClientsOnly -> "Clients non supprimables"
 }
