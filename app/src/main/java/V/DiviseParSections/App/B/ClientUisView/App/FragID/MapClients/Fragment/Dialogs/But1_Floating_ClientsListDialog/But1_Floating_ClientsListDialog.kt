@@ -86,7 +86,7 @@ fun But1_Floating_ClientsListDialog(
 
     var filterMenuExpanded by remember { mutableStateOf(false) }
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
-        ?: VisibleClientsNow.showAll
+        ?: MapClientsViewModel.VisibleClientsNow.showAll
 
     // Filtre additionnel par secteur (M2Client.secteur), indépendant de
     // currentFilterMode : se combine avec le mode de filtre actif plutôt que
@@ -112,8 +112,8 @@ fun But1_Floating_ClientsListDialog(
     // base dès 3 caractères — voir le commentaire sur allClients ci-dessous).
     LaunchedEffect(searchQuery) {
         val query = searchQuery.trim()
-        if (query.length >= 3 && currentFilterMode != VisibleClientsNow.showAll) {
-            viewModel.update_filter_marqueClient(VisibleClientsNow.showAll)
+        if (query.length >= 3 && currentFilterMode != MapClientsViewModel.VisibleClientsNow.showAll) {
+            viewModel.update_filter_marqueClient(MapClientsViewModel.VisibleClientsNow.showAll)
         }
     }
 
@@ -135,13 +135,13 @@ fun But1_Floating_ClientsListDialog(
         if (q.length < 3) emptyList() else distinctSecteurs.filter { it.contains(q, ignoreCase = true) }
     }
     val isCreditFilter = currentFilterMode ==
-            VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ||
+            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ||
             currentFilterMode ==
-            VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term
+            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term
     val isFournisseursCreditFilter = currentFilterMode ==
-            VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ||
+            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ||
             currentFilterMode ==
-            VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
+            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
     val isAnyCreditFilter = isCreditFilter || isFournisseursCreditFilter
     // Le mode actif est-il l'un des 2 filtres "long terme" (client ou
     // fournisseur) ? Détermine si le total/détail affiché doit venir de
@@ -150,9 +150,9 @@ fun But1_Floating_ClientsListDialog(
     // jamais dans le total affiché, même s'il était bien inclus dans la liste
     // de clients filtrée par HandleFilter.filterClientsBasedOnMode.
     val isLongTermCreditFilter = currentFilterMode ==
-            VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term ||
+            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term ||
             currentFilterMode ==
-            VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
+            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
 
     val repo8Bons = viewModel.getter.repo8BonVent.datasValue
 
@@ -217,19 +217,19 @@ fun But1_Floating_ClientsListDialog(
     }
 
     val isGlobalModeFilter = currentFilterMode in listOf(
-        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
-        VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
-        VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
-        VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
-        VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
-        VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
-        VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
-        VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
+        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
         // Filtre global comme les autres ci-dessus : its_non_deletable_client_et_trxs
         // ne dépend pas de la position sur la carte, donc pas de restriction
         // de proximité pour ce filtre non plus.
-        VisibleClientsNow.showNonDeletableClientsOnly,
+        MapClientsViewModel.VisibleClientsNow.showNonDeletableClientsOnly,
     )
 
     val baseClientsList = remember(clients, allClients, currentFilterMode, isCreditFilter, isGlobalModeFilter, creditMontantByClientKeyId) {
@@ -372,7 +372,8 @@ fun But1_Floating_ClientsListDialog(
                     ,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                ) {
+                ) {//<--
+                //TODO(1): cree moi  le button passe pour tout
                     Box {
                         TextButton(onClick = { modeMenuExpanded = true }) {
                             Box(
@@ -392,8 +393,19 @@ fun But1_Floating_ClientsListDialog(
                             onDismissRequest = { modeMenuExpanded = false },
                             modifier = Modifier.widthIn(min = 240.dp),
                         ) {
+                            // Les modes "toggle/état" (fixent un statut/flag sur le client au
+                            // clic, plutôt que d'ouvrir une action) sont regroupés sous un
+                            // header dédié, séparé du reste par un Divider — même pattern
+                            // que le regroupement "Crédits" du menu Filtre ci-dessous.
+                            // Les 4 boutons Set_* fixent explicitement les deux flags
+                            // (client/fournisseur x court/long terme) en un clic, plutôt
+                            // que de les inverser indépendamment.
                             val toggleClickModes = listOf(
                                 ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme,      //<--
+                                // Ces modes (+ Delete/Ferme/Cible/Livré via otherClickModes)
+                                // ne ferment plus le dialogue après update : ils ne font que
+                                // fixer un statut/flag, donc l'utilisateur reste dans la liste
+                                // pour enchaîner sur d'autres clients sans rouvrir le menu.
                                 ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme,
                                 ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme,
                                 ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme,
@@ -499,8 +511,7 @@ fun But1_Floating_ClientsListDialog(
                                                     ),
                                             )
                                             Text(
-                                                text = getModeLabel(clickMode),            //<--
-                                                //TODO(1): cree moi ca 
+                                                text = getModeLabel(clickMode),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = if (clickMode == currentMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
                                                 fontWeight = if (clickMode == currentMode) FontWeight.Bold else FontWeight.Normal,
@@ -541,13 +552,13 @@ fun But1_Floating_ClientsListDialog(
                         ) {
                            
                             val creditFilterModes = listOf(
-                                VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-                                VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
-                                VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
-                                VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
-                                VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
+                                MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+                                MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+                                MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+                                MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+                                MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
                             )
-                            val otherFilterModes = VisibleClientsNow.entries
+                            val otherFilterModes = MapClientsViewModel.VisibleClientsNow.entries
                                 .filter { it !in creditFilterModes }
 
                             Text(
