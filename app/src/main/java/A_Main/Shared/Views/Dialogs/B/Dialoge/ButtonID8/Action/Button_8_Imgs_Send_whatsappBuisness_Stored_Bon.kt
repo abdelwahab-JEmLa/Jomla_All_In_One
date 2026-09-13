@@ -177,7 +177,7 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
                         Button(
                             onClick = {
                                 showZeroPriceWarning = false
-                                val phone = client?.numTelephone?.trim() ?: ""
+                                val phone = client?.getActiveWorkerPhoneNumber()?.trim() ?: ""
                                 if (phone.isEmpty()) {
                                     showPhoneDialog = true
                                 } else {
@@ -187,7 +187,7 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
                                             context,
                                             phone,
                                             jpgUris,
-                                            client?.nom ?: "",
+                                            client?.getActiveWorkerName() ?: "",
                                             bonMessage,
                                         ) { isSending = false }
                                     }
@@ -276,7 +276,7 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
                 if (hasZeroPriceProducts) {
                     showZeroPriceWarning = true; return@FloatingActionButton
                 }
-                val phone = client?.numTelephone?.trim() ?: ""
+                val phone = client?.getActiveWorkerPhoneNumber()?.trim() ?: ""
                 if (phone.isEmpty()) showPhoneDialog = true
                 else {
                     isSending = true; scope.launch {
@@ -284,7 +284,7 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
                             context,
                             phone,
                             jpgUris,
-                            client?.nom ?: "",
+                            client?.getActiveWorkerName() ?: "",
                             bonMessage,
                         ) { isSending = false }
                     }
@@ -304,7 +304,7 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
         }
 
         if (showLabels) {
-            val phone = client?.numTelephone?.trim() ?: ""
+            val phone = client?.getActiveWorkerPhoneNumber()?.trim() ?: ""
             val labelText = when {
                 isSending -> "Envoi images…"
                 !imagesExist -> "Images non prêtes"
