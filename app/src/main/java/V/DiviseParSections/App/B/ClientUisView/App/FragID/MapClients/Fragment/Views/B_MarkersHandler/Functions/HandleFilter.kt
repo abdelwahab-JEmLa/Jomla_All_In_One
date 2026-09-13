@@ -4,7 +4,7 @@ import EntreApps.Shared.Models.Relative_Vents.Models.Fournisseur_Speciale
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel .VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.find_its_Confirmation_de_Transaction
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -19,7 +19,7 @@ import kotlin.math.sqrt
 
 fun handleFilterMarkersClick(
     mapView: MapView,
-    currentFilterMode: VisibleClientsNow,
+    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     onFilterChanged: (VisibleClientsNow) -> Unit,
 ) {
     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }

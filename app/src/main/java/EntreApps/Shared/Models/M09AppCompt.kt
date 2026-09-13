@@ -20,6 +20,7 @@ enum class Title_Filter() {
 }
 
 
+
 @Entity
 data class M09AppCompt(
     @PrimaryKey
@@ -116,6 +117,14 @@ data class M09AppCompt(
     var click_On_Marque: ActiveCentralValues.Click_On_Marque = ActiveCentralValues.Click_On_Marque.Standart,
     var title_Filter: Title_Filter = Title_Filter.Rien,
 
+    // ---- options d'affichage du titre du marqueur (dialogue "Titre") ----
+    /** Affiche un point/suffixe après le nom sur le marqueur. */
+    var titre_affiche_suffixe_apres_nom: Boolean = false,
+    /** Affiche les infos de la dernière transaction sous le nom sur le marqueur. */
+    var titre_affiche_last_trx_infos: Boolean = false,
+    /** Affiche la bulle d'info du marqueur (au-dessus du marqueur sur la carte). */
+    var titre_affiche_buble: Boolean = true,
+
     var KeyByParent: String = "",
     var vid: Long = 1,
 
@@ -200,6 +209,9 @@ data class M09AppCompt(
         "startTextSearchM1Produit" to startTextSearchM1Produit,
         "click_On_Marque" to click_On_Marque.name,
         "title_Filter" to title_Filter.name,
+        "titre_affiche_suffixe_apres_nom" to titre_affiche_suffixe_apres_nom,
+        "titre_affiche_last_trx_infos" to titre_affiche_last_trx_infos,
+        "titre_affiche_buble" to titre_affiche_buble,
         "KeyByParent" to KeyByParent,
         "vid" to vid,
         "limite_couleurs_ou_leur_last_achate_est_moin_que_jour" to limite_couleurs_ou_leur_last_achate_est_moin_que_jour,

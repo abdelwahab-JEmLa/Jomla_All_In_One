@@ -27,6 +27,7 @@ data class ActiveCentralValues(
     val roleDefinieParSourceACetteFragment: RoleDefinieParSourceACetteFragment? = null,
     val active_OpnerDialog_M17MessageVocale: M17MessageVocale? = null,
 
+
     val handled_M10OperationVent_Pour_Link: M10OperationVentCouleur? = null,
     val affiche_Panier_au_Search_Dialog: Boolean = false,
 

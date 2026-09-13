@@ -33,6 +33,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -87,6 +88,9 @@ fun But1_OnClickMode(
     var secteurQuery by remember { mutableStateOf("") }
     var secteurSuggestionsExpanded by remember { mutableStateOf(false) }
     val secteurFocusRequester = remember { FocusRequester() }
+
+    // État du dialogue "Options de titre" (voir DropdownMenuItem "Titre" plus bas).
+    var showTitleOptionsDialog by remember { mutableStateOf(false) }
 
     // Secteurs distincts déjà utilisés par les clients, pour l'auto-complétion
     // à partir de 3 lettres saisies. Rafraîchi via mapReloadTrigger, comme le
@@ -314,11 +318,7 @@ fun But1_OnClickMode(
                                 }
                             },
                             onClick = {
-                                compt?.let {
-                                    val nextFilter = if (it.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) Title_Filter.Rien else Title_Filter.Tout_Sauf_Nom_Si_Non_New
-                                    viewModel.update_active_Compt(it.copy(title_Filter = nextFilter))
-                                }
-                                viewModel.mapReloadTrigger++
+                                showTitleOptionsDialog = true
                                 expanded = false
                             },
                             modifier = Modifier.padding(horizontal = 4.dp)
@@ -376,6 +376,7 @@ fun But1_OnClickMode(
     }
 
     if (showSecteurDialog) {
+
         Dialog(onDismissRequest = {
             showSecteurDialog = false
             secteurQuery = ""
@@ -462,6 +463,168 @@ fun But1_OnClickMode(
                             enabled = secteurQuery.isNotBlank(),
                         ) {
                             Text("Valider")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showTitleOptionsDialog) {
+        Dialog(onDismissRequest = { showTitleOptionsDialog = false }) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Options de titre",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                    )
+                    Text(
+                        text = "Choisissez les infos affichées sur les marqueurs de la carte",
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
+                    )
+
+                    // Nom seul vs standard (détails + téléphone) — ancien
+                    // comportement du DropdownMenuItem "Titre", conservé ici.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(end = 8.dp)) {
+                            Text(
+                                text = "Nom seul",
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                            )
+                            Text(
+                                text = "Masque les détails et le téléphone sur le marqueur",
+                                fontSize = 11.sp,
+                                color = Color.Gray,
+                            )
+                        }
+                        Switch(
+                            checked = compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New,
+                            onCheckedChange = { checked ->
+                                compt?.let {
+                                    val nextFilter = if (checked) Title_Filter.Tout_Sauf_Nom_Si_Non_New else Title_Filter.Rien
+                                    viewModel.update_active_Compt(it.copy(title_Filter = nextFilter))
+                                }
+                                viewModel.mapReloadTrigger++
+                            },
+                        )
+                    }
+
+                    // Affiche un suffixe après le nom sur le marqueur.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(end = 8.dp)) {
+                            Text(
+                                text = "Suffixe après le nom",
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                            )
+                            Text(
+                                text = "Ajoute un point/suffixe après le nom du client",
+                                fontSize = 11.sp,
+                                color = Color.Gray,
+                            )
+                        }
+                        Switch(
+                            checked = compt?.titre_affiche_suffixe_apres_nom == true,
+                            onCheckedChange = { checked ->
+                                compt?.let {
+                                    viewModel.update_active_Compt(it.copy(titre_affiche_suffixe_apres_nom = checked))
+                                }
+                                viewModel.mapReloadTrigger++
+                            },
+                        )
+                    }
+
+                    // Affiche les infos de la dernière transaction.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(end = 8.dp)) {
+                            Text(
+                                text = "Dernière transaction",
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                            )
+                            Text(
+                                text = "Affiche les infos de la dernière transaction sous le nom",
+                                fontSize = 11.sp,
+                                color = Color.Gray,
+                            )
+                        }
+                        Switch(
+                            checked = compt?.titre_affiche_last_trx_infos == true,
+                            onCheckedChange = { checked ->
+                                compt?.let {
+                                    viewModel.update_active_Compt(it.copy(titre_affiche_last_trx_infos = checked))
+                                }
+                                viewModel.mapReloadTrigger++
+                            },
+                        )
+                    }
+
+                    // Affiche la bulle d'info du marqueur.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(end = 8.dp)) {
+                            Text(
+                                text = "Bulle du marqueur",
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                            )
+                            Text(
+                                text = "Affiche la bulle d'info au-dessus du marqueur",
+                                fontSize = 11.sp,
+                                color = Color.Gray,
+                            )
+                        }
+                        Switch(
+                            checked = compt?.titre_affiche_buble != false,
+                            onCheckedChange = { checked ->
+                                compt?.let {
+                                    viewModel.update_active_Compt(it.copy(titre_affiche_buble = checked))
+                                }
+                                viewModel.mapReloadTrigger++
+                            },
+                        )
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                    ) {
+                        TextButton(onClick = { showTitleOptionsDialog = false }) {
+                            Text("Fermer")
                         }
                     }
                 }

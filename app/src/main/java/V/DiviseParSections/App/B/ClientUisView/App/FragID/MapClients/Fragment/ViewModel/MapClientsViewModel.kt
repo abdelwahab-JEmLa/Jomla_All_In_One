@@ -146,9 +146,14 @@ class MapClientsViewModel(
                     dao_M9AppCompt = appDatabase.dao_M9AppCompt(),
                     activeDatasFragNewProto = active_Datas,
                 ).collect { compt ->
-                    compt?.filter_marqueClient_Name
-                        ?.let { name -> VisibleClientsNow.entries.find { it.name == name } }
-                        ?.let { active_Datas.filter_marqueClient_enum_entries = it }
+                    val name = compt?.filter_marqueClient_Name
+                    if (!name.isNullOrBlank()) {
+                        val mode: VisibleClientsNow? =
+                            VisibleClientsNow.entries.firstOrNull { entry -> entry.name == name }
+                        if (mode != null) {
+                            active_Datas.filter_marqueClient_enum_entries = mode
+                        }
+                    }
                 }
         }
     }
@@ -526,33 +531,36 @@ class MapClientsViewModel(
         }
     }
 
-    enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.Companion.White) {
-        //<--
-//TODO(1): ajotu  its_limited_a900 = false
-        // Les 4 filtres crédit : client / fournisseur, court terme / long terme.
-        // "Long terme" = crédit ouvert depuis plus de CREDIT_LONG_TERM_THRESHOLD_DAYS
-        // jours (voir HandleFilter.kt) — seuil à valider/ajuster côté métier.
-        Filter_Leur_Last_TRX_Est_Credit(Icons.Default.Map, Color.Companion.Red),
-        Filter_Leur_Last_TRX_Est_Credit_Long_Term(Icons.Default.Map, Color(0xFFB71C1C)),
-        Filter_Fournisseurs_Short_Term_Credit(Icons.Default.Store, Color(0xFFFF9800)),
-        Filter_Fournisseurs_Long_Term_Credit(Icons.Default.Store, Color(0xFFE65100)),
-        // Clients de Jamale (its_Client_De_Jamale == true) ayant un crédit en
-        // cours, tous flags court/long terme confondus — recoupement des 4
-        // filtres crédit ci-dessus avec le flag Jamale plutôt qu'un nouveau
+    // its_limited_a900 : indique si ce mode de filtre est limité au rayon de
+    // proximité proximite_de_vision_meter (900m par défaut) autour du centre
+    // de la carte, ou s'il est "global" (affiche tous les clients concernés,
+    // quelle que soit leur distance). false = global/illimité, true = limité
+    // à la proximité. Les filtres crédit et les modes "statut serveur" (cible
+    // vendeur, livré, passé, non-supprimable) sont globaux car leur pertinence
+    // ne dépend pas de la position actuelle sur la carte — voir aussi le
+    // commentaire sur proximityFilterCenter dans UiState ci-dessus.
+    enum class VisibleClientsNow(
+        val icon: Any,
+        val couleur: Color = Color.Companion.White,
+        val its_limited_a900: Boolean = true,
+    ) {
+        Filter_Leur_Last_TRX_Est_Credit(Icons.Default.Map, Color.Companion.Red, its_limited_a900 = false),
+        Filter_Leur_Last_TRX_Est_Credit_Long_Term(Icons.Default.Map, Color(0xFFB71C1C), its_limited_a900 = false),
+        Filter_Fournisseurs_Short_Term_Credit(Icons.Default.Store, Color(0xFFFF9800), its_limited_a900 = false),
+        Filter_Fournisseurs_Long_Term_Credit(Icons.Default.Store, Color(0xFFE65100), its_limited_a900 = false),
 
-        // couple court/long terme dédié.
-        Filter_Clients_De_Jamale_Avec_Credit(Icons.Default.Map, Color(0xFF009688)),
-        Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME(Icons.Default.Map, Color.Companion.Red),
-        AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Filter, Color.Companion.Blue),
-        AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Companion.Red),
-        CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore, Color.Companion.Blue),
+        Filter_Clients_De_Jamale_Avec_Credit(Icons.Default.Map, Color(0xFF009688), its_limited_a900 = false),
+        Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME(Icons.Default.Map, Color.Companion.Red, its_limited_a900 = false),
+        AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Filter, Color.Companion.Blue, its_limited_a900 = false),
+        AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Companion.Red, its_limited_a900 = false),
+        CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore, Color.Companion.Blue, its_limited_a900 = false),
         showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
         affichePourCollecteurCommendes(LottieJsonGetterR_Raw_Icons.afficheFenetre),
         showAtayClients(LottieJsonGetterR_Raw_Icons.atay),
         showClientsOnlyAcEtateCIBLE_POUR_2(Icons.Default.CheckCircleOutline),
         showAlimentionlients(LottieJsonGetterR_Raw_Icons.alimentation),
         showClientsWithConfirmedProducts(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
-        showNonDeletableClientsOnly(Icons.Default.CheckCircleOutline, Color(0xFF616161)),
+        showNonDeletableClientsOnly(Icons.Default.CheckCircleOutline, Color(0xFF616161), its_limited_a900 = false),
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
 

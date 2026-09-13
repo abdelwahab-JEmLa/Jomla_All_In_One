@@ -12,8 +12,8 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Title_Filter
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.initiateBackgroundPdfCreation_NewP
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel .VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.get_sum_Bon_Vents
@@ -52,7 +52,7 @@ fun addOuUpdateMapMarkers(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     mapView: MapView,
-    currentFilterMode: VisibleClientsNow,
+    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     showMarkerDetails: Boolean,
     proximityFilterCenter: GeoPoint?,
     proximityFilterRadiusMeters: Double,
@@ -115,7 +115,7 @@ fun getClientsCurrentlyVisibleOnMap(
         // proximityFilterRadiusMeters. Sans ça, un fournisseur avec crédit situé
         // hors du rayon de 900m (proximite_de_vision_meter) disparaissait de la
         // liste alors qu'il devait s'afficher.
-        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
         VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
         VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
         VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
@@ -228,7 +228,12 @@ fun createAndAddMarker(
 
     mapView.overlays.add(marker)
 
-    if (showMarkerDetails) {
+    // La bulle d'info (infoWindow) peut être désactivée globalement via
+    // titre_affiche_buble — voir le dialogue "Options de titre"
+    // (But1_Floating_Separated_FragMap_Button_1). Par défaut (null/absent)
+    // elle reste affichée, comme avant l'ajout du toggle.
+    val afficheBuble = viewModel.active_Datas.active_M9Compt?.titre_affiche_buble != false
+    if (showMarkerDetails && afficheBuble) {
         marker.showInfoWindow()
     }
 }
@@ -356,7 +361,8 @@ fun performClickOnMarqueAction(
         ActiveCentralValues.Click_On_Marque.Standart -> {
             viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
 
-            if (showMarkerDetails) marker?.showInfoWindow()
+            val afficheBuble = viewModel.active_Datas.active_M9Compt?.titre_affiche_buble != false
+            if (showMarkerDetails && afficheBuble) marker?.showInfoWindow()
         }
 
         // Add client to targeting list
@@ -684,13 +690,27 @@ fun Marker.title(
     val position = relative_M8Transaction?.position_Don_Lis_Cible_Clients_au_VentPeriod ?: 0
     val positionPrefix = if (position != 0) "[$position] " else ""
 
-    val activeFilter = viewModel.active_Datas.active_M9Compt?.title_Filter ?: Title_Filter.Rien
+    val activeCompt = viewModel.active_Datas.active_M9Compt
+    val activeFilter = activeCompt?.title_Filter ?: Title_Filter.Rien
+    // "." après le nom quand titre_affiche_suffixe_apres_nom est actif — voir
+    // le dialogue "Options de titre" (But1_Floating_Separated_FragMap_Button_1).
+    val suffixeApresNom = if (activeCompt?.titre_affiche_suffixe_apres_nom == true) "." else ""
+    // Infos de la dernière transaction sous le nom quand
+    // titre_affiche_last_trx_infos est actif — même dialogue.
+    val afficheLastTrxInfos = activeCompt?.titre_affiche_last_trx_infos == true
+
+    fun lastTrxInfosLine(): String {
+        if (!afficheLastTrxInfos || relative_M8Transaction == null) return ""
+        val dateHandler = DatesHandler()
+        val timeStr = dateHandler.getDateAndTimString(relative_M8Transaction.creationTimestamps).time
+        return "\n${relative_M8Transaction.etateActuellementEst.nomArabe} ($timeStr)"
+    }
 
     title = if (activeFilter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
         if (m2Client.nom.contains("new", ignoreCase = true) || m2Client.nom.contains("ز")) {
             ""
         } else {
-            m2Client.nom.cleanClientNameFromPhone()
+            "${m2Client.nom.cleanClientNameFromPhone()}$suffixeApresNom${lastTrxInfosLine()}"
         }
     } else if (viewModel.afficheLesJoursAuNoms && position == 0) {
         val dateHandler = DatesHandler()
@@ -716,7 +736,7 @@ fun Marker.title(
                     "\n${
                         m2Client.nom.split(" ")
                             .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
-                    } ${
+                    }$suffixeApresNom ${
                         if (m2Client.numTelephone.isNotEmpty()) "📞${
                             m2Client.numTelephone.takeLast(
                                 2
@@ -724,14 +744,14 @@ fun Marker.title(
                         }" else ""
                     }"
         } else {
-            m2Client.nom
+            "${m2Client.nom}$suffixeApresNom"
         }
     } else {
         if (position != 0 && relative_M8Transaction != null) {
             "$positionPrefix${relative_M8Transaction.etateActuellementEst.nomArabe}" +
-                    "\n${m2Client.nom}"
+                    "\n${m2Client.nom}$suffixeApresNom${lastTrxInfosLine()}"
         } else {
-            "$positionPrefix${m2Client.nom}"
+            "$positionPrefix${m2Client.nom}$suffixeApresNom${lastTrxInfosLine()}"
         }
     }
 }

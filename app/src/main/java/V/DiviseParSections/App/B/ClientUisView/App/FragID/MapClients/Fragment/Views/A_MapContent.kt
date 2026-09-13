@@ -13,7 +13,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Di
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.ClientFilterMode_Button_4
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
 // getClientsCurrentlyVisibleOnMap is defined in A_B_MarkersHandler.kt, same package — no import needed.
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.CARTO_DB_VOYAGER
@@ -120,7 +119,7 @@ fun MapContent(
     var showClientsListDialog by remember { mutableStateOf(false) }
 
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
-        ?: VisibleClientsNow.showAll
+        ?: MapClientsViewModel.VisibleClientsNow.showAll
 
     val proximityFilterCenter = uiState.proximityFilterCenter
 
@@ -254,7 +253,10 @@ fun MapContent(
             mapView = mapView,
             onClear = onClear,
             currentFilterMode = currentFilterMode,
-            onFilterMarkers = { handleFilterMarkersClick(mapView, currentFilterMode) { viewModel.update_filter_marqueClient(it) } },
+            onFilterMarkers = { handleFilterMarkersClick(mapView, currentFilterMode)
+            {
+                viewModel.update_filter_marqueClient(it) } }
+            ,
             onPickFilter = { viewModel.update_filter_marqueClient(it) }
         )
 

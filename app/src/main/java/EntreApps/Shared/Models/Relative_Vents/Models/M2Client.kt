@@ -71,6 +71,7 @@ data class M2Client(
     val nif_Num: String = "16291403036",
     var secteur: String = "",
 ) {
+
     fun toFirebaseMap(): Map<String, Any?> = mapOf(
         "secteur" to secteur,
         "its_non_deletable_client_et_trxs" to its_non_deletable_client_et_trxs,

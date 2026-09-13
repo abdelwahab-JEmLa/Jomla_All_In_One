@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel.VisibleClientsNow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 fun AfficheTemporaireDeCibleEtPasseAEux(
     showLabels: Boolean,
     viewModel: MapClientsViewModel,
-    onFilterChanged: (VisibleClientsNow) -> Unit,
+    onFilterChanged: (MapClientsViewModel.VisibleClientsNow) -> Unit,
 ) {
     var isTemporaryFilterActive by remember { mutableStateOf(false) }
 
@@ -68,7 +68,7 @@ fun AfficheTemporaireDeCibleEtPasseAEux(
                     timerJob?.cancel() // Cancel the timer
                     timerJob = null
                     isTemporaryFilterActive = false
-                    onFilterChanged(VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
+                    onFilterChanged(MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
                 }
                 // Also show the day filter dialog
             },

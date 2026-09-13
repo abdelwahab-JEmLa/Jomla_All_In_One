@@ -7,10 +7,12 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_Floating_Separated_FragMap_Button_1.getModeLabel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel .VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.performClickOnMarqueAction
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,12 +27,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
@@ -60,6 +64,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import kotlin.math.abs
+import kotlin.text.format
 
 /**
  * Floating dialog listing the clients currently displayed on the map (the
@@ -112,8 +118,8 @@ fun But1_Floating_ClientsListDialog(
     // base dès 3 caractères — voir le commentaire sur allClients ci-dessous).
     LaunchedEffect(searchQuery) {
         val query = searchQuery.trim()
-        if (query.length >= 3 && currentFilterMode != MapClientsViewModel.VisibleClientsNow.showAll) {
-            viewModel.update_filter_marqueClient(MapClientsViewModel.VisibleClientsNow.showAll)
+        if (query.length >= 3 && currentFilterMode != VisibleClientsNow.showAll) {
+            viewModel.update_filter_marqueClient(VisibleClientsNow.showAll)
         }
     }
 
@@ -135,13 +141,13 @@ fun But1_Floating_ClientsListDialog(
         if (q.length < 3) emptyList() else distinctSecteurs.filter { it.contains(q, ignoreCase = true) }
     }
     val isCreditFilter = currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ||
+            VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ||
             currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term
+            VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term
     val isFournisseursCreditFilter = currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ||
+            VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ||
             currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
+            VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
     val isAnyCreditFilter = isCreditFilter || isFournisseursCreditFilter
     // Le mode actif est-il l'un des 2 filtres "long terme" (client ou
     // fournisseur) ? Détermine si le total/détail affiché doit venir de
@@ -150,9 +156,9 @@ fun But1_Floating_ClientsListDialog(
     // jamais dans le total affiché, même s'il était bien inclus dans la liste
     // de clients filtrée par HandleFilter.filterClientsBasedOnMode.
     val isLongTermCreditFilter = currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term ||
+            VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term ||
             currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
+            VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
 
     val repo8Bons = viewModel.getter.repo8BonVent.datasValue
 
@@ -216,21 +222,9 @@ fun But1_Floating_ClientsListDialog(
         )
     }
 
-    val isGlobalModeFilter = currentFilterMode in listOf(
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
-        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
-        // Filtre global comme les autres ci-dessus : its_non_deletable_client_et_trxs
-        // ne dépend pas de la position sur la carte, donc pas de restriction
-        // de proximité pour ce filtre non plus.
-        MapClientsViewModel.VisibleClientsNow.showNonDeletableClientsOnly,
-    )
+    // its_limited_a900 == false signifie que ce mode est "global" (ne dépend
+    // pas de la position sur la carte) — voir VisibleClientsNow.
+    val isGlobalModeFilter = !currentFilterMode.its_limited_a900
 
     val baseClientsList = remember(clients, allClients, currentFilterMode, isCreditFilter, isGlobalModeFilter, creditMontantByClientKeyId) {
         if (isGlobalModeFilter) {
@@ -365,306 +359,310 @@ fun But1_Floating_ClientsListDialog(
                         unfocusedContainerColor = Color.White,
                     ),
                 )
-                Row(
+                LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(30.dp)
                     ,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                ) {//<--
-                //TODO(1): cree moi  le button passe pour tout
-                    Box {
-                        TextButton(onClick = { modeMenuExpanded = true }) {
-                            Box(
-                                modifier = Modifier
-                                    .size(10.dp)
-                                    .background(color = currentMode.couleur, shape = CircleShape),
-                            )
-                            Text(
-                                text = "Mode : ${getModeLabel(currentMode)}",
-                                modifier = Modifier.padding(start = 8.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
+                ) {
+                    item {
+                        Box {
+                            TextButton(onClick = { modeMenuExpanded = true }) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .background(color = currentMode.couleur, shape = CircleShape),
+                                )
+                                Text(
+                                    text = "Mode : ${getModeLabel(currentMode)}",
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
 
-                        DropdownMenu(
-                            expanded = modeMenuExpanded,
-                            onDismissRequest = { modeMenuExpanded = false },
-                            modifier = Modifier.widthIn(min = 240.dp),
-                        ) {
-                            // Les modes "toggle/état" (fixent un statut/flag sur le client au
-                            // clic, plutôt que d'ouvrir une action) sont regroupés sous un
-                            // header dédié, séparé du reste par un Divider — même pattern
-                            // que le regroupement "Crédits" du menu Filtre ci-dessous.
-                            // Les 4 boutons Set_* fixent explicitement les deux flags
-                            // (client/fournisseur x court/long terme) en un clic, plutôt
-                            // que de les inverser indépendamment.
-                            val toggleClickModes = listOf(
-                                ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme,      //<--
-                                // Ces modes (+ Delete/Ferme/Cible/Livré via otherClickModes)
-                                // ne ferment plus le dialogue après update : ils ne font que
-                                // fixer un statut/flag, donc l'utilisateur reste dans la liste
-                                // pour enchaîner sur d'autres clients sans rouvrir le menu.
-                                ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme,
-                                ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme,
-                                ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme,
-                                ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale,
-                                ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable,
-                            )
-                            val otherClickModes = ActiveCentralValues.Click_On_Marque.entries
-                                .filter { it !in toggleClickModes }
-                            //<--
-                            // Recentre le filtre de proximité (3km) sur la position actuelle
-                            // de la carte. Utile après avoir scrollé/déplacé la carte pendant
-                            // que le dialogue est ouvert : sans ça le filtre restait figé sur
-                            // le centre capté à l'ouverture du dialogue (voir A_MapContent.kt,
-                            // But1_Floating_ClientsListButton.onClick).
-                            DropdownMenuItem(
-                                text = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.MyLocation,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(16.dp),
-                                        )
-                                        Text(
-                                            text = "Centrer sur la carte (3km)",
-                                            style = MaterialTheme.typography.bodySmall,
-                                        )
-                                    }
-                                },
-                                onClick = {
-                                    (mapView.mapCenter as? GeoPoint)?.let { center ->
-                                        viewModel.relod_map_marques_du_3km_du_centre_map(
-                                            center.latitude,
-                                            center.longitude,
-                                        )
-                                    }
-                                    modeMenuExpanded = false
-                                },
-                            )
-                            Divider(modifier = Modifier.padding(vertical = 4.dp))
-                            otherClickModes.forEach { clickMode ->
+                            DropdownMenu(
+                                expanded = modeMenuExpanded,
+                                onDismissRequest = { modeMenuExpanded = false },
+                                modifier = Modifier.widthIn(min = 240.dp),
+                            ) {
+                                // Les modes "toggle/état" (fixent un statut/flag sur le client au
+                                // clic, plutôt que d'ouvrir une action) sont regroupés sous un
+                                // header dédié, séparé du reste par un Divider — même pattern
+                                // que le regroupement "Crédits" du menu Filtre ci-dessous.
+                                // Les 4 boutons Set_* fixent explicitement les deux flags
+                                // (client/fournisseur x court/long terme) en un clic, plutôt
+                                // que de les inverser indépendamment.
+                                val toggleClickModes = listOf(
+                                    ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme,      //<--
+                                    // Ces modes (+ Delete/Ferme/Cible/Livré via otherClickModes)
+                                    // ne ferment plus le dialogue après update : ils ne font que
+                                    // fixer un statut/flag, donc l'utilisateur reste dans la liste
+                                    // pour enchaîner sur d'autres clients sans rouvrir le menu.
+                                    ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme,
+                                    ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme,
+                                    ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme,
+                                    ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale,
+                                    ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable,
+                                )
+                                val otherClickModes = ActiveCentralValues.Click_On_Marque.entries
+                                    .filter { it !in toggleClickModes }
+                                //<--
+                                // Recentre le filtre de proximité (3km) sur la position actuelle
+                                // de la carte. Utile après avoir scrollé/déplacé la carte pendant
+                                // que le dialogue est ouvert : sans ça le filtre restait figé sur
+                                // le centre capté à l'ouverture du dialogue (voir A_MapContent.kt,
+                                // But1_Floating_ClientsListButton.onClick).
                                 DropdownMenuItem(
                                     text = {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                                         ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(10.dp)
-                                                    .background(
-                                                        color = clickMode.couleur,
-                                                        shape = CircleShape
-                                                    ),
+                                            Icon(
+                                                imageVector = Icons.Default.MyLocation,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(16.dp),
                                             )
                                             Text(
-                                                text = getModeLabel(clickMode),
+                                                text = "Centrer sur la carte (3km)",
                                                 style = MaterialTheme.typography.bodySmall,
                                             )
                                         }
                                     },
                                     onClick = {
-                                        compt?.let {
-                                            viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
-                                        }
-                                        viewModel.mapReloadTrigger++
-                                        // Ne ferme pas le menu : voir commentaire sur toggleClickModes.
-                                    },
-                                )
-                            }
-
-                            Divider(modifier = Modifier.padding(vertical = 4.dp))
-
-                            Text(
-                                text = "Changeurs de statut",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                            )
-
-                            // Toggle_Non_Deletable (m2.its_non_deletable_client_et_trxs) est
-                            // inclus dans toggleClickModes ci-dessus : comme les autres
-                            // Set_*/Toggle_Client_De_Jamale, un clic ici active juste le mode
-                            // sur le compte (click_On_Marque) — le flag n'est réellement
-                            // basculé sur le client qu'au clic sur son marqueur/sa ligne,
-                            // via performClickOnMarqueAction dans A_B_MarkersHandler.kt.
-                            toggleClickModes.forEach { clickMode ->
-                                DropdownMenuItem(       //<--
-                                    text = {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(10.dp)
-                                                    .background(
-                                                        color = clickMode.couleur,
-                                                        shape = CircleShape
-                                                    ),
-                                            )
-                                            Text(
-                                                text = getModeLabel(clickMode),
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = if (clickMode == currentMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
-                                                fontWeight = if (clickMode == currentMode) FontWeight.Bold else FontWeight.Normal,
+                                        (mapView.mapCenter as? GeoPoint)?.let { center ->
+                                            viewModel.relod_map_marques_du_3km_du_centre_map(
+                                                center.latitude,
+                                                center.longitude,
                                             )
                                         }
-                                    },
-                                    onClick = {
-                                        compt?.let {
-                                            viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
-                                        }
-                                        viewModel.mapReloadTrigger++
-                                        // Ne ferme pas le menu : l'utilisateur peut enchaîner
-                                        // sur un autre statut sans rouvrir le dropdown.
+                                        modeMenuExpanded = false
                                     },
                                 )
+                                Divider(modifier = Modifier.padding(vertical = 4.dp))
+                                otherClickModes.forEach { clickMode ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(10.dp)
+                                                        .background(
+                                                            color = clickMode.couleur,
+                                                            shape = CircleShape
+                                                        ),
+                                                )
+                                                Text(
+                                                    text = getModeLabel(clickMode),
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            compt?.let {
+                                                viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
+                                            }
+                                            viewModel.mapReloadTrigger++
+                                            // Ne ferme pas le menu : voir commentaire sur toggleClickModes.
+                                        },
+                                    )
+                                }
+
+                                Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+                                Text(
+                                    text = "Changeurs de statut",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                                )
+
+                                // Toggle_Non_Deletable (m2.its_non_deletable_client_et_trxs) est
+                                // inclus dans toggleClickModes ci-dessus : comme les autres
+                                // Set_*/Toggle_Client_De_Jamale, un clic ici active juste le mode
+                                // sur le compte (click_On_Marque) — le flag n'est réellement
+                                // basculé sur le client qu'au clic sur son marqueur/sa ligne,
+                                // via performClickOnMarqueAction dans A_B_MarkersHandler.kt.
+                                toggleClickModes.forEach { clickMode ->
+                                    DropdownMenuItem(       //<--
+                                        text = {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(10.dp)
+                                                        .background(
+                                                            color = clickMode.couleur,
+                                                            shape = CircleShape
+                                                        ),
+                                                )
+                                                Text(
+                                                    text = getModeLabel(clickMode),
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = if (clickMode == currentMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                                                    fontWeight = if (clickMode == currentMode) FontWeight.Bold else FontWeight.Normal,
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            compt?.let {
+                                                viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
+                                            }
+                                            viewModel.mapReloadTrigger++
+                                            // Ne ferme pas le menu : l'utilisateur peut enchaîner
+                                            // sur un autre statut sans rouvrir le dropdown.
+                                        },
+                                    )
+                                }
                             }
                         }
                     }
-                    Box {
-                        TextButton(onClick = { filterMenuExpanded = true }) {
-                            Icon(
-                                imageVector = Icons.Default.FilterList,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp),
-                            )
-                            Text(
-                                text = "Filtre : ${getFilterLabel(currentFilterMode)}" +
-                                        (activeSecteurFilter?.let { " · $it" } ?: ""),
-                                modifier = Modifier.padding(start = 6.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }     
-                        //<--     //<--
-                        DropdownMenu(
-                            expanded = filterMenuExpanded,
-                            onDismissRequest = { filterMenuExpanded = false },
-                            modifier = Modifier.widthIn(min = 240.dp),
-                        ) {
-                           
-                            val creditFilterModes = listOf(
-                                MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-                                MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
-                                MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
-                                MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
-                                MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
-                            )
-                            val otherFilterModes = MapClientsViewModel.VisibleClientsNow.entries
-                                .filter { it !in creditFilterModes }
+                    item {
+                        Box {
+                            TextButton(onClick = { filterMenuExpanded = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.FilterList,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                                Text(
+                                    text = "Filtre : ${getFilterLabel(currentFilterMode)}" +
+                                            (activeSecteurFilter?.let { " · $it" } ?: ""),
+                                    modifier = Modifier.padding(start = 6.dp),
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                            //<--     //<--
+                            DropdownMenu(
+                                expanded = filterMenuExpanded,
+                                onDismissRequest = { filterMenuExpanded = false },
+                                modifier = Modifier.widthIn(min = 240.dp),
+                            ) {
 
-                            Text(
-                                text = "Crédits",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                            )   //<--
-                            // "Court terme" (crédit affiché ici) = dernière situation
-                            // crédit du client différente de zéro. Un client sans
-                            // situation crédit enregistrée, ou dont la dernière
-                            // situation est exactement 0, n'apparaît pas dans ce
-                            // filtre — voir M2Client.calculateCreditsMap.
-                            creditFilterModes.forEach { filterMode ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(10.dp)
-                                                    .background(
-                                                        color = filterMode.couleur,
-                                                        shape = CircleShape,
-                                                    ),
-                                            )
+                                val creditFilterModes = listOf(
+                                    VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+                                    VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+                                    VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+                                    VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+                                    VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
+                                )
+                                val otherFilterModes = VisibleClientsNow.entries
+                                    .filter { it !in creditFilterModes }
+
+                                Text(
+                                    text = "Crédits",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                                )   //<--
+                                // "Court terme" (crédit affiché ici) = dernière situation
+                                // crédit du client différente de zéro. Un client sans
+                                // situation crédit enregistrée, ou dont la dernière
+                                // situation est exactement 0, n'apparaît pas dans ce
+                                // filtre — voir M2Client.calculateCreditsMap.
+                                creditFilterModes.forEach { filterMode ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(10.dp)
+                                                        .background(
+                                                            color = filterMode.couleur,
+                                                            shape = CircleShape,
+                                                        ),
+                                                )
+                                                Text(
+                                                    text = getFilterLabel(filterMode),
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = if (filterMode == currentFilterMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                                                    fontWeight = if (filterMode == currentFilterMode) FontWeight.Bold else FontWeight.Normal,
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            viewModel.update_filter_marqueClient(filterMode)
+                                            viewModel.mapReloadTrigger++
+                                            filterMenuExpanded = false
+                                        },
+                                    )
+                                }
+
+                                Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+                                otherFilterModes.forEach { filterMode ->
+                                    DropdownMenuItem(
+                                        text = {
                                             Text(
                                                 text = getFilterLabel(filterMode),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = if (filterMode == currentFilterMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
                                                 fontWeight = if (filterMode == currentFilterMode) FontWeight.Bold else FontWeight.Normal,
                                             )
-                                        }
-                                    },
-                                    onClick = {
-                                        viewModel.update_filter_marqueClient(filterMode)
-                                        viewModel.mapReloadTrigger++
-                                        filterMenuExpanded = false
-                                    },
-                                )
-                            }
+                                        },
+                                        onClick = {
+                                            viewModel.update_filter_marqueClient(filterMode)
+                                            viewModel.mapReloadTrigger++
+                                            filterMenuExpanded = false
+                                        },
+                                    )
+                                }
 
-                            Divider(modifier = Modifier.padding(vertical = 4.dp))
+                                Divider(modifier = Modifier.padding(vertical = 4.dp))
 
-                            otherFilterModes.forEach { filterMode ->
+                                // Filtre par secteur (M2Client.secteur) : se combine avec
+                                // currentFilterMode ci-dessus au lieu de le remplacer — voir
+                                // filteredClients. Un clic direct sur l'item réinitialise le
+                                // filtre si un secteur est déjà actif ; sinon il ouvre le
+                                // dialogue de sélection listant les secteurs distincts.
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            text = getFilterLabel(filterMode),
+                                            text = activeSecteurFilter?.let { "Secteur : $it   ✕" }
+                                                ?: "Filtrer par secteur…",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = if (filterMode == currentFilterMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
-                                            fontWeight = if (filterMode == currentFilterMode) FontWeight.Bold else FontWeight.Normal,
+                                            color = if (activeSecteurFilter != null) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                                            fontWeight = if (activeSecteurFilter != null) FontWeight.Bold else FontWeight.Normal,
                                         )
                                     },
                                     onClick = {
-                                        viewModel.update_filter_marqueClient(filterMode)
-                                        viewModel.mapReloadTrigger++
-                                        filterMenuExpanded = false
+                                        if (activeSecteurFilter != null) {
+                                            activeSecteurFilter = null
+                                            filterMenuExpanded = false
+                                        } else {
+                                            showSecteurFilterDialog = true
+                                            filterMenuExpanded = false
+                                        }
                                     },
                                 )
                             }
-
-                            Divider(modifier = Modifier.padding(vertical = 4.dp))
-
-                            // Filtre par secteur (M2Client.secteur) : se combine avec
-                            // currentFilterMode ci-dessus au lieu de le remplacer — voir
-                            // filteredClients. Un clic direct sur l'item réinitialise le
-                            // filtre si un secteur est déjà actif ; sinon il ouvre le
-                            // dialogue de sélection listant les secteurs distincts.
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = activeSecteurFilter?.let { "Secteur : $it   ✕" }
-                                            ?: "Filtrer par secteur…",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = if (activeSecteurFilter != null) MaterialTheme.colorScheme.primary else Color.Unspecified,
-                                        fontWeight = if (activeSecteurFilter != null) FontWeight.Bold else FontWeight.Normal,
-                                    )
-                                },
-                                onClick = {
-                                    if (activeSecteurFilter != null) {
-                                        activeSecteurFilter = null
-                                        filterMenuExpanded = false
-                                    } else {
-                                        showSecteurFilterDialog = true
-                                        filterMenuExpanded = false
-                                    }
-                                },
-                            )
                         }
                     }
-
-                    TextButton(onClick = { showPeriodsDialog = true }) {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                        Text(
-                            text = "Périodes",
-                            modifier = Modifier.padding(start = 6.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                        )
+                    item {
+                        TextButton(onClick = { showPeriodsDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.DateRange,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Text(
+                                text = "Périodes",
+                                modifier = Modifier.padding(start = 6.dp),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
                     }
                 }
 
@@ -929,3 +927,114 @@ fun But1_Floating_ClientsListDialog(
     }
 }
 
+@Composable
+fun ClientRow(
+    client: M2Client,
+    currentMode: ActiveCentralValues.Click_On_Marque,
+    lastTransaction: M8BonVent?,
+    getter: RepositorysMainGetter,
+    onClick: () -> Unit,
+    onCenterOnMap: () -> Unit,
+    onUpdateSecteur: () -> Unit,
+) {
+    val sumBonVents = lastTransaction?.let { lastTransaction.montant_principale_du_type }
+
+    // montant_principale_du_type = sumCredits - sumVersements (voir
+    // M8BonVent.fun_calculative_du_main_val). Pour un client normal, positif =
+    // il nous doit de l'argent, négatif = on lui doit (versements en trop).
+    // Pour un fournisseur c'est l'inverse — voir M2Client.calculateCreditsMap.
+    // On affiche donc toujours le montant réel (+ ou -) avec un libellé qui
+    // en précise le sens, plutôt que de cacher les valeurs négatives.
+    val creditLabel = if (lastTransaction != null && sumBonVents != null && sumBonVents != 0.0) {
+        val dateHandler = DatesHandler()
+        val date = dateHandler.getDateAndTimString(lastTransaction.creationTimestamps).date
+        val doitNousDeArgent = if (client.its_Fournisseur_Grossisst_A_Jomla) sumBonVents < 0.0 else sumBonVents > 0.0
+        val prefix = if (doitNousDeArgent) "+" else "-"
+        "$prefix${"%.2f".format(abs(sumBonVents))} DA · $date"
+    } else {
+        null
+    }
+
+    Row(
+        modifier = Modifier.Companion
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.Companion.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            modifier = Modifier.Companion
+                .size(10.dp)
+                .background(color = currentMode.couleur, shape = CircleShape),
+        )
+        Column(modifier = Modifier.Companion.weight(1f)) {
+            Text(
+                text = client.nom,
+                fontWeight = FontWeight.Companion.Medium,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            if (client.numTelephone.isNotEmpty() && client.numTelephone != "null") {
+                Text(
+                    text = client.numTelephone,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Companion.Gray,
+                )
+            }
+            if (client.secteur.isNotBlank()) {
+                Text(
+                    text = "Secteur : ${client.secteur}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Companion.Gray,
+                )
+            }
+            if (creditLabel != null) {
+                Text(
+                    text = "Crédit : $creditLabel",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
+        // Ouvre le dialogue de modification du secteur pour CE client précis
+        // (distinct du dialogue "Modifier le secteur" du FAB, qui met à jour
+        // tous les clients ciblés d'un coup) — action indépendante de onClick.
+        IconButton(onClick = onUpdateSecteur) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Modifier le secteur de ${client.nom}",
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+        // Centre la carte sur ce client sans déclencher l'action du mode actif
+        // (Standard / Appeler / Navigation / ...) ni fermer le dialogue —
+        // action indépendante de onClick.
+        IconButton(onClick = onCenterOnMap) {
+            Icon(
+                imageVector = Icons.Default.MyLocation,
+                contentDescription = "Centrer la carte sur ${client.nom}",
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+fun getFilterLabel(mode: VisibleClientsNow): String = when (mode) {
+    MapClientsViewModel.VisibleClientsNow.showAll -> "Tous les clients"
+    VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> "Crédit (court terme)"
+    VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term -> "Crédit (long terme)"
+    VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit -> "Crédit Fournisseurs / Grossistes (court terme)"
+    VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit -> "Crédit Fournisseurs / Grossistes (long terme)"
+    VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit -> "Clients de Jamale avec crédit"
+    VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "Commande confirmée"
+    VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> "Commande livrée"
+    VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> "Cible vendeur"
+    VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> "Cible & Passé"
+    VisibleClientsNow.showNonAbsentClientsOnly -> "Clients non absents"
+    VisibleClientsNow.affichePourCollecteurCommendes -> "Collecteur commandes"
+    VisibleClientsNow.showAtayClients -> "Atay / Moukassarat"
+    VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> "Cible pour 2"
+    VisibleClientsNow.showAlimentionlients -> "Alimentation"
+    VisibleClientsNow.showClientsWithConfirmedProducts -> "Produits confirmés"
+    VisibleClientsNow.showNonDeletableClientsOnly -> "Clients non supprimables"
+}

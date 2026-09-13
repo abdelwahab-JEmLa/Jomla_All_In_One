@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel .VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.MapSource
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.changeMapSource
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
@@ -63,7 +63,7 @@ private class FilterLogger {
         private val logs = mutableListOf<String>()
 
         fun logFilterChange(
-            previousMode: VisibleClientsNow,
+            previousMode: MapClientsViewModel.VisibleClientsNow,
             newMode: VisibleClientsNow,
         ) {
             val timestamp =
@@ -245,7 +245,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                             // Log the filter change
                             val previousMode = currentFilterMode
                             val newMode = when (currentFilterMode) {
-                                VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
+                                MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
                                     VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
 
                                 VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->

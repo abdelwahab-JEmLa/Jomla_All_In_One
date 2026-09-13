@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel .VisibleClientsNow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +40,7 @@ private val filtersToShow = listOf(
 
 @Composable
 fun FilterView(
-    currentFilterMode: VisibleClientsNow,
+    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     onFilterSelect: (VisibleClientsNow) -> Unit,
     onDismiss: () -> Unit
 ) = Dialog(onDismissRequest = onDismiss) {
