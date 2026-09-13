@@ -10,7 +10,7 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -26,7 +26,7 @@ class ActiveDatasFragNewProto {
     var click_On_Marque: ActiveCentralValues.Click_On_Marque? by mutableStateOf(null)
 
     var section_ToggleButton_TagPrioriter__start_Collapsed: Boolean? by mutableStateOf(true)
-    var filter_marqueClient_enum_entries: MapClientsViewModel.VisibleClientsNow? by mutableStateOf(
+    var filter_marqueClient_enum_entries: VisibleClientsNow? by mutableStateOf(
         null
     )
 

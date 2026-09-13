@@ -1,16 +1,19 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_Floating_Separated_FragMap_Button_1
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Title_Filter
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,27 +21,22 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Store
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,19 +44,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import kotlin.math.roundToInt
 
 @Composable
 fun But1_OnClickMode(
-    buttonState: Button_State = Button_State.get_Default().copy(
+    buttonState: Button_State = Button_State.Companion.get_Default().copy(
         text_Label = "Mode Selection",
         icons = Pair(Icons.Default.Remove, Icons.Default.Add)
     ),
@@ -80,6 +81,28 @@ fun But1_OnClickMode(
     var offsetX by remember { mutableFloatStateOf(screenWidth.value - 200f) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value - 200f) }
     var expanded by remember { mutableStateOf(false) }
+
+    // État du dialogue "Modifier le secteur" (voir DropdownMenuItem plus bas).
+    var showSecteurDialog by remember { mutableStateOf(false) }
+    var secteurQuery by remember { mutableStateOf("") }
+    var secteurSuggestionsExpanded by remember { mutableStateOf(false) }
+    val secteurFocusRequester = remember { FocusRequester() }
+
+    // Secteurs distincts déjà utilisés par les clients, pour l'auto-complétion
+    // à partir de 3 lettres saisies. Rafraîchi via mapReloadTrigger, comme le
+    // reste de l'écran (voir commentaire "Màj optimiste du trigger" dans le
+    // ViewModel).
+    val distinctSecteurs = remember(viewModel.mapReloadTrigger) {
+        viewModel.bProto_ClientsDataBase
+            .map { it.secteur }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sorted()
+    }
+    val filteredSecteurSuggestions = remember(secteurQuery, distinctSecteurs) {
+        val q = secteurQuery.trim()
+        if (q.length < 3) emptyList() else distinctSecteurs.filter { it.contains(q, ignoreCase = true) }
+    }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
@@ -193,6 +216,39 @@ fun But1_OnClickMode(
                             },
                             onClick = {
                                 viewModel.passAllCibleClientsForCurrentVentPeriod()
+                                expanded = false
+                            },
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )          //<--
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Place,
+                                        contentDescription = null,
+                                        tint = Color(0xFF747680),
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = "Modifier le secteur",
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 14.sp
+                                        )
+                                        Text(
+                                            text = "Change le secteur des clients ciblés",
+                                            fontSize = 11.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                showSecteurDialog = true
                                 expanded = false
                             },
                             modifier = Modifier.padding(horizontal = 4.dp)
@@ -318,6 +374,100 @@ fun But1_OnClickMode(
             }
         }
     }
+
+    if (showSecteurDialog) {
+        Dialog(onDismissRequest = {
+            showSecteurDialog = false
+            secteurQuery = ""
+            secteurSuggestionsExpanded = false
+        }) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    val keyboardController = LocalSoftwareKeyboardController.current
+                    // Le champ doit être focus (et le clavier ouvert) dès
+                    // l'apparition du dialogue, avec une valeur initiale vide
+                    // (secteurQuery démarre déjà à "" — voir sa déclaration).
+                    LaunchedEffect(Unit) {
+                        secteurFocusRequester.requestFocus()
+                        keyboardController?.show()
+                    }
+                    Text(
+                        text = "Modifier le secteur",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                    )
+                    Text(
+                        text = "Applique le secteur saisi à tous les clients actuellement ciblés",
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
+                    )
+                    OutlinedTextField(
+                        value = secteurQuery,
+                        onValueChange = {
+                            secteurQuery = it
+                            secteurSuggestionsExpanded = it.trim().length >= 3
+                        },
+                        label = { Text("Secteur") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(secteurFocusRequester),
+                    )
+                    // À partir de 3 lettres saisies, propose les secteurs
+                    // distincts déjà utilisés par des clients et qui
+                    // correspondent au texte tapé.
+                    if (secteurSuggestionsExpanded && filteredSecteurSuggestions.isNotEmpty()) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            filteredSecteurSuggestions.forEach { suggestion ->
+                                Text(
+                                    text = suggestion,
+                                    fontSize = 13.sp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            secteurQuery = suggestion
+                                            secteurSuggestionsExpanded = false
+                                        }
+                                        .padding(vertical = 8.dp, horizontal = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                    ) {
+                        TextButton(onClick = {
+                            showSecteurDialog = false
+                            secteurQuery = ""
+                            secteurSuggestionsExpanded = false
+                        }) {
+                            Text("Annuler")
+                        }
+                        TextButton(
+                            onClick = {
+                                viewModel.updateSecteurForAllCibleClients(secteurQuery)
+                                showSecteurDialog = false
+                                secteurQuery = ""
+                                secteurSuggestionsExpanded = false
+                            },
+                            enabled = secteurQuery.isNotBlank(),
+                        ) {
+                            Text("Valider")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -364,65 +514,3 @@ fun But1_Floating_ClientsListButton(
     }
 }
 
-private fun getModeIcon(mode: ActiveCentralValues.Click_On_Marque): ImageVector = when (mode) {
-    ActiveCentralValues.Click_On_Marque.Standart -> Icons.Default.Info
-    ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> Icons.Default.Add
-    ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> Icons.Default.ShoppingCart
-    ActiveCentralValues.Click_On_Marque.Lence_New_Command -> Icons.Default.Add
-    ActiveCentralValues.Click_On_Marque.Call -> Icons.Default.Call
-    ActiveCentralValues.Click_On_Marque.Navigate -> Icons.Default.Explore
-    ActiveCentralValues.Click_On_Marque.Marck_Ferme -> Icons.Default.Close
-    ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> Icons.Default.LocalShipping
-    ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> Icons.Default.Share
-    ActiveCentralValues.Click_On_Marque.Delete_Client -> Icons.Default.Delete
-    ActiveCentralValues.Click_On_Marque.Passe_Client -> Icons.Default.CheckCircle
-    ActiveCentralValues.Click_On_Marque.Livre_Client -> Icons.Default.Check
-    ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme -> Icons.Default.Person
-    ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme -> Icons.Default.Person
-    ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme -> Icons.Default.Store
-    ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme -> Icons.Default.Store
-    ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale -> Icons.Default.Person
-    ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable -> Icons.Default.Lock
-}
-
-fun getModeLabel(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
-    ActiveCentralValues.Click_On_Marque.Standart -> "Standard"
-    ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Ajouter Ciblage"
-    ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Afficher Commande"
-    ActiveCentralValues.Click_On_Marque.Lence_New_Command -> "Lancer Nouvelle Commande"
-    ActiveCentralValues.Click_On_Marque.Call -> "Appeler Client"
-    ActiveCentralValues.Click_On_Marque.Navigate -> "Navigation GPS"
-    ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer Fermé"
-    ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer Livré"
-    ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> "Envoyer PDF WhatsApp"
-    ActiveCentralValues.Click_On_Marque.Delete_Client -> "Supprimer Client"
-    ActiveCentralValues.Click_On_Marque.Passe_Client -> "Passer le client"
-    ActiveCentralValues.Click_On_Marque.Livre_Client -> "Livrer le client"
-    ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme -> "Client (court terme)"
-    ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme -> "Client (long terme)"
-    ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme -> "Fournisseur (court terme)"
-    ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme -> "Fournisseur (long terme)"
-    ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale -> "Client de Jamale"
-    ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable -> "Non-Supprimable"
-}
-
-private fun getModeDescription(mode: ActiveCentralValues.Click_On_Marque): String = when (mode) {
-    ActiveCentralValues.Click_On_Marque.Standart -> "Afficher les détails du client"
-    ActiveCentralValues.Click_On_Marque.ADD_Au_Ciblage_Clients -> "Ajouter à la liste de ciblage"
-    ActiveCentralValues.Click_On_Marque.Affiche_OnCommand_VentPeriod_Transaction -> "Voir le bon de commande actif"
-    ActiveCentralValues.Click_On_Marque.Lence_New_Command -> "Créer et ouvrir directement une nouvelle commande"
-    ActiveCentralValues.Click_On_Marque.Call -> "Lancer un appel téléphonique"
-    ActiveCentralValues.Click_On_Marque.Navigate -> "Ouvrir dans Google Maps"
-    ActiveCentralValues.Click_On_Marque.Marck_Ferme -> "Marquer le client comme fermé"
-    ActiveCentralValues.Click_On_Marque.Marck_Command_Livret -> "Marquer la commande comme livrée"
-    ActiveCentralValues.Click_On_Marque.Cree_et_envoi_whatsapp_pdf -> "Créer et envoyer le bon PDF via WhatsApp"
-    ActiveCentralValues.Click_On_Marque.Delete_Client -> "Supprimer définitivement le client de la carte"
-    ActiveCentralValues.Click_On_Marque.Passe_Client -> "Créer un bon Passe_Pour_Current_vent_period pour ce client"
-    ActiveCentralValues.Click_On_Marque.Livre_Client -> "Créer un bon COMMANDE_LIVRAI pour ce client"
-    ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme -> "Définir comme Client, crédit court terme"
-    ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme -> "Définir comme Client, crédit long terme"
-    ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme -> "Définir comme Fournisseur/Grossiste, crédit court terme"
-    ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme -> "Définir comme Fournisseur/Grossiste, crédit long terme"
-    ActiveCentralValues.Click_On_Marque.Toggle_Client_De_Jamale -> "Basculer son statut Client de Jamale"
-    ActiveCentralValues.Click_On_Marque.Toggle_Non_Deletable -> "Verrouiller/déverrouiller le client et ses transactions (non supprimables)"
-}

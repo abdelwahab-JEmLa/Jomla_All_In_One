@@ -48,6 +48,7 @@ fun A_MapClients_A2FragID_1(
         }
     }
 
+
     Box(modifier = modifier.fillMaxSize()) {
         if (progress < 1.0f && !isTimeout) {
             LoadingProgressOverlay(progress = progress)

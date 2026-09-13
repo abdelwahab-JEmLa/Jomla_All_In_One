@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -30,7 +31,7 @@ import kotlinx.coroutines.launch
 fun AfficheTemporaireDeCibleEtPasseAEux(
     showLabels: Boolean,
     viewModel: MapClientsViewModel,
-    onFilterChanged: (MapClientsViewModel.VisibleClientsNow) -> Unit,
+    onFilterChanged: (VisibleClientsNow) -> Unit,
 ) {
     var isTemporaryFilterActive by remember { mutableStateOf(false) }
 
@@ -51,14 +52,14 @@ fun AfficheTemporaireDeCibleEtPasseAEux(
                     isTemporaryFilterActive = true
 
                     // Change to CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX immediately
-                    onFilterChanged(MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX)
+                    onFilterChanged(VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX)
 
                     // Start 20-second timer
                     timerJob = coroutineScope.launch {
                         delay(20000) // 20 seconds
 
                         // Revert back to AFFICHE_CIBLE_POUR_VENDEUR
-                        onFilterChanged(MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
+                        onFilterChanged(VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
                         isTemporaryFilterActive = false
                         timerJob = null
                     }
@@ -67,7 +68,7 @@ fun AfficheTemporaireDeCibleEtPasseAEux(
                     timerJob?.cancel() // Cancel the timer
                     timerJob = null
                     isTemporaryFilterActive = false
-                    onFilterChanged(MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
+                    onFilterChanged(VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
                 }
                 // Also show the day filter dialog
             },

@@ -1,16 +1,16 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_Floating_ClientsListDialog
 
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_Floating_Separated_FragMap_Button_1.getModeLabel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.performClickOnMarqueAction
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -86,7 +86,20 @@ fun But1_Floating_ClientsListDialog(
 
     var filterMenuExpanded by remember { mutableStateOf(false) }
     val currentFilterMode = viewModel.active_Datas.filter_marqueClient_enum_entries
-        ?: MapClientsViewModel.VisibleClientsNow.showAll
+        ?: VisibleClientsNow.showAll
+
+    // Filtre additionnel par secteur (M2Client.secteur), indépendant de
+    // currentFilterMode : se combine avec le mode de filtre actif plutôt que
+    // de le remplacer (voir filteredClients plus bas).
+    var showSecteurFilterDialog by remember { mutableStateOf(false) }
+    var activeSecteurFilter by remember { mutableStateOf<String?>(null) }
+
+    // Dialogue d'édition du secteur pour UN client précis (bouton crayon sur
+    // chaque ligne, voir ClientRow.onUpdateSecteur) — distinct du dialogue du
+    // FAB (But1_OnClickMode) qui met à jour tous les clients ciblés d'un coup.
+    var clientForSecteurEdit by remember { mutableStateOf<M2Client?>(null) }
+    var editSecteurQuery by remember { mutableStateOf("") }
+    var editSecteurSuggestionsExpanded by remember { mutableStateOf(false) }
 
     val compt = viewModel.active_Datas.active_M9Compt
     val currentMode = compt?.click_On_Marque ?: ActiveCentralValues.Click_On_Marque.Standart
@@ -99,8 +112,8 @@ fun But1_Floating_ClientsListDialog(
     // base dès 3 caractères — voir le commentaire sur allClients ci-dessous).
     LaunchedEffect(searchQuery) {
         val query = searchQuery.trim()
-        if (query.length >= 3 && currentFilterMode != MapClientsViewModel.VisibleClientsNow.showAll) {
-            viewModel.update_filter_marqueClient(MapClientsViewModel.VisibleClientsNow.showAll)
+        if (query.length >= 3 && currentFilterMode != VisibleClientsNow.showAll) {
+            viewModel.update_filter_marqueClient(VisibleClientsNow.showAll)
         }
     }
 
@@ -110,14 +123,25 @@ fun But1_Floating_ClientsListDialog(
     // client database, so the user can find any client by name — not only
     // one that's currently rendered as a marker.
     val allClients = viewModel.getter.repo2Client.datasValue
+    val distinctSecteurs = remember(allClients) {
+        allClients
+            .map { it.secteur }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sorted()
+    }
+    val editSecteurSuggestions = remember(editSecteurQuery, distinctSecteurs) {
+        val q = editSecteurQuery.trim()
+        if (q.length < 3) emptyList() else distinctSecteurs.filter { it.contains(q, ignoreCase = true) }
+    }
     val isCreditFilter = currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ||
+            VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ||
             currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term
+            VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term
     val isFournisseursCreditFilter = currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ||
+            VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ||
             currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
+            VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
     val isAnyCreditFilter = isCreditFilter || isFournisseursCreditFilter
     // Le mode actif est-il l'un des 2 filtres "long terme" (client ou
     // fournisseur) ? Détermine si le total/détail affiché doit venir de
@@ -126,9 +150,9 @@ fun But1_Floating_ClientsListDialog(
     // jamais dans le total affiché, même s'il était bien inclus dans la liste
     // de clients filtrée par HandleFilter.filterClientsBasedOnMode.
     val isLongTermCreditFilter = currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term ||
+            VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term ||
             currentFilterMode ==
-            MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
+            VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit
 
     val repo8Bons = viewModel.getter.repo8BonVent.datasValue
 
@@ -193,19 +217,19 @@ fun But1_Floating_ClientsListDialog(
     }
 
     val isGlobalModeFilter = currentFilterMode in listOf(
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
-        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+        VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+        VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+        VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
+        VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
+        VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
+        VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
         // Filtre global comme les autres ci-dessus : its_non_deletable_client_et_trxs
         // ne dépend pas de la position sur la carte, donc pas de restriction
         // de proximité pour ce filtre non plus.
-        MapClientsViewModel.VisibleClientsNow.showNonDeletableClientsOnly,
+        VisibleClientsNow.showNonDeletableClientsOnly,
     )
 
     val baseClientsList = remember(clients, allClients, currentFilterMode, isCreditFilter, isGlobalModeFilter, creditMontantByClientKeyId) {
@@ -216,9 +240,9 @@ fun But1_Floating_ClientsListDialog(
         }
     }
 
-    val filteredClients = remember(baseClientsList, allClients, searchQuery, isGlobalModeFilter) {
+    val filteredClients = remember(baseClientsList, allClients, searchQuery, isGlobalModeFilter, activeSecteurFilter) {
         val query = searchQuery.trim().lowercase()
-        when {
+        val bySearch = when {
             query.isEmpty() -> baseClientsList
             query.length < 3 -> baseClientsList.filter {
                 it.nom.lowercase().contains(query) ||
@@ -232,6 +256,9 @@ fun But1_Floating_ClientsListDialog(
                 }
             }
         }
+        // Le filtre secteur se combine avec la recherche/le mode ci-dessus,
+        // il ne les remplace pas.
+        activeSecteurFilter?.let { secteur -> bySearch.filter { it.secteur == secteur } } ?: bySearch
     }
 
     Dialog(
@@ -365,19 +392,8 @@ fun But1_Floating_ClientsListDialog(
                             onDismissRequest = { modeMenuExpanded = false },
                             modifier = Modifier.widthIn(min = 240.dp),
                         ) {
-                            // Les modes "toggle/état" (fixent un statut/flag sur le client au
-                            // clic, plutôt que d'ouvrir une action) sont regroupés sous un
-                            // header dédié, séparé du reste par un Divider — même pattern
-                            // que le regroupement "Crédits" du menu Filtre ci-dessous.
-                            // Les 4 boutons Set_* fixent explicitement les deux flags
-                            // (client/fournisseur x court/long terme) en un clic, plutôt
-                            // que de les inverser indépendamment.
                             val toggleClickModes = listOf(
                                 ActiveCentralValues.Click_On_Marque.Set_Client_Court_Terme,      //<--
-                                // Ces modes (+ Delete/Ferme/Cible/Livré via otherClickModes)
-                                // ne ferment plus le dialogue après update : ils ne font que
-                                // fixer un statut/flag, donc l'utilisateur reste dans la liste
-                                // pour enchaîner sur d'autres clients sans rouvrir le menu.
                                 ActiveCentralValues.Click_On_Marque.Set_Client_Long_Terme,
                                 ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Court_Terme,
                                 ActiveCentralValues.Click_On_Marque.Set_Fournisseur_Long_Terme,
@@ -511,31 +527,27 @@ fun But1_Floating_ClientsListDialog(
                                 modifier = Modifier.size(18.dp),
                             )
                             Text(
-                                text = "Filtre : ${getFilterLabel(currentFilterMode)}",
+                                text = "Filtre : ${getFilterLabel(currentFilterMode)}" +
+                                        (activeSecteurFilter?.let { " · $it" } ?: ""),
                                 modifier = Modifier.padding(start = 6.dp),
                                 style = MaterialTheme.typography.bodySmall,
                             )
-                        }      //<--
+                        }     
+                        //<--     //<--
                         DropdownMenu(
                             expanded = filterMenuExpanded,
                             onDismissRequest = { filterMenuExpanded = false },
                             modifier = Modifier.widthIn(min = 240.dp),
                         ) {
-                            // Les filtres liés au crédit sont regroupés sous un header
-                            // "Crédits", séparé du reste par un Divider, avec leur
-                            // couleur propre (celle définie sur l'enum) pour bien les
-                            // distinguer des autres modes de filtre. Le filtre "Clients
-                            // de Jamale avec crédit" est inclus dans ce groupe : c'est un
-                            // recoupement du flag its_Client_De_Jamale avec les 4 filtres
-                            // crédit ci-dessus, pas un filtre de statut à part.
+                           
                             val creditFilterModes = listOf(
-                                MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-                                MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
-                                MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
-                                MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
-                                MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
+                                VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+                                VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+                                VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+                                VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+                                VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
                             )
-                            val otherFilterModes = MapClientsViewModel.VisibleClientsNow.entries
+                            val otherFilterModes = VisibleClientsNow.entries
                                 .filter { it !in creditFilterModes }
 
                             Text(
@@ -600,6 +612,34 @@ fun But1_Floating_ClientsListDialog(
                                     },
                                 )
                             }
+
+                            Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            // Filtre par secteur (M2Client.secteur) : se combine avec
+                            // currentFilterMode ci-dessus au lieu de le remplacer — voir
+                            // filteredClients. Un clic direct sur l'item réinitialise le
+                            // filtre si un secteur est déjà actif ; sinon il ouvre le
+                            // dialogue de sélection listant les secteurs distincts.
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = activeSecteurFilter?.let { "Secteur : $it   ✕" }
+                                            ?: "Filtrer par secteur…",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = if (activeSecteurFilter != null) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                                        fontWeight = if (activeSecteurFilter != null) FontWeight.Bold else FontWeight.Normal,
+                                    )
+                                },
+                                onClick = {
+                                    if (activeSecteurFilter != null) {
+                                        activeSecteurFilter = null
+                                        filterMenuExpanded = false
+                                    } else {
+                                        showSecteurFilterDialog = true
+                                        filterMenuExpanded = false
+                                    }
+                                },
+                            )
                         }
                     }
 
@@ -681,6 +721,11 @@ fun But1_Floating_ClientsListDialog(
                                     mapView.controller.setZoom(19.2)
                                     onDismiss()
                                 },
+                                onUpdateSecteur = {
+                                    clientForSecteurEdit = client
+                                    editSecteurQuery = client.secteur
+                                    editSecteurSuggestionsExpanded = false
+                                },
                             )
                             Divider(color = Color.LightGray.copy(alpha = 0.4f))
                         }
@@ -724,98 +769,152 @@ fun But1_Floating_ClientsListDialog(
             }
         }
     }
-}
 
-@Composable
-private fun ClientRow(
-    client: M2Client,
-    currentMode: ActiveCentralValues.Click_On_Marque,
-    lastTransaction: M8BonVent?,
-    getter: RepositorysMainGetter,
-    onClick: () -> Unit,
-    onCenterOnMap: () -> Unit,
-) {
-    val sumBonVents = lastTransaction?.let { lastTransaction.montant_principale_du_type }
-
-    // montant_principale_du_type = sumCredits - sumVersements (voir
-    // M8BonVent.fun_calculative_du_main_val). Pour un client normal, positif =
-    // il nous doit de l'argent, négatif = on lui doit (versements en trop).
-    // Pour un fournisseur c'est l'inverse — voir M2Client.calculateCreditsMap.
-    // On affiche donc toujours le montant réel (+ ou -) avec un libellé qui
-    // en précise le sens, plutôt que de cacher les valeurs négatives.
-    val creditLabel = if (lastTransaction != null && sumBonVents != null && sumBonVents != 0.0) {
-        val dateHandler = DatesHandler()
-        val date = dateHandler.getDateAndTimString(lastTransaction.creationTimestamps).date
-        val doitNousDeArgent = if (client.its_Fournisseur_Grossisst_A_Jomla) sumBonVents < 0.0 else sumBonVents > 0.0
-        val prefix = if (doitNousDeArgent) "+" else "-"
-        "$prefix${"%.2f".format(kotlin.math.abs(sumBonVents))} DA · $date"
-    } else {
-        null
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(10.dp)
-                .background(color = currentMode.couleur, shape = CircleShape),
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = client.nom,
-                fontWeight = FontWeight.Medium,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            if (client.numTelephone.isNotEmpty() && client.numTelephone != "null") {
-                Text(
-                    text = client.numTelephone,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
-                )
-            }
-            if (creditLabel != null) {
-                Text(
-                    text = "Crédit : $creditLabel",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                )
+    if (showSecteurFilterDialog) {
+        Dialog(
+            onDismissRequest = { showSecteurFilterDialog = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
+                    .fillMaxHeight(0.7f)
+                    .padding(16.dp),
+            ) {
+                Column(modifier = Modifier.fillMaxHeight()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "Filtrer par secteur",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        IconButton(onClick = { showSecteurFilterDialog = false }) {
+                            Icon(imageVector = Icons.Default.Close, contentDescription = "Fermer")
+                        }
+                    }
+                    Divider()
+                    if (distinctSecteurs.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "Aucun secteur renseigné sur les clients",
+                                color = Color.Gray,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                            items(distinctSecteurs) { secteur ->
+                                Text(
+                                    text = secteur,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (secteur == activeSecteurFilter) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                                    fontWeight = if (secteur == activeSecteurFilter) FontWeight.Bold else FontWeight.Normal,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            activeSecteurFilter = secteur
+                                            showSecteurFilterDialog = false
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
-        // Centre la carte sur ce client sans déclencher l'action du mode actif
-        // (Standard / Appeler / Navigation / ...) ni fermer le dialogue —
-        // action indépendante de onClick.
-        IconButton(onClick = onCenterOnMap) {
-            Icon(
-                imageVector = Icons.Default.MyLocation,
-                contentDescription = "Centrer la carte sur ${client.nom}",
-                tint = MaterialTheme.colorScheme.primary,
-            )
+    }
+
+    clientForSecteurEdit?.let { client ->
+        Dialog(onDismissRequest = {
+            clientForSecteurEdit = null
+            editSecteurQuery = ""
+            editSecteurSuggestionsExpanded = false
+        }) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Modifier le secteur de ${client.nom}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    OutlinedTextField(
+                        value = editSecteurQuery,
+                        onValueChange = {
+                            editSecteurQuery = it
+                            editSecteurSuggestionsExpanded = it.trim().length >= 3
+                        },
+                        label = { Text("Secteur") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                    )
+                    // À partir de 3 lettres saisies, propose les secteurs
+                    // distincts déjà utilisés par des clients (même liste que
+                    // pour le dialogue "Modifier le secteur" du FAB).
+                    if (editSecteurSuggestionsExpanded && editSecteurSuggestions.isNotEmpty()) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            editSecteurSuggestions.forEach { suggestion ->
+                                Text(
+                                    text = suggestion,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            editSecteurQuery = suggestion
+                                            editSecteurSuggestionsExpanded = false
+                                        }
+                                        .padding(vertical = 8.dp, horizontal = 4.dp),
+                                )
+                            }
+                        }
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                    ) {
+                        TextButton(onClick = {
+                            clientForSecteurEdit = null
+                            editSecteurQuery = ""
+                            editSecteurSuggestionsExpanded = false
+                        }) {
+                            Text("Annuler")
+                        }
+                        TextButton(
+                            onClick = {
+                                viewModel.updateData(client.copy(secteur = editSecteurQuery.trim()))
+                                clientForSecteurEdit = null
+                                editSecteurQuery = ""
+                                editSecteurSuggestionsExpanded = false
+                            },
+                        ) {
+                            Text("Valider")
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-private fun getFilterLabel(mode: MapClientsViewModel.VisibleClientsNow): String = when (mode) {
-    MapClientsViewModel.VisibleClientsNow.showAll -> "Tous les clients"
-    MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> "Crédit (court terme)"
-    MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term -> "Crédit (long terme)"
-    MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit -> "Crédit Fournisseurs / Grossistes (court terme)"
-    MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit -> "Crédit Fournisseurs / Grossistes (long terme)"
-    MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit -> "Clients de Jamale avec crédit"
-    MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> "Commande confirmée"
-    MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> "Commande livrée"
-    MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> "Cible vendeur"
-    MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> "Cible & Passé"
-    MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly -> "Clients non absents"
-    MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes -> "Collecteur commandes"
-    MapClientsViewModel.VisibleClientsNow.showAtayClients -> "Atay / Moukassarat"
-    MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> "Cible pour 2"
-    MapClientsViewModel.VisibleClientsNow.showAlimentionlients -> "Alimentation"
-    MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts -> "Produits confirmés"
-    MapClientsViewModel.VisibleClientsNow.showNonDeletableClientsOnly -> "Clients non supprimables"
-}

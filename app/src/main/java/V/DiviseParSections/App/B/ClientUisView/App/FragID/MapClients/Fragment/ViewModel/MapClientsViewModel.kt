@@ -16,22 +16,14 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repos
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.G.Update.deleteData
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
-import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import android.content.Context
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircleOutline
-import androidx.compose.material.icons.filled.Filter
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.SettingsBackupRestore
-import androidx.compose.material.icons.filled.Store
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
@@ -304,6 +296,36 @@ class MapClientsViewModel(
         }
     }
 
+    /**
+     * Met à jour le secteur (M2Client.secteur) de tous les clients
+     * actuellement ciblés (dernière transaction à l'état Cible) avec la
+     * valeur donnée. Utilisé par le dialogue "Modifier le secteur" du menu
+     * du bouton flottant de mode (But1_OnClickMode).
+     */
+    fun updateSecteurForAllCibleClients(newSecteur: String) {
+        val secteurTrim = newSecteur.trim()
+        if (secteurTrim.isBlank()) return
+
+        viewModelScope.launch {
+            val currentClients = repo2Client.datasState.value
+            var count = 0
+
+            currentClients.forEach { client ->
+                val lastTrx = getLastTransaction(client)
+                if (lastTrx?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible) {
+                    updateData(client.copy(secteur = secteurTrim))
+                    count++
+                }
+            }
+            mapReloadTrigger++
+            android.widget.Toast.makeText(
+                context,
+                "Secteur '$secteurTrim' appliqué à $count client(s) ciblé(s)",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     fun passAllConfirmedClientsToLivre() {
         viewModelScope.launch {
             val currentClients = repo2Client.datasState.value
@@ -494,39 +516,6 @@ class MapClientsViewModel(
             } catch (e: Exception) {
             }
         }
-    }
-
-    enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
-        // Les 4 filtres crédit : client / fournisseur, court terme / long terme.
-        // "Long terme" = crédit ouvert depuis plus de CREDIT_LONG_TERM_THRESHOLD_DAYS
-        // jours (voir HandleFilter.kt) — seuil à valider/ajuster côté métier.
-        Filter_Leur_Last_TRX_Est_Credit(Icons.Default.Map, Color.Red),
-        Filter_Leur_Last_TRX_Est_Credit_Long_Term(Icons.Default.Map, Color(0xFFB71C1C)),
-        Filter_Fournisseurs_Short_Term_Credit(Icons.Default.Store, Color(0xFFFF9800)),
-        Filter_Fournisseurs_Long_Term_Credit(Icons.Default.Store, Color(0xFFE65100)),
-        // Clients de Jamale (its_Client_De_Jamale == true) ayant un crédit en
-        // cours, tous flags court/long terme confondus — recoupement des 4
-        // filtres crédit ci-dessus avec le flag Jamale plutôt qu'un nouveau
-
-        // couple court/long terme dédié.
-        Filter_Clients_De_Jamale_Avec_Credit(Icons.Default.Map, Color(0xFF009688)),
-        Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME(Icons.Default.Map, Color.Red),
-        AFFICHE_COMMANDE_LIVRAI_Filter(Icons.Default.Filter, Color.Blue),
-        AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),
-        CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore, Color.Blue),
-        showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
-        affichePourCollecteurCommendes(LottieJsonGetterR_Raw_Icons.afficheFenetre),
-        showAtayClients(LottieJsonGetterR_Raw_Icons.atay),
-        showClientsOnlyAcEtateCIBLE_POUR_2(Icons.Default.CheckCircleOutline),
-        showAlimentionlients(LottieJsonGetterR_Raw_Icons.alimentation),
-        showClientsWithConfirmedProducts(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
-        // Clients/transactions verrouillés (its_non_deletable_client_et_trxs ==
-        // true), voir Toggle_Non_Deletable dans Click_On_Marque : ce filtre
-        // permet de retrouver rapidement tous les clients ainsi verrouillés,
-        // indépendamment de leur position sur la carte (filtre global — voir
-        // isGlobalModeFilter dans But1_Floating_ClientsListDialog).
-        showNonDeletableClientsOnly(Icons.Default.CheckCircleOutline, Color(0xFF616161)),
-        showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
 
 

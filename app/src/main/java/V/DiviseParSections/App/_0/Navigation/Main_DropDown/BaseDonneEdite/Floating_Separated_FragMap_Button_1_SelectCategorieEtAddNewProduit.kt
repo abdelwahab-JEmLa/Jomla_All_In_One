@@ -2,6 +2,7 @@ package V.DiviseParSections.App._0.Navigation.Main_DropDown.BaseDonneEdite
 
 import EntreApps.Shared.Models.Relative_Produits.Models.get_ListM21CataloguesCategorie
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -59,7 +60,7 @@ fun Floating_Separated_FragMap_Button_1_SelectCategorieEtAddNewProduit(
 ) {
     val currentValues = focusedValuesGetter.active_Central_Values
     val filter_marqueClient_enum_entrie = viewModel.active_Datas.filter_marqueClient_enum_entries
-    val isShowingAll = filter_marqueClient_enum_entrie == MapClientsViewModel.VisibleClientsNow.showAll
+    val isShowingAll = filter_marqueClient_enum_entrie == VisibleClientsNow.showAll
             || filter_marqueClient_enum_entrie == null
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
 

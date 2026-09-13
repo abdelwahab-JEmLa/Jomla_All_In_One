@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.D
 
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.find_its_Confirmation_de_Transaction
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
@@ -57,11 +58,12 @@ fun ClientFilterMode_Button_4(
         colors = Pair(Color.Red, Color.Green)
     )
 ) {
+
     val filter_marqueClient_enum_entrie = mapClientsViewModel.active_Datas.filter_marqueClient_enum_entries
     val keyID_currentActiveFocused_M14VentPeriode = focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
     val isAdmin = focusedValuesGetter.currentApp_Est_Admin
 
-    val isShowingAll = filter_marqueClient_enum_entrie == MapClientsViewModel.VisibleClientsNow.showAll
+    val isShowingAll = filter_marqueClient_enum_entrie == VisibleClientsNow.showAll
             || filter_marqueClient_enum_entrie == null
 
     val updatedButtonState = buttonState.copy(its_Active = isShowingAll)
@@ -90,8 +92,8 @@ fun ClientFilterMode_Button_4(
 
     // Resolve the count relevant to the currently active filter for the label.
     val currentFilterCount: Int? = when (filter_marqueClient_enum_entrie) {
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> acceptedBons.size
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> creditBons.size
+        VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> acceptedBons.size
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> creditBons.size
         else -> null
     }
 
@@ -119,7 +121,7 @@ fun ClientFilterMode_Button_4(
                         // FIX: pass currentFilterCount so the label matches the dropdown text
                         text = getFilterLabelForMode(
                             filter_marqueClient_enum_entrie
-                                ?: MapClientsViewModel.VisibleClientsNow.showAll,
+                                ?: VisibleClientsNow.showAll,
                             count = currentFilterCount
                         ),
                         color = Color.White,
@@ -166,19 +168,19 @@ fun ClientFilterMode_Button_4(
                         text = {
                             Text(
                                 text = "Show All Clients",
-                                color = if (filter_marqueClient_enum_entrie == MapClientsViewModel.VisibleClientsNow.showAll
+                                color = if (filter_marqueClient_enum_entrie == VisibleClientsNow.showAll
                                     || filter_marqueClient_enum_entrie == null)
                                     Color.Blue else Color.Black
                             )
                         },
                         onClick = {
-                            mapClientsViewModel.update_filter_marqueClient(MapClientsViewModel.VisibleClientsNow.showAll)
+                            mapClientsViewModel.update_filter_marqueClient(VisibleClientsNow.showAll)
                             showDropdown = false
                         }
                     )
 
                     // A_COMMANDE_CONFIRME
-                    val visibleClientsNow1 = MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME
+                    val visibleClientsNow1 = VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -195,7 +197,7 @@ fun ClientFilterMode_Button_4(
                     )
 
                     // COMMANDE_LIVRAI — reuses hoisted acceptedBons
-                    val visibleClientsNow2 = MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+                    val visibleClientsNow2 = VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
                     val filteredClients = filterClientsBasedOnMode(
                         viewModel = mapClientsViewModel,
                         currentFilterMode = visibleClientsNow2
@@ -215,7 +217,7 @@ fun ClientFilterMode_Button_4(
                     )
 
                     // Credit — reuses hoisted creditBons
-                    val visibleClientsNow3 = MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit
+                    val visibleClientsNow3 = VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit
                     val creditFilteredClients = filterClientsBasedOnMode(
                         viewModel = mapClientsViewModel,
                         currentFilterMode = visibleClientsNow3
@@ -261,7 +263,7 @@ fun ClientFilterMode_Button_4(
                     )
 
                     // Credit Fournisseurs / Grossistes
-                    val visibleClientsNowFournisseurs = MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit
+                    val visibleClientsNowFournisseurs = VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -281,20 +283,20 @@ fun ClientFilterMode_Button_4(
     }
 }
 
-fun getFilterLabelForMode(mode: MapClientsViewModel.VisibleClientsNow, count: Int? = null): String {
+fun getFilterLabelForMode(mode: VisibleClientsNow, count: Int? = null): String {
     return when (mode) {
-        MapClientsViewModel.VisibleClientsNow.showAll -> "Show All Clients"
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME ->
+        VisibleClientsNow.showAll -> "Show All Clients"
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME ->
             "A_COMMANDE_CONFIRME Filter"
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter ->
+        VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter ->
             count?.let { "COMMANDE_LIVRAI Filter ($it)" } ?: "COMMANDE_LIVRAI Filter"
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ->
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit ->
             count?.let { "Credit Filter ($it)" } ?: "Credit Filter"
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ->
+        VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit ->
             "Crédit Fournisseurs / Grossistes"
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
+        VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
             "Targeted Clients"
-        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit ->
+        VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit ->
             count?.let { "Clients de Jamale avec crédit ($it)" } ?: "Clients de Jamale avec crédit"
         else -> "Unknown Filter"
     }

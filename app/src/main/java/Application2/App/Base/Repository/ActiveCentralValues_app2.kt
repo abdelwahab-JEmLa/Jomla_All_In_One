@@ -1,6 +1,5 @@
 package Application2.App.Base.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import EntreApps.Shared.Models.Home.SortVentMode
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
@@ -15,6 +14,7 @@ import EntreApps.Shared.Models.Components.Ousstad_Tahfid
 import EntreApps.Shared.Models.Utilisateur
 import EntreApps.Shared.Models.Compts
 import EntreApps.Shared.Models.Relative_Produits.Models.M21CataloguesCategorie
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import java.io.File
@@ -52,7 +52,7 @@ data class ActiveCentralValues_app2(
     val actuelle_Ciblage_MaxPosition: Int = 1,
     val gps_follow_mode_active: Boolean? = false,
 
-    val visibleClientsNow: MapClientsViewModel.VisibleClientsNow? = null,
+    val visibleClientsNow: VisibleClientsNow? = null,
 
     // FIXED: Add flag to track if we're in temporary mode
     val isInTemporaryShowAllMode: Boolean = false,

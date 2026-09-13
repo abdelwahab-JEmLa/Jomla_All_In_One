@@ -18,7 +18,6 @@ import androidx.room.PrimaryKey
 import org.mongodb.kbson.BsonObjectId
 
 
-
 @Entity
 data class M2Client(
     @PrimaryKey
@@ -26,6 +25,7 @@ data class M2Client(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
     var creationTimestamps: Long = System.currentTimeMillis(),
     //Infos De Base
+
     var nom: String = "Non Defini",
     var cretionTimestamps: Long = DatesHandler().getCurrentTimestamps(),
     //Forging Keys
@@ -36,7 +36,6 @@ data class M2Client(
     var its_Client_De_Jamale: Boolean = false,
     var its_Fournisseur_Grossisst_A_Jomla: Boolean = false,
     var ces_credits_son_a_long_term: Boolean = false,
-
 
 
     var cUnClientTemporaire: Boolean = true,
@@ -69,46 +68,46 @@ data class M2Client(
 
     val nomPrenomArabe: String = "حمنيش عبد الوهاب",
     val register_Commerce_Nm: String = "16/00 – 5138424 D20",
-    val nif_Num: String = "16291403036"
-    ,    var secteur: String = "",
-    ) {
+    val nif_Num: String = "16291403036",
+    var secteur: String = "",
+) {
     fun toFirebaseMap(): Map<String, Any?> = mapOf(
-        "secteur"                                          to secteur,
-        "its_non_deletable_client_et_trxs"                                          to its_non_deletable_client_et_trxs,
+        "secteur" to secteur,
+        "its_non_deletable_client_et_trxs" to its_non_deletable_client_et_trxs,
 
-        "keyID"                                          to keyID,
-        "dernierTimeTampsSynchronisationAvecFireBase"    to dernierTimeTampsSynchronisationAvecFireBase,
-        "creationTimestamps"                             to creationTimestamps,
-        "nom"                                            to nom,
-        "cretionTimestamps"                              to cretionTimestamps,
-        "its_Fournisseur"                                to its_Fournisseur,
-        "its_Client_De_Jamale"                           to its_Client_De_Jamale,
-        "its_Fournisseur_Grossisst_A_Jomla"               to its_Fournisseur_Grossisst_A_Jomla,
-        "ces_credits_son_a_long_term"                    to ces_credits_son_a_long_term,
-        "parentComptCreateurKEyID"                       to parentComptCreateurKEyID,
-        "numTelephone"                                   to numTelephone,
-        "couleur"                                        to couleur,
-        "bonDuClientsSu"                                 to bonDuClientsSu,
-        "currentCreditBalance"                           to currentCreditBalance,
-        "positionDonClientsList"                         to positionDonClientsList,
-        "cUnClientTemporaire"                            to cUnClientTemporaire,
-        "auFilterFAB"                                    to auFilterFAB,
-        "typeDeSonMagasine"                              to typeDeSonMagasine.name,
-        "clientTypeMode"                                 to clientTypeMode.name,
-        "caMarqueGpsEstOuvert"                           to caMarqueGpsEstOuvert,
-        "latitude"                                       to latitude,
-        "longitude"                                      to longitude,
-        "title"                                          to title,
-        "snippet"                                        to snippet,
-        "actuelleEtat"                                   to actuelleEtat.name,
-        "edite_Exact_Gps_est_fait"                       to edite_Exact_Gps_est_fait,
-        "tagCeBonEstOuvertPourComptsIds"                 to tagCeBonEstOuvertPourComptsIds,
-        "id"                                             to id,
-        "keyByParent"                                    to keyByParent,
-        "bsonObjectId"                                   to bsonObjectId,
-        "nomPrenomArabe"                                 to nomPrenomArabe,
-        "register_Commerce_Nm"                           to register_Commerce_Nm,
-        "nif_Num"                                        to nif_Num,
+        "keyID" to keyID,
+        "dernierTimeTampsSynchronisationAvecFireBase" to dernierTimeTampsSynchronisationAvecFireBase,
+        "creationTimestamps" to creationTimestamps,
+        "nom" to nom,
+        "cretionTimestamps" to cretionTimestamps,
+        "its_Fournisseur" to its_Fournisseur,
+        "its_Client_De_Jamale" to its_Client_De_Jamale,
+        "its_Fournisseur_Grossisst_A_Jomla" to its_Fournisseur_Grossisst_A_Jomla,
+        "ces_credits_son_a_long_term" to ces_credits_son_a_long_term,
+        "parentComptCreateurKEyID" to parentComptCreateurKEyID,
+        "numTelephone" to numTelephone,
+        "couleur" to couleur,
+        "bonDuClientsSu" to bonDuClientsSu,
+        "currentCreditBalance" to currentCreditBalance,
+        "positionDonClientsList" to positionDonClientsList,
+        "cUnClientTemporaire" to cUnClientTemporaire,
+        "auFilterFAB" to auFilterFAB,
+        "typeDeSonMagasine" to typeDeSonMagasine.name,
+        "clientTypeMode" to clientTypeMode.name,
+        "caMarqueGpsEstOuvert" to caMarqueGpsEstOuvert,
+        "latitude" to latitude,
+        "longitude" to longitude,
+        "title" to title,
+        "snippet" to snippet,
+        "actuelleEtat" to actuelleEtat.name,
+        "edite_Exact_Gps_est_fait" to edite_Exact_Gps_est_fait,
+        "tagCeBonEstOuvertPourComptsIds" to tagCeBonEstOuvertPourComptsIds,
+        "id" to id,
+        "keyByParent" to keyByParent,
+        "bsonObjectId" to bsonObjectId,
+        "nomPrenomArabe" to nomPrenomArabe,
+        "register_Commerce_Nm" to register_Commerce_Nm,
+        "nif_Num" to nif_Num,
     )
 
     /**
@@ -193,8 +192,9 @@ data class M2Client(
         val ref = central_MainDataBases_RefProduction
             .child(pathString)
 
-        val ref_Non_Active_Datas = M00CentralParametresOfAllApps.Companion.centralRef_Non_Active_Datas_PourLightApp
-            .child(pathString)
+        val ref_Non_Active_Datas =
+            M00CentralParametresOfAllApps.Companion.centralRef_Non_Active_Datas_PourLightApp
+                .child(pathString)
 //
 //        val parent = Firebase.database.getReference(
 //            "00_DataPrototype-04-02" +
@@ -240,8 +240,9 @@ data class M2Client(
                 .filter { !it.ces_credits_son_a_long_term && !it.its_Client_De_Jamale }
                 .filter { if (forFournisseurs) it.its_Fournisseur_Grossisst_A_Jomla else !it.its_Fournisseur_Grossisst_A_Jomla }
                 .mapNotNull { client ->
-                    val lastSituation = bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
-                        ?: return@mapNotNull null
+                    val lastSituation =
+                        bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
+                            ?: return@mapNotNull null
                     val brutMontant = lastSituation.montant_principale_du_type
                     // montant_principale_du_type = sumCredits - sumVersements.
                     // Pour un client normal, positif = il nous doit de l'argent.
@@ -281,8 +282,9 @@ data class M2Client(
                 .filter { it.ces_credits_son_a_long_term }
                 .filter { if (forFournisseurs) it.its_Fournisseur_Grossisst_A_Jomla else !it.its_Fournisseur_Grossisst_A_Jomla }
                 .mapNotNull { client ->
-                    val lastSituation = bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
-                        ?: return@mapNotNull null
+                    val lastSituation =
+                        bonsByClient[client.keyID]?.maxByOrNull { it.creationTimestamps }
+                            ?: return@mapNotNull null
                     val brutMontant = lastSituation.montant_principale_du_type
                     // Même inversion de signe que calculateCreditsMap pour les
                     // fournisseurs — voir le commentaire là-bas.
@@ -306,7 +308,8 @@ data class M2Client(
 }
 
 object Jomla_Clients {
-    val ECHATILLANTS_KEY_ID = AbdelwahabJomla_Client_Speciale.AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a.keyID
+    val ECHATILLANTS_KEY_ID =
+        AbdelwahabJomla_Client_Speciale.AbdelwahabJomla_ECHATILLANTS_Ditha_MarqueSel3a.keyID
 }
 
 enum class AbdelwahabJomla_Client_Speciale(

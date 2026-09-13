@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.MapSource
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.changeMapSource
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
@@ -62,8 +63,8 @@ private class FilterLogger {
         private val logs = mutableListOf<String>()
 
         fun logFilterChange(
-            previousMode: MapClientsViewModel.VisibleClientsNow,
-            newMode: MapClientsViewModel.VisibleClientsNow,
+            previousMode: VisibleClientsNow,
+            newMode: VisibleClientsNow,
         ) {
             val timestamp =
                 java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
@@ -82,9 +83,9 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
     viewModel: MapClientsViewModel,
     mapView: MapView,
     onClear: () -> Unit,
-    onPickFilter: (MapClientsViewModel.VisibleClientsNow) -> Unit,
+    onPickFilter: (VisibleClientsNow) -> Unit,
     onFilterMarkers: () -> Unit,
-    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
+    currentFilterMode: VisibleClientsNow,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler =
         koinInject<PanelsGroupeButtonHandler>()
 ) {
@@ -244,38 +245,38 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                             // Log the filter change
                             val previousMode = currentFilterMode
                             val newMode = when (currentFilterMode) {
-                                MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
-                                    MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+                                VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
+                                    VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
 
-                                MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
-                                    MapClientsViewModel.VisibleClientsNow.showAll
+                                VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
+                                    VisibleClientsNow.showAll
 
-                                MapClientsViewModel.VisibleClientsNow.showAll ->
-                                    MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly
+                                VisibleClientsNow.showAll ->
+                                    VisibleClientsNow.showNonAbsentClientsOnly
 
-                                MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly ->
-                                    MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes
+                                VisibleClientsNow.showNonAbsentClientsOnly ->
+                                    VisibleClientsNow.affichePourCollecteurCommendes
 
-                                MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes ->
-                                    MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+                                VisibleClientsNow.affichePourCollecteurCommendes ->
+                                    VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
 
-                                MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
-                                    MapClientsViewModel.VisibleClientsNow.showAtayClients
+                                VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
+                                    VisibleClientsNow.showAtayClients
 
-                                MapClientsViewModel.VisibleClientsNow.showAtayClients ->
-                                    MapClientsViewModel.VisibleClientsNow.showAlimentionlients
+                                VisibleClientsNow.showAtayClients ->
+                                    VisibleClientsNow.showAlimentionlients
 
-                                MapClientsViewModel.VisibleClientsNow.showAlimentionlients ->
-                                    MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts
+                                VisibleClientsNow.showAlimentionlients ->
+                                    VisibleClientsNow.showClientsWithConfirmedProducts
 
-                                MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts ->
-                                    MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
+                                VisibleClientsNow.showClientsWithConfirmedProducts ->
+                                    VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter
 
-                                MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter ->
-                                    MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                                VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter ->
+                                    VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
 
                                 else -> {
-                                    MapClientsViewModel.VisibleClientsNow.showAll
+                                    VisibleClientsNow.showAll
                                 }
                             }
 

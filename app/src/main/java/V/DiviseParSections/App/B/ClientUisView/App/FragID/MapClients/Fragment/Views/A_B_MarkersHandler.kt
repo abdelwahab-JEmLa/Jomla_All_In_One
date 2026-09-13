@@ -13,6 +13,7 @@ import EntreApps.Shared.Models.Title_Filter
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.initiateBackgroundPdfCreation_NewP
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.get_sum_Bon_Vents
@@ -51,7 +52,7 @@ fun addOuUpdateMapMarkers(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     mapView: MapView,
-    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
+    currentFilterMode: VisibleClientsNow,
     showMarkerDetails: Boolean,
     proximityFilterCenter: GeoPoint?,
     proximityFilterRadiusMeters: Double,
@@ -101,7 +102,7 @@ fun addOuUpdateMapMarkers(
  */
 fun getClientsCurrentlyVisibleOnMap(
     viewModel: MapClientsViewModel,
-    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
+    currentFilterMode: VisibleClientsNow,
     proximityFilterCenter: GeoPoint?,
     proximityFilterRadiusMeters: Double,
 ): List<M2Client> {
@@ -114,15 +115,15 @@ fun getClientsCurrentlyVisibleOnMap(
         // proximityFilterRadiusMeters. Sans ça, un fournisseur avec crédit situé
         // hors du rayon de 900m (proximite_de_vision_meter) disparaissait de la
         // liste alors qu'il devait s'afficher.
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
-        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+        VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+        VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+        VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME,
+        VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
+        VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter,
+        VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
     )
 
     return if (proximityFilterCenter != null && !isGlobalModeFilter) {
@@ -644,6 +645,7 @@ fun performClickOnMarqueAction(
                 its_Fournisseur_Grossisst_A_Jomla = true,
                 ces_credits_son_a_long_term = true,
             )
+
             viewModel.updateData(updated)
             Toast.makeText(context, "${m2Client.nom} : Fournisseur/Grossiste, crédit long terme", Toast.LENGTH_SHORT).show()
         }

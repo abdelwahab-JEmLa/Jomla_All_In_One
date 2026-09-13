@@ -4,6 +4,7 @@ import EntreApps.Shared.Models.Relative_Vents.Models.Fournisseur_Speciale
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.find_its_Confirmation_de_Transaction
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -18,41 +19,41 @@ import kotlin.math.sqrt
 
 fun handleFilterMarkersClick(
     mapView: MapView,
-    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
-    onFilterChanged: (MapClientsViewModel.VisibleClientsNow) -> Unit,
+    currentFilterMode: VisibleClientsNow,
+    onFilterChanged: (VisibleClientsNow) -> Unit,
 ) {
     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
     val newMode = when (currentFilterMode) {
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
-            MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+        VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
+            VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
 
-        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
-            MapClientsViewModel.VisibleClientsNow.showAll
+        VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
+            VisibleClientsNow.showAll
 
-        MapClientsViewModel.VisibleClientsNow.showAll ->
-            MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly
+        VisibleClientsNow.showAll ->
+            VisibleClientsNow.showNonAbsentClientsOnly
 
-        MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly ->
-            MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes
+        VisibleClientsNow.showNonAbsentClientsOnly ->
+            VisibleClientsNow.affichePourCollecteurCommendes
 
-        MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes ->
-            MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+        VisibleClientsNow.affichePourCollecteurCommendes ->
+            VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
 
-        MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
-            MapClientsViewModel.VisibleClientsNow.showAtayClients
+        VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
+            VisibleClientsNow.showAtayClients
 
-        MapClientsViewModel.VisibleClientsNow.showAtayClients ->
-            MapClientsViewModel.VisibleClientsNow.showAlimentionlients
+        VisibleClientsNow.showAtayClients ->
+            VisibleClientsNow.showAlimentionlients
 
-        MapClientsViewModel.VisibleClientsNow.showAlimentionlients ->
-            MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts
+        VisibleClientsNow.showAlimentionlients ->
+            VisibleClientsNow.showClientsWithConfirmedProducts
 
-        MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts ->
-            MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+        VisibleClientsNow.showClientsWithConfirmedProducts ->
+            VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
 
         else -> {
-            MapClientsViewModel.VisibleClientsNow.showAll
+            VisibleClientsNow.showAll
         }
     }
 
@@ -61,7 +62,7 @@ fun handleFilterMarkersClick(
 
 fun filterClientsBasedOnMode(
     viewModel: MapClientsViewModel,
-    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
+    currentFilterMode: VisibleClientsNow,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
@@ -73,13 +74,13 @@ fun filterClientsBasedOnMode(
 
     // Apply the normal filter logic
     val filteredClients = when (currentFilterMode) {
-        MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly -> {
+        VisibleClientsNow.showNonAbsentClientsOnly -> {
             clientDataBaseSnapList.filter {
                 it.actuelleEtat != M2Client.DernierEtatAAffiche.ACHETEUR_NON_DISPO
             }
         }
 
-        MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes -> {
+        VisibleClientsNow.affichePourCollecteurCommendes -> {
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
                         it.actuelleEtat == M2Client.DernierEtatAAffiche.Cible
@@ -92,29 +93,29 @@ fun filterClientsBasedOnMode(
             }
         }
 
-        MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
+        VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
             clientDataBaseSnapList.filter {
                 it.actuelleEtat == M2Client.DernierEtatAAffiche.CIBLE_POUR_2
             }
         }
 
-        MapClientsViewModel.VisibleClientsNow.showAtayClients -> {
+        VisibleClientsNow.showAtayClients -> {
             clientDataBaseSnapList.filter {
                 it.typeDeSonMagasine == M2Client.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         }
 
-        MapClientsViewModel.VisibleClientsNow.showAlimentionlients -> {
+        VisibleClientsNow.showAlimentionlients -> {
             clientDataBaseSnapList.filter {
                 it.typeDeSonMagasine == M2Client.TypeDeSonMagasine.AlIMENTATION_GENERALE
             }
         }
 
-        MapClientsViewModel.VisibleClientsNow.showAll -> {
+        VisibleClientsNow.showAll -> {
             clientDataBaseSnapList
         }
 
-        MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts -> {
+        VisibleClientsNow.showClientsWithConfirmedProducts -> {
             val datas = viewModel.getter.repo8BonVent.datasValue
             val clientsWithConfirmedProducts =
                 datas
@@ -130,7 +131,7 @@ fun filterClientsBasedOnMode(
             }
         }
 
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
+        VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
@@ -139,7 +140,7 @@ fun filterClientsBasedOnMode(
             }
         }
 
-        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
+        VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
@@ -153,7 +154,7 @@ fun filterClientsBasedOnMode(
             }
         }
 
-        MapClientsViewModel.VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> {
+        VisibleClientsNow.AFFICHE_COMMANDE_LIVRAI_Filter -> {
             val keyID_currentActiveFocuced_M14VentPeriode =
                 focusedValuesGetter.currentActiveFocuced_M14VentPeriode?.keyID
             clientDataBaseSnapList.filter {
@@ -171,7 +172,7 @@ fun filterClientsBasedOnMode(
             }
         }
 
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> {
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_A_COMMANDE_CONFIRME -> {
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             }
@@ -184,7 +185,7 @@ fun filterClientsBasedOnMode(
         // (mêmes fonctions que celles qui calculent les totaux affichés dans
         // But1_Floating_ClientsListDialog) pour que la liste de clients montrée
         // ici corresponde exactement aux totaux affichés là-bas.
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> {
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit -> {
             val keyIdsAvecCredit = M2Client.calculateCreditsMap(
                 clients = clientDataBaseSnapList,
                 bons = viewModel.getter.repo8BonVent.datasValue,
@@ -193,7 +194,7 @@ fun filterClientsBasedOnMode(
             clientDataBaseSnapList.filter { it.keyID in keyIdsAvecCredit }
         }
 
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term -> {
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term -> {
             val keyIdsAvecCredit = M2Client.calculateIgnoredCreditsMap(
                 clients = clientDataBaseSnapList,
                 bons = viewModel.getter.repo8BonVent.datasValue,
@@ -202,7 +203,7 @@ fun filterClientsBasedOnMode(
             clientDataBaseSnapList.filter { it.keyID in keyIdsAvecCredit }
         }
 
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit -> {
+        VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit -> {
             val keyIdsAvecCredit = M2Client.calculateCreditsMap(
                 clients = clientDataBaseSnapList,
                 bons = viewModel.getter.repo8BonVent.datasValue,
@@ -211,7 +212,7 @@ fun filterClientsBasedOnMode(
             clientDataBaseSnapList.filter { it.keyID in keyIdsAvecCredit }
         }
 
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit -> {
+        VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit -> {
             val keyIdsAvecCredit = M2Client.calculateIgnoredCreditsMap(
                 clients = clientDataBaseSnapList,
                 bons = viewModel.getter.repo8BonVent.datasValue,
@@ -224,7 +225,7 @@ fun filterClientsBasedOnMode(
         // its_Client_De_Jamale avec l'union des 4 map crédit (client/fournisseur
         // x court/long terme), pour couvrir un client de Jamale peu importe
         // son statut fournisseur ou son ancienneté de crédit.
-        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit -> {
+        VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit -> {
             val bons = viewModel.getter.repo8BonVent.datasValue
             val keyIdsAvecCredit = M2Client.calculateCreditsMap(
                 clients = clientDataBaseSnapList,
@@ -258,11 +259,11 @@ fun filterClientsBasedOnMode(
     // à moins de 100m d'Ami Jamel. La règle d'exclusion de proximité ne
     // s'applique donc que quand un filtre non-crédit est actif.
     val isCreditFilterMode = currentFilterMode in listOf(
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
-        MapClientsViewModel.VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
+        VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
+        VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
+        VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
+        VisibleClientsNow.Filter_Clients_De_Jamale_Avec_Credit,
     )
 
     val finalClientsList = (filteredClients + alwaysVisibleClients)
