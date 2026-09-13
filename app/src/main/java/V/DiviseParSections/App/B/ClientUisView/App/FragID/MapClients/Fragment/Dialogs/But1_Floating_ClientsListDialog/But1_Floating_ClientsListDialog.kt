@@ -374,38 +374,8 @@ fun But1_Floating_ClientsListDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    // Pendants, dans cette liste, des 2 items du dropdown du FAB de mode
-                    // (But1_OnClickMode) : mêmes actions (passAllCibleClientsForCurrentVentPeriod
-                    // / passAllConfirmedClientsToLivre), exposées ici en accès direct pour ne
-                    // pas obliger l'utilisateur à rouvrir le FAB depuis cette liste.
-                    item {
-                        TextButton(onClick = { viewModel.passAllCibleClientsForCurrentVentPeriod() }) {
-                            Icon(
-                                imageVector = Icons.Default.SettingsBackupRestore,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp),
-                            )
-                            Text(
-                                text = "Passer les ciblés",
-                                modifier = Modifier.padding(start = 6.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                    }
-                    item {
-                        TextButton(onClick = { showLivrerConfirmedDialog = true }) {
-                            Icon(
-                                imageVector = Icons.Default.LocalShipping,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp),
-                            )
-                            Text(
-                                text = "Livrer les confirmées",
-                                modifier = Modifier.padding(start = 6.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                    }
+
+
                     item {
                         Box {
                             TextButton(onClick = { modeMenuExpanded = true }) {
@@ -699,6 +669,34 @@ fun But1_Floating_ClientsListDialog(
                                     },
                                 )
                             }
+                        }
+                    }
+                    item {
+                        TextButton(onClick = { viewModel.passAllCibleClientsForCurrentVentPeriod() }) {
+                            Icon(
+                                imageVector = Icons.Default.SettingsBackupRestore,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Text(
+                                text = "Passer les ciblés",
+                                modifier = Modifier.padding(start = 6.dp),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
+                    item {
+                        TextButton(onClick = { showLivrerConfirmedDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.LocalShipping,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Text(
+                                text = "Livrer les confirmées",
+                                modifier = Modifier.padding(start = 6.dp),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
                         }
                     }
                     item {
