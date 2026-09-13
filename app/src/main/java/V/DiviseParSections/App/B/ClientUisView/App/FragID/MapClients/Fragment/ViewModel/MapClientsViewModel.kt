@@ -531,18 +531,11 @@ class MapClientsViewModel(
         }
     }
 
-    // its_limited_a900 : indique si ce mode de filtre est limité au rayon de
-    // proximité proximite_de_vision_meter (900m par défaut) autour du centre
-    // de la carte, ou s'il est "global" (affiche tous les clients concernés,
-    // quelle que soit leur distance). false = global/illimité, true = limité
-    // à la proximité. Les filtres crédit et les modes "statut serveur" (cible
-    // vendeur, livré, passé, non-supprimable) sont globaux car leur pertinence
-    // ne dépend pas de la position actuelle sur la carte — voir aussi le
-    // commentaire sur proximityFilterCenter dans UiState ci-dessus.
     enum class VisibleClientsNow(
         val icon: Any,
         val couleur: Color = Color.Companion.White,
         val its_limited_a900: Boolean = true,
+
     ) {
         Filter_Leur_Last_TRX_Est_Credit(Icons.Default.Map, Color.Companion.Red, its_limited_a900 = false),
         Filter_Leur_Last_TRX_Est_Credit_Long_Term(Icons.Default.Map, Color(0xFFB71C1C), its_limited_a900 = false),

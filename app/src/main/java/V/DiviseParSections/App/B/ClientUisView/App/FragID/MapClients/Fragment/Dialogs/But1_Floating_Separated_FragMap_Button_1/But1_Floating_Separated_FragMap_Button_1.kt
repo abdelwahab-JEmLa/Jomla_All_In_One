@@ -223,7 +223,40 @@ fun But1_OnClickMode(
                                 expanded = false
                             },
                             modifier = Modifier.padding(horizontal = 4.dp)
-                        )          //<--
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.LocalShipping,
+                                        contentDescription = null,
+                                        tint = Color(0xFF747680),
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = "Livrer toutes les confirmées",
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 14.sp
+                                        )
+                                        Text(
+                                            text = "Passe les commandes confirmées en 'Livré'",
+                                            fontSize = 11.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                viewModel.passAllConfirmedClientsToLivre()
+                                expanded = false
+                            },
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
                         DropdownMenuItem(
                             text = {
                                 Row(
@@ -253,39 +286,6 @@ fun But1_OnClickMode(
                             },
                             onClick = {
                                 showSecteurDialog = true
-                                expanded = false
-                            },
-                            modifier = Modifier.padding(horizontal = 4.dp)
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.LocalShipping,
-                                        contentDescription = null,
-                                        tint = Color(0xFF747680),
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                        Text(
-                                            text = "Livrer tous les confirmés",
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 14.sp
-                                        )
-                                        Text(
-                                            text = "Passe les clients 'Passé' au statut 'Livré'",
-                                            fontSize = 11.sp,
-                                            color = Color.Gray
-                                        )
-                                    }
-                                }
-                            },
-                            onClick = {
-                                viewModel.passAllConfirmedClientsToLivre()
                                 expanded = false
                             },
                             modifier = Modifier.padding(horizontal = 4.dp)
@@ -490,7 +490,6 @@ fun But1_OnClickMode(
                         color = Color.Gray,
                         modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
                     )
-
                     // Nom seul vs standard (détails + téléphone) — ancien
                     // comportement du DropdownMenuItem "Titre", conservé ici.
                     Row(
@@ -524,7 +523,80 @@ fun But1_OnClickMode(
                         )
                     }
 
-                    // Affiche un suffixe après le nom sur le marqueur.
+                    // N'a de sens qu'en mode "Nom seul" (le suffixe est ajouté
+                    // partout dans Marker.title(), mais ce contrôle ne
+                    // s'affiche que quand ce mode est actif).
+                    if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                        ) {
+                            Column(modifier = Modifier.padding(end = 8.dp)) {
+                                Text(
+                                    text = "Suffixe après le nom",
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 14.sp,
+                                )
+                                Text(
+                                    text = "Ajoute un point/suffixe après le nom du client",
+                                    fontSize = 11.sp,
+                                    color = Color.Gray,
+                                )
+                            }
+                            Switch(
+                                checked = compt?.titre_affiche_suffixe_apres_nom == true,
+                                onCheckedChange = { checked ->
+                                    compt?.let {
+                                        viewModel.update_active_Compt(it.copy(titre_affiche_suffixe_apres_nom = checked))
+                                    }
+                                    viewModel.mapReloadTrigger++
+                                },
+                            )
+                        }
+                    }
+
+                    // Masque (mode "Nom seul" uniquement) le libellé des
+                    // clients "new"/"ز" — voir titre_masque_bulle_clients_new
+                    // et son usage dans Marker.title() (A_B_MarkersHandler.kt).
+                    if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                        ) {
+                            Column(modifier = Modifier.padding(end = 8.dp)) {
+                                Text(
+                                    text = "Masquer les clients \"new\"",
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 14.sp,
+                                )
+                                Text(
+                                    text = "Cache le libellé des clients dont le nom contient \"new\" ou \"ز\"",
+                                    fontSize = 11.sp,
+                                    color = Color.Gray,
+                                )
+                            }
+                            Switch(
+                                checked = compt?.titre_masque_bulle_clients_new != false,
+                                onCheckedChange = { checked ->
+                                    compt?.let {
+                                        viewModel.update_active_Compt(it.copy(titre_masque_bulle_clients_new = checked))
+                                    }
+                                    viewModel.mapReloadTrigger++
+                                },
+                            )
+                        }
+                    }
+
+                    // Affiche le secteur du client sur le marqueur.
+                    // NB: nécessite le champ `titre_affiche_secteur: Boolean` sur
+                    // M9Compt (même convention que les autres titre_affiche_*
+                    // ci-dessous) — à ajouter côté modèle si ce n'est pas déjà fait.
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -534,28 +606,32 @@ fun But1_OnClickMode(
                     ) {
                         Column(modifier = Modifier.padding(end = 8.dp)) {
                             Text(
-                                text = "Suffixe après le nom",
+                                text = "Secteur",
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 14.sp,
                             )
                             Text(
-                                text = "Ajoute un point/suffixe après le nom du client",
+                                text = "Affiche le secteur du client sous le nom",
                                 fontSize = 11.sp,
                                 color = Color.Gray,
                             )
                         }
                         Switch(
-                            checked = compt?.titre_affiche_suffixe_apres_nom == true,
+                            checked = compt?.titre_affiche_secteur == true,
                             onCheckedChange = { checked ->
                                 compt?.let {
-                                    viewModel.update_active_Compt(it.copy(titre_affiche_suffixe_apres_nom = checked))
+                                    viewModel.update_active_Compt(it.copy(titre_affiche_secteur = checked))
                                 }
                                 viewModel.mapReloadTrigger++
                             },
                         )
                     }
 
-                    // Affiche les infos de la dernière transaction.
+                    // Affiche les infos de la dernière transaction. Le libellé
+                    // d'état (etateActuellementEst.nomArabe) n'est affiché sous
+                    // le nom que si ce toggle est actif — voir lastTrxInfosLine()
+                    // et son usage dans Marker.title() (A_B_MarkersHandler.kt),
+                    // désormais cohérent entre toutes les branches du titre.
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -584,6 +660,37 @@ fun But1_OnClickMode(
                                 viewModel.mapReloadTrigger++
                             },
                         )
+                    }
+
+                    if (compt?.titre_affiche_last_trx_infos == true) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(end = 8.dp)) {
+                                Text(
+                                    text = "Seulement états notables",
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 13.sp,
+                                )
+                                Text(
+                                    text = "Livré, Confirmé, Fermé ou Acheteur absent uniquement",
+                                    fontSize = 11.sp,
+                                    color = Color.Gray,
+                                )
+                            }
+                            Switch(
+                                checked = compt?.titre_affiche_last_trx_que_etats_notables == true,
+                                onCheckedChange = { checked ->
+                                    compt?.let {
+                                        viewModel.update_active_Compt(it.copy(titre_affiche_last_trx_que_etats_notables = checked))
+                                    }
+                                    viewModel.mapReloadTrigger++
+                                },
+                            )
+                        }
                     }
 
                     // Affiche la bulle d'info du marqueur.
@@ -676,4 +783,3 @@ fun But1_Floating_ClientsListButton(
         }
     }
 }
-

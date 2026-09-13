@@ -7,7 +7,7 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_Floating_Separated_FragMap_Button_1.getModeLabel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel .VisibleClientsNow
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel.VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.performClickOnMarqueAction
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
@@ -36,8 +36,11 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SettingsBackupRestore
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
@@ -65,7 +68,6 @@ import androidx.compose.ui.window.DialogProperties
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import kotlin.math.abs
-import kotlin.text.format
 
 /**
  * Floating dialog listing the clients currently displayed on the map (the
@@ -87,6 +89,11 @@ fun But1_Floating_ClientsListDialog(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var showPeriodsDialog by remember { mutableStateOf(false) }
+    var showLivrerConfirmedDialog by remember { mutableStateOf(false) }
+    // Modes dont l'activation (sélection dans le dropdown "Mode") doit être
+    // confirmée avant d'être appliquée — Passer/Livrer un client affectent
+    // ensuite chaque marqueur cliqué tant que le mode reste actif.
+    var pendingConfirmClickMode by remember { mutableStateOf<ActiveCentralValues.Click_On_Marque?>(null) }
     var modeMenuExpanded by remember { mutableStateOf(false) }
     var showCreditBreakdown by remember { mutableStateOf(false) }
 
@@ -367,6 +374,38 @@ fun But1_Floating_ClientsListDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    // Pendants, dans cette liste, des 2 items du dropdown du FAB de mode
+                    // (But1_OnClickMode) : mêmes actions (passAllCibleClientsForCurrentVentPeriod
+                    // / passAllConfirmedClientsToLivre), exposées ici en accès direct pour ne
+                    // pas obliger l'utilisateur à rouvrir le FAB depuis cette liste.
+                    item {
+                        TextButton(onClick = { viewModel.passAllCibleClientsForCurrentVentPeriod() }) {
+                            Icon(
+                                imageVector = Icons.Default.SettingsBackupRestore,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Text(
+                                text = "Passer les ciblés",
+                                modifier = Modifier.padding(start = 6.dp),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
+                    item {
+                        TextButton(onClick = { showLivrerConfirmedDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.LocalShipping,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Text(
+                                text = "Livrer les confirmées",
+                                modifier = Modifier.padding(start = 6.dp),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
                     item {
                         Box {
                             TextButton(onClick = { modeMenuExpanded = true }) {
@@ -442,38 +481,6 @@ fun But1_Floating_ClientsListDialog(
                                     },
                                 )
                                 Divider(modifier = Modifier.padding(vertical = 4.dp))
-                                otherClickModes.forEach { clickMode ->
-                                    DropdownMenuItem(
-                                        text = {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(10.dp)
-                                                        .background(
-                                                            color = clickMode.couleur,
-                                                            shape = CircleShape
-                                                        ),
-                                                )
-                                                Text(
-                                                    text = getModeLabel(clickMode),
-                                                    style = MaterialTheme.typography.bodySmall,
-                                                )
-                                            }
-                                        },
-                                        onClick = {
-                                            compt?.let {
-                                                viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
-                                            }
-                                            viewModel.mapReloadTrigger++
-                                            // Ne ferme pas le menu : voir commentaire sur toggleClickModes.
-                                        },
-                                    )
-                                }
-
-                                Divider(modifier = Modifier.padding(vertical = 4.dp))
 
                                 Text(
                                     text = "Changeurs de statut",
@@ -490,7 +497,7 @@ fun But1_Floating_ClientsListDialog(
                                 // basculé sur le client qu'au clic sur son marqueur/sa ligne,
                                 // via performClickOnMarqueAction dans A_B_MarkersHandler.kt.
                                 toggleClickModes.forEach { clickMode ->
-                                    DropdownMenuItem(       //<--
+                                    DropdownMenuItem(
                                         text = {
                                             Row(
                                                 verticalAlignment = Alignment.CenterVertically,
@@ -519,6 +526,50 @@ fun But1_Floating_ClientsListDialog(
                                             viewModel.mapReloadTrigger++
                                             // Ne ferme pas le menu : l'utilisateur peut enchaîner
                                             // sur un autre statut sans rouvrir le dropdown.
+                                        },
+                                    )
+                                }
+
+                                Divider(modifier = Modifier.padding(vertical = 4.dp))
+                                otherClickModes.forEach { clickMode ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(10.dp)
+                                                        .background(
+                                                            color = clickMode.couleur,
+                                                            shape = CircleShape
+                                                        ),
+                                                )
+                                                Text(
+                                                    text = getModeLabel(clickMode),
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            // Passer/Livrer un client ne s'activent qu'après
+                                            // confirmation — voir le dialogue pendingConfirmClickMode
+                                            // plus bas : une fois actif, chaque marqueur cliqué sur
+                                            // la carte applique cette action tant que le mode reste
+                                            // sélectionné, donc une activation accidentelle est
+                                            // coûteuse à rattraper.
+                                            if (clickMode == ActiveCentralValues.Click_On_Marque.Passe_Client ||
+                                                clickMode == ActiveCentralValues.Click_On_Marque.Livre_Client
+                                            ) {
+                                                pendingConfirmClickMode = clickMode
+                                            } else {
+                                                compt?.let {
+                                                    viewModel.update_active_Compt(it.copy(click_On_Marque = clickMode))
+                                                }
+                                                viewModel.mapReloadTrigger++
+                                            }
+                                            // Ne ferme pas le menu : voir commentaire sur toggleClickModes.
                                         },
                                     )
                                 }
@@ -742,6 +793,70 @@ fun But1_Floating_ClientsListDialog(
                 }
             }
         }
+    }
+
+    if (pendingConfirmClickMode != null) {
+        val mode = pendingConfirmClickMode!!
+        val isLivre = mode == ActiveCentralValues.Click_On_Marque.Livre_Client
+        AlertDialog(
+            onDismissRequest = { pendingConfirmClickMode = null },
+            title = {
+                Text(if (isLivre) "Activer le mode \"Livrer le client\" ?" else "Activer le mode \"Passer le client\" ?")
+            },
+            text = {
+                Text(
+                    if (isLivre) {
+                        "Tant que ce mode reste actif, chaque client dont vous cliquez le marqueur " +
+                                "ou la ligne sera marqué comme livré."
+                    } else {
+                        "Tant que ce mode reste actif, chaque client dont vous cliquez le marqueur " +
+                                "ou la ligne sera marqué comme passé."
+                    }
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    compt?.let {
+                        viewModel.update_active_Compt(it.copy(click_On_Marque = mode))
+                    }
+                    viewModel.mapReloadTrigger++
+                    pendingConfirmClickMode = null
+                }) {
+                    Text("Activer")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingConfirmClickMode = null }) {
+                    Text("Annuler")
+                }
+            },
+        )
+    }
+
+    if (showLivrerConfirmedDialog) {
+        AlertDialog(
+            onDismissRequest = { showLivrerConfirmedDialog = false },
+            title = { Text("Livrer les clients confirmés ?") },
+            text = {
+                Text(
+                    "Tous les clients dont la dernière commande est \"confirmée\" " +
+                            "seront marqués comme \"livrés\". Cette action est irréversible."
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.passAllConfirmedClientsToLivre()
+                    showLivrerConfirmedDialog = false
+                }) {
+                    Text("Confirmer")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLivrerConfirmedDialog = false }) {
+                    Text("Annuler")
+                }
+            },
+        )
     }
 
     if (showPeriodsDialog) {

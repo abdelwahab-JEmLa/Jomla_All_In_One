@@ -70,6 +70,7 @@ data class M2Client(
     val register_Commerce_Nm: String = "16/00 – 5138424 D20",
     val nif_Num: String = "16291403036",
     var secteur: String = "",
+
 ) {
 
     fun toFirebaseMap(): Map<String, Any?> = mapOf(

@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.FilterListOff
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -156,6 +157,31 @@ fun ClientFilterMode_Button_4(
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
+                }
+
+                // Bouton compact à côté du FAB principal, désactive tous les
+                // filtres (retour à showAll + reset du filtre de proximité)
+                // sans passer par le dropdown. N'apparaît que si un filtre est
+                // actuellement actif, puisqu'il n'aurait rien à faire sinon.
+                if (!isShowingAll) {
+                    FloatingActionButton(
+                        modifier = Modifier
+                            .getSemanticsTag(updatedButtonState, "clearAllFiltersButtonState")
+                            .size(36.dp),
+                        onClick = {
+                            mapClientsViewModel.update_filter_marqueClient(VisibleClientsNow.showAll)
+                            mapClientsViewModel.clearProximityFilter()
+                            showDropdown = false
+                        },
+                        containerColor = Color.Gray,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FilterListOff,
+                            contentDescription = "Désactiver tous les filtres",
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
 
                 DropdownMenu(

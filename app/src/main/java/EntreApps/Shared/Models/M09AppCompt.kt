@@ -21,6 +21,7 @@ enum class Title_Filter() {
 
 
 
+
 @Entity
 data class M09AppCompt(
     @PrimaryKey
@@ -122,8 +123,29 @@ data class M09AppCompt(
     var titre_affiche_suffixe_apres_nom: Boolean = false,
     /** Affiche les infos de la dernière transaction sous le nom sur le marqueur. */
     var titre_affiche_last_trx_infos: Boolean = false,
+    /**
+     * Quand actif (et titre_affiche_last_trx_infos aussi actif), les infos de
+     * dernière transaction — et le "day" affiché quand afficheLesJoursAuNoms
+     * est actif — ne s'affichent que si l'état de cette dernière transaction
+     * est un des 4 états notables : Livré (COMMANDE_LIVRAI), Confirmé
+     * (A_COMMANDE_CONFIRME), Fermé (FERME), Acheteur absent
+     * (ACHETEUR_NON_DISPO). Sinon (état par défaut = false), aucun filtre
+     * n'est appliqué : toutes les infos de la dernière transaction, peu
+     * importe son état, sont affichées comme avant.
+     */
+    var titre_affiche_last_trx_que_etats_notables: Boolean = false,
     /** Affiche la bulle d'info du marqueur (au-dessus du marqueur sur la carte). */
     var titre_affiche_buble: Boolean = true,
+    /** Affiche le secteur du client sous le nom sur le marqueur. */
+    var titre_affiche_secteur: Boolean = false,
+    /**
+     * Quand actif (par défaut), le mode "Nom seul" (title_Filter ==
+     * Tout_Sauf_Nom_Si_Non_New) masque complètement le libellé du marqueur
+     * pour les clients dont le nom contient "new" ou "ز" (marqueurs "nouveau
+     * client"). Quand désactivé, ces clients affichent leur nom normalement
+     * comme les autres, même en mode "Nom seul".
+     */
+    var titre_masque_bulle_clients_new: Boolean = true,
 
     var KeyByParent: String = "",
     var vid: Long = 1,
@@ -211,7 +233,10 @@ data class M09AppCompt(
         "title_Filter" to title_Filter.name,
         "titre_affiche_suffixe_apres_nom" to titre_affiche_suffixe_apres_nom,
         "titre_affiche_last_trx_infos" to titre_affiche_last_trx_infos,
+        "titre_affiche_last_trx_que_etats_notables" to titre_affiche_last_trx_que_etats_notables,
         "titre_affiche_buble" to titre_affiche_buble,
+        "titre_affiche_secteur" to titre_affiche_secteur,
+        "titre_masque_bulle_clients_new" to titre_masque_bulle_clients_new,
         "KeyByParent" to KeyByParent,
         "vid" to vid,
         "limite_couleurs_ou_leur_last_achate_est_moin_que_jour" to limite_couleurs_ou_leur_last_achate_est_moin_que_jour,

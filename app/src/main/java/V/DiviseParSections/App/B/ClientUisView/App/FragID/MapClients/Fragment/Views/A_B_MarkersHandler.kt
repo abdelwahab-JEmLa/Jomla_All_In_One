@@ -109,13 +109,6 @@ fun getClientsCurrentlyVisibleOnMap(
     val modeFilteredClients = filterClientsBasedOnMode(viewModel, currentFilterMode)
 
     val isGlobalModeFilter = currentFilterMode in listOf(
-        // Les 4 filtres crédit (client/fournisseur x court/long terme), plus le
-        // filtre Jamale-avec-crédit, sont globaux : un crédit ne dépend pas de
-        // la position actuelle sur la carte, donc pas de restriction par
-        // proximityFilterRadiusMeters. Sans ça, un fournisseur avec crédit situé
-        // hors du rayon de 900m (proximite_de_vision_meter) disparaissait de la
-        // liste alors qu'il devait s'afficher.
-        MapClientsViewModel.VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit,
         VisibleClientsNow.Filter_Leur_Last_TRX_Est_Credit_Long_Term,
         VisibleClientsNow.Filter_Fournisseurs_Short_Term_Credit,
         VisibleClientsNow.Filter_Fournisseurs_Long_Term_Credit,
@@ -698,41 +691,79 @@ fun Marker.title(
     // Infos de la dernière transaction sous le nom quand
     // titre_affiche_last_trx_infos est actif — même dialogue.
     val afficheLastTrxInfos = activeCompt?.titre_affiche_last_trx_infos == true
+    // Sous-option de titre_affiche_last_trx_infos : quand actif, la dernière
+    // transaction (et le "day" affiché quand afficheLesJoursAuNoms est actif)
+    // ne compte que si son état est l'un des 4 états notables — voir
+    // But1_Floating_Separated_FragMap_Button_1, switch "Seulement états
+    // notables" sous "Dernière transaction".
+    val etatsNotablesPourDerniereTrx = setOf(
+        M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI,
+        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME,
+        M8BonVent.EtateActuellementEst.FERME,
+        M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO,
+    )
+    val afficheSeulementEtatsNotables = activeCompt?.titre_affiche_last_trx_que_etats_notables == true
+    // Dernière transaction retenue pour l'affichage une fois le filtre
+    // "états notables" appliqué (null si elle ne passe pas le filtre).
+    val derniereTrxPourAffichage = relative_M8Transaction?.takeIf {
+        !afficheSeulementEtatsNotables || it.etateActuellementEst in etatsNotablesPourDerniereTrx
+    }
+    // Secteur du client sous le nom quand titre_affiche_secteur est actif —
+    // même dialogue "Options de titre".
+    val afficheSecteur = activeCompt?.titre_affiche_secteur == true
+    // Masque (mode "Nom seul" uniquement) le libellé des clients "new"/"ز" —
+    // voir le switch "Masquer les clients \"new\"" dans
+    // But1_Floating_Separated_FragMap_Button_1. Actif par défaut (comportement
+    // historique inchangé) ; désactivé, ces clients s'affichent normalement.
+    val masqueClientsNew = activeCompt?.titre_masque_bulle_clients_new != false
 
     fun lastTrxInfosLine(): String {
-        if (!afficheLastTrxInfos || relative_M8Transaction == null) return ""
+        if (!afficheLastTrxInfos || derniereTrxPourAffichage == null) return ""
         val dateHandler = DatesHandler()
-        val timeStr = dateHandler.getDateAndTimString(relative_M8Transaction.creationTimestamps).time
-        return "\n${relative_M8Transaction.etateActuellementEst.nomArabe} ($timeStr)"
+        val timeStr = dateHandler.getDateAndTimString(derniereTrxPourAffichage.creationTimestamps).time
+        return "\n${derniereTrxPourAffichage.etateActuellementEst.nomArabe} ($timeStr)"
+    }
+
+    fun secteurLine(): String {
+        if (!afficheSecteur || m2Client.secteur.isBlank()) return ""
+        return "\n${m2Client.secteur}"
     }
 
     title = if (activeFilter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
-        if (m2Client.nom.contains("new", ignoreCase = true) || m2Client.nom.contains("ز")) {
+        if (masqueClientsNew && (m2Client.nom.contains("new", ignoreCase = true) || m2Client.nom.contains("ز"))) {
             ""
         } else {
-            "${m2Client.nom.cleanClientNameFromPhone()}$suffixeApresNom${lastTrxInfosLine()}"
+            "${m2Client.nom.cleanClientNameFromPhone()}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
         }
     } else if (viewModel.afficheLesJoursAuNoms && position == 0) {
         val dateHandler = DatesHandler()
-        val timeStr = relative_M8Transaction?.creationTimestamps?.let {
+        val timeStr = derniereTrxPourAffichage?.creationTimestamps?.let {
             dateHandler.getDateAndTimString(it).time
         }
         val dayName = dateHandler.getArabicDayNameFromTimestamp(
-            relative_M8Transaction?.creationTimestamps ?: 0
+            derniereTrxPourAffichage?.creationTimestamps ?: 0
         )
         val distanceSemain =
-            dateHandler.getAbrgDistanceSemain(relative_M8Transaction?.creationTimestamps)
+            dateHandler.getAbrgDistanceSemain(derniereTrxPourAffichage?.creationTimestamps)
 
-        if (relative_M8Transaction != null) {
-            val text = " بالتقريب$sumBonVents"
-            val texy_Safe = text.takeIf { sumBonVents!! > 0.0 } ?: ""
-            val demande_Versemet_si_Type = relative_M8Transaction.demande_Versemet_si_Type
-                .takeIf { relative_M8Transaction.demande_Versemet_si_Type > 0.0 } ?: ""
+        if (derniereTrxPourAffichage != null) {
+            // L'état/montant/versement de la dernière transaction ne s'affiche
+            // que si titre_affiche_last_trx_infos est actif (par défaut activé
+            // = "tout s'affiche"), pour rester cohérent avec les autres
+            // branches de ce titre et avec le toggle "Dernière transaction"
+            // du dialogue "Options de titre".
+            val trxInfosSection = if (afficheLastTrxInfos) {
+                val text = " بالتقريب$sumBonVents"
+                val texy_Safe = text.takeIf { sumBonVents!! > 0.0 } ?: ""
+                val demande_Versemet_si_Type = derniereTrxPourAffichage.demande_Versemet_si_Type
+                    .takeIf { derniereTrxPourAffichage.demande_Versemet_si_Type > 0.0 } ?: ""
+                "\n${derniereTrxPourAffichage.etateActuellementEst.nomArabe}$texy_Safe$demande_Versemet_si_Type"
+            } else {
+                ""
+            }
 
             "$distanceSemain.$dayName (${timeStr})" +
-                    "\n${relative_M8Transaction.etateActuellementEst.nomArabe}" +
-                    texy_Safe +
-                    demande_Versemet_si_Type +
+                    trxInfosSection +
                     "\n${
                         m2Client.nom.split(" ")
                             .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
@@ -742,17 +773,17 @@ fun Marker.title(
                                 2
                             )
                         }" else ""
-                    }"
+                    }" +
+                    secteurLine()
         } else {
-            "${m2Client.nom}$suffixeApresNom"
+            "${m2Client.nom}$suffixeApresNom${secteurLine()}"
         }
     } else {
-        if (position != 0 && relative_M8Transaction != null) {
-            "$positionPrefix${relative_M8Transaction.etateActuellementEst.nomArabe}" +
-                    "\n${m2Client.nom}$suffixeApresNom${lastTrxInfosLine()}"
-        } else {
-            "$positionPrefix${m2Client.nom}$suffixeApresNom${lastTrxInfosLine()}"
-        }
+        // L'état de la dernière transaction est désormais porté uniquement par
+        // lastTrxInfosLine() (gérée par titre_affiche_last_trx_infos), qu'il y
+        // ait une position ou non — évite d'afficher l'état deux fois quand le
+        // toggle est actif, et l'enlève bien quand il est désactivé.
+        "$positionPrefix${m2Client.nom}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
     }
 }
 
