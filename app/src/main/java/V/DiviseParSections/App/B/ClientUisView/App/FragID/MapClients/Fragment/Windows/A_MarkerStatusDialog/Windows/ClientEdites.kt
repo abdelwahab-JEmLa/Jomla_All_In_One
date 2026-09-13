@@ -20,6 +20,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -418,6 +419,66 @@ fun ClientEdites(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
+            }
+
+            if (relative_Client != null) {
+                // Liste des workers 2..6, avec surlignage de celui pointé par
+                // active_worker_actullement_idx (index 1 = worker principal /
+                // numTelephone déjà affiché ci-dessus, 2..6 = nom_worker_N/telep_worker_N).
+                val workers = listOf(
+                    2 to (relative_Client.nom_worker_2 to relative_Client.telep_worker_2),
+                    3 to (relative_Client.nom_worker_3 to relative_Client.telep_worker_3),
+                    4 to (relative_Client.nom_worker_4 to relative_Client.telep_worker_4),
+                    5 to (relative_Client.nom_worker_5 to relative_Client.telep_worker_5),
+                    6 to (relative_Client.nom_worker_6 to relative_Client.telep_worker_6),
+                ).filter { (_, pair) -> pair.first.isNotBlank() || pair.second.isNotBlank() }
+
+                if (workers.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    ) {
+                        workers.forEach { (workerIdx, nomTelep) ->
+                            val (nomWorker, telepWorker) = nomTelep
+                            val isActive = relative_Client.active_worker_actullement_idx == workerIdx
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = if (isActive)
+                                            MaterialTheme.colorScheme.primaryContainer
+                                        else
+                                            Color.Transparent
+                                    )
+                                    .clickable {
+                                        val updated = relative_Client.copy(
+                                            active_worker_actullement_idx = workerIdx
+                                        )
+                                        viewModel.updateData(updated)
+                                    }
+                                    .padding(vertical = 4.dp, horizontal = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = nomWorker.ifBlank { "Worker $workerIdx" },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal
+                                )
+                                if (telepWorker.isNotBlank()) {
+                                    Text(
+                                        text = telepWorker,
+                                        modifier = Modifier.clickable { onShowPhoneDialogChange(true) },
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -27,6 +27,7 @@ data class M2Client(
     //Infos De Base
 
     var nom: String = "Non Defini",
+
     var cretionTimestamps: Long = DatesHandler().getCurrentTimestamps(),
     //Forging Keys
     var its_Fournisseur: Boolean = false,
@@ -71,6 +72,18 @@ data class M2Client(
     val nif_Num: String = "16291403036",
     var secteur: String = "",
 
+    var active_worker_actullement_idx: Int = 0,
+
+    var nom_worker_2: String = "",
+    var telep_worker_2: String = "",
+    var nom_worker_3: String = "",
+    var telep_worker_3: String = "",
+    var nom_worker_4: String = "",
+    var telep_worker_4: String = "",
+    var nom_worker_5: String = "",
+    var telep_worker_5: String = "",
+    var nom_worker_6: String = "",
+    var telep_worker_6: String = "",
 ) {
 
     fun toFirebaseMap(): Map<String, Any?> = mapOf(
@@ -110,6 +123,17 @@ data class M2Client(
         "nomPrenomArabe" to nomPrenomArabe,
         "register_Commerce_Nm" to register_Commerce_Nm,
         "nif_Num" to nif_Num,
+        "active_worker_actullement_idx" to active_worker_actullement_idx,
+        "nom_worker_2" to nom_worker_2,
+        "telep_worker_2" to telep_worker_2,
+        "nom_worker_3" to nom_worker_3,
+        "telep_worker_3" to telep_worker_3,
+        "nom_worker_4" to nom_worker_4,
+        "telep_worker_4" to telep_worker_4,
+        "nom_worker_5" to nom_worker_5,
+        "telep_worker_5" to telep_worker_5,
+        "nom_worker_6" to nom_worker_6,
+        "telep_worker_6" to telep_worker_6,
     )
 
     /**

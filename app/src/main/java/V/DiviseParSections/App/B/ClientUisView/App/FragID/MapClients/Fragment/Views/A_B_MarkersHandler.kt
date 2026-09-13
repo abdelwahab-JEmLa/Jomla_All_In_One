@@ -672,6 +672,16 @@ private fun String.cleanClientNameFromPhone(): String {
         .trim('.', '-', ',', ' ', ':')
 }
 
+/**
+ * Strips the "." suffix (and anything after it) from a client name, e.g.
+ * "Ahmed.Boutique" -> "Ahmed". Mirrors [M2Client.Companion.extractClientNamePrefix]
+ * / BluetoothPrintHandler.extractClientNamePrefix so the marker title uses the
+ * same cleanup as the printed receipts.
+ */
+private fun String.withoutDotSuffix(): String {
+    return this.substringBefore(".", this).trim()
+}
+
 fun Marker.title(
     viewModel: MapClientsViewModel,
     m2Client: M2Client,
@@ -729,11 +739,28 @@ fun Marker.title(
         return "\n${m2Client.secteur}"
     }
 
+    // Title_Filter.Tout_Sauf_Nom_Si_Non_New: affiche m2Client.nom au titre du
+    // marqueur (plus les lignes optionnelles ci-dessous) quand actif — voir le
+    // switch "Nom seul" de TitleOptionsDialog (But1_Floating_Separated_FragMap_
+    // Button_1.kt), qui démarre maintenant coché (true) par défaut puisque
+    // c'est le comportement de titre normal, pas un mode "tout sauf le nom".
+    //
+    // Quand le switch "Suffixe après le nom" est désactivé, on retire aussi le
+    // "." (et tout ce qui suit) du nom brut — même nettoyage que
+    // M2Client.extractClientNamePrefix / BluetoothPrintHandler.
+    // extractClientNamePrefix, pour éviter d'afficher "Ahmed.Boutique" en
+    // entier alors que le suffixe n'est pas censé apparaître.
+    val nomPourTitre = if (suffixeApresNom.isEmpty()) {
+        m2Client.nom.withoutDotSuffix()
+    } else {
+        m2Client.nom
+    }
+
     title = if (activeFilter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
         if (masqueClientsNew && (m2Client.nom.contains("new", ignoreCase = true) || m2Client.nom.contains("ز"))) {
             ""
         } else {
-            "${m2Client.nom.cleanClientNameFromPhone()}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
+            "${nomPourTitre.cleanClientNameFromPhone()}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
         }
     } else if (viewModel.afficheLesJoursAuNoms && position == 0) {
         val dateHandler = DatesHandler()
@@ -747,11 +774,6 @@ fun Marker.title(
             dateHandler.getAbrgDistanceSemain(derniereTrxPourAffichage?.creationTimestamps)
 
         if (derniereTrxPourAffichage != null) {
-            // L'état/montant/versement de la dernière transaction ne s'affiche
-            // que si titre_affiche_last_trx_infos est actif (par défaut activé
-            // = "tout s'affiche"), pour rester cohérent avec les autres
-            // branches de ce titre et avec le toggle "Dernière transaction"
-            // du dialogue "Options de titre".
             val trxInfosSection = if (afficheLastTrxInfos) {
                 val text = " بالتقريب$sumBonVents"
                 val texy_Safe = text.takeIf { sumBonVents!! > 0.0 } ?: ""
@@ -765,7 +787,7 @@ fun Marker.title(
             "$distanceSemain.$dayName (${timeStr})" +
                     trxInfosSection +
                     "\n${
-                        m2Client.nom.split(" ")
+                        nomPourTitre.split(" ")
                             .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
                     }$suffixeApresNom ${
                         if (m2Client.numTelephone.isNotEmpty()) "📞${
@@ -776,14 +798,10 @@ fun Marker.title(
                     }" +
                     secteurLine()
         } else {
-            "${m2Client.nom}$suffixeApresNom${secteurLine()}"
+            "${nomPourTitre}$suffixeApresNom${secteurLine()}"
         }
     } else {
-        // L'état de la dernière transaction est désormais porté uniquement par
-        // lastTrxInfosLine() (gérée par titre_affiche_last_trx_infos), qu'il y
-        // ait une position ou non — évite d'afficher l'état deux fois quand le
-        // toggle est actif, et l'enlève bien quand il est désactivé.
-        "$positionPrefix${m2Client.nom}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
+        "$positionPrefix${nomPourTitre}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
     }
 }
 
@@ -842,6 +860,7 @@ fun restoreLocationOverlayAtBottom(mapView: MapView, locationOverlay: Any?) {
         mapView.overlays.add(0, overlay as Overlay?)
     }
 }
+
 
 /** Haversine distance in metres between two lat/lng points. */
 fun haversineMeters(

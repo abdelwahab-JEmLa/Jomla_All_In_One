@@ -259,6 +259,13 @@ class BluetoothPrintHandler {
             ?: "Client"
     }
 
+    /**
+     * Strips the "." suffix (and anything after it) from a client name, e.g.
+     * "Ahmed.Boutique" -> "Ahmed". Same cleanup used by the map marker title
+     * when its "Suffixe après le nom" toggle is off — see nomPourTitre /
+     * withoutDotSuffix() in A_B_MarkersHandler.kt's Marker.title() — and by
+     * M2Client.Companion.extractClientNamePrefix.
+     */
     private fun extractClientNamePrefix(clientName: String): String {
         return clientName.substringBefore(".", clientName).trim()
     }

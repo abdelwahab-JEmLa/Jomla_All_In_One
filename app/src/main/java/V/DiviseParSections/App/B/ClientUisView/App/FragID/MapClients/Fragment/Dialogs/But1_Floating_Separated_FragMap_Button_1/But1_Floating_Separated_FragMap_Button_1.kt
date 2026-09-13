@@ -471,268 +471,301 @@ fun But1_OnClickMode(
     }
 
     if (showTitleOptionsDialog) {
-        Dialog(onDismissRequest = { showTitleOptionsDialog = false }) {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Options de titre",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
+        TitleOptionsDialog(
+            viewModel = viewModel,
+            onDismissRequest = { showTitleOptionsDialog = false },
+        )
+    }
+}
+
+/**
+ * "Options de titre" dialog, extracted out of [But1_OnClickMode] (see the
+ * TODO(1) this replaces) so it isn't buried inline in the parent composable.
+ *
+ * Behavior fix (TODO(2.C), see also Marker.title() in A_B_MarkersHandler.kt):
+ * [Title_Filter.Tout_Sauf_Nom_Si_Non_New] does not mean "hide everything
+ * except the name" — it means "show m2Client.nom on the title when active".
+ * That's the normal/expected marker title, so the "Nom seul" switch now
+ * defaults to checked (true) instead of starting unchecked; toggling it off
+ * switches to [Title_Filter.Rien] (the old default) for the rare case where
+ * no name should be shown at all.
+ */
+@Composable
+private fun TitleOptionsDialog(
+    viewModel: MapClientsViewModel,
+    onDismissRequest: () -> Unit,
+) {
+    // Relu ici (et non passé en paramètre) pour rester à jour si le compt actif
+    // change pendant que le dialogue est ouvert, comme dans But1_OnClickMode.
+    val compt = viewModel.active_Datas.active_M9Compt
+
+    Dialog(onDismissRequest = onDismissRequest) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Options de titre",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                )
+                Text(
+                    text = "Choisissez les infos affichées sur les marqueurs de la carte",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
+                )
+                // Affiche le nom du client au titre du marqueur — actif par
+                // défaut (voir commentaire de TitleOptionsDialog ci-dessus).
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                ) {
+                    Column(modifier = Modifier.padding(end = 8.dp)) {
+                        Text(
+                            text = "Nom seul",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                        )
+                        Text(
+                            text = "Masque les détails et le téléphone sur le marqueur",
+                            fontSize = 11.sp,
+                            color = Color.Gray,
+                        )
+                    }
+                    Switch(
+                        checked = compt?.title_Filter != Title_Filter.Rien,
+                        onCheckedChange = { checked ->
+                            compt?.let {
+                                val nextFilter = if (checked) Title_Filter.Tout_Sauf_Nom_Si_Non_New else Title_Filter.Rien
+                                viewModel.update_active_Compt(it.copy(title_Filter = nextFilter))
+                            }
+                            viewModel.mapReloadTrigger++
+                        },
                     )
-                    Text(
-                        text = "Choisissez les infos affichées sur les marqueurs de la carte",
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
+                }
+
+                if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(end = 8.dp)) {
+                            Text(
+                                text = "Suffixe après le nom",
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                            )
+                            // Actif : ajoute un "." après le nom (voir
+                            // suffixeApresNom dans Marker.title()).
+                            // Désactivé : si le nom du client contient déjà un
+                            // "." (ex. "Ahmed.Boutique"), tout ce qui suit est
+                            // retiré du titre — voir nomPourTitre /
+                            // withoutDotSuffix() dans Marker.title()
+                            // (A_B_MarkersHandler.kt), même nettoyage que
+                            // M2Client.extractClientNamePrefix /
+                            // BluetoothPrintHandler.extractClientNamePrefix.
+                            Text(
+                                text = "Ajoute un point/suffixe après le nom du client. Désactivé, tout ce qui suit un point existant dans le nom est masqué.",
+                                fontSize = 11.sp,
+                                color = Color.Gray,
+                            )
+                        }
+                        Switch(
+                            checked = compt?.titre_affiche_suffixe_apres_nom == true,
+                            onCheckedChange = { checked ->
+                                compt?.let {
+                                    viewModel.update_active_Compt(it.copy(titre_affiche_suffixe_apres_nom = checked))
+                                }
+                                viewModel.mapReloadTrigger++
+                            },
+                        )
+                    }
+                }
+
+                // Masque (mode "Nom seul" uniquement) le libellé des
+                // clients "new"/"ز" — voir titre_masque_bulle_clients_new
+                // et son usage dans Marker.title() (A_B_MarkersHandler.kt).
+                if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(end = 8.dp)) {
+                            Text(
+                                text = "Masquer les clients \"new\"",
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                            )
+                            Text(
+                                text = "Cache le libellé des clients dont le nom contient \"new\" ou \"ز\"",
+                                fontSize = 11.sp,
+                                color = Color.Gray,
+                            )
+                        }
+                        Switch(
+                            checked = compt?.titre_masque_bulle_clients_new != false,
+                            onCheckedChange = { checked ->
+                                compt?.let {
+                                    viewModel.update_active_Compt(it.copy(titre_masque_bulle_clients_new = checked))
+                                }
+                                viewModel.mapReloadTrigger++
+                            },
+                        )
+                    }
+                }
+
+                // Affiche le secteur du client sur le marqueur.
+                // NB: nécessite le champ `titre_affiche_secteur: Boolean` sur
+                // M9Compt (même convention que les autres titre_affiche_*
+                // ci-dessous) — à ajouter côté modèle si ce n'est pas déjà fait.
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                ) {
+                    Column(modifier = Modifier.padding(end = 8.dp)) {
+                        Text(
+                            text = "Secteur",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                        )
+                        Text(
+                            text = "Affiche le secteur du client sous le nom",
+                            fontSize = 11.sp,
+                            color = Color.Gray,
+                        )
+                    }
+                    Switch(
+                        checked = compt?.titre_affiche_secteur == true,
+                        onCheckedChange = { checked ->
+                            compt?.let {
+                                viewModel.update_active_Compt(it.copy(titre_affiche_secteur = checked))
+                            }
+                            viewModel.mapReloadTrigger++
+                        },
                     )
-                    // Nom seul vs standard (détails + téléphone) — ancien
-                    // comportement du DropdownMenuItem "Titre", conservé ici.
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                    ) {
-                        Column(modifier = Modifier.padding(end = 8.dp)) {
-                            Text(
-                                text = "Nom seul",
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                            )
-                            Text(
-                                text = "Masque les détails et le téléphone sur le marqueur",
-                                fontSize = 11.sp,
-                                color = Color.Gray,
-                            )
-                        }
-                        Switch(
-                            checked = compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New,
-                            onCheckedChange = { checked ->
-                                compt?.let {
-                                    val nextFilter = if (checked) Title_Filter.Tout_Sauf_Nom_Si_Non_New else Title_Filter.Rien
-                                    viewModel.update_active_Compt(it.copy(title_Filter = nextFilter))
-                                }
-                                viewModel.mapReloadTrigger++
-                            },
+                }
+
+                // Affiche les infos de la dernière transaction. Le libellé
+                // d'état (etateActuellementEst.nomArabe) n'est affiché sous
+                // le nom que si ce toggle est actif — voir lastTrxInfosLine()
+                // et son usage dans Marker.title() (A_B_MarkersHandler.kt),
+                // désormais cohérent entre toutes les branches du titre.
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                ) {
+                    Column(modifier = Modifier.padding(end = 8.dp)) {
+                        Text(
+                            text = "Dernière transaction",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                        )
+                        Text(
+                            text = "Affiche les infos de la dernière transaction sous le nom",
+                            fontSize = 11.sp,
+                            color = Color.Gray,
                         )
                     }
-
-                    // N'a de sens qu'en mode "Nom seul" (le suffixe est ajouté
-                    // partout dans Marker.title(), mais ce contrôle ne
-                    // s'affiche que quand ce mode est actif).
-                    if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                        ) {
-                            Column(modifier = Modifier.padding(end = 8.dp)) {
-                                Text(
-                                    text = "Suffixe après le nom",
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 14.sp,
-                                )
-                                Text(
-                                    text = "Ajoute un point/suffixe après le nom du client",
-                                    fontSize = 11.sp,
-                                    color = Color.Gray,
-                                )
+                    Switch(
+                        checked = compt?.titre_affiche_last_trx_infos == true,
+                        onCheckedChange = { checked ->
+                            compt?.let {
+                                viewModel.update_active_Compt(it.copy(titre_affiche_last_trx_infos = checked))
                             }
-                            Switch(
-                                checked = compt?.titre_affiche_suffixe_apres_nom == true,
-                                onCheckedChange = { checked ->
-                                    compt?.let {
-                                        viewModel.update_active_Compt(it.copy(titre_affiche_suffixe_apres_nom = checked))
-                                    }
-                                    viewModel.mapReloadTrigger++
-                                },
+                            viewModel.mapReloadTrigger++
+                        },
+                    )
+                }
+
+                if (compt?.titre_affiche_last_trx_infos == true) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(end = 8.dp)) {
+                            Text(
+                                text = "Seulement états notables",
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 13.sp,
+                            )
+                            Text(
+                                text = "Livré, Confirmé, Fermé ou Acheteur absent uniquement",
+                                fontSize = 11.sp,
+                                color = Color.Gray,
                             )
                         }
+                        Switch(
+                            checked = compt?.titre_affiche_last_trx_que_etats_notables == true,
+                            onCheckedChange = { checked ->
+                                compt?.let {
+                                    viewModel.update_active_Compt(it.copy(titre_affiche_last_trx_que_etats_notables = checked))
+                                }
+                                viewModel.mapReloadTrigger++
+                            },
+                        )
                     }
+                }
 
-                    // Masque (mode "Nom seul" uniquement) le libellé des
-                    // clients "new"/"ز" — voir titre_masque_bulle_clients_new
-                    // et son usage dans Marker.title() (A_B_MarkersHandler.kt).
-                    if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                        ) {
-                            Column(modifier = Modifier.padding(end = 8.dp)) {
-                                Text(
-                                    text = "Masquer les clients \"new\"",
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 14.sp,
-                                )
-                                Text(
-                                    text = "Cache le libellé des clients dont le nom contient \"new\" ou \"ز\"",
-                                    fontSize = 11.sp,
-                                    color = Color.Gray,
-                                )
+                // Affiche la bulle d'info du marqueur.
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                ) {
+                    Column(modifier = Modifier.padding(end = 8.dp)) {
+                        Text(
+                            text = "Bulle du marqueur",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                        )
+                        Text(
+                            text = "Affiche la bulle d'info au-dessus du marqueur",
+                            fontSize = 11.sp,
+                            color = Color.Gray,
+                        )
+                    }
+                    Switch(
+                        checked = compt?.titre_affiche_buble != false,
+                        onCheckedChange = { checked ->
+                            compt?.let {
+                                viewModel.update_active_Compt(it.copy(titre_affiche_buble = checked))
                             }
-                            Switch(
-                                checked = compt?.titre_masque_bulle_clients_new != false,
-                                onCheckedChange = { checked ->
-                                    compt?.let {
-                                        viewModel.update_active_Compt(it.copy(titre_masque_bulle_clients_new = checked))
-                                    }
-                                    viewModel.mapReloadTrigger++
-                                },
-                            )
-                        }
-                    }
+                            viewModel.mapReloadTrigger++
+                        },
+                    )
+                }
 
-                    // Affiche le secteur du client sur le marqueur.
-                    // NB: nécessite le champ `titre_affiche_secteur: Boolean` sur
-                    // M9Compt (même convention que les autres titre_affiche_*
-                    // ci-dessous) — à ajouter côté modèle si ce n'est pas déjà fait.
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                    ) {
-                        Column(modifier = Modifier.padding(end = 8.dp)) {
-                            Text(
-                                text = "Secteur",
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                            )
-                            Text(
-                                text = "Affiche le secteur du client sous le nom",
-                                fontSize = 11.sp,
-                                color = Color.Gray,
-                            )
-                        }
-                        Switch(
-                            checked = compt?.titre_affiche_secteur == true,
-                            onCheckedChange = { checked ->
-                                compt?.let {
-                                    viewModel.update_active_Compt(it.copy(titre_affiche_secteur = checked))
-                                }
-                                viewModel.mapReloadTrigger++
-                            },
-                        )
-                    }
-
-                    // Affiche les infos de la dernière transaction. Le libellé
-                    // d'état (etateActuellementEst.nomArabe) n'est affiché sous
-                    // le nom que si ce toggle est actif — voir lastTrxInfosLine()
-                    // et son usage dans Marker.title() (A_B_MarkersHandler.kt),
-                    // désormais cohérent entre toutes les branches du titre.
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                    ) {
-                        Column(modifier = Modifier.padding(end = 8.dp)) {
-                            Text(
-                                text = "Dernière transaction",
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                            )
-                            Text(
-                                text = "Affiche les infos de la dernière transaction sous le nom",
-                                fontSize = 11.sp,
-                                color = Color.Gray,
-                            )
-                        }
-                        Switch(
-                            checked = compt?.titre_affiche_last_trx_infos == true,
-                            onCheckedChange = { checked ->
-                                compt?.let {
-                                    viewModel.update_active_Compt(it.copy(titre_affiche_last_trx_infos = checked))
-                                }
-                                viewModel.mapReloadTrigger++
-                            },
-                        )
-                    }
-
-                    if (compt?.titre_affiche_last_trx_infos == true) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Column(modifier = Modifier.padding(end = 8.dp)) {
-                                Text(
-                                    text = "Seulement états notables",
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 13.sp,
-                                )
-                                Text(
-                                    text = "Livré, Confirmé, Fermé ou Acheteur absent uniquement",
-                                    fontSize = 11.sp,
-                                    color = Color.Gray,
-                                )
-                            }
-                            Switch(
-                                checked = compt?.titre_affiche_last_trx_que_etats_notables == true,
-                                onCheckedChange = { checked ->
-                                    compt?.let {
-                                        viewModel.update_active_Compt(it.copy(titre_affiche_last_trx_que_etats_notables = checked))
-                                    }
-                                    viewModel.mapReloadTrigger++
-                                },
-                            )
-                        }
-                    }
-
-                    // Affiche la bulle d'info du marqueur.
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                    ) {
-                        Column(modifier = Modifier.padding(end = 8.dp)) {
-                            Text(
-                                text = "Bulle du marqueur",
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                            )
-                            Text(
-                                text = "Affiche la bulle d'info au-dessus du marqueur",
-                                fontSize = 11.sp,
-                                color = Color.Gray,
-                            )
-                        }
-                        Switch(
-                            checked = compt?.titre_affiche_buble != false,
-                            onCheckedChange = { checked ->
-                                compt?.let {
-                                    viewModel.update_active_Compt(it.copy(titre_affiche_buble = checked))
-                                }
-                                viewModel.mapReloadTrigger++
-                            },
-                        )
-                    }
-
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 12.dp),
-                    ) {
-                        TextButton(onClick = { showTitleOptionsDialog = false }) {
-                            Text("Fermer")
-                        }
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                ) {
+                    TextButton(onClick = onDismissRequest) {
+                        Text("Fermer")
                     }
                 }
             }
