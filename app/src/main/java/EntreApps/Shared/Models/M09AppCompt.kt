@@ -147,6 +147,7 @@ data class M09AppCompt(
      * comme les autres, même en mode "Nom seul".
      */
     var titre_masque_bulle_clients_new: Boolean = true,
+    var lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources: Boolean = true,
 
     var KeyByParent: String = "",
     var vid: Long = 1,
@@ -175,6 +176,7 @@ data class M09AppCompt(
         else emptyList()
 
     fun to_Map(): Map<String, Any?> = mapOf(
+        "lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources" to lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources,
         "proximite_de_vision_meter" to proximite_de_vision_meter,
         "keyID" to keyID,
         "creationTimestamp" to creationTimestamp,

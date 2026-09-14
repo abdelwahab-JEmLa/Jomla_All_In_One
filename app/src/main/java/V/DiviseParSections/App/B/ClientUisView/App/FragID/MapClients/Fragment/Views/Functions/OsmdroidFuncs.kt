@@ -131,6 +131,7 @@ fun cleanupMapResources(mapView: MapView, viewModel: MapClientsViewModel) {
     viewModel.cancelActiveOperations()
 }
 suspend fun initializeMapPosition(
+
     context: Context,
     mapView: MapView,
     currentZoom: Double,

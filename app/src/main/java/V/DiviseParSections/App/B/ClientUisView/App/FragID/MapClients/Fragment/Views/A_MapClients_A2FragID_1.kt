@@ -31,6 +31,8 @@ fun A_MapClients_A2FragID_1(
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
 ) {
 
+    //<--
+    //TODO(1): fait que si m9 .lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources
     val uiState by viewModel.uiState.collectAsState()
     val progress = uiState.mainLoadingProgress
 

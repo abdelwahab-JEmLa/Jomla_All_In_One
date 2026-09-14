@@ -390,7 +390,8 @@ fun But1_Floating_ClientsListDialog(
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                             }
-
+                                       //<--
+                                       //TODO(1): ajout un button qui togle m9.lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources
                             DropdownMenu(
                                 expanded = modeMenuExpanded,
                                 onDismissRequest = { modeMenuExpanded = false },

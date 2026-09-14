@@ -102,6 +102,7 @@ fun MapContent(
     onClear: () -> Unit,
     wifiTransferDatas_ControllerApp: WifiTransferDatas_ControllerApp,
 ) {
+
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
