@@ -20,6 +20,80 @@ class DatesHandler {
         return System.currentTimeMillis()
     }
 
+    // Distance relative en arabe, du type "قبل 5 أيام" (il y a 5 jours) ou
+    // "قبل أسبوع ويومين" (il y a 1 semaine et 2 jours). Contrairement à
+    // getAbrgDistanceSemain (qui donne le jour de la semaine, ex: "الخميس ق.2")
+    // ou à getTimeDifferenceInArabicWithMintes (mois/années arrondis), cette
+    // fonction combine semaines + jours restants pour une durée précise et
+    // lisible, utilisée par exemple pour afficher depuis quand un crédit est
+    // ouvert (voir creditLabel dans ClientRow / But1_Floating_ClientsListDialog).
+    fun getRelativeTimeArabic(timestamp: Long): String {
+        try {
+            // Comparaison sur des journées entières (minuit à minuit), pas sur
+            // des millisecondes brutes, pour que "hier soir tard" et "hier
+            // matin" comptent tous les deux comme 1 jour d'écart.
+            val startOfDay: (Long) -> Calendar = { ts ->
+                Calendar.getInstance().apply {
+                    timeInMillis = ts
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+            }
+
+            val today = startOfDay(System.currentTimeMillis())
+            val given = startOfDay(timestamp)
+
+            val diffMillis = today.timeInMillis - given.timeInMillis
+            val totalDays = TimeUnit.MILLISECONDS.toDays(diffMillis)
+
+            if (totalDays < 0L) return "" // date future : cas non géré ici
+            if (totalDays == 0L) return isolateRtl("اليوم")
+            if (totalDays == 1L) return isolateRtl("أمس")
+
+            val weeks = totalDays / 7
+            val days = totalDays % 7
+
+            val daysPart = when (days) {
+                0L -> ""
+                1L -> "يوم"
+                2L -> "يومين"
+                in 3..10 -> "$days أيام"
+                else -> "$days يوم"
+            }
+
+            val weeksPart = when (weeks) {
+                0L -> ""
+                1L -> "أسبوع"
+                2L -> "أسبوعين"
+                in 3..10 -> "$weeks أسابيع"
+                else -> "$weeks أسبوع"
+            }
+
+            val body = when {
+                weeks == 0L -> daysPart
+                days == 0L -> weeksPart
+                else -> "$weeksPart و $daysPart"
+            }
+
+            return isolateRtl("قبل $body")
+        } catch (e: Exception) {
+            return ""
+        }
+    }
+
+    // Isole le texte arabe entre marqueurs bidi (RLI ... PDI, U+2067/U+2069)
+    // avant de l'insérer dans un libellé à majorité latine comme
+    // "Crédit : +4500,00 DA · قبل أسبوع و يومين". Sans ça, quand ce genre de
+    // texte mixte latin+arabe passe à la ligne, l'algorithme bidi peut
+    // mélanger l'ordre des mots/chiffres arabes sur la 2e ligne (bug constaté
+    // à l'écran : "أيام3أسبوعين و" au lieu de "أسبوعين و 3 أيام"). L'isolate
+    // dit au moteur de texte "ce bloc est un îlot RTL autonome, ne le
+    // réordonne pas en fonction du contexte latin autour" — recommandation
+    // Unicode standard pour du texte bidirectionnel dynamique/concaténé.
+    private fun isolateRtl(text: String): String = "\u2067$text\u2069"
+
     fun getArabicDayNameFromTimestamp(timestamp: Long): String {
         try {
             val calendar = Calendar.getInstance()
