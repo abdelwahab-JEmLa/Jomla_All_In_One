@@ -765,14 +765,18 @@ fun Marker.title(
     val dayName = derniereTrxPourAffichage?.creationTimestamps?.let {
         dateHandler.getArabicDayNameFromTimestamp(it)
     } ?: ""
+
     val distanceSemain = derniereTrxPourAffichage?.creationTimestamps?.let {
         dateHandler.getAbrgDistanceSemain(it)
     } ?: ""
 
     title =
-        "$distanceSemain.$dayName (${timeStr})" +
-                derniereTrxPourAffichage?.etateActuellementEst?.nomArabe +
-                "$positionPrefix${nomPourTitre}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
+        secteurLine()   +
+    "$distanceSemain.$dayName (${timeStr})" +
+                positionPrefix +
+                nomPourTitre +
+                suffixeApresNom +
+                lastTrxInfosLine()
 }
 
 private fun uperrcase(nomPourTitre: String): String = nomPourTitre.split(" ")
