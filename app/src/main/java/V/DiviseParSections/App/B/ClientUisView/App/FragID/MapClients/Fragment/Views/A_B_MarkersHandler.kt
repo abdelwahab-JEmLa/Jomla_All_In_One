@@ -225,8 +225,17 @@ fun createAndAddMarker(
     // titre_affiche_buble — voir le dialogue "Options de titre"
     // (But1_Floating_Separated_FragMap_Button_1). Par défaut (null/absent)
     // elle reste affichée, comme avant l'ajout du toggle.
-    val afficheBuble = viewModel.active_Datas.active_M9Compt?.titre_affiche_buble != false
-    if (showMarkerDetails && afficheBuble) {
+    val activeComptForBuble = viewModel.active_Datas.active_M9Compt
+    val afficheBuble = activeComptForBuble?.titre_affiche_buble != false
+    // Comme pour le libellé du titre (voir Marker.title()), la bulle d'info
+    // est aussi masquée pour les clients "new" (nom contenant "new" ou
+    // matchant "ز.<numéro>", voir isNewClientName()) quand le switch
+    // "Masquer les clients \"new\"" est actif et que le mode "Nom seul" est
+    // sélectionné.
+    val masqueBubleCarClientNew = activeComptForBuble?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New &&
+            activeComptForBuble.titre_masque_bulle_clients_new != false &&
+            isNewClientName(m2Client.nom)
+    if (showMarkerDetails && afficheBuble && !masqueBubleCarClientNew) {
         marker.showInfoWindow()
     }
 }
@@ -354,8 +363,12 @@ fun performClickOnMarqueAction(
         ActiveCentralValues.Click_On_Marque.Standart -> {
             viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
 
-            val afficheBuble = viewModel.active_Datas.active_M9Compt?.titre_affiche_buble != false
-            if (showMarkerDetails && afficheBuble) marker?.showInfoWindow()
+            val activeComptForBuble = viewModel.active_Datas.active_M9Compt
+            val afficheBuble = activeComptForBuble?.titre_affiche_buble != false
+            // Même masquage que dans createAndAddMarker pour les clients
+            // "new" — voir isNewClientName().
+            val masqueBubleCarClientNew = activeComptForBuble?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New && activeComptForBuble.titre_masque_bulle_clients_new && isNewClientName(m2Client.nom)
+            if (showMarkerDetails && afficheBuble && !masqueBubleCarClientNew) marker?.showInfoWindow()
         }
 
         // Add client to targeting list
@@ -682,6 +695,21 @@ private fun String.withoutDotSuffix(): String {
     return this.substringBefore(".", this).trim()
 }
 
+/**
+ * Un client est considéré "new" si son nom contient "new" (insensible à la
+ * casse), ou s'il matche le motif "ز.<numéro>" (ex. "ز.12", "ز.3"). Le simple
+ * fait de contenir "ز" n'importe où dans le nom ne suffit plus — voir le
+ * switch "Masquer les clients \"new\"" dans
+ * But1_Floating_Separated_FragMap_Button_1. Utilisé à la fois pour masquer le
+ * libellé du titre (Marker.title()) et pour masquer la bulle d'info du
+ * marqueur (voir usage dans createAndAddMarker).
+ */
+private val newClientZaySuffixRegex = Regex("""ز\.\d+""")
+
+fun isNewClientName(nom: String): Boolean {
+    return nom.contains("new", ignoreCase = true) || newClientZaySuffixRegex.containsMatchIn(nom)
+}
+
 fun Marker.title(
     viewModel: MapClientsViewModel,
     m2Client: M2Client,
@@ -701,11 +729,9 @@ fun Marker.title(
     // Infos de la dernière transaction sous le nom quand
     // titre_affiche_last_trx_infos est actif — même dialogue.
     val afficheLastTrxInfos = activeCompt?.titre_affiche_last_trx_infos == true
-    // Sous-option de titre_affiche_last_trx_infos : quand actif, la dernière
-    // transaction (et le "day" affiché quand afficheLesJoursAuNoms est actif)
-    // ne compte que si son état est l'un des 4 états notables — voir
-    // But1_Floating_Separated_FragMap_Button_1, switch "Seulement états
-    // notables" sous "Dernière transaction".
+    // "Seulement états notables" : la dernière transaction (et son jour)
+    // ne compte que si son état est notable — voir dialogue "Options de
+    // titre" (But1_Floating_Separated_FragMap_Button_1).
     val etatsNotablesPourDerniereTrx = setOf(
         M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI,
         M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME,
@@ -713,8 +739,6 @@ fun Marker.title(
         M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO,
     )
     val afficheSeulementEtatsNotables = activeCompt?.titre_affiche_last_trx_que_etats_notables == true
-    // Dernière transaction retenue pour l'affichage une fois le filtre
-    // "états notables" appliqué (null si elle ne passe pas le filtre).
     val derniereTrxPourAffichage = relative_M8Transaction?.takeIf {
         !afficheSeulementEtatsNotables || it.etateActuellementEst in etatsNotablesPourDerniereTrx
     }
@@ -726,6 +750,13 @@ fun Marker.title(
     // But1_Floating_Separated_FragMap_Button_1. Actif par défaut (comportement
     // historique inchangé) ; désactivé, ces clients s'affichent normalement.
     val masqueClientsNew = activeCompt?.titre_masque_bulle_clients_new != false
+    // Switch indépendant "Nom du client" (nouveau, séparé du mode "Nom seul" /
+    // title_Filter ci-dessus) — voir But1_Floating_Separated_FragMap_Button_1,
+    // tout en haut de TitleOptionsDialog. Actif par défaut ; désactivé, le nom
+    // du client est retiré du titre du marqueur dans toutes les branches
+    // ci-dessous (Nom seul, jours-aux-noms, standard), sans affecter les
+    // autres infos (secteur, dernière transaction, etc.).
+    val afficheNom = activeCompt?.titre_affiche_nom != false
 
     fun lastTrxInfosLine(): String {
         if (!afficheLastTrxInfos || derniereTrxPourAffichage == null) return ""
@@ -750,14 +781,16 @@ fun Marker.title(
     // M2Client.extractClientNamePrefix / BluetoothPrintHandler.
     // extractClientNamePrefix, pour éviter d'afficher "Ahmed.Boutique" en
     // entier alors que le suffixe n'est pas censé apparaître.
-    val nomPourTitre = if (suffixeApresNom.isEmpty()) {
+    val nomPourTitre = if (!afficheNom) {
+        ""
+    } else if (suffixeApresNom.isEmpty()) {
         m2Client.nom.withoutDotSuffix()
     } else {
         m2Client.nom
     }
 
     title = if (activeFilter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
-        if (masqueClientsNew && (m2Client.nom.contains("new", ignoreCase = true) || m2Client.nom.contains("ز"))) {
+        if (masqueClientsNew && isNewClientName(m2Client.nom)) {
             ""
         } else {
             "${nomPourTitre.cleanClientNameFromPhone()}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
@@ -767,16 +800,21 @@ fun Marker.title(
         val timeStr = derniereTrxPourAffichage?.creationTimestamps?.let {
             dateHandler.getDateAndTimString(it).time
         }
-        val dayName = dateHandler.getArabicDayNameFromTimestamp(
-            derniereTrxPourAffichage?.creationTimestamps ?: 0
-        )
-        val distanceSemain =
-            dateHandler.getAbrgDistanceSemain(derniereTrxPourAffichage?.creationTimestamps)
+        val dayName = derniereTrxPourAffichage?.creationTimestamps?.let {
+            dateHandler.getArabicDayNameFromTimestamp(it)
+        } ?: ""
+        // distanceSemain doit être calculé sur le même timestamp filtré que
+        // dayName et timeStr (derniereTrxPourAffichage), sinon le jour et la
+        // distance ne correspondent pas à la même transaction quand le filtre
+        // "états notables" élimine la dernière transaction réelle.
+        val distanceSemain = derniereTrxPourAffichage?.creationTimestamps?.let {
+            dateHandler.getAbrgDistanceSemain(it)
+        } ?: ""
 
         if (derniereTrxPourAffichage != null) {
             val trxInfosSection = if (afficheLastTrxInfos) {
                 val text = " بالتقريب$sumBonVents"
-                val texy_Safe = text.takeIf { sumBonVents!! > 0.0 } ?: ""
+                val texy_Safe = text.takeIf { (sumBonVents ?: 0.0) > 0.0 } ?: ""
                 val demande_Versemet_si_Type = derniereTrxPourAffichage.demande_Versemet_si_Type
                     .takeIf { derniereTrxPourAffichage.demande_Versemet_si_Type > 0.0 } ?: ""
                 "\n${derniereTrxPourAffichage.etateActuellementEst.nomArabe}$texy_Safe$demande_Versemet_si_Type"
@@ -789,13 +827,7 @@ fun Marker.title(
                     "\n${
                         nomPourTitre.split(" ")
                             .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
-                    }$suffixeApresNom ${
-                        if (m2Client.numTelephone.isNotEmpty()) "📞${
-                            m2Client.numTelephone.takeLast(
-                                2
-                            )
-                        }" else ""
-                    }" +
+                    }$suffixeApresNom" +
                     secteurLine()
         } else {
             "${nomPourTitre}$suffixeApresNom${secteurLine()}"
@@ -860,6 +892,7 @@ fun restoreLocationOverlayAtBottom(mapView: MapView, locationOverlay: Any?) {
         mapView.overlays.add(0, overlay as Overlay?)
     }
 }
+
 
 
 /** Haversine distance in metres between two lat/lng points. */

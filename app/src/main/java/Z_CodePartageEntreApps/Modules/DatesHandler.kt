@@ -14,6 +14,7 @@ data class DateAndTimString(
     val time: String = "HH:mm"
 )
 
+
 class DatesHandler {
     fun getCurrentTimestamps(): Long {
         return System.currentTimeMillis()

@@ -123,21 +123,21 @@ data class M09AppCompt(
     var titre_affiche_suffixe_apres_nom: Boolean = false,
     /** Affiche les infos de la dernière transaction sous le nom sur le marqueur. */
     var titre_affiche_last_trx_infos: Boolean = false,
-    /**
-     * Quand actif (et titre_affiche_last_trx_infos aussi actif), les infos de
-     * dernière transaction — et le "day" affiché quand afficheLesJoursAuNoms
-     * est actif — ne s'affichent que si l'état de cette dernière transaction
-     * est un des 4 états notables : Livré (COMMANDE_LIVRAI), Confirmé
-     * (A_COMMANDE_CONFIRME), Fermé (FERME), Acheteur absent
-     * (ACHETEUR_NON_DISPO). Sinon (état par défaut = false), aucun filtre
-     * n'est appliqué : toutes les infos de la dernière transaction, peu
-     * importe son état, sont affichées comme avant.
-     */
+
+
     var titre_affiche_last_trx_que_etats_notables: Boolean = false,
     /** Affiche la bulle d'info du marqueur (au-dessus du marqueur sur la carte). */
     var titre_affiche_buble: Boolean = true,
     /** Affiche le secteur du client sous le nom sur le marqueur. */
     var titre_affiche_secteur: Boolean = false,
+    /**
+     * Affiche le nom du client au titre du marqueur. Actif par défaut ;
+     * désactivé, le nom est retiré du titre dans tous les modes (Nom seul,
+     * jours-aux-noms, standard), indépendamment de title_Filter — voir le
+     * switch "Nom du client" dans But1_Floating_Separated_FragMap_Button_1
+     * et son usage dans Marker.title() (A_B_MarkersHandler.kt).
+     */
+    var titre_affiche_nom: Boolean = true,
     /**
      * Quand actif (par défaut), le mode "Nom seul" (title_Filter ==
      * Tout_Sauf_Nom_Si_Non_New) masque complètement le libellé du marqueur
@@ -236,6 +236,7 @@ data class M09AppCompt(
         "titre_affiche_last_trx_que_etats_notables" to titre_affiche_last_trx_que_etats_notables,
         "titre_affiche_buble" to titre_affiche_buble,
         "titre_affiche_secteur" to titre_affiche_secteur,
+        "titre_affiche_nom" to titre_affiche_nom,
         "titre_masque_bulle_clients_new" to titre_masque_bulle_clients_new,
         "KeyByParent" to KeyByParent,
         "vid" to vid,

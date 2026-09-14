@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_Floating_Separated_FragMap_Button_1
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
-import EntreApps.Shared.Models.Title_Filter
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Button_State
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -300,17 +299,17 @@ fun But1_OnClickMode(
                                     Icon(
                                         imageVector = Icons.Default.List,
                                         contentDescription = null,
-                                        tint = if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) Color(0xFF4CAF50) else Color.Gray,
+                                        tint = Color.Gray,
                                         modifier = Modifier.size(24.dp)
                                     )
                                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                         Text(
-                                            text = if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) "Titre: Nom Seul" else "Titre: Standard",
+                                            text = "Options de titre",
                                             fontWeight = FontWeight.Medium,
                                             fontSize = 14.sp
                                         )
                                         Text(
-                                            text = if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) "Masque les détails et le téléphone" else "Affiche le nom et les détails complets",
+                                            text = "Choisir les infos affichées sur les marqueurs",
                                             fontSize = 11.sp,
                                             color = Color.Gray
                                         )
@@ -477,19 +476,6 @@ fun But1_OnClickMode(
         )
     }
 }
-
-/**
- * "Options de titre" dialog, extracted out of [But1_OnClickMode] (see the
- * TODO(1) this replaces) so it isn't buried inline in the parent composable.
- *
- * Behavior fix (TODO(2.C), see also Marker.title() in A_B_MarkersHandler.kt):
- * [Title_Filter.Tout_Sauf_Nom_Si_Non_New] does not mean "hide everything
- * except the name" — it means "show m2Client.nom on the title when active".
- * That's the normal/expected marker title, so the "Nom seul" switch now
- * defaults to checked (true) instead of starting unchecked; toggling it off
- * switches to [Title_Filter.Rien] (the old default) for the rare case where
- * no name should be shown at all.
- */
 @Composable
 private fun TitleOptionsDialog(
     viewModel: MapClientsViewModel,
@@ -518,8 +504,6 @@ private fun TitleOptionsDialog(
                     color = Color.Gray,
                     modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
                 )
-                // Affiche le nom du client au titre du marqueur — actif par
-                // défaut (voir commentaire de TitleOptionsDialog ci-dessus).
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -529,29 +513,27 @@ private fun TitleOptionsDialog(
                 ) {
                     Column(modifier = Modifier.padding(end = 8.dp)) {
                         Text(
-                            text = "Nom seul",
+                            text = "Nom du client",
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.sp,
                         )
                         Text(
-                            text = "Masque les détails et le téléphone sur le marqueur",
+                            text = "Affiche ou masque le nom du client sur le marqueur",
                             fontSize = 11.sp,
                             color = Color.Gray,
                         )
                     }
                     Switch(
-                        checked = compt?.title_Filter != Title_Filter.Rien,
+                        checked = compt?.titre_affiche_nom != false,
                         onCheckedChange = { checked ->
                             compt?.let {
-                                val nextFilter = if (checked) Title_Filter.Tout_Sauf_Nom_Si_Non_New else Title_Filter.Rien
-                                viewModel.update_active_Compt(it.copy(title_Filter = nextFilter))
+                                viewModel.update_active_Compt(it.copy(titre_affiche_nom = checked))
                             }
                             viewModel.mapReloadTrigger++
                         },
                     )
                 }
-
-                if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
+                run {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -565,15 +547,6 @@ private fun TitleOptionsDialog(
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 14.sp,
                             )
-                            // Actif : ajoute un "." après le nom (voir
-                            // suffixeApresNom dans Marker.title()).
-                            // Désactivé : si le nom du client contient déjà un
-                            // "." (ex. "Ahmed.Boutique"), tout ce qui suit est
-                            // retiré du titre — voir nomPourTitre /
-                            // withoutDotSuffix() dans Marker.title()
-                            // (A_B_MarkersHandler.kt), même nettoyage que
-                            // M2Client.extractClientNamePrefix /
-                            // BluetoothPrintHandler.extractClientNamePrefix.
                             Text(
                                 text = "Ajoute un point/suffixe après le nom du client. Désactivé, tout ce qui suit un point existant dans le nom est masqué.",
                                 fontSize = 11.sp,
@@ -592,39 +565,34 @@ private fun TitleOptionsDialog(
                     }
                 }
 
-                // Masque (mode "Nom seul" uniquement) le libellé des
-                // clients "new"/"ز" — voir titre_masque_bulle_clients_new
-                // et son usage dans Marker.title() (A_B_MarkersHandler.kt).
-                if (compt?.title_Filter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                    ) {
-                        Column(modifier = Modifier.padding(end = 8.dp)) {
-                            Text(
-                                text = "Masquer les clients \"new\"",
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                            )
-                            Text(
-                                text = "Cache le libellé des clients dont le nom contient \"new\" ou \"ز\"",
-                                fontSize = 11.sp,
-                                color = Color.Gray,
-                            )
-                        }
-                        Switch(
-                            checked = compt?.titre_masque_bulle_clients_new != false,
-                            onCheckedChange = { checked ->
-                                compt?.let {
-                                    viewModel.update_active_Compt(it.copy(titre_masque_bulle_clients_new = checked))
-                                }
-                                viewModel.mapReloadTrigger++
-                            },
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                ) {
+                    Column(modifier = Modifier.padding(end = 8.dp)) {
+                        Text(
+                            text = "Masquer les clients \"new\"",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                        )
+                        Text(
+                            text = "Cache le libellé et la bulle d'info des clients dont le nom contient \"new\" ou correspond à \"ز.<numéro>\"",
+                            fontSize = 11.sp,
+                            color = Color.Gray,
                         )
                     }
+                    Switch(
+                        checked = compt?.titre_masque_bulle_clients_new != false,
+                        onCheckedChange = { checked ->
+                            compt?.let {
+                                viewModel.update_active_Compt(it.copy(titre_masque_bulle_clients_new = checked))
+                            }
+                            viewModel.mapReloadTrigger++
+                        },
+                    )
                 }
 
                 // Affiche le secteur du client sur le marqueur.
