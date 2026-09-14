@@ -142,6 +142,7 @@ fun MapContent(
     val lastScrollMs    = remember { mutableStateOf(0L) }
     val lastReloadMs    = remember { mutableStateOf(0L) }
 
+
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom, shouldCenterOnLocation = true)
         locationTracker.startTracking()
@@ -323,7 +324,11 @@ fun MapContent(
             )
         }
 
-
+        // Le besoin "cacher juste la carte mais garder les floating buttons +
+        // finalement couvert autrement : voir skipMapForResources /
+        // DirectClientsListDialog dans A_MapClients_A2FragID_1.kt, qui évite
+        // complètement de composer MapContent pour les comptes concernés au
+        // lieu d'essayer de masquer seulement l'AndroidView de la carte ici.
 
         // Phone-entry dialog: shown when Cree_et_envoi_whatsapp_pdf is tapped for a client
         // whose phone number is missing. After the user enters a number the phone is saved

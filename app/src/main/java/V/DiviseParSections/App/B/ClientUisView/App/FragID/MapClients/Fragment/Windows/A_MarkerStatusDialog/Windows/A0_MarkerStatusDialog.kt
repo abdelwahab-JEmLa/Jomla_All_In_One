@@ -84,6 +84,12 @@ private fun CustomStatusDropdownMenu(
     onDismissRequest: () -> Unit,
     relative_M2Client: M2Client?,
 ) {
+    // Ce dropdown fait partie de MarkerStatusDialog : depuis que
+    // DirectClientsListDialog (A_MapClients_A2FragID_1.kt) rend aussi
+    // MarkerStatusDialog quand lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources
+    // est actif, un clic sur une ligne de But1_Floating_ClientsListDialog en
+    // mode Standart affiche bien ce dialogue (et donc ce dropdown de statut)
+    // par-dessus la liste, sans necessiter la carte.
     val currentApp_ItsWorkChezGrossisst= focusedValuesGetter.currentApp_ItsWorkChezGrossisst
     var activeItem by remember(expanded) { mutableStateOf(ActiveDropdownItem.None) }
     DropdownMenu(
@@ -135,6 +141,7 @@ private fun CustomStatusDropdownMenu(
                             )
                     }
 
+
                     val updatedBonVent = new_M17MessageVocale?.let {
                         relative_M8BonVent
                             .copy(
@@ -143,6 +150,7 @@ private fun CustomStatusDropdownMenu(
                                 parent_M17Message_DebugInfos = new_M17MessageVocale.getDebugInfos(),
                             )
                     }
+
 
                     aCentralFacade.repositorysMainSetter.update_M8BonVent(updatedBonVent)
 

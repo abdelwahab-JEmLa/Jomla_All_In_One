@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SettingsBackupRestore
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
@@ -370,6 +371,7 @@ fun But1_Floating_ClientsListDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(30.dp)
+
                     ,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -377,7 +379,7 @@ fun But1_Floating_ClientsListDialog(
 
 
                     item {
-                        Box {
+                        Box {  //<--
                             TextButton(onClick = { modeMenuExpanded = true }) {
                                 Box(
                                     modifier = Modifier
@@ -390,8 +392,6 @@ fun But1_Floating_ClientsListDialog(
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                             }
-                                       //<--
-                                       //TODO(1): ajout un button qui togle m9.lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources
                             DropdownMenu(
                                 expanded = modeMenuExpanded,
                                 onDismissRequest = { modeMenuExpanded = false },
@@ -545,6 +545,48 @@ fun But1_Floating_ClientsListDialog(
                                     )
                                 }
                             }
+                        }
+                    }
+                    item {
+                        // Bouton qui bascule M09AppCompt.lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources
+                        // pour ce compte : une fois actif, A_MapClients_A2FragID_1 ouvre ce
+                        // dialogue directement au prochain lancement du fragment sans jamais
+                        // composer MapContent (pas de tuiles OSM à charger, pas de GPS
+                        // tracking) — voir le nouveau DirectClientsListDialog dans ce dernier.
+                        val skipMapForResources =
+                            compt?.lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources == true
+                        IconButton(
+                            onClick = {
+                                compt?.let {
+                                    viewModel.update_active_Compt(
+                                        it.copy(
+                                            lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources =
+                                                !it.lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources
+                                        )
+                                    )
+                                }
+                                // Le flag vient de changer : on referme ce dialogue pour que
+                                // l'écran sous-jacent se recompose avec le nouveau mode
+                                // (carte normale si on vient de désactiver l'économie de
+                                // ressources, ou écran neutre + DirectClientsListDialog si on
+                                // vient de l'activer) plutôt que de rester affiché par-dessus
+                                // un état qui ne correspond plus au flag.
+                                onDismiss()
+                            },
+                            modifier = Modifier.size(24.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Speed,
+                                contentDescription = if (skipMapForResources)
+                                    "Mode économie de ressources actif : liste directe sans charger la carte"
+                                else
+                                    "Mode économie de ressources inactif : la carte se charge normalement",
+                                tint = if (skipMapForResources)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp),
+                            )
                         }
                     }
                     item {

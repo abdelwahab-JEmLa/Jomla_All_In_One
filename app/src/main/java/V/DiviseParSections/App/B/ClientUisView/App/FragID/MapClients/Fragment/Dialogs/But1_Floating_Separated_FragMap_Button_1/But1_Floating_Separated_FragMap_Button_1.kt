@@ -141,6 +141,10 @@ fun But1_OnClickMode(
                 }
 
                 Box {
+                    // Fixed: quand lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources
+                    // est actif, DirectClientsListDialog (A_MapClients_A2FragID_1.kt) rend
+                    // maintenant aussi MarkerStatusDialog par-dessus But1_Floating_ClientsListDialog,
+                    // donc le clic sur une ligne client y ouvre bien le dialogue d'edition.
                     FloatingActionButton(
                         modifier = Modifier
                             .getSemanticsTag(updatedButtonState, "buttonState")
