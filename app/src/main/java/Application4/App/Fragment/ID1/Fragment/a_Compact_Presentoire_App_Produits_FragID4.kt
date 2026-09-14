@@ -137,7 +137,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
     var tariffs by remember { mutableStateOf<List<M13TarificationInfos>?>(null) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {           //<--
         val (m9, bonVent) = withContext(Dispatchers.IO) {
             val m9Result = viewModelNewProtoPatterns.appDatabase
                 .dao_M9AppCompt()
@@ -166,11 +166,15 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
             val currentTariffs = tariffs.orEmpty()
             val newOperations = depotList.map { couleur ->
+                // "super gros" (its_gro_app = true), pas un prix d'achat. Utiliser
+                // Tariff_Achat_Depuit_Grossisst (its_gro_app = false), le vrai type
+                // "prix d'achat" pour l'app non-grossiste — sinon achatTariff ne
+                // matchait quasiment jamais et retombait silencieusement à 0.0.
                 val achatTariff = currentTariffs
                     .sortedBy { it.creationTimestamps }
                     .lastOrNull {
                         it.parent_M1Produit_KeyId == couleur.parentBProduitInfosKeyID &&
-                                it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+                                it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst
                     }
                 val newTariff = M13TarificationInfos.get_default().copy(
                     typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
@@ -271,6 +275,12 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
             FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                 onClick_Lence_Ventes_Depot = {
+                    // Relatif au bouton "Vents Dépôt (Super Gros)" de
+                    // PressistatntMainActivityButtons_Sec8FWinID1 (TODO(1)) : ce
+                    // bouton-ci ne doit QUE créer les ventes de dépôt à partir de
+                    // vents_de_count — celui-ci est déjà construit plus haut avec le
+                    // vrai prix d'achat (achatTariff / Tariff_Achat_Depuit_Grossisst),
+                    // pas le prix de vente, donc pas d'action supplémentaire ici.
                     viewModelNewProtoPatterns.addNew_listM10OperationVentCouleur(vents_de_count)
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 },

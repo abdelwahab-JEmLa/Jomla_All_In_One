@@ -2,6 +2,7 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 
 import Application4.App.Modules.Wi.Module.Wifi_Messages_Types_NewProto
 import EntreApps.Shared.Models.Home.ActiveCentralValues
+import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.Z.ClientSearchItem.View.ID4ClientSearchButton
@@ -50,6 +51,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -376,12 +378,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 showAlertDialog = true
                             }
                         } else {
-//                        if (travailleChezGrossisst3Ali == false && !cLenceDepuitFragmentsSepecialicteDeVents || false) {
-//                            Enhanced_Affiche_MotivationAu_Vendeur_De_Plus_De_Benifices(
-//                                aCentralFacade = aCentralFacade,
-//                                focusedValuesGetter = focusedValuesGetter
-//                            )
-//                        }
                         }
                     }
 
@@ -395,7 +391,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 //                    }
 
                     if ((!itsFragmentProduitFastSearchDialog
-                        && nonActived_activeFocuce_TariffPrixDifineur_M1ProduitKeyID) &&  focused_M1ProduitInfos_Pour_PrixDifineur_is_null
+                                && nonActived_activeFocuce_TariffPrixDifineur_M1ProduitKeyID) &&  focused_M1ProduitInfos_Pour_PrixDifineur_is_null
                     ) {
                         Button_ID2_Menagerie_Telegram(
                             showLabels = showLabels,
@@ -445,6 +441,74 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     }
 
 
+                    Box {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            FloatingActionButton(
+                                modifier = Modifier.size(40.dp),
+                                onClick = {
+                                    val bonVentCible = focusedValuesGetter.activeOnVent_M8BonVent
+                                        ?: return@FloatingActionButton
+
+                                    val couleursAuDepot = focusedValuesGetter.repo3CouleurProduitInfos
+                                        .datasValue
+                                        .filter { it.count_Don_Depot > 0 }
+
+                                    couleursAuDepot.forEach { couleur ->
+                                        val superGrosTariff = list_M13TarificationInfos
+                                            .filter {
+                                                it.parent_M1Produit_KeyId == couleur.parentBProduitInfosKeyID &&
+                                                        it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                                                        it.prixCurrency != 0.0
+                                            }
+                                            .maxByOrNull { it.creationTimestamps }
+
+                                        val newOperation = M10OperationVentCouleur.get_Default().copy(
+                                            creationTimestamps = System.currentTimeMillis(),
+                                            quantity = couleur.count_Don_Depot,
+                                            prix_de_Vent_entre_directement_NewProto = superGrosTariff?.prixCurrency
+                                                ?: 0.0,
+                                            parentM13TarificationKeyID = superGrosTariff?.keyID
+                                                ?: "Tariff_ItsWorkInGrossist_SuperGros Non Trouve",
+                                            parentM13TarificationDebugInfos = superGrosTariff?.getDebugInfos()
+                                                ?: "prix SuperGros introuvable pour ${couleur.parentId1ProduitInfosDebugName}",
+                                            parent_M1Produit_KeyId = couleur.parentBProduitInfosKeyID,
+                                            parent_M1Produit_DebugInfos = "par.produit ${couleur.parentId1ProduitInfosDebugName}",
+                                            parent_M3CouleurProduit_KeyID = couleur.keyID,
+                                            parent_M3CouleurProduit_DebugInfos = couleur.get_DebugsInfos(),
+                                            parent_M8BonVent_KeyId = bonVentCible.keyID,
+                                            parent_M8BonVent_DebugInfos = bonVentCible.get_DebugInfos(),
+                                            parent_M2Client_KeyID = bonVentCible.parent_M2Client_KeyID,
+                                            typeTarificationEnumT2 = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                                        )
+                                        focusedValuesGetter.ajoute_New_M10OperationVentCouleur(newOperation)
+                                    }
+                                },
+                                containerColor = MaterialTheme.colorScheme.tertiary
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ShoppingCart,
+                                    contentDescription = "Créer les ventes de dépôt (prix super gros)",
+                                    tint = Color.White
+                                )
+                            }
+                            if (showLabels) {
+                                Text(
+                                    text = "Vents Dépôt (Super Gros)",
+                                    modifier = Modifier
+                                        .background(
+                                            MaterialTheme.colorScheme.tertiary,
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+                    }
 
                     if (focusedValuesGetter.activeOnVent_M8BonVent != null) {
                         PdfBonVentFAB(

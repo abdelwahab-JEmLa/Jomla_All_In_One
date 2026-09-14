@@ -3,14 +3,14 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.
 
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
+import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos.TypeChoisi
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
+import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
-import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
-import EntreApps.Shared.Models.Relative_Produits.Models.M3CouleurProduitInfos
-import EntreApps.Shared.Models.Relative_Vents.Models.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -35,6 +35,7 @@ import kotlinx.coroutines.Job
 class FocusedValuesGetter(
     repo2Client: Repo2Client,
     repoM1ProduitInfos: RepoM1Produit,
+
     val repo3CouleurProduitInfos: Repo03CouleurProduitInfos,
     repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,

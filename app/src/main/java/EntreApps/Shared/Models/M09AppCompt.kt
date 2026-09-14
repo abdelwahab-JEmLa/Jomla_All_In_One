@@ -147,13 +147,13 @@ data class M09AppCompt(
      * comme les autres, même en mode "Nom seul".
      */
     var titre_masque_bulle_clients_new: Boolean = true,
-    var lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources: Boolean = true,
-
     var KeyByParent: String = "",
-    var vid: Long = 1,
 
+    var vid: Long = 1,
     var limite_couleurs_ou_leur_last_achate_est_moin_que_jour: Int = 1000,
+
     var proximite_de_vision_meter: Int = 800,
+    var lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources: Boolean = true,
 ) {
     fun get_DebugInfos(): String = buildString {
         append("(M9=")
@@ -186,6 +186,7 @@ data class M09AppCompt(
         "mode_edite_dispo" to mode_edite_dispo,
         "credit_fait" to credit_fait,
         "nom" to nom,
+
         "nom_contains_a_evite_de_delete_leur_oeprations" to nom_contains_a_evite_de_delete_leur_oeprations,
         "autres_Noms_SepareParComma" to autres_Noms_SepareParComma,
         "deviceModelNom" to deviceModelNom,
