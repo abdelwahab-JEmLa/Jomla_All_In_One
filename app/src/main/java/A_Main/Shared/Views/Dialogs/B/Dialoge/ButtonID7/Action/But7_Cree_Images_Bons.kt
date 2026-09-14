@@ -69,11 +69,19 @@ fun But7_Cree_Images_Bons(
     val activeVents = on_vent_couleurs
         .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve && it.quantity > 0 }
 
-    // Compute the live total value of the current bon so we can detect price-change staleness.
+    // Fix (ex TODO 1): les ventes créées depuis le dépôt (voir
+    // A_Compact_Presentoire_App_Produits_FragID4) portent un
+    // parentM13TarificationKeyID placeholder ("Prix_Progressive_Editable Non
+    // Saved") qui ne correspond à aucun M13TarificationInfos persisté. Sans
+    // repli, ces ventes comptaient pour 0.0 ici — on utilise donc le prix
+    // porté directement par la vente (prix_de_Vent_entre_directement_NewProto)
+    // quand aucun tarif persisté n'est trouvé.
     val activeTotal = remember(activeVents) {
         activeVents.sumOf { vent ->
-            val tariff = relative_list_tariff.find { it.keyID == vent.parentM13TarificationKeyID }
-            (tariff?.prixCurrency ?: 0.0) * vent.quantity
+            val tarifPrix = relative_list_tariff.find { it.keyID == vent.parentM13TarificationKeyID }
+                ?.prixCurrency
+                ?: vent.prix_de_Vent_entre_directement_NewProto
+            tarifPrix * vent.quantity
         }
     }
 
@@ -137,7 +145,7 @@ fun But7_Cree_Images_Bons(
                     set(
                         value = relativeListM13vent
                             .filter { it.parent_M1Produit_DebugInfos.contains("Lino")
-                        },
+                            },
                         key = SemanticsPropertyKey("filter")
                     )
                     set(
@@ -152,7 +160,8 @@ fun But7_Cree_Images_Bons(
                 isGenerating = true
                 scope.launch {
                     try {
-                        initiateBackgroundPdfCreation_ProMai(
+
+                        initiateBackgroundPdfCreation_ProMai(     //<--
                             datas= datas,
                             A_PrintReceiptHandler_ProMai=printInPdf_itextpdf_Handler,
                             context = context,

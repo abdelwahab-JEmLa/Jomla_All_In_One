@@ -33,6 +33,7 @@ class C_PdfPrintHandler(
      */
     suspend fun generateAndOpenPdf(
         context: Context,
+
         client: M2Client?,
         operations: List<M10OperationVentCouleur>,
         repo13TarificationInfos: List<M13TarificationInfos>,

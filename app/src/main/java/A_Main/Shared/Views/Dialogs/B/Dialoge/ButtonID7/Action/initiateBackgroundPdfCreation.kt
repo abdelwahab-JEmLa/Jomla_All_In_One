@@ -49,6 +49,7 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
     A_PrintReceiptHandler_ProMai: A_PrintReceiptHandler_ProMai,
 ) {
 
+
     when {
         on_vent_client == null -> {
             withContext(Dispatchers.Main) {
@@ -119,9 +120,14 @@ suspend fun initiateBackgroundPdfCreation_ProMai(
 
                 // Always persist the updated bon so isPdfUpToDate can turn green,
                 // regardless of whether the caller also wants the path via onPdfSaved.
+                // Fix (ex TODO 1, cf. But7_Cree_Images_Bons): repli sur le prix
+                // porté directement par la vente si aucun M13TarificationInfos
+                // persisté ne correspond au keyID (cas des ventes de dépôt).
                 val activeTotal = relative_List_M13Vent.sumOf { vent ->
-                    (list_M13TarificationInfos.find { it.keyID == vent.parentM13TarificationKeyID }
-                        ?.prixCurrency ?: 0.0) * vent.quantity
+                    val tarifPrix = list_M13TarificationInfos.find { it.keyID == vent.parentM13TarificationKeyID }
+                        ?.prixCurrency
+                        ?: vent.prix_de_Vent_entre_directement_NewProto
+                    tarifPrix * vent.quantity
                 }
                 on_update_m8_bon(
                     on_vent_bon.copy(

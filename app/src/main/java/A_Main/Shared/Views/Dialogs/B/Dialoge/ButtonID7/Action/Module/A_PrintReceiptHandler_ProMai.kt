@@ -18,6 +18,7 @@ class A_PrintReceiptHandler_ProMai(
     ) {
     private val CPdfPrintHandler = C_PdfPrintHandler(b_Generateur_ProMai)
 
+
     /**
      * Generate PDF only - Returns Result for proper error handling
      * FIXED: Now checks demande_Versemet_si_Type_est_regle

@@ -303,6 +303,7 @@ fun Button_8_Imgs_Send_whatsappBuisness_Stored_Bon_App4(
             )
         }
 
+
         if (showLabels) {
             val phone = client?.getActiveWorkerPhoneNumber()?.trim() ?: ""
             val labelText = when {

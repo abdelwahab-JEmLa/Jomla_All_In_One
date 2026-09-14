@@ -129,13 +129,17 @@ class PdfTableBuilder_Mai(
 
             val produit = produitRepo.find { it.keyID == produitId }
             val qty = ops.sumOf { it.quantity }
-            // If no tariff is found, check whether any op in the group has a
-            // directly-entered client price (Edited_Pour_Client) and use it as fallback.
+            // Fix (ex TODO 1 dans But7_Cree_Images_Bons): parentM13TarificationKeyID
+            // ne pointe pas toujours vers un M13TarificationInfos persisté — les
+            // ventes créées depuis le dépôt portent un keyID placeholder
+            // ("Prix_Progressive_Editable Non Saved"). Le repli précédent ne
+            // couvrait que Edited_Pour_Client et ratait donc ces ventes de dépôt,
+            // qui s'imprimaient sans prix (cellules vides). On utilise maintenant
+            // le prix porté directement par la vente dès que le tarif persisté
+            // est introuvable, quel que soit son type.
             val rawPrice = tarification?.prixCurrency
-                ?: ops.firstOrNull {
-                    it.typeTarificationEnumT2 ==
-                            M13TarificationInfos.TypeChoisi.Edited_Pour_Client
-                }?.prix_de_Vent_entre_directement_NewProto
+                ?: ops.firstOrNull { it.prix_de_Vent_entre_directement_NewProto > 0.0 }
+                    ?.prix_de_Vent_entre_directement_NewProto
                 ?: 0.0
             val subtotal = rawPrice * qty
             val shouldDisplayPriceAndSubtotal = rawPrice > 0.0
