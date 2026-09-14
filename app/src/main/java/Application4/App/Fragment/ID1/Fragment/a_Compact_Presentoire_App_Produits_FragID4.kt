@@ -19,6 +19,8 @@ import EntreApps.Shared.Modules.Base.AppDatabase
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID5.Ancien_PresenterApp_FragID5.Fragment.a.ID1_Fe.Feature.Options.a.Main.FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import android.graphics.BitmapFactory
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -50,6 +52,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun A_Compact_Presentoire_App_Produits_App4(
     modifier: Modifier = Modifier,
@@ -154,7 +157,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
         val tariffs_dao = withContext(Dispatchers.IO) {
             appDatabase.dao_M13TarificationInfos().getAll()
         }
-        tariffs= tariffs_dao
+        tariffs = tariffs_dao
         val depotList = all.filter { it.count_Don_Depot > 0 }
         couleursAuDepot_by_dao = depotList
 
@@ -163,13 +166,18 @@ fun A_Compact_Presentoire_App_Produits_App4(
 
             val currentTariffs = tariffs.orEmpty()
             val newOperations = depotList.map { couleur ->
-                val newTariff =
-                    currentTariffs
-                        .sortedBy { it.creationTimestamps }
-                        .lastOrNull {
-                            it.parent_M1Produit_KeyId == couleur.parentBProduitInfosKeyID &&
-                                    it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
-                        } ?: M13TarificationInfos.get_default()
+                val achatTariff = currentTariffs
+                    .sortedBy { it.creationTimestamps }
+                    .lastOrNull {
+                        it.parent_M1Produit_KeyId == couleur.parentBProduitInfosKeyID &&
+                                it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+                    }
+                val newTariff = M13TarificationInfos.get_default().copy(
+                    typeChoisi = M13TarificationInfos.TypeChoisi.Prix_Progressive_Editable,
+                    prixCurrency = achatTariff?.prixCurrency ?: 0.0,
+                    parent_M1Produit_KeyId = couleur.parentBProduitInfosKeyID,
+                    parent_M1Produit_DebugInfos = "par.produit ${couleur.parentId1ProduitInfosDebugName}",
+                )
                 M10OperationVentCouleur.get_Default().copy(
                     creationTimestamps = System.currentTimeMillis(),
                     quantity = couleur.count_Don_Depot,
@@ -206,6 +214,13 @@ fun A_Compact_Presentoire_App_Produits_App4(
         Box(
             modifier = Modifier.semantics(mergeDescendants = true) {
                 set(value = currentBonVent_m9, key = SemanticsPropertyKey("currentBonVent_m9"))
+                set(value = tariffs, key = SemanticsPropertyKey("tariffs"))
+                set(value = tariffs?.lastOrNull() {
+                    it.parent_M1Produit_KeyId == "-Od3KgneO-CS5cATvGxI"
+                            && it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                            it.prixCurrency != 0.0
+                }, key = SemanticsPropertyKey("tariffs.find "))
+
                 set(
                     value = couleursAuDepot_by_dao,
                     key = SemanticsPropertyKey("couleursAuDepot_by_dao")
@@ -238,7 +253,7 @@ fun A_Compact_Presentoire_App_Produits_App4(
                 )
             } else {
                 Main_LazyColumnList_App4(
-                    active_Central_Values=active_Central_Values,
+                    active_Central_Values = active_Central_Values,
                     modifier = modifier,
                     uiState_NewProtoPatterns_viewModel = Pair(uiState, viewModelNewProtoPatterns),
                     onProductCategoryClick = { product ->

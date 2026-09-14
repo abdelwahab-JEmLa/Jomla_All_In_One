@@ -1,8 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import Application4.App.Modules.Wi.Module.WifiTransferDatas_ControllerApp
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_et_benifice
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
@@ -10,6 +12,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.View.Buttons.View.Button_StockOptions_SubtractFromDepot
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -72,7 +75,7 @@ fun AfficheurRegleOuvert(
                 .fillMaxWidth()
                 .padding(12.dp)
                 .testTag("test")
-        ) {
+        ) {   //<--
             val activeCompt = viewModel.getter.repo9AppCompt.currentAppCompt
 
             activeCompt?.let { activeCompt ->
@@ -140,6 +143,41 @@ fun AfficheurRegleOuvert(
                         relative_M8BonVent = it,
                         context = context,
                     )
+                }
+
+                // Recalcule sum_De_Totale_Vents du dernier bon "en commande"
+                // (relative_M8BonVent, ON_MODE_COMMEND_ACTUELLEMENT) a partir de
+                // ses operations de vente, puis persiste via update_M8BonVent.
+                relative_M8BonVent?.let { lastCommandeBonVent ->
+                    TextButton(
+                        onClick = {
+                            val ventsForBon =
+                                repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter { vent ->
+                                    vent.parent_M8BonVent_KeyId == lastCommandeBonVent.keyID
+                                }
+
+                            val recalculatedSums = lastCommandeBonVent.sum_totale_et_benifice(
+                                vents = ventsForBon,
+                                tariffs = emptyList<M13TarificationInfos>()
+                            )
+
+                            aCentralFacade.repositorysMainSetter.update_M8BonVent(
+                                lastCommandeBonVent.copy(
+                                    sum_De_Totale_Vents = recalculatedSums.totale_vents,
+                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                )
+                            )
+
+                            Toast.makeText(
+                                context,
+                                "تم تحديث المجموع الكلي للفاتورة الحالية",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("إعادة حساب و تحديث المجموع الكلي")
+                    }
                 }
 
                 val lastCommande_Transaction =

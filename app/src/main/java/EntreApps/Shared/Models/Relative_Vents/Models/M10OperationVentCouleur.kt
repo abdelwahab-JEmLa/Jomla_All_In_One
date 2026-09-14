@@ -13,6 +13,7 @@ data class M10OperationVentCouleur(
     var creationTimestamps: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
+
     var its_created_in_working_for_wholesaler: Boolean = false,
 
 

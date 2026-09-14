@@ -230,7 +230,6 @@ fun PressistatntMainActivityButtons_App4(
                 }
             },
     ) {
-
         val listM13tarificationinfos = uiState.list_M13TarificationInfos
 
         val on_vent_couleurs =

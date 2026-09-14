@@ -50,7 +50,6 @@ data class M8BonVent(
     var vocaleKeyID: String = "",
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
-    var totale_saved: Double = 0.0,
     var vala_supp: Int = 0,
     var a_etai_imprime_au_moi_ne_foit: Boolean = false,
 
@@ -69,6 +68,7 @@ data class M8BonVent(
 
 
     var sum_De_Totale_Vents: Double = 0.0,
+
     var position_Don_Lis_Cible_Clients_au_VentPeriod: Int = 0,
     var cLeDataOuvertDuParentList: Boolean? = null,
     var cActive: Boolean = false,
@@ -108,7 +108,7 @@ data class M8BonVent(
             "vocaleKeyID" to vocaleKeyID,
             "sonVocaleEstEcoute" to sonVocaleEstEcoute,
             "sonEcoutementEstFaitAutimestamps" to sonEcoutementEstFaitAutimestamps,
-            "totale_saved" to totale_saved,
+            "totale_saved" to sum_De_Totale_Vents,
             "vala_supp" to vala_supp,
             "a_etai_imprime_au_moi_ne_foit" to a_etai_imprime_au_moi_ne_foit,
             "cUn_Versement_duBonVentKey" to cUn_Versement_duBonVentKey,
@@ -336,7 +336,7 @@ data class M8BonVent(
                     ?: false,
                 sonEcoutementEstFaitAutimestamps = map["sonEcoutementEstFaitAutimestamps"]?.toLongOrNull()
                     ?: 0L,
-                totale_saved = map["totale_saved"]?.toDoubleOrNull() ?: 0.0,
+                sum_De_Totale_Vents = map["totale_saved"]?.toDoubleOrNull() ?: 0.0,
                 vala_supp = map["vala_supp"]?.toIntOrNull() ?: 0,
                 a_etai_imprime_au_moi_ne_foit = map["a_etai_imprime_au_moi_ne_foit"]?.equals(
                     "true",
@@ -392,7 +392,9 @@ data class M8BonVent(
             }
 
 
-        fun M8BonVent.sum_totale_et_benifice(
+        fun M8BonVent.sum_totale_et_benifice(    //<--
+        //TODO(2.C Relative Au Todo(1): 
+                //... de ca 
             vents: List<M10OperationVentCouleur>,
             tariffs: List<M13TarificationInfos>,
         ): Sums_Bons {
@@ -430,25 +432,6 @@ data class M8BonVent(
             tariffs: List<M13TarificationInfos>,
         ): Double = sum_totale_et_benifice(vents, tariffs).totale_vents
 
-        /**
-         * Total des commandes confirmées dont le montant va arriver : pour
-         * chaque client on prend son dernier bon (par creationTimestamps) et,
-         * seulement si ce dernier bon est dans l'état A_COMMANDE_CONFIRME, on
-         * calcule sa valeur réelle en sommant quantité x tarif sur ses lignes
-         * M10OperationVentCouleur.
-         *
-         * Les lignes M10OperationVentCouleur sont créées pendant que le bon
-         * est dans l'état ON_MODE_COMMEND_ACTUELLEMENT (c'est là que la
-         * commande est construite) : elles sont donc parentées à CE bon-là,
-         * pas au bon A_COMMANDE_CONFIRME qui vient ensuite simplement acter
-         * la confirmation. On cherche donc, pour chaque client, le dernier
-         * bon ON_MODE_COMMEND_ACTUELLEMENT antérieur (ou égal) au bon
-         * confirmé, et on calcule à partir de ses ventes.
-         *
-         * montant_principale_du_type n'est pas utilisable ici : ce champ
-         * n'est renseigné que pour les états crédit (voir
-         * fun_calculative_du_main_val, branche "else -> 0.0").
-         */
         fun calculateTotalCommandesConfirmees(
             clients: List<M2Client>,
             bons: List<M8BonVent>,

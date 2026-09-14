@@ -4,8 +4,10 @@ import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_Ne
 import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.M00CentralParametresOfAllApps
 import EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M14VentPeriode
 import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
+import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent.Companion.sum_totale_et_benifice
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.AddToStockDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.Dialogs.ChangeDispoDialog
@@ -47,6 +49,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
@@ -383,7 +386,40 @@ fun View_MainItem(
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
-                ) {
+                ) {//<--
+                    item {
+                        // Recalcule le sum_De_Totale_Vents de ce M8BonVent a partir de ses
+                        // operations de vente (relative_list_Vent) puis persiste la nouvelle
+                        // valeur via update_M8BonVent. Voir M8BonVent.sum_totale_et_benifice
+                        // (relatif a ce TODO).
+                        IconButton(
+                            onClick = {
+                                val recalculatedSums = relative_M8BonVent.sum_totale_et_benifice(
+                                    vents = relative_list_Vent,
+                                    tariffs = emptyList<M13TarificationInfos>()
+                                )
+
+                                repositorysMainSetter.update_M8BonVent(
+                                    relative_M8BonVent.copy(
+                                        sum_De_Totale_Vents = recalculatedSums.totale_vents,
+                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                    )
+                                )
+
+                                Toast.makeText(
+                                    context,
+                                    "تم تحديث المجموع الكلي للبون",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = "Update Bon Total",
+                                tint = Color.White
+                            )
+                        }
+                    }
                     item {
                         if (sumBonVents > 0.0) {
                             Card(

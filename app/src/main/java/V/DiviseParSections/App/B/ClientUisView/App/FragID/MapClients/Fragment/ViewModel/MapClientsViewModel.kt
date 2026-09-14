@@ -72,6 +72,7 @@ data class UiState(
 class MapClientsViewModel(
     private val context: Context,
 
+
     val aCentralFacade: ACentralFacade,
     val focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,

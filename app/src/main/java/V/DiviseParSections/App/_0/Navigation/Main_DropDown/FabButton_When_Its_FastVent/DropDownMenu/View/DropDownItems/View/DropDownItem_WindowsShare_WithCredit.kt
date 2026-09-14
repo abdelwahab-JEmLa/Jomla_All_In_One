@@ -83,7 +83,7 @@ fun DropDownItem_WindowsShare_WithCredit(
     val nouveauCredit = ancienCredit + totalBon - versement
 
     val updatedBonVent = activeOnVent_M8BonVent?.copy(
-        totale_saved = totalBon,
+        sum_De_Totale_Vents = totalBon,
         versement_fait = versement,
         ancien_credit = ancienCredit,
         new_credit_apre_tout_fait = nouveauCredit,

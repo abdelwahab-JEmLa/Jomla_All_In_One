@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 
 
+
+
 class A_ViewModel_NewProtoPatterns(
     private val context: Context,
     val appDatabase: AppDatabase,

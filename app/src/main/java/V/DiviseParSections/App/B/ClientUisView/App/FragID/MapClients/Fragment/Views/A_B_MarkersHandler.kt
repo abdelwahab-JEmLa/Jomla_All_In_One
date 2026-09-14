@@ -724,6 +724,7 @@ fun Marker.title(
     val derniereTrxPourAffichage = if (!afficheSeulementEtatsNotables) {
         last_M8Transaction
     } else {
+
         viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
             .filter { it.parent_M2Client_KeyID == m2Client.keyID && it.etateActuellementEst in etatsNotablesPourDerniereTrx }
             .maxByOrNull { it.creationTimestamps }
@@ -742,16 +743,6 @@ fun Marker.title(
         if (!afficheSecteur || m2Client.secteur.isBlank()) return ""
         return "\n${m2Client.secteur}"
     }
-
-    // Ligne "jour + distance en semaines" de la dernière transaction, ex.
-    // "الخميس.الفائت (14:32)". Ne renvoie rien s'il n'y a pas de dernière
-    // transaction (même garde que lastTrxInfosLine/secteurLine) — avant ce
-    // fix, en l'absence de transaction, la ligne affichait quand même un
-    // "." suivi de "(null)" littéral, ce qui donnait l'impression que rien
-    // ne s'affichait correctement, et faisait croire à tort que ce point
-    // venait du switch "Suffixe après le nom". getAbrgDistanceSemain()
-    // renvoie déjà le jour concaténé au suffixe de distance, donc on ne
-    // reconcatène plus dayName séparément (ça le dupliquait).
     fun distanceSemainLine(): String {
         val trx = derniereTrxPourAffichage ?: return ""
         val dateHandler = DatesHandler()

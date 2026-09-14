@@ -52,6 +52,7 @@ fun EntreParEcriture_Tariff(
         .active_Datas
         .listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
 ) {
+
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     var textValue by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }

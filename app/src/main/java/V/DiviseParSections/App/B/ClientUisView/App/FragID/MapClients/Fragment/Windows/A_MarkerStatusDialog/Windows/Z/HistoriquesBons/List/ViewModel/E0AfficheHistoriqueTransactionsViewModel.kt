@@ -29,6 +29,7 @@ data class SecID5FragID2UiState(
 )
 
 
+
 @SuppressLint("StaticFieldLeak")
 class E0AfficheHistoriqueTransactionsViewModel(
     private val context: Context,
