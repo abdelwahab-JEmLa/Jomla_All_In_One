@@ -48,10 +48,15 @@ fun EntreParEcriture_Tariff(
     on_update_M13TarificationInfos_par_ecriture: (M13TarificationInfos) -> Unit = {},
     compactMode: Boolean = false,
     isSelected: Boolean = false,
+    tariff_achat_prix: Double = 0.0,
     listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state: List<M10OperationVentCouleur>? = uiState_NewProtoPatterns_viewModel.second
         .active_Datas
         .listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state,
-) {
+) {           //<--
+    // Fix (ex TODO 2.C, relatif au TODO 1): tariff_achat_prix n'était pas
+    // transmis jusqu'ici, donc le bénéfice par rapport au prix d'achat ne
+    // pouvait pas s'afficher sur cette carte de saisie manuelle, contrairement
+    // aux autres cartes de tarif (TariffItemSelector). Voir beneficeAchat plus bas.
 
     val viewModel = uiState_NewProtoPatterns_viewModel.second
     var textValue by remember { mutableStateOf("") }
@@ -115,6 +120,13 @@ fun EntreParEcriture_Tariff(
             }
         }
     }
+    val beneficeAchat by remember(displayPrice, tariff_achat_prix) {
+        derivedStateOf {
+            displayPrice?.let { prix ->
+                if (tariff_achat_prix > 0) prix - tariff_achat_prix else null
+            }
+        }
+    }
 
     val showInfoOnTop = isFocused && displayPrice != null
 
@@ -130,6 +142,16 @@ fun EntreParEcriture_Tariff(
         verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
         if (showInfoOnTop) {
+            val benefAchat = beneficeAchat
+            if (benefAchat != null) {
+                Text(
+                    text = "bén achat: ${formatPrice(benefAchat)} DA",
+                    color = if (benefAchat >= 0) Color.Black.copy(alpha = 0.75f) else Color.Red.copy(alpha = 0.85f),
+                    fontSize = secondaryFontSize,
+                    lineHeight = secondaryFontSize,
+                    textAlign = TextAlign.Center,
+                )
+            }
             val benef = beneficeClient
             if (benef != null) {
                 Text(
@@ -228,11 +250,21 @@ fun EntreParEcriture_Tariff(
 
         val pu = prixUnitaire
         val benef = beneficeClient
+        val benefAchat = beneficeAchat
         if (!showInfoOnTop) {
             if (pu != null) {
                 Text(
                     text = "(${formatPriceWithDecimals(pu)}/u)",
                     color = Color.Black.copy(alpha = 0.8f),
+                    fontSize = secondaryFontSize,
+                    lineHeight = secondaryFontSize,
+                    textAlign = TextAlign.Center,
+                )
+            }
+            if (benefAchat != null) {
+                Text(
+                    text = "bén achat: ${formatPrice(benefAchat)} DA",
+                    color = if (benefAchat >= 0) Color.Black.copy(alpha = 0.75f) else Color.Red.copy(alpha = 0.85f),
                     fontSize = secondaryFontSize,
                     lineHeight = secondaryFontSize,
                     textAlign = TextAlign.Center,

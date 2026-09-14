@@ -91,14 +91,19 @@ fun Pricipale_Tariffs_Vendeurs_FragID3(
         }
     }
 
-    val tariff_achat_prix by remember {
+    // Fix (ex TODO 1, cf. A_Compact_Presentoire_App_Produits_FragID4): le prix
+    // "achat" doit venir de Tariff_Achat_Depuit_Grossisst (its_gro_app = false,
+    // cohérent avec isGrossistMode = false ci-dessus), pas de
+    // Tariff_ItsWorkInGrossist_SuperGros qui est un palier de prix de VENTE.
+    val tariff_achat_prix by remember(tariffsList) {
         derivedStateOf {
             tariffsList
-                .lastOrNull { it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros }
+                .lastOrNull { it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst }
                 ?.prixCurrency
                 ?: 0.0
         }
     }
+
 
     Tariffs_MainList(
         modifier = modifier,
