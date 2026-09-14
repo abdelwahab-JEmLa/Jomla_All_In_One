@@ -310,22 +310,22 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                         }
                     }
 
-                    if ((!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) || au_depot > 0) {
-                        if (au_depot > 0 || affichable_mem_si_zero_depot) {
-                            add {
-                                Card(
-                                    modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
-                                    shape = RoundedCornerShape(20.dp),
-                                    colors = CardDefaults.cardColors(containerColor = Color.Red)
+                    // Le compteur de dépôt reste affichable même si le "start" (start_count)
+                    // ou le lien (c_unite_couleur_de_couleurKey) est actif pour cette couleur.
+                    if (au_depot > 0 || affichable_mem_si_zero_depot) {
+                        add {
+                            Card(
+                                modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.Red)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
                                 ) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                                    ) {
-                                        Icon(imageVector = Icons.Default.Warehouse, contentDescription = "Dépôt", tint = Color.Black, modifier = Modifier.size((iconSize.value * 0.7f).dp))
-                                        Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
-                                    }
+                                    Icon(imageVector = Icons.Default.Warehouse, contentDescription = "Dépôt", tint = Color.Black, modifier = Modifier.size((iconSize.value * 0.7f).dp))
+                                    Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
                                 }
                             }
                         }
@@ -379,6 +379,8 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                         add {
                             MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
                         }
+                    }
+                    if (((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) || mode_c_unite_actif) && is_admin) {
                         add {
                             Card(
                                 modifier = Modifier.clickable {

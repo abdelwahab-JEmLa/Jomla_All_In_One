@@ -52,6 +52,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -112,6 +113,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     var showAlertDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
     var showPanieDropdown by remember { mutableStateOf(false) }
+    var showVentsDepotSuperGrosConfirmDialog by remember { mutableStateOf(false) }
 
     var offsetX by remember {
         mutableFloatStateOf(focusedValuesGetter.active_Central_Values.startIntOffset_PresistantFABs.x.toFloat())
@@ -449,42 +451,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             FloatingActionButton(
                                 modifier = Modifier.size(40.dp),
                                 onClick = {
-                                    val bonVentCible = focusedValuesGetter.activeOnVent_M8BonVent
-                                        ?: return@FloatingActionButton
-
-                                    val couleursAuDepot = focusedValuesGetter.repo3CouleurProduitInfos
-                                        .datasValue
-                                        .filter { it.count_Don_Depot > 0 }
-
-                                    couleursAuDepot.forEach { couleur ->
-                                        val superGrosTariff = list_M13TarificationInfos
-                                            .filter {
-                                                it.parent_M1Produit_KeyId == couleur.parentBProduitInfosKeyID &&
-                                                        it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
-                                                        it.prixCurrency != 0.0
-                                            }
-                                            .maxByOrNull { it.creationTimestamps }
-
-                                        val newOperation = M10OperationVentCouleur.get_Default().copy(
-                                            creationTimestamps = System.currentTimeMillis(),
-                                            quantity = couleur.count_Don_Depot,
-                                            prix_de_Vent_entre_directement_NewProto = superGrosTariff?.prixCurrency
-                                                ?: 0.0,
-                                            parentM13TarificationKeyID = superGrosTariff?.keyID
-                                                ?: "Tariff_ItsWorkInGrossist_SuperGros Non Trouve",
-                                            parentM13TarificationDebugInfos = superGrosTariff?.getDebugInfos()
-                                                ?: "prix SuperGros introuvable pour ${couleur.parentId1ProduitInfosDebugName}",
-                                            parent_M1Produit_KeyId = couleur.parentBProduitInfosKeyID,
-                                            parent_M1Produit_DebugInfos = "par.produit ${couleur.parentId1ProduitInfosDebugName}",
-                                            parent_M3CouleurProduit_KeyID = couleur.keyID,
-                                            parent_M3CouleurProduit_DebugInfos = couleur.get_DebugsInfos(),
-                                            parent_M8BonVent_KeyId = bonVentCible.keyID,
-                                            parent_M8BonVent_DebugInfos = bonVentCible.get_DebugInfos(),
-                                            parent_M2Client_KeyID = bonVentCible.parent_M2Client_KeyID,
-                                            typeTarificationEnumT2 = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
-                                        )
-                                        focusedValuesGetter.ajoute_New_M10OperationVentCouleur(newOperation)
-                                    }
+                                    showVentsDepotSuperGrosConfirmDialog = true
                                 },
                                 containerColor = MaterialTheme.colorScheme.tertiary
                             ) {
@@ -508,6 +475,75 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 )
                             }
                         }
+                    }
+
+                    if (showVentsDepotSuperGrosConfirmDialog) {
+                        val couleursAuDepotPreview = focusedValuesGetter.repo3CouleurProduitInfos
+                            .datasValue
+                            .filter { it.count_Don_Depot > 0 }
+
+                        AlertDialog(
+                            onDismissRequest = { showVentsDepotSuperGrosConfirmDialog = false },
+                            title = { Text(text = "Confirmer la création des ventes") },
+                            text = {
+                                Text(
+                                    text = "Créer ${couleursAuDepotPreview.size} vente(s) de dépôt au prix super gros pour le bon actif ? Cette action ne peut pas être annulée automatiquement."
+                                )
+                            },
+                            confirmButton = {
+                                androidx.compose.material3.TextButton(
+                                    onClick = {
+                                        val bonVentCible = focusedValuesGetter.activeOnVent_M8BonVent
+                                        if (bonVentCible != null) {
+                                            couleursAuDepotPreview.forEach { couleur ->
+                                                val superGrosTariff = list_M13TarificationInfos
+                                                    .filter {
+                                                        it.parent_M1Produit_KeyId == couleur.parentBProduitInfosKeyID &&
+                                                                it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
+                                                                it.prixCurrency != 0.0
+                                                    }
+                                                    .maxByOrNull { it.creationTimestamps }
+
+                                                val newOperation = M10OperationVentCouleur.get_Default().copy(
+                                                    creationTimestamps = System.currentTimeMillis(),
+                                                    quantity = couleur.count_Don_Depot,
+                                                    prix_de_Vent_entre_directement_NewProto = superGrosTariff?.prixCurrency
+                                                        ?: 0.0,
+                                                    parentM13TarificationKeyID = superGrosTariff?.keyID
+                                                        ?: "Tariff_ItsWorkInGrossist_SuperGros Non Trouve",
+                                                    parentM13TarificationDebugInfos = superGrosTariff?.getDebugInfos()
+                                                        ?: "prix SuperGros introuvable pour ${couleur.parentId1ProduitInfosDebugName}",
+                                                    parent_M1Produit_KeyId = couleur.parentBProduitInfosKeyID,
+                                                    parent_M1Produit_DebugInfos = "par.produit ${couleur.parentId1ProduitInfosDebugName}",
+                                                    parent_M3CouleurProduit_KeyID = couleur.keyID,
+                                                    parent_M3CouleurProduit_DebugInfos = couleur.get_DebugsInfos(),
+                                                    parent_M8BonVent_KeyId = bonVentCible.keyID,
+                                                    parent_M8BonVent_DebugInfos = bonVentCible.get_DebugInfos(),
+                                                    parent_M2Client_KeyID = bonVentCible.parent_M2Client_KeyID,
+                                                    typeTarificationEnumT2 = M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros,
+                                                )
+                                                focusedValuesGetter.ajoute_New_M10OperationVentCouleur(newOperation)
+                                            }
+                                            currentToast = ToastData(
+                                                message = "Ventes de dépôt créées",
+                                                type = ToastType.SUCCESS,
+                                                duration = 1500L
+                                            )
+                                        }
+                                        showVentsDepotSuperGrosConfirmDialog = false
+                                    }
+                                ) {
+                                    Text(text = "Confirmer")
+                                }
+                            },
+                            dismissButton = {
+                                androidx.compose.material3.TextButton(
+                                    onClick = { showVentsDepotSuperGrosConfirmDialog = false }
+                                ) {
+                                    Text(text = "Annuler")
+                                }
+                            }
+                        )
                     }
 
                     if (focusedValuesGetter.activeOnVent_M8BonVent != null) {
