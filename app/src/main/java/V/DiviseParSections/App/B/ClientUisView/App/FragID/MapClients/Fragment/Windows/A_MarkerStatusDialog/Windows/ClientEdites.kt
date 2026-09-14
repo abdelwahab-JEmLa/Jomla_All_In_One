@@ -23,6 +23,8 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Share
@@ -94,6 +96,34 @@ fun ClientEdites(
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete client",
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        }
+
+        // Toggle "non supprimable" Icon - marks/unmarks this client and its
+        // transactions as protected from deletion (its_non_deletable_client_et_trxs).
+        item {
+            val isNonDeletable = relative_Client?.its_non_deletable_client_et_trxs == true
+            Card(
+                modifier = Modifier
+                    .clickable {
+                        relative_Client?.let { client ->
+                            val updated = client.copy(
+                                its_non_deletable_client_et_trxs = !isNonDeletable
+                            )
+                            viewModel.updateData(updated)
+                        }
+                    }
+            ) {
+                Icon(
+                    imageVector = if (isNonDeletable) Icons.Default.Lock else Icons.Default.LockOpen,
+                    contentDescription = if (isNonDeletable) {
+                        "Client protégé contre la suppression (appuyer pour désactiver)"
+                    } else {
+                        "Protéger le client contre la suppression"
+                    },
+                    tint = if (isNonDeletable) Color(0xFFF44336) else Color.Gray,
                     modifier = Modifier.padding(8.dp)
                 )
             }

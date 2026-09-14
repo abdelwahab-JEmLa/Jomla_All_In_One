@@ -20,6 +20,7 @@ import org.mongodb.kbson.BsonObjectId
 
 @Entity
 data class M2Client(
+
     @PrimaryKey
     var keyID: String = generePushKey(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
