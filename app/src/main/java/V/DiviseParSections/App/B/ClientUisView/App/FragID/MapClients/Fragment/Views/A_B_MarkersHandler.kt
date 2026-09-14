@@ -12,11 +12,10 @@ import EntreApps.Shared.Models.Relative_Vents.Models.M8BonVent
 import EntreApps.Shared.Models.Title_Filter
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But_4_FloatingSearchFAB.Buttons.OnVentBon_LocalPdf.View.initiateBackgroundPdfCreation_NewP
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel .VisibleClientsNow
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel.VisibleClientsNow
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.get_Found_Or_Default_M8BonVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List.get_sum_Bon_Vents
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
@@ -714,15 +713,12 @@ fun Marker.title(
     viewModel: MapClientsViewModel,
     m2Client: M2Client,
 ) {
-    val relative_M8Transaction = viewModel.getLastTransaction(m2Client)
+    val last_M8Transaction = viewModel.getLastTransaction(m2Client)
 
-    val sumBonVents = relative_M8Transaction?.let { get_sum_Bon_Vents(viewModel.getter, it) }
-
-    val position = relative_M8Transaction?.position_Don_Lis_Cible_Clients_au_VentPeriod ?: 0
+    val position = last_M8Transaction?.position_Don_Lis_Cible_Clients_au_VentPeriod ?: 0
     val positionPrefix = if (position != 0) "[$position] " else ""
 
     val activeCompt = viewModel.active_Datas.active_M9Compt
-    val activeFilter = activeCompt?.title_Filter ?: Title_Filter.Rien
     val suffixeApresNom = if (activeCompt?.titre_affiche_suffixe_apres_nom == true) "." else ""
     val afficheLastTrxInfos = activeCompt?.titre_affiche_last_trx_infos == true
     val etatsNotablesPourDerniereTrx = setOf(
@@ -733,16 +729,13 @@ fun Marker.title(
     )
     val afficheSeulementEtatsNotables = activeCompt?.titre_affiche_last_trx_que_etats_notables == true
     val derniereTrxPourAffichage = if (!afficheSeulementEtatsNotables) {
-        relative_M8Transaction
-    } else if (relative_M8Transaction != null && relative_M8Transaction.etateActuellementEst in etatsNotablesPourDerniereTrx) {
-        relative_M8Transaction
+        last_M8Transaction
     } else {
         viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
             .filter { it.parent_M2Client_KeyID == m2Client.keyID && it.etateActuellementEst in etatsNotablesPourDerniereTrx }
             .maxByOrNull { it.creationTimestamps }
     }
     val afficheSecteur = activeCompt?.titre_affiche_secteur == true
-    val masqueClientsNew = activeCompt?.titre_masque_bulle_clients_new != false
     val afficheNom = activeCompt?.titre_affiche_nom != false
 
     fun lastTrxInfosLine(): String {
@@ -757,57 +750,33 @@ fun Marker.title(
         return "\n${m2Client.secteur}"
     }
 
+    val nom_client_up = uperrcase(m2Client.nom)
     val nomPourTitre = if (!afficheNom) {
         ""
     } else if (suffixeApresNom.isEmpty()) {
-        m2Client.nom.withoutDotSuffix()
+        nom_client_up.withoutDotSuffix()
     } else {
-        m2Client.nom
+        nom_client_up
     }
-
-    title = if (activeFilter == Title_Filter.Tout_Sauf_Nom_Si_Non_New) {
-        if (masqueClientsNew && isNewClientName(m2Client.nom)) {
-            ""
-        } else {
-            "${nomPourTitre.cleanClientNameFromPhone()}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
-        }
-    } else if (viewModel.afficheLesJoursAuNoms && position == 0) {
-        val dateHandler = DatesHandler()
-        val timeStr = derniereTrxPourAffichage?.creationTimestamps?.let {
-            dateHandler.getDateAndTimString(it).time
-        }
-        val dayName = derniereTrxPourAffichage?.creationTimestamps?.let {
-            dateHandler.getArabicDayNameFromTimestamp(it)
-        } ?: ""
-        val distanceSemain = derniereTrxPourAffichage?.creationTimestamps?.let {
-            dateHandler.getAbrgDistanceSemain(it)
-        } ?: ""
-
-        if (derniereTrxPourAffichage != null) {
-            val trxInfosSection = if (afficheLastTrxInfos) {
-                val text = " بالتقريب$sumBonVents"
-                val texy_Safe = text.takeIf { (sumBonVents ?: 0.0) > 0.0 } ?: ""
-                val demande_Versemet_si_Type = derniereTrxPourAffichage.demande_Versemet_si_Type
-                    .takeIf { derniereTrxPourAffichage.demande_Versemet_si_Type > 0.0 } ?: ""
-                "\n${derniereTrxPourAffichage.etateActuellementEst.nomArabe}$texy_Safe$demande_Versemet_si_Type"
-            } else {
-                ""
-            }
-
-            "$distanceSemain.$dayName (${timeStr})" +
-                    trxInfosSection +
-                    "\n${
-                        nomPourTitre.split(" ")
-                            .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
-                    }$suffixeApresNom" +
-                    secteurLine()
-        } else {
-            "${nomPourTitre}$suffixeApresNom${secteurLine()}"
-        }
-    } else {
-        "$positionPrefix${nomPourTitre}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
+    val dateHandler = DatesHandler()
+    val timeStr = derniereTrxPourAffichage?.creationTimestamps?.let {
+        dateHandler.getDateAndTimString(it).time
     }
+    val dayName = derniereTrxPourAffichage?.creationTimestamps?.let {
+        dateHandler.getArabicDayNameFromTimestamp(it)
+    } ?: ""
+    val distanceSemain = derniereTrxPourAffichage?.creationTimestamps?.let {
+        dateHandler.getAbrgDistanceSemain(it)
+    } ?: ""
+
+    title =
+        "$distanceSemain.$dayName (${timeStr})" +
+                derniereTrxPourAffichage?.etateActuellementEst?.nomArabe +
+                "$positionPrefix${nomPourTitre}$suffixeApresNom${lastTrxInfosLine()}${secteurLine()}"
 }
+
+private fun uperrcase(nomPourTitre: String): String = nomPourTitre.split(" ")
+    .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
 
 fun configureMarkerInfoWindow(
     marker: Marker,
