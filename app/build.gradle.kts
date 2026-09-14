@@ -35,7 +35,7 @@ android {
 
         val appSuffix =  ""
         // if (project.hasProperty("appSuffix")) project.property("appSuffix").toString() else ".c_JomLaElectroLivreurGrossist_PresenterScreen"
-        versionName = "1.15.2$appSuffix featre :map_changements"
+        versionName = "1.15.3$appSuffix fix: counts et map"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
