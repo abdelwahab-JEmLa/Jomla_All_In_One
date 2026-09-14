@@ -723,15 +723,8 @@ fun Marker.title(
 
     val activeCompt = viewModel.active_Datas.active_M9Compt
     val activeFilter = activeCompt?.title_Filter ?: Title_Filter.Rien
-    // "." après le nom quand titre_affiche_suffixe_apres_nom est actif — voir
-    // le dialogue "Options de titre" (But1_Floating_Separated_FragMap_Button_1).
     val suffixeApresNom = if (activeCompt?.titre_affiche_suffixe_apres_nom == true) "." else ""
-    // Infos de la dernière transaction sous le nom quand
-    // titre_affiche_last_trx_infos est actif — même dialogue.
     val afficheLastTrxInfos = activeCompt?.titre_affiche_last_trx_infos == true
-    // "Seulement états notables" : la dernière transaction (et son jour)
-    // ne compte que si son état est notable — voir dialogue "Options de
-    // titre" (But1_Floating_Separated_FragMap_Button_1).
     val etatsNotablesPourDerniereTrx = setOf(
         M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI,
         M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME,
@@ -739,23 +732,17 @@ fun Marker.title(
         M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO,
     )
     val afficheSeulementEtatsNotables = activeCompt?.titre_affiche_last_trx_que_etats_notables == true
-    val derniereTrxPourAffichage = relative_M8Transaction?.takeIf {
-        !afficheSeulementEtatsNotables || it.etateActuellementEst in etatsNotablesPourDerniereTrx
+    val derniereTrxPourAffichage = if (!afficheSeulementEtatsNotables) {
+        relative_M8Transaction
+    } else if (relative_M8Transaction != null && relative_M8Transaction.etateActuellementEst in etatsNotablesPourDerniereTrx) {
+        relative_M8Transaction
+    } else {
+        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+            .filter { it.parent_M2Client_KeyID == m2Client.keyID && it.etateActuellementEst in etatsNotablesPourDerniereTrx }
+            .maxByOrNull { it.creationTimestamps }
     }
-    // Secteur du client sous le nom quand titre_affiche_secteur est actif —
-    // même dialogue "Options de titre".
     val afficheSecteur = activeCompt?.titre_affiche_secteur == true
-    // Masque (mode "Nom seul" uniquement) le libellé des clients "new"/"ز" —
-    // voir le switch "Masquer les clients \"new\"" dans
-    // But1_Floating_Separated_FragMap_Button_1. Actif par défaut (comportement
-    // historique inchangé) ; désactivé, ces clients s'affichent normalement.
     val masqueClientsNew = activeCompt?.titre_masque_bulle_clients_new != false
-    // Switch indépendant "Nom du client" (nouveau, séparé du mode "Nom seul" /
-    // title_Filter ci-dessus) — voir But1_Floating_Separated_FragMap_Button_1,
-    // tout en haut de TitleOptionsDialog. Actif par défaut ; désactivé, le nom
-    // du client est retiré du titre du marqueur dans toutes les branches
-    // ci-dessous (Nom seul, jours-aux-noms, standard), sans affecter les
-    // autres infos (secteur, dernière transaction, etc.).
     val afficheNom = activeCompt?.titre_affiche_nom != false
 
     fun lastTrxInfosLine(): String {
@@ -770,17 +757,6 @@ fun Marker.title(
         return "\n${m2Client.secteur}"
     }
 
-    // Title_Filter.Tout_Sauf_Nom_Si_Non_New: affiche m2Client.nom au titre du
-    // marqueur (plus les lignes optionnelles ci-dessous) quand actif — voir le
-    // switch "Nom seul" de TitleOptionsDialog (But1_Floating_Separated_FragMap_
-    // Button_1.kt), qui démarre maintenant coché (true) par défaut puisque
-    // c'est le comportement de titre normal, pas un mode "tout sauf le nom".
-    //
-    // Quand le switch "Suffixe après le nom" est désactivé, on retire aussi le
-    // "." (et tout ce qui suit) du nom brut — même nettoyage que
-    // M2Client.extractClientNamePrefix / BluetoothPrintHandler.
-    // extractClientNamePrefix, pour éviter d'afficher "Ahmed.Boutique" en
-    // entier alors que le suffixe n'est pas censé apparaître.
     val nomPourTitre = if (!afficheNom) {
         ""
     } else if (suffixeApresNom.isEmpty()) {
@@ -803,10 +779,6 @@ fun Marker.title(
         val dayName = derniereTrxPourAffichage?.creationTimestamps?.let {
             dateHandler.getArabicDayNameFromTimestamp(it)
         } ?: ""
-        // distanceSemain doit être calculé sur le même timestamp filtré que
-        // dayName et timeStr (derniereTrxPourAffichage), sinon le jour et la
-        // distance ne correspondent pas à la même transaction quand le filtre
-        // "états notables" élimine la dernière transaction réelle.
         val distanceSemain = derniereTrxPourAffichage?.creationTimestamps?.let {
             dateHandler.getAbrgDistanceSemain(it)
         } ?: ""
@@ -898,6 +870,7 @@ fun restoreLocationOverlayAtBottom(mapView: MapView, locationOverlay: Any?) {
 /** Haversine distance in metres between two lat/lng points. */
 fun haversineMeters(
     lat1: Double, lng1: Double,
+
     lat2: Double, lng2: Double,
 ): Double {
     val r = 6_371_000.0
