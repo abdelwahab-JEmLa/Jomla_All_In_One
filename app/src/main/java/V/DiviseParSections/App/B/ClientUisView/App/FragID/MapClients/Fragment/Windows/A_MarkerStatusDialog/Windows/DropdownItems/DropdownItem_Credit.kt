@@ -55,7 +55,7 @@ fun DropdownItem_Credit(
         repo8BonVent.datasValue
             .filter {
                 it.parent_M2Client_KeyID == relative_M2Client.keyID &&
-                it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
+                        it.etateActuellementEst == M8BonVent.EtateActuellementEst.New_Situation_Credit
             }
             .maxByOrNull { it.creationTimestamps }
             ?.montant_principale_du_type?.toInt()
@@ -113,8 +113,34 @@ fun DropdownItem_Credit(
             moulahada = moulahadaText,
         )
 
+        // Lie cette situation au dernier bon "en commande" (ON_MODE_COMMEND_ACTUELLEMENT) :
+        // reprend son sum_De_Totale_Vents et reference sa keyID dans moulahada.
+        val lastOnCommandeBonVent = repo8BonVent.datasValue
+            .filter {
+                it.parent_M2Client_KeyID == relative_M2Client.keyID &&
+                        it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            }
+            .maxByOrNull { it.creationTimestamps }
+
+        val lastCommandeSumEntry = lastOnCommandeBonVent?.let { lastCommande ->
+            M8BonVent.get_default(
+                parent_M9AppCompt_KeyID = currentCompt.keyID,
+                parent_M9AppCompt_DebugInfos = currentCompt.get_DebugInfos(),
+                parent_M14VentPeriod_KeyId = currentPeriod.keyID,
+                parent_M14VentPeriod_DebugInfos = currentPeriod.get_DebugInfos(),
+                parent_M2Client_KeyID = relative_M2Client.keyID,
+                parent_M2Client_DebugInfos = relative_M2Client.get_DebugInfos(),
+                etateActuellementEst = M8BonVent.EtateActuellementEst.New_Situation_Credit,
+            ).copy(
+                creationTimestamps = baseTs + 2_000L,
+                montant_principale_du_type = lastCommande.sum_De_Totale_Vents,
+                moulahada = "Bon Vent de Key: ${lastCommande.keyID}",
+            )
+        }
+
         aCentralFacade.repositorysMainSetter.update_M8BonVent(creditBon)
         aCentralFacade.repositorysMainSetter.update_M8BonVent(newSituation)
+        lastCommandeSumEntry?.let { aCentralFacade.repositorysMainSetter.update_M8BonVent(it) }
         onDismiss()
     }
 

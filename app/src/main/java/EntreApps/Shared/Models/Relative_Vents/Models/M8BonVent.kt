@@ -362,7 +362,6 @@ data class M8BonVent(
                 credit_fait = map["credit_fait"]?.toDoubleOrNull() ?: 0.0,
                 montant_principale_du_type = map["montant_principale_du_type"]?.toDoubleOrNull()
                     ?: 0.0,
-                sum_De_Totale_Vents = map["sum_De_Totale_Vents"]?.toDoubleOrNull() ?: 0.0,
                 position_Don_Lis_Cible_Clients_au_VentPeriod = map["position_Don_Lis_Cible_Clients_au_VentPeriod"]?.toIntOrNull()
                     ?: 0,
                 cLeDataOuvertDuParentList = map["cLeDataOuvertDuParentList"]?.let {
@@ -392,9 +391,7 @@ data class M8BonVent(
             }
 
 
-        fun M8BonVent.sum_totale_et_benifice(    //<--
-        //TODO(2.C Relative Au Todo(1): 
-                //... de ca 
+        fun M8BonVent.sum_totale_et_benifice(
             vents: List<M10OperationVentCouleur>,
             tariffs: List<M13TarificationInfos>,
         ): Sums_Bons {

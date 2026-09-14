@@ -144,8 +144,7 @@ fun AfficheurRegleOuvert(
                         context = context,
                     )
                 }
-
-                // Recalcule sum_De_Totale_Vents du dernier bon "en commande"
+                       // Recalcule sum_De_Totale_Vents du dernier bon "en commande"
                 // (relative_M8BonVent, ON_MODE_COMMEND_ACTUELLEMENT) a partir de
                 // ses operations de vente, puis persiste via update_M8BonVent.
                 relative_M8BonVent?.let { lastCommandeBonVent ->
@@ -167,6 +166,7 @@ fun AfficheurRegleOuvert(
                                     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                 )
                             )
+
 
                             Toast.makeText(
                                 context,

@@ -89,8 +89,7 @@ private fun CustomStatusDropdownMenu(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
-    ) {//<--
-    //TODO(1): AJOUT ITEM A CLICK C COMME 
+    ) {
         @Composable
         fun StatusDropdownItem(
             status: M8BonVent.EtateActuellementEst,
@@ -383,6 +382,13 @@ fun MarkerStatusDialog(
                                 )
                             }
                         }
+                    }
+                    //<--
+                    item {
+                        ButtonRecalculeEtAjouteCreditDepuisCommande(
+                            aCentralFacade = aCentralFacade,
+                            relative_M2Client = relative_M2Client,
+                        )
                     }
 
                     item {
