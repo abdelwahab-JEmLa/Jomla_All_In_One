@@ -467,23 +467,27 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                 horizontalArrangement = Arrangement.spacedBy(spacingBetweenCards),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) {
-                    if (au_depot > 0 || affichable_mem_si_zero_depot) {
-                        Card(
-                            modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.Red)
+                // Dépôt toujours affichable, même si presentative ou lien actif pour la couleur.
+                if (au_depot > 0 || affichable_mem_si_zero_depot) {
+                    Card(
+                        modifier = Modifier.clickable(enabled = is_admin) { isEditDepotMode = true },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.Red)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
                         ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = horizontalPadding * 0.7f, vertical = verticalPadding * 0.7f),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
-                            }
+                            Text(text = au_depot.toString(), style = textStyle.copy(fontSize = textStyle.fontSize * 0.7f), fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                     }
+                }
 
+                // La quantité s'affiche normalement, ou quand même si start_count > 0
+                // même pour une couleur presentative/liée (sinon on tombe sur un vide total).
+                val showQuantityCard = (!its_couleur_ac_imgVid_presentative_de_tout_les_couleur && c_unite_couleur_de_couleurKey.isEmpty()) || start_count > 0
+                if (showQuantityCard) {
                     Card(
                         modifier = Modifier.clickable(enabled = isAvailable) {
                             when {
@@ -519,6 +523,13 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                }
+
+                // Le picker image/vidéo était absent de cette branche (mode compact /
+                // show_depot_card_on_top_in_flow_row = false, qui est la valeur par défaut) :
+                // c'est pour ça qu'il ne s'affichait jamais tant que ce flag n'était pas mis à true.
+                if ((affiche_buttons_lien_unite_couleur_au_couleut_parent || mode_selection_parent_couleur_key.isNotEmpty()) && is_admin) {
+                    MediaPickerBar(onPickImage = onPickImage, onPickVideo = onPickVideo, textStyle = textStyle)
                 }
             }
         }
