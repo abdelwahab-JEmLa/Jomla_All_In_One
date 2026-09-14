@@ -59,7 +59,7 @@ data class UiState(
     val error: String? = null,
     val m2Client_In_ShowEditMarkerMode: M2Client? = null,
     val proximityFilterCenter: GeoPoint? = null,
-    // Le rayon de proximité (proximite_de_vision_meter, 900m par défaut) ne
+    // Le rayon de proximité (proximite_de_vision_meter, 800m par défaut) ne
     // s'applique PAS quand currentFilterMode est un mode global (les 5 filtres
     // crédit, AFFICHE_CIBLE_POUR_VENDEUR, etc. — voir isGlobalModeFilter dans
     // A_B_MarkersHandler.getClientsCurrentlyVisibleOnMap) : l'affichage y est
@@ -110,7 +110,20 @@ class MapClientsViewModel(
     var mapReloadTrigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
     var scrollSpeedThresholdMps by mutableStateOf(1.0)
-    var proximite_de_vision_meter by mutableStateOf(900)
+    var proximite_de_vision_meter by mutableStateOf(M09AppCompt.get_Default().proximite_de_vision_meter)
+
+    /**
+     * Met à jour proximite_de_vision_meter localement et persiste la valeur
+     * dans le M09AppCompt actif, pour que le rayon de proximité survive au
+     * redémarrage de l'app / au changement de compte (suit m9.proximite_de_vision_meter).
+     */
+    fun update_proximite_de_vision_meter(value: Int) {
+        proximite_de_vision_meter = value
+        val compt = active_Datas.active_M9Compt ?: return
+        if (compt.proximite_de_vision_meter != value) {
+            update_active_Compt(compt.copy(proximite_de_vision_meter = value))
+        }
+    }
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
 
     fun update_uiState_m2Client_In_ShowEditMarkerMode(m2Client_In_ShowEditMarkerMode: M2Client? = null) {
@@ -154,6 +167,9 @@ class MapClientsViewModel(
                             active_Datas.filter_marqueClient_enum_entries = mode
                         }
                     }
+                    // Fait que la valeur locale suit m9.proximite_de_vision_meter
+                    // (chargement initial + changement de compte actif).
+                    compt?.let { proximite_de_vision_meter = it.proximite_de_vision_meter }
                 }
         }
     }
@@ -536,7 +552,7 @@ class MapClientsViewModel(
         val couleur: Color = Color.Companion.White,
         val its_limited_a900: Boolean = true,
 
-    ) {
+        ) {
         Filter_Leur_Last_TRX_Est_Credit(Icons.Default.Map, Color.Companion.Red, its_limited_a900 = false),
         Filter_Leur_Last_TRX_Est_Credit_Long_Term(Icons.Default.Map, Color(0xFFB71C1C), its_limited_a900 = false),
         Filter_Fournisseurs_Short_Term_Credit(Icons.Default.Store, Color(0xFFFF9800), its_limited_a900 = false),

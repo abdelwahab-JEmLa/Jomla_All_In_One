@@ -125,6 +125,7 @@ data class M09AppCompt(
     var titre_affiche_last_trx_infos: Boolean = false,
 
 
+
     var titre_affiche_last_trx_que_etats_notables: Boolean = false,
     /** Affiche la bulle d'info du marqueur (au-dessus du marqueur sur la carte). */
     var titre_affiche_buble: Boolean = true,
@@ -151,6 +152,7 @@ data class M09AppCompt(
     var vid: Long = 1,
 
     var limite_couleurs_ou_leur_last_achate_est_moin_que_jour: Int = 1000,
+    var proximite_de_vision_meter: Int = 800,
 ) {
     fun get_DebugInfos(): String = buildString {
         append("(M9=")
@@ -173,6 +175,7 @@ data class M09AppCompt(
         else emptyList()
 
     fun to_Map(): Map<String, Any?> = mapOf(
+        "proximite_de_vision_meter" to proximite_de_vision_meter,
         "keyID" to keyID,
         "creationTimestamp" to creationTimestamp,
         "dernierTimeTampsSynchronisationAvecFireBase" to dernierTimeTampsSynchronisationAvecFireBase,

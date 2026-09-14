@@ -684,12 +684,6 @@ private fun String.cleanClientNameFromPhone(): String {
         .trim('.', '-', ',', ' ', ':')
 }
 
-/**
- * Strips the "." suffix (and anything after it) from a client name, e.g.
- * "Ahmed.Boutique" -> "Ahmed". Mirrors [M2Client.Companion.extractClientNamePrefix]
- * / BluetoothPrintHandler.extractClientNamePrefix so the marker title uses the
- * same cleanup as the printed receipts.
- */
 private fun String.withoutDotSuffix(): String {
     return this.substringBefore(".", this).trim()
 }
@@ -708,7 +702,6 @@ private val newClientZaySuffixRegex = Regex("""ز\.\d+""")
 fun isNewClientName(nom: String): Boolean {
     return nom.contains("new", ignoreCase = true) || newClientZaySuffixRegex.containsMatchIn(nom)
 }
-
 fun Marker.title(
     viewModel: MapClientsViewModel,
     m2Client: M2Client,
@@ -750,6 +743,24 @@ fun Marker.title(
         return "\n${m2Client.secteur}"
     }
 
+    // Ligne "jour + distance en semaines" de la dernière transaction, ex.
+    // "الخميس.الفائت (14:32)". Ne renvoie rien s'il n'y a pas de dernière
+    // transaction (même garde que lastTrxInfosLine/secteurLine) — avant ce
+    // fix, en l'absence de transaction, la ligne affichait quand même un
+    // "." suivi de "(null)" littéral, ce qui donnait l'impression que rien
+    // ne s'affichait correctement, et faisait croire à tort que ce point
+    // venait du switch "Suffixe après le nom". getAbrgDistanceSemain()
+    // renvoie déjà le jour concaténé au suffixe de distance, donc on ne
+    // reconcatène plus dayName séparément (ça le dupliquait).
+    fun distanceSemainLine(): String {
+        val trx = derniereTrxPourAffichage ?: return ""
+        val dateHandler = DatesHandler()
+        val timeStr = dateHandler.getDateAndTimString(trx.creationTimestamps).time
+        val distanceSemain = dateHandler.getAbrgDistanceSemain(trx.creationTimestamps)
+        if (distanceSemain.isEmpty()) return ""
+        return "\n$distanceSemain ($timeStr)"
+    }
+
     val nom_client_up = uperrcase(m2Client.nom)
     val nomPourTitre = if (!afficheNom) {
         ""
@@ -758,21 +769,10 @@ fun Marker.title(
     } else {
         nom_client_up
     }
-    val dateHandler = DatesHandler()
-    val timeStr = derniereTrxPourAffichage?.creationTimestamps?.let {
-        dateHandler.getDateAndTimString(it).time
-    }
-    val dayName = derniereTrxPourAffichage?.creationTimestamps?.let {
-        dateHandler.getArabicDayNameFromTimestamp(it)
-    } ?: ""
-
-    val distanceSemain = derniereTrxPourAffichage?.creationTimestamps?.let {
-        dateHandler.getAbrgDistanceSemain(it)
-    } ?: ""
 
     title =
-        secteurLine()   +
-    "$distanceSemain.$dayName (${timeStr})" +
+        secteurLine() +
+                distanceSemainLine() +
                 positionPrefix +
                 nomPourTitre +
                 suffixeApresNom +

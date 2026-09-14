@@ -119,7 +119,7 @@ class DatesHandler {
         if (timestamp == null) return ""
 
         try {
-            // RepositorysMainGetter current date without time
+            // Get current date without time
             val currentCalendar = Calendar.getInstance()
             currentCalendar.set(Calendar.HOUR_OF_DAY, 0)
             currentCalendar.set(Calendar.MINUTE, 0)
@@ -134,7 +134,7 @@ class DatesHandler {
             }
             currentCalendar.add(Calendar.DAY_OF_MONTH, -daysToSubtract)
 
-            // RepositorysMainSetter given date calendar
+            // Set given date calendar
             val givenCalendar = Calendar.getInstance()
             givenCalendar.timeInMillis = timestamp
             givenCalendar.set(Calendar.HOUR_OF_DAY, 0)
@@ -148,16 +148,18 @@ class DatesHandler {
 
             // Calculate week difference
             val weeksDiff = daysDiff / 7
-            val avant = "الفائت"
+
+            if (weeksDiff < 0L) return "" // future dates: return empty string
+
+            // Arabic name of the day the given date falls on (e.g. الخميس, الاحد)
+            val dayName = getArabicDayNameFromTimestamp(timestamp)
+            if (dayName.isEmpty()) return ""
 
             return when {
-                weeksDiff == 0L -> "هذا"
-                weeksDiff == 1L -> avant
-                weeksDiff == 2L -> "ق.$avant"
-                weeksDiff == 3L -> "ق.3"
-                weeksDiff == 4L -> "ق.4"
-                weeksDiff > 4L -> "ق.+"
-                else -> "" // For current week or future dates, return empty string
+                weeksDiff == 0L -> "هذا.$dayName"                 // ex: هذا.الاحد
+                weeksDiff == 1L -> "$dayName.الفائت"               // ex: الخميس.الفائت
+                weeksDiff in 2..5 -> "$dayName ق.${weeksDiff - 1}" // ex: الخميس ق.1, ق.2, ق.3, ق.4
+                else -> "$dayName ق.+"
             }
         } catch (e: Exception) {
             return ""

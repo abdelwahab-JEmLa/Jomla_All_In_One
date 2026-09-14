@@ -553,7 +553,8 @@ private fun TitleOptionsDialog(
                                 color = Color.Gray,
                             )
                         }
-                        Switch(
+                        Switch(              //<--
+                        //TODO(1): pk quen je desacive cca 
                             checked = compt?.titre_affiche_suffixe_apres_nom == true,
                             onCheckedChange = { checked ->
                                 compt?.let {
@@ -769,6 +770,7 @@ fun But1_Floating_ClientsListButton(
                 }
                 .padding(16.dp)
         ) {
+
             FloatingActionButton(
                 modifier = Modifier.size(48.dp),
                 onClick = onClick,

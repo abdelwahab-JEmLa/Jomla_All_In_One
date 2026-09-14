@@ -189,7 +189,7 @@ private fun editer_proximite_de_vision_meter(viewModel: MapClientsViewModel) {
     fun applyValue() {
         val parsed = draftText.toIntOrNull()
         if (parsed != null && parsed > 0.0) {
-            viewModel.proximite_de_vision_meter = parsed
+            viewModel.update_proximite_de_vision_meter(parsed)
         } else {
             draftText = viewModel.proximite_de_vision_meter.toString()
         }
