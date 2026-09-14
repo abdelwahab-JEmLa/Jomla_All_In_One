@@ -763,6 +763,7 @@ fun Marker.title(
 
     val nom_client_up = uperrcase(m2Client.nom)
     val nomPourTitre = if (!afficheNom) {
+
         ""
     } else if (suffixeApresNom.isEmpty()) {
         nom_client_up.withoutDotSuffix()
@@ -771,12 +772,13 @@ fun Marker.title(
     }
 
     title =
-        secteurLine() +
+        (secteurLine() +
                 distanceSemainLine() +
                 positionPrefix +
                 nomPourTitre +
                 suffixeApresNom +
-                lastTrxInfosLine()
+                lastTrxInfosLine())
+            .trimStart('\n')
 }
 
 private fun uperrcase(nomPourTitre: String): String = nomPourTitre.split(" ")

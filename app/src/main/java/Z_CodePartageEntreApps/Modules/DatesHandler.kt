@@ -155,6 +155,7 @@ class DatesHandler {
             val dayName = getArabicDayNameFromTimestamp(timestamp)
             if (dayName.isEmpty()) return ""
 
+
             return when {
                 weeksDiff == 0L -> "هذا.$dayName"                 // ex: هذا.الاحد
                 weeksDiff == 1L -> "$dayName.الفائت"               // ex: الخميس.الفائت

@@ -609,6 +609,17 @@ fun View_MainItem(
                         color = Color.White
                     )
 
+                    val distanceSemain = datesHandler.getAbrgDistanceSemain(
+                        relative_M8BonVent.creationTimestamps
+                    )
+                    if (distanceSemain.isNotEmpty()) {
+                        Text(
+                            text = "  $distanceSemain",
+                            style = MaterialTheme.typography.bodyLarge, // Larger text
+                            color = Color.White
+                        )
+                    }
+
                     Spacer(modifier = Modifier.weight(1f))
 
                     Text(
