@@ -38,7 +38,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Done
@@ -87,7 +89,7 @@ private fun CustomStatusDropdownMenu(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
-    ) { 
+    ) {
         @Composable
         fun StatusDropdownItem(
             status: M8BonVent.EtateActuellementEst,
@@ -272,6 +274,20 @@ fun MarkerStatusDialog(
     var showEditDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf("") }
     var editedPhone by remember { mutableStateOf("") }
+    // Workers 2..6 : mêmes champs que editedName/editedPhone, mais pour
+    // chaque worker secondaire (nom_worker_N / telep_worker_N). Préremplis
+    // depuis relative_M2Client comme les deux champs principaux, "" si le
+    // slot est encore vide.
+    var editedNomWorker2 by remember { mutableStateOf("") }
+    var editedTelepWorker2 by remember { mutableStateOf("") }
+    var editedNomWorker3 by remember { mutableStateOf("") }
+    var editedTelepWorker3 by remember { mutableStateOf("") }
+    var editedNomWorker4 by remember { mutableStateOf("") }
+    var editedTelepWorker4 by remember { mutableStateOf("") }
+    var editedNomWorker5 by remember { mutableStateOf("") }
+    var editedTelepWorker5 by remember { mutableStateOf("") }
+    var editedNomWorker6 by remember { mutableStateOf("") }
+    var editedTelepWorker6 by remember { mutableStateOf("") }
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
     var showExitConfirmationDialog by remember { mutableStateOf(false) }
@@ -285,6 +301,16 @@ fun MarkerStatusDialog(
     if (editedName.isEmpty() && relative_M2Client != null) {
         editedName = relative_M2Client.nom
         editedPhone = relative_M2Client.numTelephone
+        editedNomWorker2 = relative_M2Client.nom_worker_2
+        editedTelepWorker2 = relative_M2Client.telep_worker_2
+        editedNomWorker3 = relative_M2Client.nom_worker_3
+        editedTelepWorker3 = relative_M2Client.telep_worker_3
+        editedNomWorker4 = relative_M2Client.nom_worker_4
+        editedTelepWorker4 = relative_M2Client.telep_worker_4
+        editedNomWorker5 = relative_M2Client.nom_worker_5
+        editedTelepWorker5 = relative_M2Client.telep_worker_5
+        editedNomWorker6 = relative_M2Client.nom_worker_6
+        editedTelepWorker6 = relative_M2Client.telep_worker_6
     }
 
     fun handleDismiss() {
@@ -387,7 +413,7 @@ fun MarkerStatusDialog(
                                             relative_Etate = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             context = context,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting ,
-                                                    fragmentNavigationHandler=fragmentNavigationHandler_NewProto,
+                                            fragmentNavigationHandler=fragmentNavigationHandler_NewProto,
                                         )
                                     }
 
@@ -495,7 +521,7 @@ fun MarkerStatusDialog(
                     if (relative_M8 != null) {
                         showExitConfirmationDialog = true
                     } else {
-                      on_dissmiss_dialog_avec_enleve_focuse_bon()
+                        on_dissmiss_dialog_avec_enleve_focuse_bon()
                     }
                 },
                 modifier = Modifier
@@ -543,7 +569,12 @@ fun MarkerStatusDialog(
                 onDismissRequest = { showEditDialog = false },
                 title = { Text("Modifier les informations") },
                 text = {
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 480.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
                         OutlinedTextField(
                             value = editedName,
                             onValueChange = { editedName = it },
@@ -558,6 +589,87 @@ fun MarkerStatusDialog(
                             label = { Text("Numéro de téléphone") },
                             modifier = Modifier.fillMaxWidth()
                         )
+
+                        // Workers secondaires 2..6 : même paire de champs
+                        // nom + téléphone que ci-dessus, un bloc par worker.
+                        Text(
+                            text = "Autres workers",
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = editedNomWorker2,
+                            onValueChange = { editedNomWorker2 = it },
+                            label = { Text("Worker 2 - Nom") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = editedTelepWorker2,
+                            onValueChange = { editedTelepWorker2 = it },
+                            label = { Text("Worker 2 - Téléphone") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = editedNomWorker3,
+                            onValueChange = { editedNomWorker3 = it },
+                            label = { Text("Worker 3 - Nom") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = editedTelepWorker3,
+                            onValueChange = { editedTelepWorker3 = it },
+                            label = { Text("Worker 3 - Téléphone") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = editedNomWorker4,
+                            onValueChange = { editedNomWorker4 = it },
+                            label = { Text("Worker 4 - Nom") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = editedTelepWorker4,
+                            onValueChange = { editedTelepWorker4 = it },
+                            label = { Text("Worker 4 - Téléphone") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = editedNomWorker5,
+                            onValueChange = { editedNomWorker5 = it },
+                            label = { Text("Worker 5 - Nom") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = editedTelepWorker5,
+                            onValueChange = { editedTelepWorker5 = it },
+                            label = { Text("Worker 5 - Téléphone") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = editedNomWorker6,
+                            onValueChange = { editedNomWorker6 = it },
+                            label = { Text("Worker 6 - Nom") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = editedTelepWorker6,
+                            onValueChange = { editedTelepWorker6 = it },
+                            label = { Text("Worker 6 - Téléphone") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 },
                 confirmButton = {
@@ -566,6 +678,16 @@ fun MarkerStatusDialog(
                             relative_M2Client?.apply {
                                 nom = editedName
                                 numTelephone = editedPhone
+                                nom_worker_2 = editedNomWorker2
+                                telep_worker_2 = editedTelepWorker2
+                                nom_worker_3 = editedNomWorker3
+                                telep_worker_3 = editedTelepWorker3
+                                nom_worker_4 = editedNomWorker4
+                                telep_worker_4 = editedTelepWorker4
+                                nom_worker_5 = editedNomWorker5
+                                telep_worker_5 = editedTelepWorker5
+                                nom_worker_6 = editedNomWorker6
+                                telep_worker_6 = editedTelepWorker6
                             }
 
                             relative_M2Client?.let { client ->
