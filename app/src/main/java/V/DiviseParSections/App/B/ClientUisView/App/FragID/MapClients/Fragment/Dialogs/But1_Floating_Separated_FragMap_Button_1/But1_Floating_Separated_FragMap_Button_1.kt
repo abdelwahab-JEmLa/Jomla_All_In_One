@@ -30,6 +30,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -198,6 +199,42 @@ fun But1_OnClickMode(
                                     modifier = Modifier.padding(vertical = 4.dp)
                                 ) {
                                     Icon(
+                                        imageVector = Icons.Default.List,
+                                        contentDescription = null,
+                                        tint = Color.Gray,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = "Options de titre",
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 14.sp
+                                        )
+                                        Text(
+                                            text = "Choisir les infos affichées sur les marqueurs",
+                                            fontSize = 11.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                showTitleOptionsDialog = true
+                                expanded = false
+                            },
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+
+                        HorizontalDivider(thickness = 7.dp)
+
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Icon(
                                         imageVector = Icons.Default.CheckCircle,
                                         contentDescription = null,
                                         tint = Color(0xFF747680),
@@ -285,39 +322,6 @@ fun But1_OnClickMode(
                             },
                             onClick = {
                                 showSecteurDialog = true
-                                expanded = false
-                            },
-                            modifier = Modifier.padding(horizontal = 4.dp)
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.List,
-                                        contentDescription = null,
-                                        tint = Color.Gray,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                        Text(
-                                            text = "Options de titre",
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 14.sp
-                                        )
-                                        Text(
-                                            text = "Choisir les infos affichées sur les marqueurs",
-                                            fontSize = 11.sp,
-                                            color = Color.Gray
-                                        )
-                                    }
-                                }
-                            },
-                            onClick = {
-                                showTitleOptionsDialog = true
                                 expanded = false
                             },
                             modifier = Modifier.padding(horizontal = 4.dp)
@@ -553,8 +557,7 @@ private fun TitleOptionsDialog(
                                 color = Color.Gray,
                             )
                         }
-                        Switch(              //<--
-                        //TODO(1): pk quen je desacive cca 
+                        Switch(
                             checked = compt?.titre_affiche_suffixe_apres_nom == true,
                             onCheckedChange = { checked ->
                                 compt?.let {
