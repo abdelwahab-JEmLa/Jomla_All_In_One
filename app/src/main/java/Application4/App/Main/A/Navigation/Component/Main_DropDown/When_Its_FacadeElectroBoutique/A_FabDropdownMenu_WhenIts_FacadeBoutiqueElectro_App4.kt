@@ -2,6 +2,7 @@ package Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_Faca
 
 import Application4.App.Fragment.ID1.Fragment.ViewModel.A_ViewModel_NewProtoPatterns
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.Affiche_ProduitDataBaseEdites_ComposableViews_ActiveCompt_Update_DropdownMenuItem
+import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.CachePrixPourClient_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.SyncDropboxImages_DropdownMenuItem
 import Application4.App.Main.A.Navigation.Component.Main_DropDown.When_Its_FacadeElectroBoutique.Button.Views.UpdateActiveComptDo_DropdownMenuItem
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,11 @@ fun FabDropdownMenu_WhenIts_FacadeBoutiqueElectro_App4(
                 viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                 affiche_ProduitDataBaseEdites_ComposableViews = affiche_ProduitDataBaseEdites_ComposableViews,
                 on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews = on_pour_update_affiche_ProduitDataBaseEdites_ComposableViews,
+                onDismissDropdown = onDismissDropdown
+            )
+
+            CachePrixPourClient_DropdownMenuItem(
+                viewModelNewProtoPatterns = viewModelNewProtoPatterns,
                 onDismissDropdown = onDismissDropdown
             )
 

@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -556,6 +557,31 @@ fun PressistatntMainActivityButtons_App4(
                     )
                 }
 
+                val isHideTariffsActive = activeDatas.active_M9Compt?.cache_prix_pour_que_le_client_ne_connait_pas == true
+                FloatingActionButton(
+                    onClick = {
+                        val currentCompt = activeDatas.active_M9Compt
+                        if (currentCompt != null) {
+                            val updated = currentCompt.copy(
+                                cache_prix_pour_que_le_client_ne_connait_pas = !currentCompt.cache_prix_pour_que_le_client_ne_connait_pas,
+                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                            )
+                            viewModelNewProtoPatterns.update_active_Compt(updated)
+                            val msg = if (updated.cache_prix_pour_que_le_client_ne_connait_pas) "Tarifs masqués pour le client" else "Tarifs affichés"
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier.size(40.dp),
+                    containerColor = if (isHideTariffsActive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = if (isHideTariffsActive) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Icon(
+                        imageVector = if (isHideTariffsActive) Icons.Default.Close else Icons.Default.Check,
+                        contentDescription = "Masquer tarifs client"
+                    )
+                }
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -627,6 +653,25 @@ fun PressistatntMainActivityButtons_App4(
                                 isSelected = currentMode == Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres,
                                 onClick = {
                                     setMode(Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres)
+                                    showDropdown = false
+                                }
+                            )
+                            HorizontalDivider()
+                            ModeMenuItem(
+                                label = if (isHideTariffsActive) "Tarifs masqués (Client)" else "Masquer tarifs client",
+                                icon = if (isHideTariffsActive) Icons.Default.Close else Icons.Default.Check,
+                                isSelected = isHideTariffsActive,
+                                onClick = {
+                                    val currentCompt = activeDatas.active_M9Compt
+                                    if (currentCompt != null) {
+                                        val updated = currentCompt.copy(
+                                            cache_prix_pour_que_le_client_ne_connait_pas = !currentCompt.cache_prix_pour_que_le_client_ne_connait_pas,
+                                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                        )
+                                        viewModelNewProtoPatterns.update_active_Compt(updated)
+                                        val msg = if (updated.cache_prix_pour_que_le_client_ne_connait_pas) "Tarifs masqués pour le client" else "Tarifs affichés"
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    }
                                     showDropdown = false
                                 }
                             )

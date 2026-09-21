@@ -108,16 +108,21 @@ fun Big_Principale_FragID3(
                 on_pour_update_mode_selection_parent_couleur = on_pour_update_mode_selection_parent_couleur,
             )
 
-            Pricipale_Tariffs_Vendeurs_FragID3(
-                relative_M1produit = relative_M1produit,
-                tariffsList = tariffsList,
-                selectedTariff_Par_AncienProto = selectedTariff,
-                onTariffSelected = onTariffSelected,
-                compactMode = !isThisProductExpanded,
-                uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
-                une_des_selectedCouleur=selectedCouleur,
-                on_update_M13TarificationInfos_par_ecriture= on_update_M13TarificationInfos_par_ecriture,
-            )
+            val hideTariffs = viewModel.active_Datas.active_M9Compt?.cache_prix_pour_que_le_client_ne_connait_pas == true
+                || active_Central_Values.activeCompt?.cache_prix_pour_que_le_client_ne_connait_pas == true
+
+            if (!hideTariffs) {
+                Pricipale_Tariffs_Vendeurs_FragID3(
+                    relative_M1produit = relative_M1produit,
+                    tariffsList = tariffsList,
+                    selectedTariff_Par_AncienProto = selectedTariff,
+                    onTariffSelected = onTariffSelected,
+                    compactMode = !isThisProductExpanded,
+                    uiState_NewProtoPatterns_viewModel = uiState_NewProtoPatterns_viewModel,
+                    une_des_selectedCouleur = selectedCouleur,
+                    on_update_M13TarificationInfos_par_ecriture = on_update_M13TarificationInfos_par_ecriture,
+                )
+            }
         }
     }
 }
