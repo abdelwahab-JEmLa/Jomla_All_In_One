@@ -145,7 +145,7 @@ Les compétences spécialisées sont organisées par sous-dossiers thématiques 
 | [tap](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/tap) | `tap` | Capture l'écran, identifie le FAB et exécute un tap ADB |
 | [tap_lit_debug_log_cat](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/tap_lit_debug_log_cat) | `tap_lit` | Tap + lecture du logcat pour debug rapide |
 | [fm_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/fm_) | `fm_`, `fm_flow` | Synchro Room/CSV/Firebase dans les écrans FragMap |
-| [learn_improve_skill_depuit_convesation_imp_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/learn_improve_skill_depuit_convesation_imp_) | `/improve`, `imp_`, `improv_`, `iprov_`, `/learn/learn` | Améliore un skill à partir des corrections de la conversation |
+| [learn_improve_skill_depuit_convesation_imp_](file:///C:/Users/Abou%20Mohamed/.gemini/antigravity-cli/skills/z__Autres/learn_improve_skill_depuit_convesation_imp_) | `/improve`, `imp_`, `improv_`, `iprov_`, `improve_t_`, `i_t_`, `/learn/learn` | Améliore un skill à partir des corrections de la conversation |
 
 ---
 

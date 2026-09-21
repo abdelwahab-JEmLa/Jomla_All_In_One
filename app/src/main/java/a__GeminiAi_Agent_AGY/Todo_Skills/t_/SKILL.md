@@ -169,7 +169,14 @@ Get-ChildItem -Recurse -Include "*.kt","*.java","*.xml","*.md" "<project_root>\a
 **Pattern note**: Use `//\s*TODO|#\s*TODO|<!--\s*TODO` (not just `TODO`) to avoid false positives
 from method names like `toDouble()`, `toString()`, `toDoubleOrNull()`, and file references.
 
-Note that some TODOs may be relative to/dependent on others, often indicated with specific markers like `//<--` or comments referring to previous/other TODOs (e.g. `//TODO(2.C Relative Au Todo(1):`). The assistant must carefully analyze these relationships and implement dependencies in the correct order.
+### 1.1. Chained & Relative Multi-File TODOs (Traitement des Chaînes de TODOs)
+- **Détection des Chaînes Relatives** : Les TODOs peuvent être répartis sur plusieurs fichiers et reliés entre eux par des pointeurs :
+  - Un déclencheur ou action UI : `//Todo(1): fai t que si >>` avec un marqueur `//<--`.
+  - Une condition ou modèle sous-jacent : `//(Todo 2.C Relative Au Todo(1): ... >> == true au click de ...`.
+  - Une destination de navigation ou logique de référence : `//TODO(3.C Relative Au Todo(2): ... au ici Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4`.
+- **Analyse et Intégration Holistique** : Ne jamais traiter un TODO relatif de manière isolée. L'assistant doit lire et recouper l'ensemble des maillons de la chaîne pour en déduire la logique métier complète avant d'écrire le code.
+- **Gestion Obligatoire des Imports** : Lors de l'implémentation de symboles référencés dans d'autres fichiers (ex: `Screen_NewProtoPattern`, `ActiveCentralValues`, `AppType`), toujours vérifier et ajouter les imports explicites nécessaires dans le fichier cible s'ils sont absents.
+- **Nettoyage Synchronisé des Marqueurs** : Une fois la fonctionnalité implémentée, supprimer l'intégralité des commentaires TODO et marqueurs associés (`//<--`, `//<-`, `//Todo(1)...`, `//TODO(2.C...`, `//TODO(3.C...`) sur **tous** les fichiers de la chaîne.
 
 ### 1.2. Token Economy — Lecture Ciblée des Fichiers
 

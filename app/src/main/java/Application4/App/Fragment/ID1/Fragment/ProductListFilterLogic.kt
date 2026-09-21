@@ -89,6 +89,22 @@ object ProductListFilterLogic {
                 .toSet()
             list.filter { it.keyID in recentColorKeys }
         }
+        Filter_Affichage_Mode_Proto.Produits_Vont_Etre_Epuise -> {
+            val ventQtyByColor = ventCouleurs
+                .filter { it.quantity > 0 }
+                .groupBy { it.parent_M3CouleurProduit_KeyID }
+                .mapValues { (_, ops) -> ops.sumOf { it.quantity } }
+            val counts = list.associate { it.keyID to it.count_Don_Depot }
+            list.filter { color ->
+                val ventQty = ventQtyByColor[color.keyID] ?: return@filter false
+                val depotCount = if (color.c_unite_couleur_de_couleurKey.isNotEmpty()) {
+                    counts[color.c_unite_couleur_de_couleurKey] ?: color.count_Don_Depot
+                } else {
+                    color.count_Don_Depot
+                }
+                (depotCount - ventQty) <= 0
+            }
+        }
         Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres ->
             // Ignore all other display rules: only surface colors flagged as
             // "delicate a regle apres", regardless of depot/echantillant/etc.

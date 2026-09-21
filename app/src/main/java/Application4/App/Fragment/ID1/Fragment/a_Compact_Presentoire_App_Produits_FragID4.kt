@@ -276,7 +276,6 @@ fun A_Compact_Presentoire_App_Produits_App4(
             FeatureID1_BigDataBase_Editeur_Par_Csv_Floating_Separated_Button(
                 onClick_Lence_Ventes_Depot = {
                     // Relatif au bouton "Vents Dépôt (Super Gros)" de
-                    // PressistatntMainActivityButtons_Sec8FWinID1 (TODO(1)) : ce
                     // bouton-ci ne doit QUE créer les ventes de dépôt à partir de
                     // vents_de_count — celui-ci est déjà construit plus haut avec le
                     // vrai prix d'achat (achatTariff / Tariff_Achat_Depuit_Grossisst),

@@ -130,14 +130,16 @@ fun A_Item_Produit_App4(
 
     val activeM9compt = centralValues.active_M9Compt
 
-    val tariff_ItsWorkInGrossist_SuperGros by remember {
-        derivedStateOf {
-            datasValue_distinct_type.find {
-                it.typeChoisi == M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros &&
-                        it.prixCurrency != 0.0
-            }
-        }
+    val tariff_Achat = datasValue_distinct_type.find {
+        it.typeChoisi in setOf(
+            M13TarificationInfos.TypeChoisi.Tariff_Achat_Depuit_Grossisst,
+            M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_Achat,
+            M13TarificationInfos.TypeChoisi.Tariff_ItsWorkInGrossist_SuperGros
+        ) && it.prixCurrency != 0.0
     }
+
+    val prixAchatEffectif = tariff_Achat?.prixCurrency
+        ?: if (relative_M1produit.prixAchat > 0.0) relative_M1produit.prixAchat else null
 
     val supperGro = datasValue_distinct_type.find {
         it.typeChoisi == M13TarificationInfos.TypeChoisi.Prix_SupperGro_Et_PresentationService &&
@@ -238,9 +240,7 @@ fun A_Item_Produit_App4(
             .padding(cardPadding)
     ) {
         A_Compact_Header_App4(
-
-
-            prix_achat = tariff_ItsWorkInGrossist_SuperGros?.prixCurrency,
+            prix_achat = prixAchatEffectif,
             relative_M1produit = relative_M1produit,
             isExpanded = isThisProductExpanded,
             onUpdateTariff = {
@@ -251,7 +251,8 @@ fun A_Item_Produit_App4(
             onUpdateProduit = { viewModel.update_m1Produit(it) },
             affiche_ProduitDataBaseEdites_ComposableViews = centralValues.currentApp_Est_Admin && affiche_buttons_lien_unite_couleur_au_couleut_parent,
             isPanierMode = centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Panie
-                    || centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres,
+                    || centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres
+                    || centralValues.filterAffichageMode_Proto == Filter_Affichage_Mode_Proto.Produits_Vont_Etre_Epuise,
             affiche_buttons_lien_unite_couleur_au_couleut_parent = affiche_buttons_lien_unite_couleur_au_couleut_parent,
             compact_button_au_edite_base_donne_options = active_Central_Values.compact_button_au_edite_base_donne_options,
             onDelete = { viewModel.delete_m1Produit(it) },

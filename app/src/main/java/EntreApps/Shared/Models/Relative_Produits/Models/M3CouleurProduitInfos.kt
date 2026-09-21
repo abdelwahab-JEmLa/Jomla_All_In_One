@@ -34,7 +34,6 @@ data class M3CouleurProduitInfos(
 
 
     var affiche_que_c_don_le_panie : Boolean = false,
-    var cheked : Boolean = false,
 
 
     var its_couleur_ac_imgVid_presentative_de_tout_les_couleur: Boolean = false,
@@ -58,8 +57,11 @@ data class M3CouleurProduitInfos(
     val extensionDisponible: String = "webp", // Default extension
 
     var dernier_achant_timeTamp: Long =0,
+
+    var cheked : Boolean = false,
 ) {
     fun to_Map(): Map<String, Any?> = mapOf(
+        "cheked" to cheked,
         "keyID" to keyID,
         "debugInfos" to debugInfos,
         "creationTimestamp" to creationTimestamp,

@@ -28,8 +28,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -90,6 +92,7 @@ fun PressistatntMainActivityButtons_App4(
         Filter_Affichage_Mode_Proto.Echants_Seulement -> MaterialTheme.colorScheme.primary
         Filter_Affichage_Mode_Proto.Panie,
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> MaterialTheme.colorScheme.tertiary
+        Filter_Affichage_Mode_Proto.Produits_Vont_Etre_Epuise -> MaterialTheme.colorScheme.error
         Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres -> MaterialTheme.colorScheme.error
 
         else -> MaterialTheme.colorScheme.surfaceVariant
@@ -99,6 +102,7 @@ fun PressistatntMainActivityButtons_App4(
         Filter_Affichage_Mode_Proto.Echants_Seulement -> Icons.Default.Check
         Filter_Affichage_Mode_Proto.Panie,
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> Icons.Default.ShoppingCart
+        Filter_Affichage_Mode_Proto.Produits_Vont_Etre_Epuise -> Icons.Default.Warning
         Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres -> Icons.Default.Star
 
         else -> Icons.Default.FilterList
@@ -118,6 +122,7 @@ fun PressistatntMainActivityButtons_App4(
         Filter_Affichage_Mode_Proto.Panie -> "Panier"
         Filter_Affichage_Mode_Proto.Panie_Si_Couleur_Ac_Vent_Affiche_Tout_Ces_Freres -> "Panier + frères"
         Filter_Affichage_Mode_Proto.Panie_Couleurs_Ac_Vent_Recent -> "Ventes récentes"
+        Filter_Affichage_Mode_Proto.Produits_Vont_Etre_Epuise -> "Bientôt épuisés"
         Filter_Affichage_Mode_Proto.Couleurs_AC_its_delicate_a_regle_apres -> "À régler après"
     }
 
@@ -534,6 +539,23 @@ fun PressistatntMainActivityButtons_App4(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {  //row de modes panie..
 
+                FloatingActionButton(
+                    onClick = {
+                        activeDatas.filter_relode_tiger += 1
+                        viewModelNewProtoPatterns.retryLoadingData()
+                        Toast.makeText(context, "Données actualisées", Toast.LENGTH_SHORT).show()
+                    },
+                    modifier = Modifier.size(40.dp),
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Actualiser les données"
+                    )
+                }
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -568,6 +590,15 @@ fun PressistatntMainActivityButtons_App4(
                                 isSelected = currentMode == Filter_Affichage_Mode_Proto.Panie,
                                 onClick = {
                                     setMode(Filter_Affichage_Mode_Proto.Panie)
+                                    showDropdown = false
+                                }
+                            )
+                            ModeMenuItem(
+                                label = "Bientôt épuisés",
+                                icon = Icons.Default.Warning,
+                                isSelected = currentMode == Filter_Affichage_Mode_Proto.Produits_Vont_Etre_Epuise,
+                                onClick = {
+                                    setMode(Filter_Affichage_Mode_Proto.Produits_Vont_Etre_Epuise)
                                     showDropdown = false
                                 }
                             )

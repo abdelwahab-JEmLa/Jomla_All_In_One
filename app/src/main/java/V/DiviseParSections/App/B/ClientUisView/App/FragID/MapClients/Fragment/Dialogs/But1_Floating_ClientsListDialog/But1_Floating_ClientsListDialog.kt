@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.But1_Floating_ClientsListDialog
 
 import Application4.App.Main.A.Navigation.Component.FragmentNavigationHandler_NewProto
+import Application4.App.Main.A.Navigation.Component.Screen_NewProtoPattern
 import EntreApps.Shared.Models.Home.ActiveCentralValues
 import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Vents.Models.M2Client
@@ -347,7 +348,15 @@ fun But1_Floating_ClientsListDialog(
                             )
                         }
                     }
-                    IconButton(onClick = onDismiss) {
+                    IconButton(onClick = {
+                        if (compt?.lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources == true) {
+                            fragmentNavigationHandler_NewProto.navigateTo(
+                                Screen_NewProtoPattern.Compact_Presentoire_App_Produits_FragID4
+                            )
+                        } else {
+                            onDismiss()
+                        }
+                    }) {
                         Icon(imageVector = Icons.Default.Close, contentDescription = "Fermer")
                     }
                 }

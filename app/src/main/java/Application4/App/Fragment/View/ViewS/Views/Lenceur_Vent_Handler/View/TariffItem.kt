@@ -1,7 +1,7 @@
 package Application4.App.Fragment.View.ViewS.Views.Lenceur_Vent_Handler.View
 
-import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import EntreApps.Shared.Models.Relative_Produits.Models.M01Produit
+import EntreApps.Shared.Models.Relative_Vents.Models.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -112,15 +112,18 @@ fun TariffItem(
                 )
             }
 
-            Text(
-                text = "m.b: ${formatPrice(tariff.prixCurrency - tariff_achat_prix)} DA",
-                color = if (beneficeClient >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Red.copy(
-                    alpha = 0.85f
-                ),
-                fontSize = secondaryFontSize,
-                lineHeight = secondaryFontSize,
-                modifier = Modifier.Companion.align(Alignment.Companion.CenterHorizontally)
-            )
+            if (tariff_achat_prix > 0.0) {
+                val margeBeneficiaire = effectivePrix - tariff_achat_prix
+                Text(
+                    text = "m.b: ${formatPrice(margeBeneficiaire)} DA",
+                    color = if (margeBeneficiaire >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Red.copy(
+                        alpha = 0.85f
+                    ),
+                    fontSize = secondaryFontSize,
+                    lineHeight = secondaryFontSize,
+                    modifier = Modifier.Companion.align(Alignment.Companion.CenterHorizontally)
+                )
+            }
         }
     } else {
         Column(
@@ -151,6 +154,18 @@ fun TariffItem(
                 Text(
                     text = "bén: ${formatPrice(beneficeClient)} DA",
                     color = if (beneficeClient >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Companion.Red.copy(
+                        alpha = 0.85f
+                    ),
+                    fontSize = secondaryFontSize,
+                    lineHeight = secondaryFontSize,
+                    modifier = Modifier.Companion.align(Alignment.Companion.CenterHorizontally)
+                )
+            }
+            if (tariff_achat_prix > 0.0) {
+                val margeBeneficiaire = effectivePrix - tariff_achat_prix
+                Text(
+                    text = "m.b: ${formatPrice(margeBeneficiaire)} DA",
+                    color = if (margeBeneficiaire >= 0) tariff.typeChoisi.couleur_Text.copy(alpha = 0.75f) else Color.Companion.Red.copy(
                         alpha = 0.85f
                     ),
                     fontSize = secondaryFontSize,

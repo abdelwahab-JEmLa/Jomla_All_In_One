@@ -43,7 +43,9 @@ fun Tariffs_MainList(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         items(tariffs_SansModeEditable, key = { it.keyID }) { tariff ->
-            TariffItemSelector(
+            TariffItemSelector(      //<--
+            //(Todo 2.C Relative Au Todo(1):
+                    //... est active ne affiche pas  les tariffs row
                 tariff = tariff,
                 relative_M1produit = relative_M1produit,
                 isSelected = tariff.keyID == selectedTariff_Par_AncienProto.keyID,

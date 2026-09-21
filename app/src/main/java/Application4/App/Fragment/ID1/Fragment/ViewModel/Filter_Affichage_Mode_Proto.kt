@@ -16,6 +16,9 @@ enum class Filter_Affichage_Mode_Proto(val mais_sort_order : ProductListFilterLo
 
     Panie(ProductListFilterLogic.Sort_Order.Vents_Creation),
 
+    /** Produits ou stock au dépôt - quantité vendue <= 0 dans le bon en cours. */
+    Produits_Vont_Etre_Epuise(ProductListFilterLogic.Sort_Order.Vents_Creation),
+
     /** Affiche uniquement les couleurs qui ont une vente de moins d'un mois. */
     Panie_Couleurs_Ac_Vent_Recent(ProductListFilterLogic.Sort_Order.Vents_Creation),
 

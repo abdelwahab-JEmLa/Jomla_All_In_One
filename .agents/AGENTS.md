@@ -114,4 +114,10 @@
 - When executing complex multi-line PowerShell scripts (e.g. scripts with `foreach`, nested string formatting, or multiple variable assignments), avoid passing them inline via `pwsh -Command "..."`.
 - Instead, write the script to a `.ps1` file inside the `scratch/` directory and execute it via `pwsh -ExecutionPolicy Bypass -File "<scratch_path>\script.ps1"`.
 
+## Jetpack Compose Icon Safety & Imports
+- When adding or modifying icons in Jetpack Compose, **only use core default icons** (e.g., `Icons.Default.Info`, `Icons.Default.Share`, `Icons.Default.Star`, `Icons.Default.Warning`, `Icons.Default.Menu`, `Icons.Default.PlayArrow`, `Icons.Default.Check`, `Icons.Default.CheckCircle`).
+- **DO NOT use extended icons** (like `Icons.Default.Send`, `Icons.Default.Email`, etc.) unless you are 100% sure the `androidx.compose.material:material-icons-extended` dependency is integrated.
+- **Explicit Imports Mandatory**: When adding any icon reference (e.g. `Icons.Default.Warning`), always verify and add the corresponding explicit import (e.g. `import androidx.compose.material.icons.filled.Warning`) to the file's imports section, as Compose files in this project use explicit non-wildcard imports.
+
+
 

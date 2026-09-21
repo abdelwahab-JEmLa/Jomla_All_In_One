@@ -153,7 +153,9 @@ data class M09AppCompt(
     var limite_couleurs_ou_leur_last_achate_est_moin_que_jour: Int = 1000,
 
     var proximite_de_vision_meter: Int = 800,
-    var lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources: Boolean = true,
+    var lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources: Boolean = false,
+
+    var cache_prix_pour_que_le_client_ne_connait_pas : Boolean = false ,
 ) {
     fun get_DebugInfos(): String = buildString {
         append("(M9=")
@@ -176,6 +178,7 @@ data class M09AppCompt(
         else emptyList()
 
     fun to_Map(): Map<String, Any?> = mapOf(
+        "cache_prix_pour_que_le_client_ne_connait_pas" to cache_prix_pour_que_le_client_ne_connait_pas,
         "lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources" to lance_dialoge_client_et_ne_lance_pas_le_map_pour_ressources,
         "proximite_de_vision_meter" to proximite_de_vision_meter,
         "keyID" to keyID,
