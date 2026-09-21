@@ -35,6 +35,7 @@ data class M3CouleurProduitInfos(
 
     var affiche_que_c_don_le_panie : Boolean = false,
 
+
     var its_couleur_ac_imgVid_presentative_de_tout_les_couleur: Boolean = false,
 
     //-------------------------------Filters---------------------------------------------------------------------------------------------------------------------------------

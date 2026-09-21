@@ -27,7 +27,6 @@ data class M01Produit(
 
     var count_Don_Depot: Int = 0,
 
-
     //S P Ids
     var idParentCategorie: Long = 0,
     var positionDonSonCesFrereCategorieProduits: Int = 0,

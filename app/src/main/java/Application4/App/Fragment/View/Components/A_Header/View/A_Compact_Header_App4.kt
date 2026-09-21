@@ -299,7 +299,7 @@ fun A_Compact_Header_App4(
                         }
                     )
 
-                    if (isPanierMode && affiche_ProduitDataBaseEdites_ComposableViews && onSetPremierCheckDonneForAllVents != null) {
+                    if ((isPanierMode || affiche_buttons_lien_unite_couleur_au_couleut_parent) && onSetPremierCheckDonneForAllVents != null) {
                         ClickableInfoCard(
                             icon = {
                                 Icon(

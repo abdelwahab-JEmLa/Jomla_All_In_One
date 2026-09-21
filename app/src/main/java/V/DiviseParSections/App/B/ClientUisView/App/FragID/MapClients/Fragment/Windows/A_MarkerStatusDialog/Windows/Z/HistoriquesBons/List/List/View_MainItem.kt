@@ -386,12 +386,21 @@ fun View_MainItem(
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
-                ) {//<--
+                ) {
+                    item {
+                        Button_StockOptions_SubtractFromDepot(
+                            onDismiss = { },
+                            repositorysMainGetter = repositorysMainGetter,
+                            repositorysMainSetter = repositorysMainSetter,
+                            relative_M8BonVent = relative_M8BonVent,
+                            context = context,
+                            couleurs = relative_list_Vent
+                        )
+                    }
                     item {
                         // Recalcule le sum_De_Totale_Vents de ce M8BonVent a partir de ses
                         // operations de vente (relative_list_Vent) puis persiste la nouvelle
                         // valeur via update_M8BonVent. Voir M8BonVent.sum_totale_et_benifice
-                        // (relatif a ce TODO).
                         IconButton(
                             onClick = {
                                 val recalculatedSums = relative_M8BonVent.sum_totale_et_benifice(
@@ -983,18 +992,38 @@ fun View_MainItem(
     if (showCreateCartonBonDialog) {
         AlertDialog(
             onDismissRequest = { showCreateCartonBonDialog = false },
-            title = { Text("إنشاء بون كارتون (Cartons Bon)") },
-            text = { Text("هل تريد إنشاء بون كارتون جديد ونقل عمليات البيع إليه؟") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
+            title = { Text("فصل العمليات إلى بون جديد (Séparation Bon)") },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("اختر نوع الفصل لإنشاء بون جديد ونقل العمليات إليه:")
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    fun separateBon(
+                        isTargetVent: (M10OperationVentCouleur) -> Boolean,
+                        label: String,
+                        isCartonBon: Boolean = false,
+                        resetPremierCheck: Boolean = false
+                    ) {
                         val lastVentPeriodKeyId = repositorysMainGetter.repo14VentPeriode.datasValue
                             .maxByOrNull { it.creationTimestamp }?.keyID
                             ?: focusedValuesGetter.active_Central_Values.active_M14VentPeriode?.keyID
                             ?: relative_M8BonVent.parent_M14VentPeriod_KeyId
 
+                        val clickedVentOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter { vent ->
+                            vent.parent_M8BonVent_KeyId == relative_M8BonVent.keyID && isTargetVent(vent)
+                        }
+
+                        if (clickedVentOperations.isEmpty()) {
+                            Toast.makeText(context, "لا توجد عمليات لنقلها ($label)", Toast.LENGTH_SHORT).show()
+                            showCreateCartonBonDialog = false
+                            return
+                        }
+
                         val newM8Bon = M8BonVent(
-                            its_Cartons_Bon = true,
+                            its_Cartons_Bon = isCartonBon,
                             parent_M14VentPeriod_KeyId = lastVentPeriodKeyId,
                             parent_M2Client_KeyID = relative_Client?.keyID ?: relative_M8BonVent.parent_M2Client_KeyID,
                             parent_M9AppCompt_KeyID = relative_M8BonVent.parent_M9AppCompt_KeyID,
@@ -1002,30 +1031,76 @@ fun View_MainItem(
                         )
                         repositorysMainSetter.addNew_M8BonVent(newM8Bon)
 
-                        val clickedVentOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter { vent ->
-                            vent.parent_M8BonVent_KeyId == relative_M8BonVent.keyID &&
-                                    repositorysMainGetter.repo1ProduitInfos.datasValue.find { it.keyID == vent.parent_M1Produit_KeyId }?.its_Carton == true
-                        }
+                        val currentTimestamp = System.currentTimeMillis()
                         clickedVentOperations.forEach { opVent ->
                             repositorysMainSetter.repo10OperationVentCouleur.addOrUpdateData(
                                 opVent.copy(
                                     parent_M8BonVent_KeyId = newM8Bon.keyID,
-                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                    premier_Check_Donne = if (resetPremierCheck) false else opVent.premier_Check_Donne,
+                                    last_update_premier_Check_Donne_TimeTamps = if (resetPremierCheck) currentTimestamp else opVent.last_update_premier_Check_Donne_TimeTamps,
+                                    dernierTimeTampsSynchronisationAvecFireBase = currentTimestamp
                                 )
                             )
                         }
 
                         Toast.makeText(
                             context,
-                            "تم إنشاء بون كارتون بنجاح ونقل ${clickedVentOperations.size} عمليات",
+                            "تم إنشاء بون $label بنجاح ونقل ${clickedVentOperations.size} عمليات",
                             Toast.LENGTH_SHORT
                         ).show()
                         showCreateCartonBonDialog = false
                     }
-                ) {
-                    Text("نعم / Confirmer")
+
+                    // 1. Cartons Séparateur
+                    Button(
+                        onClick = {
+                            separateBon(
+                                isTargetVent = { vent ->
+                                    repositorysMainGetter.repo1ProduitInfos.datasValue.find { it.keyID == vent.parent_M1Produit_KeyId }?.its_Carton == true
+                                },
+                                label = "كارتون (Cartons)",
+                                isCartonBon = true
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("1. كارتون (Cartons Séparateur)")
+                    }
+
+                    // 2. Chequed Séparateur
+                    Button(
+                        onClick = {
+                            separateBon(
+                                isTargetVent = { vent ->
+                                    vent.premier_Check_Donne
+                                },
+                                label = "المفحوص (Checked)",
+                                resetPremierCheck = true
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("2. مفحوص (Checked Séparateur)")
+                    }
+
+                    // 3. Echantillon Séparateur
+                    Button(
+                        onClick = {
+                            separateBon(
+                                isTargetVent = { vent ->
+                                    val couleur = repositorysMainGetter.repo03CouleurProduitInfos.datasValue.find { it.keyID == vent.parent_M3CouleurProduit_KeyID }
+                                    couleur?.affiche_que_c_don_le_panie == true
+                                },
+                                label = "عينات (Échantillons)"
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("3. عينات (Échantillons Séparateur)")
+                    }
                 }
             },
+            confirmButton = {},
             dismissButton = {
                 TextButton(onClick = { showCreateCartonBonDialog = false }) {
                     Text("إلغاء / Annuler")
