@@ -37,6 +37,11 @@
 - **Déploiement avec/sans ZIP** :
   - **Sans ZIP (ex: `b+1`)** : Déployez directement les dossiers extraits (`0.`) sur le téléphone via ADB, sans créer de fichier ZIP.
   - **Avec ZIP (ex: `b+1+z`)** : Compressez l'export sous le nom `Client_V_<VERSION>.zip` (où `<VERSION>` est la version propre, ex: `1.14.4`) et poussez le ZIP ainsi que les dossiers extraits sur le téléphone.
+- **Export & Déploiement `9_Client_App_Last`** :
+  - Lors de l'export local et du déploiement ADB, copiez et poussez systématiquement les APKs dans le dossier commun `Playe_Store/9_Client_App_Last/` sous les noms renommés :
+    - `AllInOne` (`a_AllInOne.apk`) ➔ `1 Centrale App.apk`
+    - `VendeurHost` (`b_JomLaElectroLivreurGrossist_VendeurHost.apk`) ➔ `2 Vendeur App.apk`
+    - `PresenterScreen` (`c_JomLaElectroLivreurGrossist_PresenterScreen.apk`) ➔ `3 Ecran Client Boutique.apk`
 - **Restauration de configuration** : Assurez-vous de restaurer immédiatement [M00CentralParametresOfAllApps.kt](file:///D:/AndroidStudioProjects/ClientJetPack/app/src/main/java/EntreApps/Shared/Models/M00CentralParametresOfAllApps.kt) après le build pour garder Git propre.
 - **Résolution de ADB** : Si la commande `adb` n'est pas reconnue globalement, utilisez le chemin absolu de l'exécutable sous `$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe` pour effectuer les opérations de push.
 - **PowerShell Argument Quoting** : Lorsque vous passez des arguments contenant des préfixes de points (ex: `-PappSuffix=.a_AllInOne`) dans PowerShell, enveloppez toujours l'argument entier de double guillemets (ex: `"-PappSuffix=.a_AllInOne"`) pour éviter que PowerShell n'interprète mal la chaîne de caractères.
