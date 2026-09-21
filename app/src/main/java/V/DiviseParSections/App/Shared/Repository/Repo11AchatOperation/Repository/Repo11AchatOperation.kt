@@ -46,7 +46,18 @@ class Repo11AchatOperation(
         produits: List<M01Produit>,
         bonVents: List<M8BonVent> = emptyList()
     ): List<M11AchatOperation> {
-        val filteredVents = filtered_ListM10Vent_BY_Curr_M14VentPeriod.filter { vent ->
+        val allCandidateVents = if (m14VentPeriod != null && m14VentPeriod.keyID.isNotBlank() && m14VentPeriod.keyID != "null") {
+            val periodKey = m14VentPeriod.keyID
+            val candidateFromRepo = repo10OperationVentCouleur.datasValue.filter { op ->
+                op.parent_M14VentPeriod_KeyId == periodKey ||
+                bonVents.any { bon -> bon.keyID == op.parent_M8BonVent_KeyId && bon.parent_M14VentPeriod_KeyId == periodKey }
+            }
+            (filtered_ListM10Vent_BY_Curr_M14VentPeriod + candidateFromRepo).distinctBy { it.keyID }
+        } else {
+            filtered_ListM10Vent_BY_Curr_M14VentPeriod
+        }
+
+        val filteredVents = allCandidateVents.filter { vent ->
             val parentBonVent = bonVents.find { it.keyID == vent.parent_M8BonVent_KeyId }
             parentBonVent?.its_working_for_wholesaler != true
         }

@@ -72,6 +72,14 @@ class Repo8BonVent(
         val dataUpdate = data.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
+        val existingIndex = datasValue.indexOfFirst { it.keyID == data.keyID }
+        _datas.value = if (existingIndex >= 0) {
+            datasValue.toMutableList().apply {
+                this[existingIndex] = dataUpdate
+            }
+        } else {
+            datasValue + dataUpdate
+        }
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
@@ -79,6 +87,14 @@ class Repo8BonVent(
         val dataUpdate = data.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
+        val existingIndex = datasValue.indexOfFirst { it.keyID == data.keyID }
+        _datas.value = if (existingIndex >= 0) {
+            datasValue.toMutableList().apply {
+                this[existingIndex] = dataUpdate
+            }
+        } else {
+            datasValue + dataUpdate
+        }
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
@@ -100,6 +116,14 @@ class Repo8BonVent(
         val dataUpdate = data.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
+        val existingIndex = datasValue.indexOfFirst { it.keyID == data.keyID }
+        _datas.value = if (existingIndex >= 0) {
+            datasValue.toMutableList().apply {
+                this[existingIndex] = dataUpdate
+            }
+        } else {
+            datasValue + dataUpdate
+        }
         dataBaseCreationFactory.set(dataUpdate)
     }
 }

@@ -261,6 +261,11 @@ fun Lenceur_Vent_Handler_App4(
         ?: detaille
         ?: new_Prix_Progressive_Editable
 
+    val currentList =
+        viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+    val currentOp =
+        currentList.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
+
     fun handleLenceVent_WhenNew(
         newQuantity: Int,
         currentList: List<M10OperationVentCouleur>?,
@@ -309,11 +314,6 @@ fun Lenceur_Vent_Handler_App4(
 
     // ── Dispatcher: route vers add, update, ou delete selon quantité et existence ──
     fun handleLenceVent(newQuantity: Int) {
-        val currentList =
-            viewModel.active_Datas.listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
-        val currentOp =
-            currentList.find { it.parent_M3CouleurProduit_KeyID == selectedCouleur.keyID }
-
         when {
             newQuantity == 0 && currentOp != null -> {
                 viewModel.delete_M10OperationVentCouleur(currentOp)
@@ -434,6 +434,20 @@ fun Lenceur_Vent_Handler_App4(
                         )
                     )
                 },
+                premier_Check_Donne = currentOp?.premier_Check_Donne == true,
+                on_toggle_premier_check = if (currentOp != null) {
+                    {
+                        val updatedOp = currentOp.copy(
+                            premier_Check_Donne = !currentOp.premier_Check_Donne,
+                            last_update_premier_Check_Donne_TimeTamps = System.currentTimeMillis(),
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        )
+                        val updatedList = currentList.map {
+                            if (it.keyID == updatedOp.keyID) updatedOp else it
+                        }
+                        viewModel.update_listM10OperationVentCouleur(updatedList)
+                    }
+                } else null,
                 relative_couleur = selectedCouleur,
             ) { updatedM3 ->
                 viewModel.update_m3couleur(updatedM3)

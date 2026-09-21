@@ -46,6 +46,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Receipt
@@ -202,6 +203,7 @@ fun View_MainItem(
     var showChangeDispoDialog by remember { mutableStateOf(false) }
     var showSaveDispoDialog by remember { mutableStateOf(false) }
     var showStockOptionsDialog by remember { mutableStateOf(false) }
+    var showLabels by remember { mutableStateOf(false) }
 
     fun save_Current_Dispo_To_Camion_Presentation(): Unit {
         // Obtenir toutes les opérations de vente liées à ce bon
@@ -388,6 +390,17 @@ fun View_MainItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     item {
+                        IconButton(
+                            onClick = { showLabels = !showLabels }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = if (showLabels) "إخفاء العناوين" else "إظهار العناوين",
+                                tint = if (showLabels) MaterialTheme.colorScheme.primary else Color.White
+                            )
+                        }
+                    }
+                    item {
                         Button_StockOptions_SubtractFromDepot(
                             onDismiss = { },
                             repositorysMainGetter = repositorysMainGetter,
@@ -401,32 +414,43 @@ fun View_MainItem(
                         // Recalcule le sum_De_Totale_Vents de ce M8BonVent a partir de ses
                         // operations de vente (relative_list_Vent) puis persiste la nouvelle
                         // valeur via update_M8BonVent. Voir M8BonVent.sum_totale_et_benifice
-                        IconButton(
-                            onClick = {
-                                val recalculatedSums = relative_M8BonVent.sum_totale_et_benifice(
-                                    vents = relative_list_Vent,
-                                    tariffs = emptyList<M13TarificationInfos>()
-                                )
-
-                                repositorysMainSetter.update_M8BonVent(
-                                    relative_M8BonVent.copy(
-                                        sum_De_Totale_Vents = recalculatedSums.totale_vents,
-                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                    )
-                                )
-
-                                Toast.makeText(
-                                    context,
-                                    "تم تحديث المجموع الكلي للبون",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Update Bon Total",
-                                tint = Color.White
-                            )
+                            IconButton(
+                                onClick = {
+                                    val recalculatedSums = relative_M8BonVent.sum_totale_et_benifice(
+                                        vents = relative_list_Vent,
+                                        tariffs = emptyList<M13TarificationInfos>()
+                                    )
+
+                                    repositorysMainSetter.update_M8BonVent(
+                                        relative_M8BonVent.copy(
+                                            sum_De_Totale_Vents = recalculatedSums.totale_vents,
+                                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                        )
+                                    )
+
+                                    Toast.makeText(
+                                        context,
+                                        "تم تحديث المجموع الكلي للبون",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = "Update Bon Total",
+                                    tint = Color.White
+                                )
+                            }
+                            if (showLabels) {
+                                Text(
+                                    text = "تحديث المجموع",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                     item {
@@ -456,134 +480,189 @@ fun View_MainItem(
                                             style = MaterialTheme.typography.titleMedium, // Slightly larger
                                             fontWeight = FontWeight.Bold,
                                             color = if (sumBonVents - relative_M8BonVent.versement > 0) {
-                                                Color.White.copy(alpha = 0.9f)
-                                            } else {
-                                                Color.Green.copy(alpha = 0.9f)
-                                            }
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text = "دج متبقي",
-                                            style = MaterialTheme.typography.bodyMedium, // Larger text
-                                            color = Color.White.copy(alpha = 0.8f)
-                                        )
-
-                                        Spacer(modifier = Modifier.width(10.dp))
-
-                                        // Separator
-                                        Text(
-                                            text = "|",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = Color.White.copy(alpha = 0.6f)
-                                        )
-
-                                        Spacer(modifier = Modifier.width(10.dp))
-
-                                        // Amount paid (compact)
-                                        Text(
-                                            text = String.format("%.2f", relative_M8BonVent.versement),
-                                            style = MaterialTheme.typography.bodyMedium, // Larger text
-                                            fontWeight = FontWeight.Medium,
-                                            color = Color.White.copy(alpha = 0.9f)
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = "مدفوع",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = Color.White.copy(alpha = 0.7f)
-                                        )
-                                    }
-                                } else {
-                                    Row(
-                                        modifier = Modifier.padding(
-                                            horizontal = 12.dp,
-                                            vertical = 8.dp
-                                        ), // Increased padding
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = String.format("%.2f", sumBonVents),
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text = "دج",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = Color.White.copy(alpha = 0.9f)
-                                        )
-                                    }
+                                                 Color.White.copy(alpha = 0.9f)
+                                             } else {
+                                                 Color.Green.copy(alpha = 0.9f)
+                                             }
+                                         )
+                                         Spacer(modifier = Modifier.width(6.dp))
+                                         Text(
+                                             text = "دج متبقي",
+                                             style = MaterialTheme.typography.bodyMedium, // Larger text
+                                             color = Color.White.copy(alpha = 0.8f)
+                                         )
+ 
+                                         Spacer(modifier = Modifier.width(10.dp))
+ 
+                                         // Separator
+                                         Text(
+                                             text = "|",
+                                             style = MaterialTheme.typography.bodyMedium,
+                                             color = Color.White.copy(alpha = 0.6f)
+                                         )
+ 
+                                         Spacer(modifier = Modifier.width(10.dp))
+ 
+                                         // Amount paid (compact)
+                                         Text(
+                                             text = String.format("%.2f", relative_M8BonVent.versement),
+                                             style = MaterialTheme.typography.bodyMedium, // Larger text
+                                             fontWeight = FontWeight.Medium,
+                                             color = Color.White.copy(alpha = 0.9f)
+                                         )
+                                         Spacer(modifier = Modifier.width(4.dp))
+                                         Text(
+                                             text = "مدفوع",
+                                             style = MaterialTheme.typography.bodyMedium,
+                                             color = Color.White.copy(alpha = 0.7f)
+                                         )
+                                     }
+                                 } else {
+                                     Row(
+                                         modifier = Modifier.padding(
+                                             horizontal = 12.dp,
+                                             vertical = 8.dp
+                                         ), // Increased padding
+                                         verticalAlignment = Alignment.CenterVertically
+                                     ) {
+                                         Text(
+                                             text = String.format("%.2f", sumBonVents),
+                                             style = MaterialTheme.typography.titleMedium,
+                                             fontWeight = FontWeight.Bold,
+                                             color = Color.White
+                                         )
+                                         Spacer(modifier = Modifier.width(6.dp))
+                                         Text(
+                                             text = "دج",
+                                             style = MaterialTheme.typography.bodyMedium,
+                                             color = Color.White.copy(alpha = 0.9f)
+                                         )
+                                     }
+                                 }
+                             }
+                         }
+                     }
+ 
+                     item {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    showCreateCartonBonDialog = true
                                 }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Create Cartons Bon",
+                                    tint = Color.White
+                                )
+                            }
+                            if (showLabels) {
+                                Text(
+                                    text = "كراتين",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White
+                                )
                             }
                         }
                     }
-
                     item {
-                        IconButton(
-                            onClick = {
-                                showCreateCartonBonDialog = true
-                            }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Create Cartons Bon",
-                                tint = Color.White
-                            )
+                            IconButton(
+                                onClick = {
+                                    showMoveToLastVentPeriodDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = "Move Bon to Selected Vent Period",
+                                    tint = Color.White
+                                )
+                            }
+                            if (showLabels) {
+                                Text(
+                                    text = "نقل لفترة",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                     item {
-                        IconButton(
-                            onClick = {
-                                showMoveToLastVentPeriodDialog = true
-                            }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Move Bon to Selected Vent Period",
-                                tint = Color.White
-                            )
+                            IconButton(
+                                onClick = {
+                                    showChangeDispoDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.SwapHoriz, // Icône pour changer l'état
+                                    contentDescription = "Change Availability",
+                                    tint = Color.White
+                                )
+                            }
+                            if (showLabels) {
+                                Text(
+                                    text = "تغيير التوفر",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
+ 
                     item {
-                        IconButton(
-                            onClick = {
-                                showChangeDispoDialog = true
-                            }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.SwapHoriz, // Icône pour changer l'état
-                                contentDescription = "Change Availability",
-                                tint = Color.White
-                            )
+                            IconButton(
+                                onClick = {
+                                    showSaveDispoDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Save,
+                                    contentDescription = "Save Availability State for Camion",
+                                    tint = Color.White
+                                )
+                            }
+                            if (showLabels) {
+                                Text(
+                                    text = "حفظ التوفر",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
-
+ 
                     item {
-                        IconButton(
-                            onClick = {
-                                showSaveDispoDialog = true
-                            }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Save,
-                                contentDescription = "Save Availability State for Camion",
-                                tint = Color.White
-                            )
-                        }
-                    }
-
-                    item {
-                        IconButton(
-                            onClick = {
-                                showStockOptionsDialog = true
+                            IconButton(
+                                onClick = {
+                                    showStockOptionsDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Receipt,
+                                    contentDescription = "Add to Stock",
+                                    tint = Color.White
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Receipt,
-                                contentDescription = "Add to Stock",
-                                tint = Color.White
-                            )
+                            if (showLabels) {
+                                Text(
+                                    text = "إضافة للمخزون",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }
@@ -1072,7 +1151,8 @@ fun View_MainItem(
                         onClick = {
                             separateBon(
                                 isTargetVent = { vent ->
-                                    vent.premier_Check_Donne
+                                    val couleur = repositorysMainGetter.repo03CouleurProduitInfos.datasValue.find { it.keyID == vent.parent_M3CouleurProduit_KeyID }
+                                    vent.premier_Check_Donne || couleur?.cheked == true
                                 },
                                 label = "المفحوص (Checked)",
                                 resetPremierCheck = true
@@ -1178,13 +1258,20 @@ fun View_MainItem(
                         val targetPeriodDebugInfos = targetPeriod.get_DebugInfos()
 
                         // Update the M8BonVent itself to point at the selected vent period
-                        repositorysMainSetter.update_M8BonVent(
-                            relative_M8BonVent.copy(
-                                parent_M14VentPeriod_KeyId = targetPeriodKeyId,
-                                parent_M14VentPeriod_DebugInfos = targetPeriodDebugInfos,
-                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                            )
+                        val updatedBon = relative_M8BonVent.copy(
+                            parent_M14VentPeriod_KeyId = targetPeriodKeyId,
+                            parent_M14VentPeriod_DebugInfos = targetPeriodDebugInfos,
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                         )
+                        repositorysMainSetter.update_M8BonVent(updatedBon)
+
+                        if (focusedValuesGetter.activeOnVent_M8BonVent?.keyID == relative_M8BonVent.keyID) {
+                            focusedValuesGetter.update_activeCentralValues(
+                                focusedValuesGetter.active_Central_Values.copy(
+                                    activeOnVent_M8BonVent = updatedBon
+                                )
+                            )
+                        }
 
                         // Propagate the change to every operation attached to this bon
                         val bonOperations = repositorysMainGetter.repo10OperationVentCouleur.datasValue.filter {

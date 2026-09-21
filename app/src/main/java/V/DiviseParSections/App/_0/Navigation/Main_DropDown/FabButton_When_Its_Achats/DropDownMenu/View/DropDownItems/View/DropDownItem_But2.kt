@@ -65,9 +65,12 @@ fun DropDownItem_But2(
 
                     // Get all vent operations for the current period that need to be purchased
                     // Exclude vents that are already delivered (Livree) or not found (Non Trouve)
+                    val bonVentsForPeriod = repositorysMainGetter.repo8BonVent.datasValue
+                        .filter { it.parent_M14VentPeriod_KeyId == currentPeriod.keyID }
                     val ventOperationsForPeriod = repositorysMainGetter.repo10OperationVentCouleur.datasValue
                         .filter {
-                            it.parent_M14VentPeriod_KeyId == currentPeriod.keyID &&
+                            (it.parent_M14VentPeriod_KeyId == currentPeriod.keyID ||
+                                    bonVentsForPeriod.any { bon -> bon.keyID == it.parent_M8BonVent_KeyId }) &&
                                     it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve
                         }
 

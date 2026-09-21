@@ -142,6 +142,8 @@ fun Affiche_Vent_Et_Couleur_Relatives(
     on_toggle_presentative: (() -> Unit)? = null,
     affiche_que_c_don_le_panie: Boolean = false,
     on_toggle_affiche_panie: (() -> Unit)? = null,
+    premier_Check_Donne: Boolean = false,
+    on_toggle_premier_check: (() -> Unit)? = null,
     relative_couleur: M3CouleurProduitInfos? = null,
     on_update_m3couleur: ((M3CouleurProduitInfos) -> Unit)? = null,
 ) {
@@ -279,6 +281,27 @@ fun Affiche_Vent_Et_Couleur_Relatives(
                                     style = textStyle,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                    if (on_toggle_premier_check != null && start_count > 0) {
+                        add {
+                            Card(
+                                modifier = Modifier.clickable {
+                                    on_toggle_premier_check()
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (premier_Check_Donne) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            ) {
+                                Text(
+                                    text = if (premier_Check_Donne) "✓" else "○",
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    style = textStyle,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (premier_Check_Donne) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }

@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -36,6 +38,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -127,6 +130,21 @@ fun PressistatntMainActivityButtons_App4(
 
     val current_OnVent_M14VentPeriode_KeyID =
         activeDatas.active_M9Compt?.current_OnVent_M14VentPeriode_KeyID
+
+    var showMarkAllCheckedDialog by remember { mutableStateOf(false) }
+
+    val activeOnVent_M8BonVent_checked_counts by remember(
+        listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+    ) {
+        derivedStateOf {
+            val ops = listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state
+                ?.filter { it.etateDelivery == EntreApps.Shared.Models.Relative_Vents.Models.M10OperationVentCouleur.EtateDelivery.Trouve }
+                ?: return@derivedStateOf null
+            val checkedOps = ops.filter { it.premier_Check_Donne }
+            val nonCheckedOps = ops.filter { !it.premier_Check_Donne }
+            Pair(checkedOps.size, nonCheckedOps.size)
+        }
+    }
 
     val activeOnVent_M8BonVent_benefice by remember(
         current_OnVent_M14VentPeriode_KeyID,
@@ -448,6 +466,66 @@ fun PressistatntMainActivityButtons_App4(
                         }
                     }
                 }
+
+                activeOnVent_M8BonVent_checked_counts?.let { (checkedCount, nonCheckedCount) ->
+                    val total = checkedCount + nonCheckedCount
+                    if (total > 0) {
+                        FloatingActionButton(
+                            onClick = { showMarkAllCheckedDialog = true },
+                            modifier = Modifier
+                                .widthIn(min = 56.dp)
+                                .height(40.dp)
+                                .pointerInput(Unit) {
+                                    detectTapGestures(
+                                        onDoubleTap = { showMarkAllCheckedDialog = true },
+                                        onTap = { showMarkAllCheckedDialog = true }
+                                    )
+                                },
+                            containerColor = if (checkedCount == total) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = if (checkedCount == total) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text(
+                                text = "✓ $checkedCount / $total",
+                                color = if (checkedCount == total) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (showMarkAllCheckedDialog) {
+                AlertDialog(
+                    onDismissRequest = { showMarkAllCheckedDialog = false },
+                    title = { Text("Vérification des couleurs") },
+                    text = { Text("Voulez-vous marquer toutes les opérations/couleurs de ce bon comme vérifiées (Checked) ?") },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                val ops = listM10OperationVentCouleur_FilteredBy_activeM8BonVent_state ?: emptyList()
+                                val currentTimestamp = System.currentTimeMillis()
+                                val updatedOps = ops.map {
+                                    it.copy(
+                                        premier_Check_Donne = true,
+                                        last_update_premier_Check_Donne_TimeTamps = currentTimestamp,
+                                        dernierTimeTampsSynchronisationAvecFireBase = currentTimestamp
+                                    )
+                                }
+                                viewModelNewProtoPatterns.update_listM10OperationVentCouleur(updatedOps)
+                                showMarkAllCheckedDialog = false
+                            }
+                        ) {
+                            Text("Tout cocher (Checked)")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showMarkAllCheckedDialog = false }) {
+                            Text("Annuler")
+                        }
+                    }
+                )
             }
 
             Row(

@@ -116,7 +116,7 @@ import java.util.Date
 
         M09AppCompt::class,
     ],
-    version = 9, // Bumped from 8 → 9: added its_Client_De_Jamale to M2Client
+    version = 10, // Bumped from 9 → 10: added cheked to M3CouleurProduitInfos
     exportSchema = false
 )
 @TypeConverters(
