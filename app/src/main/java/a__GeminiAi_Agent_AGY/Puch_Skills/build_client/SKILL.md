@@ -92,6 +92,9 @@ Exécutez le script Gradle en injectant le paramètre `"-PappSuffix"` correspond
 .\gradlew.bat assembleDebug "-PappSuffix=<SUFFIXE>" --offline --parallel --build-cache --configuration-cache
 ```
 
+> [!TIP] **Exécution par Script dédié (`scratch/`)**
+> Pour les builds multi-cibles séquentiels (ex: `b+1`, `b_c`), privilégiez l'exécution via un script Python ou PowerShell dédié dans `scratch/` (ex: `scratch/build_all.py`) qui enchaîne automatiquement la mise à jour des paramètres, l'appel Gradle `-PappSuffix`, la copie des APKs vers les dossiers du Bureau (`Playe_Store/<VERSION>/0./` et `Playe_Store/9_Client_App_Last/`) et garantit dans un bloc `finally` la restauration systématique de `M00CentralParametresOfAllApps.kt`. Cela élimine également les erreurs d'échappement de guillemets dans les commandes PowerShell chaînées.
+
 #### D. Exporter l'APK (Dossier Versionné & `9_Client_App_Last`)
 1. **Dossier Versionné** :
    - Créez le dossier d'export sur le Bureau : `C:\Users\Abou Mohamed\Desktop\Playe_Store\<VERSION>\0.\<DOSSIER_APP>` (où `<DOSSIER_APP>` est `a_AllInOne`, `b_JomLaElectroLivreurGrossist_VendeurHost`, ou `c_JomLaElectroLivreurGrossist_PresenterScreen`).

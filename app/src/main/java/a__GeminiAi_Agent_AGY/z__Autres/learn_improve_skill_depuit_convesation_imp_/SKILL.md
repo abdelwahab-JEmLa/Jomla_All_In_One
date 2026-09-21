@@ -34,6 +34,7 @@ This skill automates the process of updating/improving existing global Antigravi
 - "imp_"
 - "improve_"
 - "imrove_"
+- "ipmrove_"
 - "improv_"
 - "iprov_"
 - "i_build_client"

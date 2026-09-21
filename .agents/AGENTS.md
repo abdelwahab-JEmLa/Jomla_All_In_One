@@ -22,7 +22,7 @@
 - **Accès au fichier protégé** : Étant donné que `references.json` se trouve dans un répertoire protégé par le système bloquant l'outil `view_file`, utilisez **exclusivement** PowerShell (`Get-Content -Path "C:\Users\Abou Mohamed\.gemini\antigravity-cli\references.json"`) via `run_command` pour lire son contenu.
 
 ## Résolution des Noms de Skills Globaux
-- Toute référence à `h_` (ou `help_skill`/`help_skills`), `b_c` (ou `build_client`) ou `lit_patterns` (ou `read_c_p`/`c_p`) désigne respectivement les répertoires de skills globaux [h_](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/h_), [build_client](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/build_client) et [lit_patterns](file:///C:/Users/Abou%20Mohamed/.gemini/config/skills/lit_patterns).
+- Toute référence à `h_` (ou `help_skill`/`help_skills`), `b_c` (ou `build_client`), `p_v` ou `lit_patterns` (ou `read_c_p`/`c_p`) désigne respectivement les répertoires de skills globaux sous `~/.gemini/config/skills/` (ex: `Puch_Skills/build_client`, `Puch_Skills/p_v`, `h_`, `lit_patterns`).
 
 ## Thermal Print Customizations (Print Without Products)
 - When printing receipts or tickets, the Bluetooth printing module supports printing a summary receipt without listing individual products (useful for credit payments or quick totals).
@@ -48,6 +48,7 @@
 - **Enchaînement Git** : À la fin du processus de compilation et déploiement de `build_client` (`b_c`), lancez automatiquement le skill global `p_v` pour commiter la version, créer/écraser le tag de version spécifique (ex : `v1.14.0.12`) en y incluant la description des changements depuis la version précédente (`version - 1`), mettre à jour le tag `par_version_instaled` et tout pousser vers les dépôts distants (`github` et `origin`).
 - **Déploiement Post-Build** : Si un build ou un déploiement a besoin d'être poussé manuellement après coup sur le téléphone, ne relancez pas la compilation. Utilisez la commande ADB push appropriée (avec ou sans ZIP selon la demande) sur le dossier d'export existant.
 - **Vérification ADB non-bloquante** : Comme pour l'application Tahfid, la vérification de la connexion du téléphone via ADB doit se faire au moment du déploiement (étape 4). Si le téléphone n'est pas détecté, l'assistant doit demander à l'utilisateur s'il est branché. En cas d'absence, le script doit proposer de conserver uniquement l'export local sur le bureau (sans bloquer ni annuler la compilation).
+- **Exécution par Script dédié (`scratch/`)** : Pour les builds multi-cibles séquentiels (ex: `b+1`, `b_c`), privilégiez l'exécution via un script Python ou PowerShell dédié dans `scratch/` qui enchaîne les configurations de paramètres, l'appel Gradle `-PappSuffix`, la copie des APKs et garantit dans un bloc `finally` la restauration systématique de `M00CentralParametresOfAllApps.kt`.
 
 
 ## Color Media Presentations & GIF Conversion
